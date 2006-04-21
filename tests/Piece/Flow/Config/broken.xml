@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow name="registrationFlow" firstState="displaying">
+  <lastState name="finishing" view="finish"/>
+  <viewState name="displaying" view="input">
+    <entry service="Piece_FlowTestCaseAction" method="setupForm"/>
+    <exit service="Piece_FlowTestCaseAction" method="teardownForm"/>
+    <activity service="Piece_FlowTestCaseAction" method="countDisplay"/>
+    <transition event="submit" nextState="validated">
+      <action service="Piece_FlowTestCaseAction" method="validate"/>
+      <guard service="Piece_FlowTestCaseAction" method="isPermitted"/>
+  </viewState>
+  <viewState name="confirming" view="confirmation">
+    <transition event="submit" nextState="validated">
+      <action service="Piece_FlowTestCaseAction" method="validate"/>
+    </transition>
+  </viewState>
+  <actionState name="validated">
+    <transition event="raiseError" nextState="displaying"/>
+    <transition event="succeedInValidatingViaDisplaying" nextState="confirming"/>
+    <transition event="succeedInValidatingViaConfirming" nextState="registered">
+      <action service="Piece_FlowTestCaseAction" method="register"/>
+    </transition>
+  </actionState>
+  <actionState name="registered">
+    <transition event="raiseError" nextState="displaying"/>
+    <transition event="succeed" nextState="finishing"/>
+  </actionState>
+</flow>

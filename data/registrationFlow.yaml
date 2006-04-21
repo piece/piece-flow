@@ -1,0 +1,51 @@
+# $Id$
+name: registrationFlow
+firstState: displaying
+lastState: { name: finishing, view: finish }
+viewState:
+  - name: displaying
+    view: input
+    entry:
+      class: Piece_FlowTestCaseAction
+      method: setupForm
+    exit:
+      class: Piece_FlowTestCaseAction
+      method: teardownForm
+    activity:
+      class: Piece_FlowTestCaseAction
+      method: countDisplay
+    transition:
+      - event: submit
+        nextState: validated
+        action:
+          class: Piece_FlowTestCaseAction
+          method: validate
+        guard:
+          class: Piece_FlowTestCaseAction
+          method: isPermitted
+  - name: confirming
+    view: confirmation
+    transition:
+      - event: submit
+        nextState: validated
+        action:
+          class: Piece_FlowTestCaseAction
+          method: validate
+actionState:
+  - name: validated
+    transition:
+      - event: raiseError
+        nextState: displaying
+      - event: succeedInValidatingViaDisplaying
+        nextState: confirming
+      - event: succeedInValidatingViaConfirming
+        nextState: registered
+        action:
+          class: Piece_FlowTestCaseAction
+          method: register
+  - name: registered
+    transition:
+      - event: raiseError
+        nextState: displaying
+      - event: succeed
+        nextState: finishing

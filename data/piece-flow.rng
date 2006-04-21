@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- $Id$ -->
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+  <start>
+    <ref name="flow"/>
+  </start>
+  <define name="flow">    
+    <element name="flow">
+      <attribute name="name">
+        <data type="string"/>
+      </attribute>
+      <attribute name="firstState">
+        <data type="string"/>
+      </attribute>
+      <interleave>
+        <element name="lastState">
+          <attribute name="name">
+            <data type="string"/>
+          </attribute>
+          <attribute name="view">
+            <data type="string"/>
+          </attribute>
+          <interleave>
+            <optional>
+              <ref name="entry"/>
+            </optional>
+            <optional>
+              <ref name="exit"/>
+            </optional>
+            <optional>
+              <ref name="activity"/>
+            </optional>
+          </interleave>
+        </element>
+        <ref name="viewStates"/>
+        <ref name="actionStates"/>
+      </interleave>
+    </element>
+  </define>
+  <define name="viewStates">
+    <oneOrMore>
+      <element name="viewState">
+        <attribute name="name">
+          <data type="string"/>
+        </attribute>
+        <attribute name="view">
+          <data type="string"/>
+        </attribute>
+        <interleave>
+          <ref name="transitions"/>
+          <optional>
+            <ref name="entry"/>
+          </optional>
+          <optional>
+            <ref name="exit"/>
+          </optional>
+          <optional>
+            <ref name="activity"/>
+          </optional>
+        </interleave>
+      </element>
+    </oneOrMore>
+  </define>
+  <define name="actionStates">
+    <oneOrMore>
+      <element name="actionState">
+        <attribute name="name">
+          <data type="string"/>
+        </attribute>
+        <interleave>
+          <ref name="transitions"/>
+          <optional>
+            <ref name="entry"/>
+          </optional>
+          <optional>
+            <ref name="exit"/>
+          </optional>
+          <optional>
+            <ref name="activity"/>
+          </optional>
+        </interleave>
+      </element>
+    </oneOrMore>
+  </define>
+  <define name="transitions">
+    <oneOrMore>
+      <element name="transition">
+        <attribute name="event">
+          <data type="string"/>
+        </attribute>
+        <attribute name="nextState">
+          <data type="string"/>
+        </attribute>
+        <optional>
+          <ref name="action"/>
+        </optional>
+        <optional>
+          <ref name="guard"/>
+        </optional>
+      </element>
+    </oneOrMore>
+  </define>
+  <define name="action">
+    <element name="action">
+      <ref name="service"/>
+    </element>
+  </define>
+  <define name="guard">
+    <element name="guard">
+      <ref name="service"/>
+    </element>
+  </define>
+  <define name="service">
+    <attribute name="class">
+      <data type="string"/>
+    </attribute>
+    <attribute name="method">
+      <data type="string"/>
+    </attribute>
+  </define>
+  <define name="entry">
+    <element name="entry">
+      <ref name="service"/>
+    </element>
+  </define>
+  <define name="exit">
+    <element name="exit">
+      <ref name="service"/>
+    </element>
+  </define>
+  <define name="activity">
+    <element name="activity">
+      <ref name="service"/>
+    </element>
+  </define>
+</grammar>
