@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE package SYSTEM "http://pear.php.net/dtd/package-1.0">
+<package version="1.0" packagerversion="1.4.8">
+ <name>Piece_Flow</name>
+ <summary>A web flow engine which to handle the page flow of a web application.</summary>
+ <description>Piece_Flow provides a web flow engine based on Finite State Machine (FSM).
+Piece_Flow can handle two different states. The view state is a state associated with a view string. The action state is a simple state, which has no association with all views.
+If the engine once started, the application will be put under control of it.
+ </description>
+ <maintainers>
+  <maintainer>
+   <user>kubo</user>
+   <name>KUBO Atsuhiro</name>
+   <email>iteman2002@yahoo.co.jp</email>
+   <role>lead</role>
+  </maintainer>
+  <maintainer>
+   <user>miya</user>
+   <name>MIYAI Fumihiko</name>
+   <email>fumichz@yahoo.co.jp</email>
+   <role>developer</role>
+  </maintainer>
+  </maintainers>
+ <release>
+  <version>0.4.0</version>
+  <date>2006-04-21</date>
+  <license>BSD License (revised)</license>
+  <state>beta</state>
+  <notes>The first release of Piece_Flow.
+  </notes>
+  <deps>
+   <dep type="php" rel="ge" version="4.3.0" optional="no"/>
+   <dep type="pkg" rel="ge" version="1.2.0" optional="no">Stagehand_FSM</dep>
+   <dep type="pkg" rel="ge" version="1.7.0" optional="no">Cache_Lite</dep>
+   <dep type="pkg" rel="ge" version="0.3.0" optional="yes">Stagehand_TestRunner</dep>
+  </deps>
+  <filelist>
+   <dir name="/" baseinstalldir="/">
+    <dir name="data">
+     <file role="data" name="piece-flow.rng">
+      <replace from="@package_version@" to="version" type="package-info"/>
+     </file>
+     <file role="data" name="piece-flow.yaml">
+      <replace from="@package_version@" to="version" type="package-info"/>
+     </file>
+     <file role="data" name="registrationFlow.xml">
+      <replace from="@package_version@" to="version" type="package-info"/>
+     </file>
+     <file role="data" name="registrationFlow.yaml">
+      <replace from="@package_version@" to="version" type="package-info"/>
+     </file>
+    </dir> <!-- /data -->
+    <dir name="docs">
+     <file role="doc" name="LICENSE">
+      <replace from="@package_version@" to="version" type="package-info"/>
+     </file>
+    </dir> <!-- /docs -->
+    <dir name="Piece">
+     <dir name="Flow">
+      <dir name="Config">
+       <file role="php" name="Callback.php">
+        <replace from="@package_version@" to="version" type="package-info"/>
+       </file>
+       <file role="php" name="Common.php">
+        <replace from="@package_version@" to="version" type="package-info"/>
+       </file>
+       <file role="php" name="Factory.php">
+        <replace from="@package_version@" to="version" type="package-info"/>
+       </file>
+       <file role="php" name="File.php">
+        <replace from="@package_version@" to="version" type="package-info"/>
+       </file>
+       <file role="php" name="XML4.php">
+        <replace from="@package_version@" to="version" type="package-info"/>
+       </file>
+       <file role="php" name="XML5.php">
+        <replace from="@package_version@" to="version" type="package-info"/>
+       </file>
+       <file role="php" name="YAML.php">
+        <replace from="@package_version@" to="version" type="package-info"/>
+       </file>
+      </dir> <!-- /Piece/Flow/Config -->
+      <file role="php" name="Action.php">
+       <replace from="@package_version@" to="version" type="package-info"/>
+      </file>
+      <file role="php" name="Config.php">
+       <replace from="@package_version@" to="version" type="package-info"/>
+      </file>
+      <file role="php" name="Error.php">
+       <replace from="@package_version@" to="version" type="package-info"/>
+      </file>
+     </dir> <!-- /Piece/Flow -->
+     <file role="php" name="Flow.php">
+      <replace from="@package_version@" to="version" type="package-info"/>
+     </file>
+    </dir> <!-- /Piece -->
+    <dir name="tests">
+     <dir name="Piece">
+      <dir name="Flow">
+       <dir name="Config">
+        <file role="test" name="Baz.php">
+         <replace from="@package_version@" to="version" type="package-info"/>
+        </file>
+        <file role="test" name="broken.xml">
+         <replace from="@package_version@" to="version" type="package-info"/>
+        </file>
+        <file role="test" name="CallbackTestCase.php">
+         <replace from="@package_version@" to="version" type="package-info"/>
+        </file>
+        <file role="test" name="CompatibilityTest.php">
+         <replace from="@package_version@" to="version" type="package-info"/>
+        </file>
+        <file role="test" name="FactoryTestCase.php">
+         <replace from="@package_version@" to="version" type="package-info"/>
+        </file>
+        <file role="test" name="FileTestCase.php">
+         <replace from="@package_version@" to="version" type="package-info"/>
+        </file>
+        <file role="test" name="invalid.xml">
+         <replace from="@package_version@" to="version" type="package-info"/>
+        </file>
+        <file role="test" name="TestRunner.php">
+         <replace from="@package_version@" to="version" type="package-info"/>
+        </file>
+        <file role="test" name="XML4TestCase.php">
+         <replace from="@package_version@" to="version" type="package-info"/>
+        </file>
+        <file role="test" name="XML5TestCase.php">
+         <replace from="@package_version@" to="version" type="package-info"/>
+        </file>
+        <file role="test" name="YAMLTestCase.php">
+         <replace from="@package_version@" to="version" type="package-info"/>
+        </file>
+       </dir> <!-- /tests/Piece/Flow/Config -->
+       <file role="test" name="ActionTestCase.php">
+        <replace from="@package_version@" to="version" type="package-info"/>
+       </file>
+       <file role="test" name="TestRunner.php">
+        <replace from="@package_version@" to="version" type="package-info"/>
+       </file>
+      </dir> <!-- /tests/Piece/Flow -->
+      <file role="test" name="FlowTestCase.php">
+       <replace from="@package_version@" to="version" type="package-info"/>
+      </file>
+      <file role="test" name="TestRunner.php">
+       <replace from="@package_version@" to="version" type="package-info"/>
+      </file>
+     </dir> <!-- /tests/Piece -->
+     <file role="test" name="AllTestRunner.php">
+      <replace from="@package_version@" to="version" type="package-info"/>
+     </file>
+    </dir> <!-- /tests -->
+   </dir> <!-- / -->
+  </filelist>
+ </release>
+ <changelog>
+   <release>
+    <version>0.4.0</version>
+    <date>2006-04-21</date>
+    <license>BSD License (revised)</license>
+    <state>beta</state>
+    <notes>The first release of Piece_Flow.
+    </notes>
+   </release>
+ </changelog>
+</package>
