@@ -243,19 +243,19 @@ class Piece_FlowTestCaseAction
         if (array_key_exists('hasErrors', $GLOBALS)
             && $GLOBALS['hasErrors']
             ) {
-            $flow->triggerEvent('raiseError');
+            return 'raiseError';
         }
 
         if ($flow->getPreviousStateName() == 'displaying') {
-            $flow->triggerEvent('succeedInValidatingViaDisplaying');
+            return 'succeedInValidatingViaDisplaying';
         } elseif ($flow->getPreviousStateName() == 'confirming') {
-            $flow->triggerEvent('succeedInValidatingViaConfirming');
+            return 'succeedInValidatingViaConfirming';
         }
     }
 
     function register(&$flow, $event, &$payload)
     {
-        $flow->triggerEvent('succeed');
+        return 'succeed';
     }
 
     function isPermitted(&$flow, $event, &$payload)
