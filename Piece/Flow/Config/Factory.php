@@ -38,6 +38,8 @@
  * @since      File available since Release 0.1.0
  */
 
+require_once 'Piece/Flow/Error.php';
+
 // {{{ Piece_Flow_Config_Factory
 
 /**
