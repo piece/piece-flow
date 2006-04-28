@@ -104,13 +104,33 @@ class Piece_Flow_Action
      *
      * @param Stagehand_FSM       $fsm
      * @param Stagehand_FSM_Event $event
-     * @param mixed           $payload
+     * @param mixed               $payload
      */
     function invoke(&$fsm, &$event, &$payload)
     {
         return call_user_func_array(array($this->_class, $this->_method),
                                     array(&$this->_flow, $event->getName(), &$payload)
                                     );
+    }
+
+    // }}}
+    // {{{ invokeAndTriggerEvent()
+
+    /**
+     * Invokes the action and triggers an event returned from the action.
+     *
+     * @param Stagehand_FSM       $fsm
+     * @param Stagehand_FSM_Event $event
+     * @param mixed               $payload
+     */
+    function invokeAndTriggerEvent(&$fsm, &$event, &$payload)
+    {
+        $result = call_user_func_array(array($this->_class, $this->_method),
+                                       array(&$this->_flow, $event->getName(), &$payload)
+                                       );
+        if (!is_null($result)) {
+            $this->_flow->triggerEvent($result);
+        }
     }
 
     /**#@-*/
