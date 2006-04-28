@@ -266,7 +266,7 @@ class Piece_Flow
             $this->_fsm->addTransition($state['name'],
                                        $state['transitions'][$i]['event'],
                                        $state['transitions'][$i]['nextState'],
-                                       $this->_wrapAction(@$state['transitions'][$i]['action']),
+                                       $this->_wrapEventTriggerAction(@$state['transitions'][$i]['action']),
                                        $this->_wrapAction(@$state['transitions'][$i]['guard'])
                                        );
         }
@@ -285,7 +285,7 @@ class Piece_Flow
 
         if (array_key_exists('activity', $state)) {
             $this->_fsm->setActivity($state['name'],
-                                     $this->_wrapAction(@$state['activity'])
+                                     $this->_wrapEventTriggerAction(@$state['activity'])
                                      );
         }
     }
@@ -294,8 +294,9 @@ class Piece_Flow
     // {{{ _wrapAction()
 
     /**
-     * Wraps an action up with a Piece_Flow_Action object and returns a
-     * callback.
+     * Wraps a simple action up with a Piece_Flow_Action object and returns a
+     * callback. The simple action means that the action is entry action or
+     * exit action or guard.
      *
      * @param array $action
      * @return array
@@ -325,6 +326,30 @@ class Piece_Flow
     {
         $this->_views[$state['name']] = $state['view'];
         $this->_configureState($state);
+    }
+
+    // }}}
+    // {{{ _wrapEventTriggerAction()
+
+    /**
+     * Wraps an event trigger action up with a Piece_Flow_Action object and
+     * returns a callback. The event trigger action means that the action is
+     * transition action or activity.
+     *
+     * @param array $action
+     * @return array
+     */
+    function _wrapEventTriggerAction($action)
+    {
+        if (is_null($action)) {
+            return $action;
+        }
+
+        $flowAction = &new Piece_Flow_Action($this,
+                                             $action['class'],
+                                             $action['method']
+                                             );
+        return array(&$flowAction, 'invokeAndTriggerEvent');
     }
 
     /**#@-*/
