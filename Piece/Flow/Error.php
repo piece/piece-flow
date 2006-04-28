@@ -147,6 +147,10 @@ class Piece_Flow_Error
         return false;
     }
 
+    /**#@+
+     * @access private
+     */
+
     /**#@-*/
 
     // }}}
