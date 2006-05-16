@@ -36,8 +36,7 @@
  * @version    SVN: $Id$
  * @link       http://iteman.typepad.jp/piece/
  * @link       http://www.martinfowler.com/eaaCatalog/applicationController.html
- * @link
- * http://opensource2.atlassian.com/confluence/spring/display/WEBFLOW/Home
+ * @link       http://opensource2.atlassian.com/confluence/spring/display/WEBFLOW/Home
  * @link       http://www-128.ibm.com/developerworks/java/library/j-cb03216/
  * @link       http://www-06.ibm.com/jp/developerworks/java/060412/j_j-cb03216.shtml
  * @see        Stagehand_FSM, Piece_Flow_Action
