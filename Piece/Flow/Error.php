@@ -81,6 +81,7 @@ class Piece_Flow_Error
 
     /**#@+
      * @access public
+     * @static
      */
 
     // }}}
@@ -91,11 +92,10 @@ class Piece_Flow_Error
      *
      * @param string  $package
      * @return PEAR_ErrorStack
-     * @static
      */
     function &getErrorStack($package = 'Piece_Flow')
     {
-        return PEAR_ErrorStack::singleton($package);
+        return PEAR_ErrorStack::singleton(strtolower($package));
     }
 
     // }}}
@@ -110,7 +110,6 @@ class Piece_Flow_Error
      * @param string  $package
      * @param array   $backtrace
      * @return PEAR_ErrorStack
-     * @static
      */
     function &raiseError($code,
                          $message = false,
@@ -136,7 +135,6 @@ class Piece_Flow_Error
      *
      * @param mixed $error
      * @return boolean
-     * @static
      */
     function isError($error)
     {
