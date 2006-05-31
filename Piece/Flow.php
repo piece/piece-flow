@@ -45,7 +45,7 @@
 
 require_once 'Stagehand/FSM.php';
 require_once 'Piece/Flow/Action.php';
-require_once 'Piece/Flow/Config/Factory.php';
+require_once 'Piece/Flow/ConfigReader/Factory.php';
 
 // {{{ Piece_Flow
 
@@ -111,7 +111,7 @@ class Piece_Flow
      */
     function configure($source, $type = null, $cacheDirectory = null)
     {
-        $driver = &Piece_Flow_Config_Factory::factory($source, $type);
+        $driver = &Piece_Flow_ConfigReader_Factory::factory($source, $type);
         if (Piece_Flow_Error::isError($driver)) {
             return $driver;
         }

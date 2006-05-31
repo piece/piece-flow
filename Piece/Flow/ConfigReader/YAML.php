@@ -38,7 +38,7 @@
  * @since      File available since Release 0.1.0
  */
 
-require_once 'Piece/Flow/Config/File.php';
+require_once 'Piece/Flow/ConfigReader/File.php';
 
 if (version_compare(phpversion(), '5.0.0', '<')) {
     require_once 'spyc.php';
@@ -46,7 +46,7 @@ if (version_compare(phpversion(), '5.0.0', '<')) {
     require_once 'spyc.php5';
 }
 
-// {{{ Piece_Flow_Config_YAML
+// {{{ Piece_Flow_ConfigReader_YAML
 
 /**
  * A Piece_Flow_Config driver for YAML.
@@ -60,7 +60,7 @@ if (version_compare(phpversion(), '5.0.0', '<')) {
  * @link       http://iteman.typepad.jp/piece/
  * @since      Class available since Release 0.1.0
  */
-class Piece_Flow_Config_YAML extends Piece_Flow_Config_File
+class Piece_Flow_ConfigReader_YAML extends Piece_Flow_ConfigReader_File
 {
 
     // {{{ properties

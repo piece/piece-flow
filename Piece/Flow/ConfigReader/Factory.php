@@ -40,7 +40,7 @@
 
 require_once 'Piece/Flow/Error.php';
 
-// {{{ Piece_Flow_Config_Factory
+// {{{ Piece_Flow_ConfigReader_Factory
 
 /**
  * An factory class for Piece_Flow_Config drivers.
@@ -54,7 +54,7 @@ require_once 'Piece/Flow/Error.php';
  * @link       http://iteman.typepad.jp/piece/
  * @since      Class available since Release 0.1.0
  */
-class Piece_Flow_Config_Factory
+class Piece_Flow_ConfigReader_Factory
 {
 
     // {{{ properties
@@ -91,16 +91,16 @@ class Piece_Flow_Config_Factory
     function &factory($source, $driverName = null)
     {
         if (is_null($driverName)) {
-            $driverName = Piece_Flow_Config_Factory::_guessDriver($source);
+            $driverName = Piece_Flow_ConfigReader_Factory::_guessDriver($source);
         }
 
         if ($driverName == 'XML') {
-            $driverName = Piece_Flow_Config_Factory::_getDriverForXML();
+            $driverName = Piece_Flow_ConfigReader_Factory::_getDriverForXML();
         }
 
-        $class = "Piece_Flow_Config_$driverName";
+        $class = "Piece_Flow_ConfigReader_$driverName";
         if (!class_exists($class)) {
-            $result = &Piece_Flow_Config_Factory::_loadDriver($class);
+            $result = &Piece_Flow_ConfigReader_Factory::_loadDriver($class);
             if (Piece_Flow_Error::isError($result)) {
                 return $result;
             }

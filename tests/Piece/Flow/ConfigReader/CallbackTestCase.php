@@ -34,19 +34,19 @@
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
  * @link       http://iteman.typepad.jp/piece/
- * @see        Piece_Flow_Config_YAML
+ * @see        Piece_Flow_ConfigReader_YAML
  * @since      File available since Release 0.1.0
  */
 
-require_once 'Piece/Flow/Config/Callback.php';
+require_once 'Piece/Flow/ConfigReader/Callback.php';
 
 require_once dirname(__FILE__) . '/CompatibilityTest.php';
 require_once 'Piece/Flow/Config.php';
 
-// {{{ Piece_Flow_Config_CallbackTestCase
+// {{{ Piece_Flow_ConfigReader_CallbackTestCase
 
 /**
- * TestCase for Piece_Flow_Config_Callback
+ * TestCase for Piece_Flow_ConfigReader_Callback
  *
  * @package    Piece_Flow
  * @author     KUBO Atsuhiro <iteman2002@yahoo.co.jp>
@@ -54,10 +54,10 @@ require_once 'Piece/Flow/Config.php';
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
  * @link       http://iteman.typepad.jp/piece/
- * @see        Piece_Flow_Config_Callback
+ * @see        Piece_Flow_ConfigReader_Callback
  * @since      Class available since Release 0.1.0
  */
-class Piece_Flow_Config_CallbackTestCase extends Piece_Flow_Config_CompatibilityTest
+class Piece_Flow_ConfigReader_CallbackTestCase extends Piece_Flow_ConfigReader_CompatibilityTest
 {
 
     // {{{ properties
@@ -81,7 +81,7 @@ class Piece_Flow_Config_CallbackTestCase extends Piece_Flow_Config_Compatibility
     function getConfig()
     {
         $callback =
-            new Piece_Flow_Config_Callback(array(&$this, 'configure'));
+            new Piece_Flow_ConfigReader_Callback(array(&$this, 'configure'));
         return $callback->configure();
     }
 

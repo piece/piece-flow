@@ -40,7 +40,7 @@
 require_once 'Piece/Flow/Error.php';
 require_once 'Piece/Flow/Config.php';
 
-// {{{ Piece_Flow_Config_Common
+// {{{ Piece_Flow_ConfigReader_Common
 
 /**
  * Base class for Piece_Flow_Config drivers.
@@ -53,7 +53,7 @@ require_once 'Piece/Flow/Config.php';
  * @link       http://iteman.typepad.jp/piece/
  * @since      Class available since Release 0.1.0
  */
-class Piece_Flow_Config_Common
+class Piece_Flow_ConfigReader_Common
 {
 
     // {{{ properties
@@ -85,7 +85,7 @@ class Piece_Flow_Config_Common
      *
      * @param mixed $source
      */
-    function Piece_Flow_Config_Common($source)
+    function Piece_Flow_ConfigReader_Common($source)
     {
         $this->_source = $source;
     }

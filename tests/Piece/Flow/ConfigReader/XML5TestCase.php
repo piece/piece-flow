@@ -34,7 +34,7 @@
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
  * @link       http://iteman.typepad.jp/piece/
- * @see        Piece_Flow_Config_XML5
+ * @see        Piece_Flow_ConfigReader_XML5
  * @since      File available since Release 0.1.0
  */
 
@@ -42,15 +42,15 @@ if (version_compare(phpversion(), '5.0.0', '<')) {
     return;
 }
 
-require_once 'Piece/Flow/Config/XML5.php';
+require_once 'Piece/Flow/ConfigReader/XML5.php';
 
 require_once dirname(__FILE__) . '/CompatibilityTest.php';
 require_once 'Piece/Flow/Config.php';
 
-// {{{ Piece_Flow_Config_XML5TestCase
+// {{{ Piece_Flow_ConfigReader_XML5TestCase
 
 /**
- * TestCase for Piece_Flow_Config_XML5
+ * TestCase for Piece_Flow_ConfigReader_XML5
  *
  * @package    Piece_Flow
  * @author     KUBO Atsuhiro <iteman2002@yahoo.co.jp>
@@ -58,10 +58,10 @@ require_once 'Piece/Flow/Config.php';
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
  * @link       http://iteman.typepad.jp/piece/
- * @see        Piece_Flow_Config_XML5
+ * @see        Piece_Flow_ConfigReader_XML5
  * @since      Class available since Release 0.1.0
  */
-class Piece_Flow_Config_XML5TestCase extends Piece_Flow_Config_CompatibilityTest
+class Piece_Flow_ConfigReader_XML5TestCase extends Piece_Flow_ConfigReader_CompatibilityTest
 {
 
     // {{{ properties
@@ -86,7 +86,7 @@ class Piece_Flow_Config_XML5TestCase extends Piece_Flow_Config_CompatibilityTest
     {
         $source =
             dirname(__FILE__) . '/../../../../data/registrationFlow.xml';
-        $xml = new Piece_Flow_Config_XML5($source);
+        $xml = new Piece_Flow_ConfigReader_XML5($source);
         return $xml->configure();
     }
 
@@ -95,7 +95,7 @@ class Piece_Flow_Config_XML5TestCase extends Piece_Flow_Config_CompatibilityTest
         PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
         $source = dirname(__FILE__) . '/invalid.xml';
-        $xml = new Piece_Flow_Config_XML5($source);
+        $xml = new Piece_Flow_ConfigReader_XML5($source);
         $xml->configure();
 
         $stack = Piece_Flow_Error::getErrorStack();

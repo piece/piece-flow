@@ -34,18 +34,18 @@
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
  * @link       http://iteman.typepad.jp/piece/
- * @see        Piece_Flow_Config_Factory
+ * @see        Piece_Flow_ConfigReader_Factory
  * @since      File available since Release 0.1.0
  */
 
-require_once 'Piece/Flow/Config/Factory.php';
+require_once 'Piece/Flow/ConfigReader/Factory.php';
 
 require_once 'PHPUnit.php';
 
-// {{{ Piece_Flow_Config_FactoryTestCase
+// {{{ Piece_Flow_ConfigReader_FactoryTestCase
 
 /**
- * TestCase for Piece_Flow_Config_Factory
+ * TestCase for Piece_Flow_ConfigReader_Factory
  *
  * @package    Piece_Flow
  * @author     KUBO Atsuhiro <iteman2002@yahoo.co.jp>
@@ -53,10 +53,10 @@ require_once 'PHPUnit.php';
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
  * @link       http://iteman.typepad.jp/piece/
- * @see        Piece_Flow_Config_Factory
+ * @see        Piece_Flow_ConfigReader_Factory
  * @since      Class available since Release 0.1.0
  */
-class Piece_Flow_Config_FactoryTestCase extends PHPUnit_TestCase
+class Piece_Flow_ConfigReader_FactoryTestCase extends PHPUnit_TestCase
 {
 
     // {{{ properties
@@ -89,25 +89,25 @@ class Piece_Flow_Config_FactoryTestCase extends PHPUnit_TestCase
 
     function testGuessingFromFileExtension()
     {
-        $this->assertTrue(is_a(Piece_Flow_Config_Factory::factory('foo.yaml'),
-                               'Piece_Flow_Config_YAML')
+        $this->assertTrue(is_a(Piece_Flow_ConfigReader_Factory::factory('foo.yaml'),
+                               'Piece_Flow_ConfigReader_YAML')
                           );
-        $this->assertTrue(is_a(Piece_Flow_Config_Factory::factory('foo.xml'),
+        $this->assertTrue(is_a(Piece_Flow_ConfigReader_Factory::factory('foo.xml'),
                                version_compare(phpversion(), '5.0.0', '>=') ?
-                               'Piece_Flow_Config_XML5' :
-                               'Piece_Flow_Config_XML4')
+                               'Piece_Flow_ConfigReader_XML5' :
+                               'Piece_Flow_ConfigReader_XML4')
                           );
     }
 
     function testSpecifyingDriverType()
     {
-        $this->assertTrue(is_a(Piece_Flow_Config_Factory::factory('foo', 'YAML'),
-                               'Piece_Flow_Config_YAML')
+        $this->assertTrue(is_a(Piece_Flow_ConfigReader_Factory::factory('foo', 'YAML'),
+                               'Piece_Flow_ConfigReader_YAML')
                           );
-        $this->assertTrue(is_a(Piece_Flow_Config_Factory::factory('foo', 'XML'),
+        $this->assertTrue(is_a(Piece_Flow_ConfigReader_Factory::factory('foo', 'XML'),
                                version_compare(phpversion(), '5.0.0', '>=') ?
-                               'Piece_Flow_Config_XML5' :
-                               'Piece_Flow_Config_XML4')
+                               'Piece_Flow_ConfigReader_XML5' :
+                               'Piece_Flow_ConfigReader_XML4')
                           );
     }
 
@@ -115,7 +115,7 @@ class Piece_Flow_Config_FactoryTestCase extends PHPUnit_TestCase
     {
         PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
-        Piece_Flow_Config_Factory::factory('foo.bar');
+        Piece_Flow_ConfigReader_Factory::factory('foo.bar');
         $stack = &Piece_Flow_Error::getErrorStack();
 
         $this->assertTrue($stack->hasErrors());
@@ -141,7 +141,7 @@ class Piece_Flow_Config_FactoryTestCase extends PHPUnit_TestCase
                 );
 
 
-        Piece_Flow_Config_Factory::factory('foo.bar', 'Baz');
+        Piece_Flow_ConfigReader_Factory::factory('foo.bar', 'Baz');
         $stack = &Piece_Flow_Error::getErrorStack();
 
         $this->assertTrue($stack->hasErrors());

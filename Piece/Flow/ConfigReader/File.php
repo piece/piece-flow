@@ -37,10 +37,10 @@
  * @since      File available since Release 0.1.0
  */
 
-require_once 'Piece/Flow/Config/Common.php';
+require_once 'Piece/Flow/ConfigReader/Common.php';
 require_once 'Cache/Lite/File.php';
 
-// {{{ Piece_Flow_Config_File
+// {{{ Piece_Flow_ConfigReader_File
 
 /**
  * A base class for any text based configuration file.
@@ -53,7 +53,7 @@ require_once 'Cache/Lite/File.php';
  * @link       http://iteman.typepad.jp/piece/
  * @since      Class available since Release 0.1.0
  */
-class Piece_Flow_Config_File extends Piece_Flow_Config_Common
+class Piece_Flow_ConfigReader_File extends Piece_Flow_ConfigReader_Common
 {
 
     // {{{ properties

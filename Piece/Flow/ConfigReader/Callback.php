@@ -37,9 +37,9 @@
  * @since      File available since Release 0.1.0
  */
 
-require_once 'Piece/Flow/Config/Common.php';
+require_once 'Piece/Flow/ConfigReader/Common.php';
 
-// {{{ Piece_Flow_Config_Callback
+// {{{ Piece_Flow_ConfigReader_Callback
 
 /**
  * A Piece_Flow_Config driver for Callback.
@@ -52,7 +52,7 @@ require_once 'Piece/Flow/Config/Common.php';
  * @link       http://iteman.typepad.jp/piece/
  * @since      Class available since Release 0.1.0
  */
-class Piece_Flow_Config_Callback extends Piece_Flow_Config_Common
+class Piece_Flow_ConfigReader_Callback extends Piece_Flow_ConfigReader_Common
 {
 
     // {{{ properties

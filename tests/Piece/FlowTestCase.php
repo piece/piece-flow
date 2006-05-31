@@ -42,7 +42,7 @@
 require_once 'Piece/Flow.php';
 
 require_once 'PHPUnit.php';
-require_once 'Piece/Flow/Config/Factory.php';
+require_once 'Piece/Flow/ConfigReader/Factory.php';
 
 // {{{ Piece_FlowTestCase
 
@@ -87,7 +87,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
     {
         $this->_source =
             dirname(__FILE__) . '/../../data/registrationFlow.yaml';
-        $driver = &Piece_Flow_Config_Factory::factory($this->_source);
+        $driver = &Piece_Flow_ConfigReader_Factory::factory($this->_source);
         $this->_config = &$driver->configure();
     }
 

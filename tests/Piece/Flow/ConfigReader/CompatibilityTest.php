@@ -34,14 +34,14 @@
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
  * @link       http://iteman.typepad.jp/piece/
- * @see        Piece_Flow_Config_Common
+ * @see        Piece_Flow_ConfigReader_Common
  * @since      File available since Release 0.1.0
  */
 
 require_once 'PHPUnit.php';
 require_once 'Piece/Flow/Config.php';
 
-// {{{ Piece_Flow_Config_CompatibilityTest
+// {{{ Piece_Flow_ConfigReader_CompatibilityTest
 
 /**
  * Base class for compatibility test of Piece_Flow_Config drivers.
@@ -52,10 +52,10 @@ require_once 'Piece/Flow/Config.php';
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
  * @link       http://iteman.typepad.jp/piece/
- * @see        Piece_Flow_Config_Common
+ * @see        Piece_Flow_ConfigReader_Common
  * @since      Class available since Release 0.1.0
  */
-class Piece_Flow_Config_CompatibilityTest extends PHPUnit_TestCase
+class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
 {
 
     // {{{ properties

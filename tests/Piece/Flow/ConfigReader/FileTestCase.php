@@ -34,19 +34,19 @@
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
  * @link       http://iteman.typepad.jp/piece/
- * @see        Piece_Flow_Config_File
+ * @see        Piece_Flow_ConfigReader_File
  * @since      File available since Release 0.1.0
  */
 
-require_once 'Piece/Flow/Config/File.php';
+require_once 'Piece/Flow/ConfigReader/File.php';
 
 require_once 'PHPUnit.php';
 require_once 'Piece/Flow/Config.php';
 
-// {{{ Piece_Flow_Config_FileTestCase
+// {{{ Piece_Flow_ConfigReader_FileTestCase
 
 /**
- * TestCase for Piece_Flow_Config_File
+ * TestCase for Piece_Flow_ConfigReader_File
  *
  * @package    Piece_Flow
  * @author     KUBO Atsuhiro <iteman2002@yahoo.co.jp>
@@ -54,10 +54,10 @@ require_once 'Piece/Flow/Config.php';
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
  * @link       http://iteman.typepad.jp/piece/
- * @see        Piece_Flow_Config_File
+ * @see        Piece_Flow_ConfigReader_File
  * @since      Class available since Release 0.1.0
  */
-class Piece_Flow_Config_FileTestCase extends PHPUnit_TestCase
+class Piece_Flow_ConfigReader_FileTestCase extends PHPUnit_TestCase
 {
 
     // {{{ properties
@@ -93,7 +93,7 @@ class Piece_Flow_Config_FileTestCase extends PHPUnit_TestCase
         PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
         $source = dirname(__FILE__) . '/non-existent.file';
-        $file = &new Piece_Flow_Config_File($source);
+        $file = &new Piece_Flow_ConfigReader_File($source);
         $file->prepare($source);
 
         $stack = &Piece_Flow_Error::getErrorStack();

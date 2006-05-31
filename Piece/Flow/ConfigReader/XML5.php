@@ -38,9 +38,9 @@
  * @since      File available since Release 0.1.0
  */
 
-require_once 'Piece/Flow/Config/File.php';
+require_once 'Piece/Flow/ConfigReader/File.php';
 
-// {{{ Piece_Flow_Config_XML5
+// {{{ Piece_Flow_ConfigReader_XML5
 
 /**
  * A Piece_Flow_Config driver for XML under PHP 5.
@@ -54,7 +54,7 @@ require_once 'Piece/Flow/Config/File.php';
  * @link       http://iteman.typepad.jp/piece/
  * @since      Class available since Release 0.1.0
  */
-class Piece_Flow_Config_XML5 extends Piece_Flow_Config_File
+class Piece_Flow_ConfigReader_XML5 extends Piece_Flow_ConfigReader_File
 {
 
     // {{{ properties

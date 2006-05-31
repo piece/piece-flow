@@ -34,7 +34,7 @@
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
  * @link       http://iteman.typepad.jp/piece/
- * @see        Piece_Flow_Config_FactoryTestCase
+ * @see        Piece_Flow_ConfigReader_FactoryTestCase
  * @since      File available since Release 0.1.0
  */
 
