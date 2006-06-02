@@ -107,7 +107,7 @@ class Piece_Flow_ConfigReader_Common
             return $flow;
         }
 
-        $this->_config = new Piece_Flow_Config();
+        $this->_config = &new Piece_Flow_Config();
         $this->_config->setName($flow['name']);
         $this->_config->setFirstState($flow['firstState']);
         $this->_config->setLastState($flow['lastState']['name'],
@@ -133,7 +133,67 @@ class Piece_Flow_ConfigReader_Common
      * @return array
      * @throws PEAR_ErrorStack
      */
-    function parse($cacheDirectory) {}
+    function &parse($cacheDirectory)
+    {
+        $absolutePathOfConfigFile = realpath($this->_source);
+
+        if (!is_readable($absolutePathOfConfigFile)) {
+            $error = &Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_READABLE,
+                                                   "The configuration file [ $absolutePathOfConfigFile ] was not readable."
+                                                   );
+            return $error;
+        }
+
+        if (is_null($cacheDirectory)) {
+            $cacheDirectory = './cache';
+        }
+
+        $absolutePathOfCacheDirectory = realpath($cacheDirectory);
+        if (!$absolutePathOfCacheDirectory) {
+            PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+            Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_FOUND,
+                                         "The cache directory [ $cacheDirectory ] not found."
+                                          );
+            PEAR_ErrorStack::staticPopCallback();
+
+            $flow = &$this->parseFile($absolutePathOfConfigFile);
+            return $flow;
+        }
+
+        if (!is_readable($absolutePathOfCacheDirectory)
+            || !is_writable($absolutePathOfCacheDirectory)
+            ) {
+            PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+            Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_READABLE,
+                                         "The cache directory [ $absolutePathOfCacheDirectory ] was not readable or writable."
+                                          );
+            PEAR_ErrorStack::staticPopCallback();
+
+            $flow = &$this->parseFile($absolutePathOfConfigFile);
+            return $flow;
+        }
+
+        $flow = &$this->_getConfiguration($absolutePathOfCacheDirectory,
+                                          $absolutePathOfConfigFile
+                                          );
+
+        return $flow;
+    }
+
+    // }}}
+    // {{{ parseFile()
+
+    /**
+     * Parses the given file and returns an array which represent a flow
+     * structure.
+     *
+     * This method is to be overriden by the appropriate driver for the given
+     * file.
+     *
+     * @return array
+     * @throws PEAR_ErrorStack
+     */
+    function &parseFile() {}
 
     /**#@-*/
 
@@ -198,6 +258,55 @@ class Piece_Flow_ConfigReader_Common
         $this->_config->setEntryAction($state['name'], @$state['entry']);
         $this->_config->setExitAction($state['name'], @$state['exit']);
         $this->_config->setActivity($state['name'], @$state['activity']);
+    }
+
+    // }}}
+    // {{{ _getConfiguration()
+
+    /**
+     * Gets a Piece_Flow_Config object from a configuration file or a cache.
+     *
+     * @param string $cacheDirectory
+     * @param string $masterFile
+     * @return Piece_Flow_Config
+     */
+    function &_getConfiguration($cacheDirectory, $masterFile)
+    {
+        $cache = &new Cache_Lite_File(array('cacheDir' => "$cacheDirectory/",
+                                            'masterFile' => $masterFile,
+                                            'automaticSerialization' => true,
+                                            'errorHandlingAPIBreak' => true)
+                                      );
+        /*
+         * The Cache_Lite class always specifies PEAR_ERROR_RETURN when
+         * calling PEAR::raiseError in default.
+         */
+        $flow = $cache->get($masterFile);
+        if (PEAR::isError($flow)) {
+            Piece_Unity_Error::raiseError(PIECE_FLOW_ERROR_CANNOT_READ,
+                                          "Cannot read the cache file in the directory [ $cacheDirectory ]."
+                                          );
+            $flow = &$this->parseFile($masterFile);
+            return $flow;
+        }
+
+        if (!$flow) {
+            $flow = &$this->parseFile($masterFile);
+            if (Piece_Flow_Error::isError($flow)) {
+                return $flow;
+            }
+
+            $result = $cache->save($flow);
+            if (PEAR::isError($result)) {
+                Piece_Unity_Error::raiseError(PIECE_FLOW_ERROR_CANNOT_WRITE,
+                                              "Cannot write the Piece_Unity_Flow object to the cache file in the directory [ $cacheDirectory ]."
+                                              );
+                $flow = &$this->parseFile($masterFile);
+                return $flow;
+            }
+        }
+
+        return $flow;
     }
 
     /**#@-*/
