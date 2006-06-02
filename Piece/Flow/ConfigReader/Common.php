@@ -268,9 +268,9 @@ class Piece_Flow_ConfigReader_Common
          */
         $flow = $cache->get($masterFile);
         if (PEAR::isError($flow)) {
-            Piece_Unity_Error::raiseError(PIECE_FLOW_ERROR_CANNOT_READ,
-                                          "Cannot read the cache file in the directory [ $cacheDirectory ]."
-                                          );
+            Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_CANNOT_READ,
+                                         "Cannot read the cache file in the directory [ $cacheDirectory ]."
+                                         );
             $flow = &$this->_parseFile($masterFile);
             return $flow;
         }
@@ -283,9 +283,9 @@ class Piece_Flow_ConfigReader_Common
 
             $result = $cache->save($flow);
             if (PEAR::isError($result)) {
-                Piece_Unity_Error::raiseError(PIECE_FLOW_ERROR_CANNOT_WRITE,
-                                              "Cannot write the Piece_Unity_Flow object to the cache file in the directory [ $cacheDirectory ]."
-                                              );
+                Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_CANNOT_WRITE,
+                                             "Cannot write the Piece_Flow object to the cache file in the directory [ $cacheDirectory ]."
+                                             );
                 $flow = &$this->_parseFile($masterFile);
                 return $flow;
             }
