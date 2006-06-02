@@ -212,8 +212,14 @@ class Piece_Flow_ConfigReader_XML5 extends Piece_Flow_ConfigReader_Common
      * @access public
      */
 
+    /**#@-*/
+
+    /**#@+
+     * @access private
+     */
+
     // }}}
-    // {{{ parseFile()
+    // {{{ _parseFile()
 
     /**
      * Parses the given file and returns an array which represent a flow
@@ -225,7 +231,7 @@ class Piece_Flow_ConfigReader_XML5 extends Piece_Flow_ConfigReader_Common
      * @return array
      * @throws PEAR_ErrorStack
      */
-    function &parseFile()
+    function &_parseFile()
     {
         $dom = DOMDocument::loadXML(file_get_contents($this->_source));
         ob_start();
@@ -253,12 +259,6 @@ $contents"
 
         return $flow;
     }
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
 
     // }}}
     // {{{ _parseViewStates()

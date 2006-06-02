@@ -156,7 +156,7 @@ class Piece_Flow_ConfigReader_Common
                                           );
             PEAR_ErrorStack::staticPopCallback();
 
-            $flow = &$this->parseFile($absolutePathOfConfigFile);
+            $flow = &$this->_parseFile($absolutePathOfConfigFile);
             return $flow;
         }
 
@@ -169,7 +169,7 @@ class Piece_Flow_ConfigReader_Common
                                           );
             PEAR_ErrorStack::staticPopCallback();
 
-            $flow = &$this->parseFile($absolutePathOfConfigFile);
+            $flow = &$this->_parseFile($absolutePathOfConfigFile);
             return $flow;
         }
 
@@ -179,21 +179,6 @@ class Piece_Flow_ConfigReader_Common
 
         return $flow;
     }
-
-    // }}}
-    // {{{ parseFile()
-
-    /**
-     * Parses the given file and returns an array which represent a flow
-     * structure.
-     *
-     * This method is to be overriden by the appropriate driver for the given
-     * file.
-     *
-     * @return array
-     * @throws PEAR_ErrorStack
-     */
-    function &parseFile() {}
 
     /**#@-*/
 
@@ -286,12 +271,12 @@ class Piece_Flow_ConfigReader_Common
             Piece_Unity_Error::raiseError(PIECE_FLOW_ERROR_CANNOT_READ,
                                           "Cannot read the cache file in the directory [ $cacheDirectory ]."
                                           );
-            $flow = &$this->parseFile($masterFile);
+            $flow = &$this->_parseFile($masterFile);
             return $flow;
         }
 
         if (!$flow) {
-            $flow = &$this->parseFile($masterFile);
+            $flow = &$this->_parseFile($masterFile);
             if (Piece_Flow_Error::isError($flow)) {
                 return $flow;
             }
@@ -301,13 +286,28 @@ class Piece_Flow_ConfigReader_Common
                 Piece_Unity_Error::raiseError(PIECE_FLOW_ERROR_CANNOT_WRITE,
                                               "Cannot write the Piece_Unity_Flow object to the cache file in the directory [ $cacheDirectory ]."
                                               );
-                $flow = &$this->parseFile($masterFile);
+                $flow = &$this->_parseFile($masterFile);
                 return $flow;
             }
         }
 
         return $flow;
     }
+
+    // }}}
+    // {{{ _parseFile()
+
+    /**
+     * Parses the given file and returns an array which represent a flow
+     * structure.
+     *
+     * This method is to be overriden by the appropriate driver for the given
+     * file.
+     *
+     * @return array
+     * @throws PEAR_ErrorStack
+     */
+    function &_parseFile() {}
 
     /**#@-*/
 
