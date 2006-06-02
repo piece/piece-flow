@@ -38,7 +38,7 @@
  * @since      File available since Release 0.1.0
  */
 
-require_once 'Piece/Flow/ConfigReader/File.php';
+require_once 'Piece/Flow/ConfigReader/Common.php';
 
 // {{{ Piece_Flow_ConfigReader_XML5
 
@@ -54,7 +54,7 @@ require_once 'Piece/Flow/ConfigReader/File.php';
  * @link       http://iteman.typepad.jp/piece/
  * @since      Class available since Release 0.1.0
  */
-class Piece_Flow_ConfigReader_XML5 extends Piece_Flow_ConfigReader_File
+class Piece_Flow_ConfigReader_XML5 extends Piece_Flow_ConfigReader_Common
 {
 
     // {{{ properties
@@ -225,7 +225,7 @@ class Piece_Flow_ConfigReader_XML5 extends Piece_Flow_ConfigReader_File
      * @return array
      * @throws PEAR_ErrorStack
      */
-    function parseFile()
+    function &parseFile()
     {
         $dom = DOMDocument::loadXML(file_get_contents($this->_source));
         ob_start();

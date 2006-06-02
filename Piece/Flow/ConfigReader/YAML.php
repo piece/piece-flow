@@ -38,7 +38,7 @@
  * @since      File available since Release 0.1.0
  */
 
-require_once 'Piece/Flow/ConfigReader/File.php';
+require_once 'Piece/Flow/ConfigReader/Common.php';
 
 if (version_compare(phpversion(), '5.0.0', '<')) {
     require_once 'spyc.php';
@@ -60,7 +60,7 @@ if (version_compare(phpversion(), '5.0.0', '<')) {
  * @link       http://iteman.typepad.jp/piece/
  * @since      Class available since Release 0.1.0
  */
-class Piece_Flow_ConfigReader_YAML extends Piece_Flow_ConfigReader_File
+class Piece_Flow_ConfigReader_YAML extends Piece_Flow_ConfigReader_Common
 {
 
     // {{{ properties
@@ -94,9 +94,10 @@ class Piece_Flow_ConfigReader_YAML extends Piece_Flow_ConfigReader_File
      * @return array
      * @throws PEAR_ErrorStack
      */
-    function parseFile()
+    function &parseFile()
     {
-        return Spyc::YAMLLoad($this->_source);
+        $flow = Spyc::YAMLLoad($this->_source);
+        return $flow;
     }
 
     /**#@-*/
