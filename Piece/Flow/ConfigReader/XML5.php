@@ -234,7 +234,7 @@ class Piece_Flow_ConfigReader_XML5 extends Piece_Flow_ConfigReader_Common
         ob_end_clean();
         if (!$validationResult) {
             return Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                                "File [{$this->_source}] containts invalid format. See below for more details.
+                                                "The file [{$this->_source}] containts invalid format. See below for more details.
 $contents"
                                                 );
         }
