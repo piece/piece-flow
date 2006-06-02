@@ -102,12 +102,7 @@ class Piece_Flow_ConfigReader_Common
      */
     function &configure($cacheDirectory = null)
     {
-        $result = &$this->prepare();
-        if (Piece_Flow_Error::isError($result)) {
-            return $result;
-        }
-
-        $flow = $this->parse($cacheDirectory);
+        $flow = &$this->parse($cacheDirectory);
         if (Piece_Flow_Error::isError($flow)) {
             return $flow;
         }
@@ -139,23 +134,6 @@ class Piece_Flow_ConfigReader_Common
      * @throws PEAR_ErrorStack
      */
     function parse($cacheDirectory) {}
-
-    // }}}
-    // {{{ prepare()
-
-    /**
-     * Prepares to read the given source.
-     *
-     * This method is to be overriden by the appropriate driver for the given
-     * source.
-     *
-     * @throws PEAR_ErrorStack
-     */
-    function &prepare()
-    {
-        $return = null;
-        return $return;
-    }
 
     /**#@-*/
 
