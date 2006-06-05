@@ -71,6 +71,7 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
      */
 
     var $_config;
+    var $_source;
 
     /**#@-*/
 
@@ -179,6 +180,13 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
 
     function tearDown()
     {
+        $cache = &new Cache_Lite_File(array('cacheDir' => dirname(__FILE__) . '/',
+                                            'masterFile' => $this->_source,
+                                            'automaticSerialization' => true,
+                                            'errorHandlingAPIBreak' => true)
+                                      );
+        $cache->clean();
+        $this->_source = null;
         $this->_config = null;
         PEAR_ErrorStack::staticPopCallback();
     }

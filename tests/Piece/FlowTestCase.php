@@ -93,14 +93,20 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
 
     function tearDown()
     {
+        $cache = &new Cache_Lite_File(array('cacheDir' => dirname(__FILE__) . '/',
+                                            'masterFile' => $this->_source,
+                                            'automaticSerialization' => true,
+                                            'errorHandlingAPIBreak' => true)
+                                      );
+        $cache->clean();
         $this->_source = null;
         $this->_config = null;
-    }
+     }
 
     function testConfiguration()
     {
         $flow = &new Piece_Flow();
-        $flow->configure($this->_source);
+        $flow->configure($this->_source, null, dirname(__FILE__));
 
         $this->assertEquals($this->_config->getName(), $flow->getName());
     }
@@ -109,7 +115,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
     {
         $viewStates = $this->_config->getViewStates();
         $flow = &new Piece_Flow();
-        $flow->configure($this->_source);
+        $flow->configure($this->_source, null, dirname(__FILE__));
         $flow->start();
 
         $this->assertEquals($viewStates['displaying']['view'],
@@ -122,7 +128,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $GLOBALS['validateCalled'] = false;
         $viewStates = $this->_config->getViewStates();
         $flow = &new Piece_Flow();
-        $flow->configure($this->_source);
+        $flow->configure($this->_source, null, dirname(__FILE__));
         $flow->start();
         $flow->triggerEvent('submit');
 
@@ -137,7 +143,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
     function testGettingPreviousStateName()
     {
         $flow = &new Piece_Flow();
-        $flow->configure($this->_source);
+        $flow->configure($this->_source, null, dirname(__FILE__));
         $flow->start();
         $flow->triggerEvent('submit');
 
@@ -147,7 +153,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
     function testGettingCurrentStateName()
     {
         $flow = &new Piece_Flow();
-        $flow->configure($this->_source);
+        $flow->configure($this->_source, null, dirname(__FILE__));
         $flow->start();
         $flow->triggerEvent('submit');
 
@@ -158,7 +164,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
     {
         $viewStates = $this->_config->getViewStates();
         $flow = &new Piece_Flow();
-        $flow->configure($this->_source);
+        $flow->configure($this->_source, null, dirname(__FILE__));
         $flow->start();
         $flow->triggerEvent('submit');
 
@@ -177,7 +183,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $GLOBALS['hasErrors'] = true;
         $viewStates = $this->_config->getViewStates();
         $flow = &new Piece_Flow();
-        $flow->configure($this->_source);
+        $flow->configure($this->_source, null, dirname(__FILE__));
         $flow->start();
         $flow->triggerEvent('submit');
 
@@ -192,7 +198,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
     {
         $GLOBALS['displayCounter'] = 0;
         $flow = &new Piece_Flow();
-        $flow->configure($this->_source);
+        $flow->configure($this->_source, null, dirname(__FILE__));
         $flow->start();
 
         $this->assertEquals(1, $GLOBALS['displayCounter']);
@@ -210,7 +216,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $GLOBALS['setupFormCalled'] = false;
         $GLOBALS['teardownFormCalled'] = false;
         $flow = &new Piece_Flow();
-        $flow->configure($this->_source);
+        $flow->configure($this->_source, null, dirname(__FILE__));
         $flow->start();
 
         $this->assertTrue($GLOBALS['setupFormCalled']);

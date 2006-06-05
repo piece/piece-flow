@@ -78,12 +78,16 @@ class Piece_Flow_ConfigReader_YAMLTestCase extends Piece_Flow_ConfigReader_Compa
      * @access public
      */
 
+    function setUp()
+    {
+        parent::setUp();
+        $this->_source = dirname(__FILE__) . '/../../../../data/registrationFlow.yaml';
+    }
+
     function getConfig()
     {
-        $source =
-            dirname(__FILE__) . '/../../../../data/registrationFlow.yaml';
-        $yaml = new Piece_Flow_ConfigReader_YAML($source);
-        return $yaml->configure();
+        $yaml = new Piece_Flow_ConfigReader_YAML($this->_source);
+        return $yaml->configure(dirname(__FILE__));
     }
 
     /**#@-*/

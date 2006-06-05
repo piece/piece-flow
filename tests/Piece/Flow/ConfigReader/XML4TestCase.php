@@ -82,12 +82,16 @@ class Piece_Flow_ConfigReader_XML4TestCase extends Piece_Flow_ConfigReader_Compa
      * @access public
      */
 
+    function setUp()
+    {
+        parent::setUp();
+        $this->_source = dirname(__FILE__) .'/../../../../data/registrationFlow.xml';
+    }
+
     function getConfig()
     {
-        $source =
-            dirname(__FILE__) .'/../../../../data/registrationFlow.xml';
-        $xml = new Piece_Flow_ConfigReader_XML4($source);
-        return $xml->configure();
+        $xml = new Piece_Flow_ConfigReader_XML4($this->_source);
+        return $xml->configure(dirname(__FILE__));
     }
 
     function testInvalidFormat()
@@ -96,7 +100,7 @@ class Piece_Flow_ConfigReader_XML4TestCase extends Piece_Flow_ConfigReader_Compa
 
         $source = dirname(__FILE__) . '/broken.xml';
         $xml = new Piece_Flow_ConfigReader_XML4($source);
-        $xml->configure();
+        $xml->configure(dirname(__FILE__));
 
         $stack = Piece_Flow_Error::getErrorStack();
 
