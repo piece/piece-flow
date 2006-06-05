@@ -41,8 +41,8 @@
 
 require_once 'Piece/Flow.php';
 
-require_once 'PHPUnit.php';
 require_once 'Piece/Flow/ConfigReader/Factory.php';
+require_once dirname(__FILE__) . '/FlowTestCaseAction.php';
 
 // {{{ Piece_FlowTestCase
 
@@ -85,6 +85,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
 
     function setUp()
     {
+        PEAR_ErrorStack::staticPushCallback(create_function('$error', 'var_dump($error); return ' . PEAR_ERRORSTACK_DIE . ';'));
         $this->_source =
             dirname(__FILE__) . '/../../data/registrationFlow.yaml';
         $driver = &Piece_Flow_ConfigReader_Factory::factory($this->_source);
@@ -101,6 +102,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $cache->clean();
         $this->_source = null;
         $this->_config = null;
+        PEAR_ErrorStack::staticPopCallback();
      }
 
     function testConfiguration()
@@ -239,53 +241,6 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
 }
 
 // }}}
-
-class Piece_FlowTestCaseAction
-{
-    function validate(&$flow, $event, &$payload)
-    {
-        $GLOBALS['validateCalled'] = true;
-
-        if (array_key_exists('hasErrors', $GLOBALS)
-            && $GLOBALS['hasErrors']
-            ) {
-            return 'raiseError';
-        }
-
-        if ($flow->getPreviousStateName() == 'displaying') {
-            return 'succeedInValidatingViaDisplaying';
-        } elseif ($flow->getPreviousStateName() == 'confirming') {
-            return 'succeedInValidatingViaConfirming';
-        }
-    }
-
-    function register(&$flow, $event, &$payload)
-    {
-        return 'succeed';
-    }
-
-    function isPermitted(&$flow, $event, &$payload)
-    {
-        return true;
-    }
-
-    function setupForm(&$flow, $event, &$payload)
-    {
-        $GLOBALS['setupFormCalled'] = true;
-    }
-
-    function teardownForm(&$flow, $event, &$payload)
-    {
-        $GLOBALS['teardownFormCalled'] = true;
-    }
-
-    function countDisplay(&$flow, $event, &$payload)
-    {
-        if (array_key_exists('displayCounter', $GLOBALS)) {
-            ++$GLOBALS['displayCounter'];
-        }
-    }
-}
 
 /*
  * Local Variables:
