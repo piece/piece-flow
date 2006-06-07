@@ -37,12 +37,13 @@
  * @since      File available since Release 0.1.0
  */
 
+require_once 'Piece/Flow.php';
 require_once 'Piece/Flow/Error.php';
 
 // {{{ Piece_Flow_Continuation
 
 /**
- * A continuation server for the Piece_Flow package.
+ * The continuation server for the Piece_Flow package.
  *
  * @package    Piece_Flow
  * @author     KUBO Atsuhiro <iteman2002@yahoo.co.jp>
@@ -67,8 +68,14 @@ class Piece_Flow_Continuation
      * @access private
      */
 
+    var $_flowDefinitions = array();
+    var $_useLinearFlowControl;
+    var $_cacheDirectory;
     var $_flows = array();
-    var $useLinearFlowControl;
+    var $_flowExecutionTicket;
+    var $_flowExecutionTicketCallback;
+    var $_flowNameCallback;
+    var $_eventNameCallback;
 
     /**#@-*/
 
@@ -80,10 +87,17 @@ class Piece_Flow_Continuation
     // {{{ constructor
 
     /**
-     * Sets whether the continuation object uses linear flow control.
+     * Sets a cache directory and whether the Piece_Flow_Continuation object
+     * uses linear flow control.
+     *
+     * @param string $cacheDirectory
+     * @param boolean $useLinearFlowControl
      */
-    function Piece_Flow_Continuation($useLinearFlowControl = false)
+    function Piece_Flow_Continuation($cacheDirectory = null,
+                                     $useLinearFlowControl = false
+                                     )
     {
+        $this->_cacheDirectory = $cacheDirectory;
         $this->_useLinearFlowControl = $useLinearFlowControl;
     }
 
@@ -91,7 +105,7 @@ class Piece_Flow_Continuation
     // {{{ addFlow()
 
     /**
-     * Adds the flow definition as the given name.
+     * Adds a flow definition to the Piece_Flow_Continuation object.
      *
      * @param string  $name
      * @param string  $file
@@ -99,16 +113,16 @@ class Piece_Flow_Continuation
      */
     function &addFlow($name, $file, $isExclusive = false)
     {
-        if ($this->_useLinearFlowControl && count(array_keys($this->_flows))) {
+        if ($this->_useLinearFlowControl && count(array_keys($this->_flowDefinitions))) {
             $error = &Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_ALREADY_EXISTS,
                                                    'A flow definition already exists in the continuation object.'
                                                    );
             return $error;
         }
 
-        $this->_flows[$name] = array('file' => $file,
-                                     'isExclusive' => $isExclusive
-                                     );
+        $this->_flowDefinitions[$name] = array('file' => $file,
+                                               'isExclusive' => $isExclusive
+                                               );
 
         $return = null;
         return $return;
@@ -118,14 +132,82 @@ class Piece_Flow_Continuation
     // {{{ hasFlow()
 
     /**
-     * Returns whether the continuation object has a flow with a given name.
+     * Returns whether the Piece_Flow_Continuation object has a flow with the
+     * given name.
      *
      * @param string $name
      * @return boolean
      */
     function hasFlow($name)
     {
-        return array_key_exists($name, $this->_flows);
+        return array_key_exists($name, $this->_flowDefinitions);
+    }
+
+    // }}}
+    // {{{ invoke()
+
+    /**
+     * Invokes a flow and returns a flow execution ticket.
+     *
+     * @return string
+     */
+    function invoke()
+    {
+        if ($this->_useLinearFlowControl) {
+            $flowExecutionTickets = array_keys($this->_flows);
+            if (count($flowExecutionTickets)) {
+                $isFirstTime = false;
+                $flowExecutionTicket = $flowExecutionTickets[0];
+            } else {
+                $isFirstTime = true;
+                $flowNames = array_keys($this->_flowDefinitions);
+                $flowName = $flowNames[0];
+            }
+        } else {
+            $flowExecutionTicket = call_user_func($this->_flowExecutionTicketCallback);
+            if ($flowExecutionTicket) {
+                $isFirstTime = false;
+            } else {
+                $isFirstTime = true;
+                $flowName = call_user_func($this->_flowNameCallback);
+            }
+        }
+
+        if (!$isFirstTime) {
+            $eventName = call_user_func($this->_eventNameCallback);
+            $this->_flows[$flowExecutionTicket]->triggerEvent($eventName);
+        } else {
+            $flow = &new Piece_Flow();
+            $flow->configure($this->_flowDefinitions[$flowName]['file'],
+                             null,
+                             $this->_cacheDirectory
+                             );
+            $flow->start();
+            while (true) {
+                $flowExecutionTicket = $this->_generateFlowExecutionTicket();
+                if (!array_key_exists($flowExecutionTicket, $this->_flows)) {
+                    $this->_flows[$flowExecutionTicket] = &$flow;
+                    break;
+                }
+            }
+        }
+
+        $this->_flowExecutionTicket = $flowExecutionTicket;
+        return $flowExecutionTicket;
+    }
+
+    // }}}
+    // {{{ getView()
+
+    /**
+     * Gets an appropriate view string which corresponding to the current
+     * state.
+     *
+     * @return string
+     */
+    function getView()
+    {
+        return $this->_flows[$this->_flowExecutionTicket]->getView();
     }
 
     /**#@-*/
@@ -133,6 +215,17 @@ class Piece_Flow_Continuation
     /**#@+
      * @access private
      */
+
+    // }}}
+    // {{{ _generateFlowExecutionTicket()
+
+    /**
+     * Generates a flow execution ticket.
+     */
+    function _generateFlowExecutionTicket()
+    {
+        return sha1(uniqid(mt_rand(), true));
+    }
 
     /**#@-*/
 
