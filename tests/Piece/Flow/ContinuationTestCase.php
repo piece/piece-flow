@@ -41,6 +41,7 @@
 require_once 'Piece/Flow/Continuation.php';
 
 require_once dirname(__FILE__) . '/Counter.php';
+require_once dirname(__FILE__) . '/SecondCounter.php';
 require_once 'Cache/Lite/File.php';
 
 // {{{ Piece_Flow_ContinuationTestCase
@@ -72,6 +73,9 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
      * @access private
      */
 
+    var $_flowExecutionTicket;
+    var $_flowName;
+
     /**#@-*/
 
     /**#@+
@@ -81,12 +85,16 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
     function setUp()
     {
         PEAR_ErrorStack::staticPushCallback(create_function('$error', 'var_dump($error); return ' . PEAR_ERRORSTACK_DIE . ';'));
+        $this->_flowName = 'Counter';
     }
 
     function tearDown()
     {
+        unset($GLOBALS['Counter']);
+        $this->_flowName = null;
+        $this->_flowExecutionTicket = null;
         $cache = &new Cache_Lite_File(array('cacheDir' => dirname(__FILE__) . '/',
-                                            'masterFile' => dirname(__FILE__) . '/counter.yaml',
+                                            'masterFile' => dirname(__FILE__) . '/Counter.yaml',
                                             'automaticSerialization' => true,
                                             'errorHandlingAPIBreak' => true)
                                       );
@@ -141,33 +149,109 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
     function testFirstTimeInvocationWithLinearFlowControl()
     {
         $continuation = &new Piece_Flow_Continuation(dirname(__FILE__), true);
-        $continuation->addFlow('counter', dirname(__FILE__) . '/counter.yaml');
+        $continuation->addFlow('Counter', dirname(__FILE__) . '/Counter.yaml');
 
         $flowExecutionTicket = $continuation->invoke();
 
         $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket);
-        $this->assertEquals('counter', $continuation->getView());
-        $this->assertEquals(0, $GLOBALS['counter']);
+        $this->assertEquals('Counter', $continuation->getView());
+        $this->assertEquals(0, $GLOBALS['Counter']);
     }
 
     function testSecondTimeInvocationWithLinearFlowControl()
     {
         $continuation = &new Piece_Flow_Continuation(dirname(__FILE__), true);
-        $continuation->addFlow('counter', dirname(__FILE__) . '/counter.yaml');
+        $continuation->addFlow('Counter', dirname(__FILE__) . '/Counter.yaml');
         $continuation->setEventNameCallback(array(&$this, 'getEventName'));
 
         $flowExecutionTicket1 = $continuation->invoke();
         $flowExecutionTicket2 = $continuation->invoke();
 
         $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket1);
-        $this->assertEquals('counter', $continuation->getView());
-        $this->assertEquals(1, $GLOBALS['counter']);
+        $this->assertEquals('Counter', $continuation->getView());
+        $this->assertEquals(1, $GLOBALS['Counter']);
         $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket2);
     }
 
     function getEventName()
     {
         return 'increase';
+    }
+
+    function testInvocationWithoutLinearFlowControlByNonExclusiveMode()
+    {
+        $continuation = &new Piece_Flow_Continuation(dirname(__FILE__));
+        $continuation->addFlow('Counter', dirname(__FILE__) . '/Counter.yaml');
+        $continuation->setEventNameCallback(array(&$this, 'getEventName'));
+        $continuation->setFlowExecutionTicketCallback(array(&$this, 'getFlowExecutionTicket'));
+        $continuation->setFlowNameCallback(array(&$this, 'getFlowName'));
+
+        $this->_flowExecutionTicket = $continuation->invoke();
+        $flowExecutionTicket = $continuation->invoke();
+
+        $this->assertRegexp('/[0-9a-f]{40}/', $this->_flowExecutionTicket);
+        $this->assertEquals('Counter', $continuation->getView());
+        $this->assertEquals(1, $GLOBALS['Counter']);
+        $this->assertEquals($this->_flowExecutionTicket, $flowExecutionTicket);
+    }
+
+    function testMultipleInvocationWithoutLinearFlowControlByNonExclusiveMode()
+    {
+        $continuation = &new Piece_Flow_Continuation(dirname(__FILE__));
+        $continuation->addFlow('Counter', dirname(__FILE__) . '/Counter.yaml');
+        $continuation->addFlow('SecondCounter', dirname(__FILE__) . '/SecondCounter.yaml');
+        $continuation->setEventNameCallback(array(&$this, 'getEventName'));
+        $continuation->setFlowExecutionTicketCallback(array(&$this, 'getFlowExecutionTicket'));
+        $continuation->setFlowNameCallback(array(&$this, 'getFlowName'));
+
+        $flowExecutionTicket1 = $continuation->invoke();
+        $this->_flowName = 'SecondCounter';
+        $flowExecutionTicket2 = $continuation->invoke();
+
+        $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket1);
+        $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket2);
+        $this->assertEquals('SecondCounter', $continuation->getView());
+        $this->assertEquals(0, $GLOBALS['Counter']);
+        $this->assertEquals(0, $GLOBALS['SecondCounter']);
+        $this->assertTrue($flowExecutionTicket1 != $flowExecutionTicket2);
+
+        $this->_flowExecutionTicket = $flowExecutionTicket1;
+        $this->_flowName = 'Counter';
+        $flowExecutionTicket3 = $continuation->invoke();
+
+        $this->assertEquals('Counter', $continuation->getView());
+        $this->assertEquals(1, $GLOBALS['Counter']);
+        $this->assertEquals(0, $GLOBALS['SecondCounter']);
+        $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket3);
+
+        $this->_flowExecutionTicket = $flowExecutionTicket2;
+        $this->_flowName = 'SecondCounter';
+        $flowExecutionTicket4 = $continuation->invoke();
+
+        $this->assertEquals('SecondCounter', $continuation->getView());
+        $this->assertEquals(1, $GLOBALS['Counter']);
+        $this->assertEquals(1, $GLOBALS['SecondCounter']);
+        $this->assertEquals($flowExecutionTicket2, $flowExecutionTicket4);
+
+        $this->_flowExecutionTicket = null;
+        unset($GLOBALS['SecondCounter']);
+        $this->_flowName = 'SecondCounter';
+        $flowExecutionTicket5 = $continuation->invoke();
+
+        $this->assertEquals('SecondCounter', $continuation->getView());
+        $this->assertEquals(1, $GLOBALS['Counter']);
+        $this->assertEquals(0, $GLOBALS['SecondCounter']);
+        $this->assertTrue($flowExecutionTicket2 != $flowExecutionTicket5);
+    }
+
+    function getFlowExecutionTicket()
+    {
+        return $this->_flowExecutionTicket;
+    }
+
+    function getFlowName()
+    {
+        return $this->_flowName;
     }
 
     /**#@-*/
