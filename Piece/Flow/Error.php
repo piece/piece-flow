@@ -99,7 +99,8 @@ class Piece_Flow_Error
      */
     function &getErrorStack($package = 'Piece_Flow')
     {
-        return PEAR_ErrorStack::singleton(strtolower($package));
+        $stack = &PEAR_ErrorStack::singleton(strtolower($package));
+        return $stack;
     }
 
     // }}}
