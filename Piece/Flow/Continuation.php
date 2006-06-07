@@ -165,7 +165,7 @@ class Piece_Flow_Continuation
             }
         } else {
             $flowExecutionTicket = call_user_func($this->_flowExecutionTicketCallback);
-            if ($flowExecutionTicket) {
+            if (array_key_exists($flowExecutionTicket, $this->_flows)) {
                 $isFirstTime = false;
             } else {
                 $isFirstTime = true;
@@ -221,6 +221,32 @@ class Piece_Flow_Continuation
     function setEventNameCallback($callback)
     {
         $this->_eventNameCallback = $callback;
+    }
+
+    // }}}
+    // {{{ setFlowExecutionTicketCallback()
+
+    /**
+     * Sets a callback for getting a flow execution ticket.
+     *
+     * @param callback $callback
+     */
+    function setFlowExecutionTicketCallback($callback)
+    {
+        $this->_flowExecutionTicketCallback = $callback;
+    }
+
+    // }}}
+    // {{{ setFlowNameCallback()
+
+    /**
+     * Sets a callback for getting a flow name.
+     *
+     * @param callback $callback
+     */
+    function setFlowNameCallback($callback)
+    {
+        $this->_flowNameCallback = $callback;
     }
 
     /**#@-*/
