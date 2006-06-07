@@ -210,6 +210,19 @@ class Piece_Flow_Continuation
         return $this->_flows[$this->_flowExecutionTicket]->getView();
     }
 
+    // }}}
+    // {{{ setEventNameCallback()
+
+    /**
+     * Sets a callback for getting an event name.
+     *
+     * @param callback $callback
+     */
+    function setEventNameCallback($callback)
+    {
+        $this->_eventNameCallback = $callback;
+    }
+
     /**#@-*/
 
     /**#@+
