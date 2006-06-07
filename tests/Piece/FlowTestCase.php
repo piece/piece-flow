@@ -43,6 +43,7 @@ require_once 'Piece/Flow.php';
 
 require_once 'Piece/Flow/ConfigReader/Factory.php';
 require_once dirname(__FILE__) . '/FlowTestCaseAction.php';
+require_once 'Cache/Lite/File.php';
 
 // {{{ Piece_FlowTestCase
 
