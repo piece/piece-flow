@@ -91,20 +91,24 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
     function tearDown()
     {
         unset($GLOBALS['Counter']);
+        unset($GLOBALS['SecondCounter']);
         $this->_flowName = null;
         $this->_flowExecutionTicket = null;
         $cache = &new Cache_Lite_File(array('cacheDir' => dirname(__FILE__) . '/',
-                                            'masterFile' => dirname(__FILE__) . '/Counter.yaml',
+                                            'masterFile' => '',
                                             'automaticSerialization' => true,
                                             'errorHandlingAPIBreak' => true)
                                       );
         $cache->clean();
+        $stack = &Piece_Flow_Error::getErrorStack();
+        $stack->getErrors(true);
         PEAR_ErrorStack::staticPopCallback();
     }
 
     function testAddingFlowWithLinearFlowControl()
     {
-        $continuation = &new Piece_Flow_Continuation(null, true);
+        $continuation = &new Piece_Flow_Continuation(true);
+        $continuation->setCacheDirectory(dirname(__FILE__));
         $continuation->addFlow('foo', '/path/to/foo.xml');
 
         $this->assertTrue($continuation->hasFlow('foo'));
@@ -115,7 +119,8 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
     {
         PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
-        $continuation = &new Piece_Flow_Continuation(null, true);
+        $continuation = &new Piece_Flow_Continuation(true);
+        $continuation->setCacheDirectory(dirname(__FILE__));
         $continuation->addFlow('foo', '/path/to/foo.xml');
 
         $this->assertTrue($continuation->hasFlow('foo'));
@@ -138,6 +143,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
     function testSettingFlowWithoutLinearFlowControl()
     {
         $continuation = &new Piece_Flow_Continuation();
+        $continuation->setCacheDirectory(dirname(__FILE__));
         $continuation->addFlow('foo', '/path/to/foo.xml');
         $continuation->addFlow('bar', '/path/to/bar.xml');
 
@@ -148,7 +154,8 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 
     function testFirstTimeInvocationWithLinearFlowControl()
     {
-        $continuation = &new Piece_Flow_Continuation(dirname(__FILE__), true);
+        $continuation = &new Piece_Flow_Continuation(true);
+        $continuation->setCacheDirectory(dirname(__FILE__));
         $continuation->addFlow('Counter', dirname(__FILE__) . '/Counter.yaml');
 
         $flowExecutionTicket = $continuation->invoke();
@@ -160,7 +167,8 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 
     function testSecondTimeInvocationWithLinearFlowControl()
     {
-        $continuation = &new Piece_Flow_Continuation(dirname(__FILE__), true);
+        $continuation = &new Piece_Flow_Continuation(true);
+        $continuation->setCacheDirectory(dirname(__FILE__));
         $continuation->addFlow('Counter', dirname(__FILE__) . '/Counter.yaml');
         $continuation->setEventNameCallback(array(&$this, 'getEventName'));
 
@@ -180,7 +188,8 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 
     function testInvocationWithoutLinearFlowControlByNonExclusiveMode()
     {
-        $continuation = &new Piece_Flow_Continuation(dirname(__FILE__));
+        $continuation = &new Piece_Flow_Continuation();
+        $continuation->setCacheDirectory(dirname(__FILE__));
         $continuation->addFlow('Counter', dirname(__FILE__) . '/Counter.yaml');
         $continuation->setEventNameCallback(array(&$this, 'getEventName'));
         $continuation->setFlowExecutionTicketCallback(array(&$this, 'getFlowExecutionTicket'));
@@ -197,7 +206,8 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 
     function testMultipleInvocationWithoutLinearFlowControlByNonExclusiveMode()
     {
-        $continuation = &new Piece_Flow_Continuation(dirname(__FILE__));
+        $continuation = &new Piece_Flow_Continuation();
+        $continuation->setCacheDirectory(dirname(__FILE__));
         $continuation->addFlow('Counter', dirname(__FILE__) . '/Counter.yaml');
         $continuation->addFlow('SecondCounter', dirname(__FILE__) . '/SecondCounter.yaml');
         $continuation->setEventNameCallback(array(&$this, 'getEventName'));
@@ -242,6 +252,48 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->assertEquals(1, $GLOBALS['Counter']);
         $this->assertEquals(0, $GLOBALS['SecondCounter']);
         $this->assertTrue($flowExecutionTicket2 != $flowExecutionTicket5);
+    }
+
+    function testSuccessOfContinuationByInvalidFlowNameWithLinearFlowControl()
+    {
+        $continuation = &new Piece_Flow_Continuation(true);
+        $continuation->setCacheDirectory(dirname(__FILE__));
+        $continuation->addFlow('Counter', dirname(__FILE__) . '/Counter.yaml');
+        $continuation->setEventNameCallback(array(&$this, 'getEventName'));
+        $continuation->setFlowExecutionTicketCallback(array(&$this, 'getFlowExecutionTicket'));
+        $continuation->setFlowNameCallback(array(&$this, 'getFlowName'));
+
+        $continuation->invoke();
+        $this->_flowName = 'InvalidFlowName';
+        $continuation->invoke();
+
+        $this->assertFalse(PEAR_ErrorStack::staticHasErrors());
+        $this->assertEquals(1, $GLOBALS['Counter']);
+    }
+
+    function testFailureOfContinuationByInvalidFlowNameWithoutLinearFlowControl()
+    {
+        PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+
+        $continuation = &new Piece_Flow_Continuation();
+        $continuation->setCacheDirectory(dirname(__FILE__));
+        $continuation->addFlow('Counter', dirname(__FILE__) . '/Counter.yaml');
+        $continuation->setEventNameCallback(array(&$this, 'getEventName'));
+        $continuation->setFlowExecutionTicketCallback(array(&$this, 'getFlowExecutionTicket'));
+        $continuation->setFlowNameCallback(array(&$this, 'getFlowName'));
+
+        $continuation->invoke();
+        $this->_flowName = 'InvalidFlowName';
+        $continuation->invoke();
+
+        $this->assertTrue(PEAR_ErrorStack::staticHasErrors());
+
+        $stack = &Piece_Flow_Error::getErrorStack();
+        $error = $stack->pop();
+
+        $this->assertEquals(PIECE_FLOW_ERROR_NOT_FOUND, $error['code']);
+
+        PEAR_ErrorStack::staticPopCallback();
     }
 
     function getFlowExecutionTicket()
