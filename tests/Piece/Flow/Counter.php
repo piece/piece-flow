@@ -41,7 +41,7 @@
 // {{{ Piece_Flow_ContinuationTestCaseCounter
 
 /**
- * An action class for 'counter'.
+ * An action class for 'Counter'.
  *
  * @package    Piece_Flow
  * @author     KUBO Atsuhiro <iteman2002@yahoo.co.jp>
@@ -75,14 +75,14 @@ class Piece_Flow_ContinuationTestCaseCounter
 
     function setup(&$flow, $event, &$payload)
     {
-        if (!array_key_exists('counter', $GLOBALS)) {
-            $GLOBALS['counter'] = 0;
+        if (!array_key_exists('Counter', $GLOBALS)) {
+            $GLOBALS['Counter'] = 0;
         }
     }
 
     function increase(&$flow, $event, &$payload)
     {
-        ++$GLOBALS['counter'];
+        ++$GLOBALS['Counter'];
         return 'succeed';
     }
 
