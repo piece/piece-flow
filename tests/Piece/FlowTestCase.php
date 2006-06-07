@@ -96,13 +96,15 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
     function tearDown()
     {
         $cache = &new Cache_Lite_File(array('cacheDir' => dirname(__FILE__) . '/',
-                                            'masterFile' => $this->_source,
+                                            'masterFile' => '',
                                             'automaticSerialization' => true,
                                             'errorHandlingAPIBreak' => true)
                                       );
         $cache->clean();
         $this->_source = null;
         $this->_config = null;
+        $stack = &Piece_Flow_Error::getErrorStack();
+        $stack->getErrors(true);
         PEAR_ErrorStack::staticPopCallback();
      }
 

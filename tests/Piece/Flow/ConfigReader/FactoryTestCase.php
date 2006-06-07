@@ -84,6 +84,8 @@ class Piece_Flow_ConfigReader_FactoryTestCase extends PHPUnit_TestCase
 
     function tearDown()
     {
+        $stack = &Piece_Flow_Error::getErrorStack();
+        $stack->getErrors(true);
         PEAR_ErrorStack::staticPopCallback();
     }
 
