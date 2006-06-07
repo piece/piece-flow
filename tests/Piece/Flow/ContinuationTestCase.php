@@ -150,6 +150,26 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->assertEquals(0, $GLOBALS['counter']);
     }
 
+    function testSecondTimeInvocationWithLinearFlowControl()
+    {
+        $continuation = &new Piece_Flow_Continuation(dirname(__FILE__), true);
+        $continuation->addFlow('counter', dirname(__FILE__) . '/counter.yaml');
+        $continuation->setEventNameCallback(array(&$this, 'getEventName'));
+
+        $flowExecutionTicket1 = $continuation->invoke();
+        $flowExecutionTicket2 = $continuation->invoke();
+
+        $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket1);
+        $this->assertEquals('counter', $continuation->getView());
+        $this->assertEquals(1, $GLOBALS['counter']);
+        $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket2);
+    }
+
+    function getEventName()
+    {
+        return 'increase';
+    }
+
     /**#@-*/
 
     /**#@+
