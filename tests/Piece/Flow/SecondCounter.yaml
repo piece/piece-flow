@@ -1,0 +1,21 @@
+# $Id: registrationFlow.yaml 1 2006-04-21 09:53:30Z kubo $
+name: SecondCounter
+firstState: displaying
+lastState: { name: finishing, view: finish }
+viewState:
+  - name: displaying
+    view: SecondCounter
+    entry:
+      class: Piece_Flow_ContinuationTestCaseSecondCounter
+      method: setup
+    transition:
+      - event: increase
+        nextState: increased
+        action:
+          class: Piece_Flow_ContinuationTestCaseSecondCounter
+          method: increase
+actionState:
+  - name: increased
+    transition:
+      - event: succeed
+        nextState: displaying
