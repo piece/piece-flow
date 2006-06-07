@@ -87,17 +87,13 @@ class Piece_Flow_Continuation
     // {{{ constructor
 
     /**
-     * Sets a cache directory and whether the Piece_Flow_Continuation object
-     * uses linear flow control.
+     * Sets whether the Piece_Flow_Continuation object uses linear flow
+     * control.
      *
-     * @param string $cacheDirectory
      * @param boolean $useLinearFlowControl
      */
-    function Piece_Flow_Continuation($cacheDirectory = null,
-                                     $useLinearFlowControl = false
-                                     )
+    function Piece_Flow_Continuation($useLinearFlowControl = false)
     {
-        $this->_cacheDirectory = $cacheDirectory;
         $this->_useLinearFlowControl = $useLinearFlowControl;
     }
 
@@ -151,7 +147,7 @@ class Piece_Flow_Continuation
      *
      * @return string
      */
-    function invoke()
+    function &invoke()
     {
         if ($this->_useLinearFlowControl) {
             $flowExecutionTickets = array_keys($this->_flows);
@@ -177,6 +173,13 @@ class Piece_Flow_Continuation
             $eventName = call_user_func($this->_eventNameCallback);
             $this->_flows[$flowExecutionTicket]->triggerEvent($eventName);
         } else {
+            if (!array_key_exists($flowName, $this->_flowDefinitions)) {
+                $error = &Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_FOUND,
+                                                       "The flow name [ $flowName ] not found in the flow definitions."
+                                                       );
+                return $error;
+            }
+
             $flow = &new Piece_Flow();
             $flow->configure($this->_flowDefinitions[$flowName]['file'],
                              null,
@@ -247,6 +250,19 @@ class Piece_Flow_Continuation
     function setFlowNameCallback($callback)
     {
         $this->_flowNameCallback = $callback;
+    }
+
+    // }}}
+    // {{{ setCacheDirectory()
+
+    /**
+     * Sets a cache directory for the flow definitions.
+     *
+     * @param string $cacheDirectory
+     */
+    function setCacheDirectory($cacheDirectory)
+    {
+        $this->_cacheDirectory = $cacheDirectory;
     }
 
     /**#@-*/
