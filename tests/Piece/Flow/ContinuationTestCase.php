@@ -40,6 +40,9 @@
 
 require_once 'Piece/Flow/Continuation.php';
 
+require_once dirname(__FILE__) . '/Counter.php';
+require_once 'Cache/Lite/File.php';
+
 // {{{ Piece_Flow_ContinuationTestCase
 
 /**
@@ -82,23 +85,29 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 
     function tearDown()
     {
+        $cache = &new Cache_Lite_File(array('cacheDir' => dirname(__FILE__) . '/',
+                                            'masterFile' => dirname(__FILE__) . '/counter.yaml',
+                                            'automaticSerialization' => true,
+                                            'errorHandlingAPIBreak' => true)
+                                      );
+        $cache->clean();
         PEAR_ErrorStack::staticPopCallback();
     }
 
     function testAddingFlowWithLinearFlowControl()
     {
-        $continuation = &new Piece_Flow_Continuation(true);
+        $continuation = &new Piece_Flow_Continuation(null, true);
         $continuation->addFlow('foo', '/path/to/foo.xml');
 
         $this->assertTrue($continuation->hasFlow('foo'));
         $this->assertFalse($continuation->hasFlow('bar'));
     }
 
-    function testFailureToAddFlowSecondTimeWithLinearFlowControl()
+    function testFailureToAddFlowForSecondTimeWithLinearFlowControl()
     {
         PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
-        $continuation = &new Piece_Flow_Continuation(true);
+        $continuation = &new Piece_Flow_Continuation(null, true);
         $continuation->addFlow('foo', '/path/to/foo.xml');
 
         $this->assertTrue($continuation->hasFlow('foo'));
@@ -127,6 +136,18 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->assertTrue($continuation->hasFlow('foo'));
         $this->assertTrue($continuation->hasFlow('bar'));
         $this->assertFalse($continuation->hasFlow('baz'));
+    }
+
+    function testFirstTimeInvocationWithLinearFlowControl()
+    {
+        $continuation = &new Piece_Flow_Continuation(dirname(__FILE__), true);
+        $continuation->addFlow('counter', dirname(__FILE__) . '/counter.yaml');
+
+        $flowExecutionTicket = $continuation->invoke();
+
+        $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket);
+        $this->assertEquals('counter', $continuation->getView());
+        $this->assertEquals(0, $GLOBALS['counter']);
     }
 
     /**#@-*/
