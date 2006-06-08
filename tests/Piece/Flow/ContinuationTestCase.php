@@ -296,6 +296,30 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         PEAR_ErrorStack::staticPopCallback();
     }
 
+    function testFailureToInvokeByNonExistingFlowConfiguration()
+    {
+        PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+
+        $continuation = &new Piece_Flow_Continuation();
+        $continuation->setCacheDirectory(dirname(__FILE__));
+        $continuation->addFlow('NonExistingFile', dirname(__FILE__) . '/NonExistingFile.yaml');
+        $continuation->setEventNameCallback(array(&$this, 'getEventName'));
+        $continuation->setFlowExecutionTicketCallback(array(&$this, 'getFlowExecutionTicket'));
+        $continuation->setFlowNameCallback(array(&$this, 'getFlowName'));
+
+        $this->_flowName = 'NonExistingFile';
+        $continuation->invoke();
+
+        $this->assertTrue(PEAR_ErrorStack::staticHasErrors());
+
+        $stack = &Piece_Flow_Error::getErrorStack();
+        $error = $stack->pop();
+
+        $this->assertEquals(PIECE_FLOW_ERROR_NOT_FOUND, $error['code']);
+
+        PEAR_ErrorStack::staticPopCallback();
+    }
+
     function getFlowExecutionTicket()
     {
         return $this->_flowExecutionTicket;
