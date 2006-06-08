@@ -76,6 +76,7 @@ class Piece_Flow_Continuation
     var $_flowExecutionTicketCallback;
     var $_flowNameCallback;
     var $_eventNameCallback;
+    var $_exclusiveFlows = array();
 
     /**#@-*/
 
@@ -166,6 +167,10 @@ class Piece_Flow_Continuation
             } else {
                 $isFirstTime = true;
                 $flowName = call_user_func($this->_flowNameCallback);
+                if (array_key_exists($flowName, $this->_exclusiveFlows)) {
+                    $isFirstTime = false;
+                    $flowExecutionTicket = $this->_exclusiveFlows[$flowName];
+                }
             }
         }
 
@@ -197,6 +202,12 @@ class Piece_Flow_Continuation
                     $this->_flows[$flowExecutionTicket] = &$flow;
                     break;
                 }
+            }
+
+            if (!$this->_useLinearFlowControl
+                && $this->_flowDefinitions[$flowName]['isExclusive']
+                ) {
+                $this->_exclusiveFlows[$flowName] = $flowExecutionTicket;
             }
         }
 
