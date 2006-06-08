@@ -48,6 +48,7 @@
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
  * @link       http://iteman.typepad.jp/piece/
+ * @see        Piece_Flow_Action_Factory
  */
 class Piece_Flow_Action_FooAction
 {
