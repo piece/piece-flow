@@ -39,8 +39,6 @@
 
 require_once 'Piece/Flow/Action/Factory.php';
 
-require_once 'PHPUnit.php';
-
 // {{{ Piece_Flow_Action_FactoryTestCase
 
 /**

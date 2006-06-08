@@ -40,8 +40,6 @@
 
 require_once 'Piece/Flow/ConfigReader/Factory.php';
 
-require_once 'PHPUnit.php';
-
 // {{{ Piece_Flow_ConfigReader_FactoryTestCase
 
 /**

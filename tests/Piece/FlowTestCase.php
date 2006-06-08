@@ -41,9 +41,6 @@
 
 require_once 'Piece/Flow.php';
 
-require_once 'Piece/Flow/ConfigReader/Factory.php';
-require_once 'Cache/Lite/File.php';
-
 // {{{ Piece_FlowTestCase
 
 /**

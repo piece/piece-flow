@@ -41,8 +41,6 @@
 
 require_once 'Piece/Flow/ActionInvoker.php';
 
-require_once 'PHPUnit.php';
-
 // {{{ Piece_Flow_ActionInvokerTestCase
 
 /**

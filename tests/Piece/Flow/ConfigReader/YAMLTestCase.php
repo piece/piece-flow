@@ -41,7 +41,6 @@
 require_once 'Piece/Flow/ConfigReader/YAML.php';
 
 require_once dirname(__FILE__) . '/CompatibilityTest.php';
-require_once 'Piece/Flow/Config.php';
 
 // {{{ Piece_Flow_ConfigReader_YAMLTestCase
 
