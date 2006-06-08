@@ -92,26 +92,12 @@ class Piece_Flow
     var $_name;
     var $_views;
     var $_attributes = array();
-    var $_payload;
 
     /**#@-*/
 
     /**#@+
      * @access public
      */
-
-    // }}}
-    // {{{ constructor
-
-    /**
-     * Sets a user defined payload to this flow.
-     *
-     * @param mixed &$payload
-     */
-    function Piece_Flow(&$payload)
-    {
-        $this->_payload = &$payload;
-    }
 
     // }}}
     // {{{ configure()
@@ -137,7 +123,6 @@ class Piece_Flow
         }
 
         $this->_fsm = &new Stagehand_FSM($config->getFirstState());
-        $this->_fsm->setPayload($this->_payload);
         $this->_name = $config->getName();
         $this->_fsm->setName($this->_name);
         $this->_configureViewState($config->getLastState());
@@ -241,11 +226,15 @@ class Piece_Flow
      */
     function setAttribute($name, $value)
     {
-        $state = &$this->_fsm->getCurrentState();
-        if (is_null($state)) {
-            return Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_OPERATION,
-                                                "setAttribute method must be called after starting flows."
-                                                );
+        if (!is_a($this->_fsm, 'Stagehand_FSM')
+            || is_null($this->_fsm->getCurrentState())
+            ) {
+            PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+            $error = Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                                  __FUNCTION__ . ' method must be called after starting flows.'
+                                                  );
+            PEAR_ErrorStack::staticPopCallback();
+            return $error;
         }
 
         $this->_attributes[$name] = $value;
@@ -279,6 +268,28 @@ class Piece_Flow
     function getAttribute($name)
     {
         return @$this->_attributes[$name];
+    }
+
+    // }}}
+    // {{{ setPayload()
+
+    /**
+     * Sets a user defined payload to the FSM.
+     *
+     * @param mixed &$payload
+     */
+    function setPayload(&$payload)
+    {
+        if (!is_a($this->_fsm, 'Stagehand_FSM')) {
+            PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+            $error = Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                                __FUNCTION__ . ' method must be called after configuring flows.'
+                                                );
+            PEAR_ErrorStack::staticPopCallback();
+            return $error;
+        }
+
+        $this->_fsm->setPayload($payload);
     }
 
     /**#@-*/
