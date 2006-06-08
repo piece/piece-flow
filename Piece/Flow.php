@@ -91,12 +91,27 @@ class Piece_Flow
     var $_fsm;
     var $_name;
     var $_views;
+    var $_attributes = array();
+    var $_payload;
 
     /**#@-*/
 
     /**#@+
      * @access public
      */
+
+    // }}}
+    // {{{ constructor
+
+    /**
+     * Sets a user defined payload to this flow.
+     *
+     * @param mixed &$payload
+     */
+    function Piece_Flow(&$payload)
+    {
+        $this->_payload = &$payload;
+    }
 
     // }}}
     // {{{ configure()
@@ -122,6 +137,7 @@ class Piece_Flow
         }
 
         $this->_fsm = &new Stagehand_FSM($config->getFirstState());
+        $this->_fsm->setPayload($this->_payload);
         $this->_name = $config->getName();
         $this->_fsm->setName($this->_name);
         $this->_configureViewState($config->getLastState());
@@ -211,6 +227,58 @@ class Piece_Flow
     {
         $state = &$this->_fsm->getCurrentState();
         return $state->getName();
+    }
+
+    // }}}
+    // {{{ setAttribute()
+
+    /**
+     * Sets an attribute for this flow.
+     *
+     * @param string $name
+     * @param mixed  $value
+     * @throws PEAR_ErrorStack
+     */
+    function setAttribute($name, $value)
+    {
+        $state = &$this->_fsm->getCurrentState();
+        if (is_null($state)) {
+            return Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                                "setAttribute method must be called after starting flows."
+                                                );
+        }
+
+        $this->_attributes[$name] = $value;
+        $return = null;
+        return $return;
+    }
+
+    // }}}
+    // {{{ hasAttribute()
+
+    /**
+     * Returns whether this flow has an attribute with a given name.
+     *
+     * @param string $name
+     * @return boolean
+     */
+    function hasAttribute($name)
+    {
+        return array_key_exists($name, $this->_attributes);
+    }
+
+    // }}}
+    // {{{ getAttribute()
+
+    /**
+     * Gets an attribute for this flow.
+     *
+     * @param string $name
+     * @return mixed
+     */
+    function getAttribute($name)
+    {
+        return @$this->_attributes[$name];
     }
 
     /**#@-*/
