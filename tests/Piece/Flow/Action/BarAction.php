@@ -37,7 +37,7 @@
  * @see        Piece_Flow_Action_Factory
  */
 
-// {{{ BarAction
+// {{{ Piece_Flow_Action_BarAction
 
 /**
  * A class for unit tests.
@@ -49,7 +49,7 @@
  * @version    Release: @package_version@
  * @link       http://iteman.typepad.jp/piece/
  */
-class BarAction
+class Piece_Flow_Action_BarAction
 {
 
     // {{{ properties

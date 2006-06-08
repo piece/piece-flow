@@ -42,7 +42,6 @@
 require_once 'Piece/Flow.php';
 
 require_once 'Piece/Flow/ConfigReader/Factory.php';
-require_once dirname(__FILE__) . '/FlowTestCaseAction.php';
 require_once 'Cache/Lite/File.php';
 
 // {{{ Piece_FlowTestCase
@@ -91,10 +90,13 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
             dirname(__FILE__) . '/../../data/registrationFlow.yaml';
         $driver = &Piece_Flow_ConfigReader_Factory::factory($this->_source);
         $this->_config = &$driver->configure();
+        Piece_Flow_Action_Factory::setActionPath(dirname(__FILE__) . '/..');
     }
 
     function tearDown()
     {
+        $GLOBALS['PIECE_FLOW_Action_Instances'] = array();
+        $GLOBALS['PIECE_FLOW_Action_Path'] = null;
         $cache = &new Cache_Lite_File(array('cacheDir' => dirname(__FILE__) . '/',
                                             'masterFile' => '',
                                             'automaticSerialization' => true,

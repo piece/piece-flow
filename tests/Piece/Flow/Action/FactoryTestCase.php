@@ -82,6 +82,8 @@ class Piece_Flow_Action_FactoryTestCase extends PHPUnit_TestCase
 
     function tearDown()
     {
+        $GLOBALS['PIECE_FLOW_Action_Instances'] = array();
+        $GLOBALS['PIECE_FLOW_Action_Path'] = null;
         $stack = &Piece_Flow_Error::getErrorStack();
         $stack->getErrors(true);
         PEAR_ErrorStack::staticPopCallback();
@@ -91,7 +93,7 @@ class Piece_Flow_Action_FactoryTestCase extends PHPUnit_TestCase
     {
         PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
-        $action = &Piece_Flow_Action_Factory::factory('Foo');
+        $action = &Piece_Flow_Action_Factory::factory('Piece_Flow_Action_FooAction');
 
         $this->assertTrue(PEAR_ErrorStack::staticHasErrors());
 
@@ -110,8 +112,8 @@ class Piece_Flow_Action_FactoryTestCase extends PHPUnit_TestCase
     {
         PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
-        Piece_Flow_Action_Factory::setActionPath(dirname(__FILE__));
-        $action = &Piece_Flow_Action_Factory::factory('Foo');
+        Piece_Flow_Action_Factory::setActionPath(dirname(__FILE__) . '/../../..');
+        $action = &Piece_Flow_Action_Factory::factory('Piece_Flow_Action_NonExistingAction');
 
         $this->assertTrue(PEAR_ErrorStack::staticHasErrors());
 
@@ -130,8 +132,8 @@ class Piece_Flow_Action_FactoryTestCase extends PHPUnit_TestCase
     {
         PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
-        Piece_Flow_Action_Factory::setActionPath(dirname(__FILE__));
-        $action = &Piece_Flow_Action_Factory::factory('InvalidAction');
+        Piece_Flow_Action_Factory::setActionPath(dirname(__FILE__) . '/../../..');
+        $action = &Piece_Flow_Action_Factory::factory('Piece_Flow_Action_InvalidAction');
 
         $this->assertTrue(PEAR_ErrorStack::staticHasErrors());
 
@@ -148,18 +150,18 @@ class Piece_Flow_Action_FactoryTestCase extends PHPUnit_TestCase
 
     function testFactory()
     {
-        Piece_Flow_Action_Factory::setActionPath(dirname(__FILE__));
-        $fooAction = &Piece_Flow_Action_Factory::factory('FooAction');
+        Piece_Flow_Action_Factory::setActionPath(dirname(__FILE__) . '/../../..');
+        $fooAction = &Piece_Flow_Action_Factory::factory('Piece_Flow_Action_FooAction');
 
-        $this->assertTrue(is_a($fooAction, 'FooAction'));
+        $this->assertTrue(is_a($fooAction, 'Piece_Flow_Action_FooAction'));
 
-        $barAction = &Piece_Flow_Action_Factory::factory('BarAction');
+        $barAction = &Piece_Flow_Action_Factory::factory('Piece_Flow_Action_BarAction');
 
-        $this->assertTrue(is_a($barAction, 'BarAction'));
+        $this->assertTrue(is_a($barAction, 'Piece_Flow_Action_BarAction'));
 
         $fooAction->baz = 'qux';
 
-        $fooAction = &Piece_Flow_Action_Factory::factory('FooAction');
+        $action = &Piece_Flow_Action_Factory::factory('Piece_Flow_Action_FooAction');
 
         $this->assertTrue(array_key_exists('baz', $fooAction));
     }

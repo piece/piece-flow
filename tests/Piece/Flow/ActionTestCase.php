@@ -79,11 +79,25 @@ class Piece_Flow_ActionTestCase extends PHPUnit_TestCase
      * @access public
      */
 
+    function setUp()
+    {
+        PEAR_ErrorStack::staticPushCallback(create_function('$error', 'var_dump($error); return ' . PEAR_ERRORSTACK_DIE . ';'));
+    }
+
+    function tearDown()
+    {
+        $GLOBALS['PIECE_FLOW_Action_Instances'] = array();
+        $GLOBALS['PIECE_FLOW_Action_Path'] = null;
+        $stack = &Piece_Flow_Error::getErrorStack();
+        $stack->getErrors(true);
+        PEAR_ErrorStack::staticPopCallback();
+    }
+
     function testInvokingAction()
     {
-        $GLOBALS['fooCalled'] = false;
+        Piece_Flow_Action_Factory::setActionPath(dirname(__FILE__) . '/../..');
         $action = &new Piece_Flow_Action(new stdClass(),
-                                         'Piece_Flow_ActionTestCaseFoo',
+                                         'Piece_Flow_FooAction',
                                          'foo'
                                          );
         $action->invoke(new stdClass(),
@@ -91,9 +105,9 @@ class Piece_Flow_ActionTestCase extends PHPUnit_TestCase
                         new stdClass()
                         );
 
-        $this->assertTrue($GLOBALS['fooCalled']);
+        $fooAction = &Piece_Flow_Action_Factory::factory('Piece_Flow_FooAction');
 
-        unset($GLOBALS['fooCalled']);
+        $this->assertTrue($fooAction->fooCalled);
     }
 
     /**#@-*/
@@ -108,16 +122,6 @@ class Piece_Flow_ActionTestCase extends PHPUnit_TestCase
 }
 
 // }}}
-
-class Piece_Flow_ActionTestCaseFoo
-{
-    function foo(&$flow)
-    {
-        if (is_a($flow, 'stdClass')) {
-            $GLOBALS['fooCalled'] = true;
-        }
-    }
-}
 
 class Piece_Flow_ActionTestCaseMockEvent
 {

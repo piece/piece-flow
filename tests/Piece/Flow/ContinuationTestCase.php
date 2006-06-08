@@ -40,8 +40,6 @@
 
 require_once 'Piece/Flow/Continuation.php';
 
-require_once dirname(__FILE__) . '/Counter.php';
-require_once dirname(__FILE__) . '/SecondCounter.php';
 require_once 'Cache/Lite/File.php';
 
 // {{{ Piece_Flow_ContinuationTestCase
@@ -85,13 +83,14 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
     function setUp()
     {
         PEAR_ErrorStack::staticPushCallback(create_function('$error', 'var_dump($error); return ' . PEAR_ERRORSTACK_DIE . ';'));
+        Piece_Flow_Action_Factory::setActionPath(dirname(__FILE__) . '/../..');
         $this->_flowName = 'Counter';
     }
 
     function tearDown()
     {
-        unset($GLOBALS['Counter']);
-        unset($GLOBALS['SecondCounter']);
+        $GLOBALS['PIECE_FLOW_Action_Instances'] = array();
+        $GLOBALS['PIECE_FLOW_Action_Path'] = null;
         $this->_flowName = null;
         $this->_flowExecutionTicket = null;
         $cache = &new Cache_Lite_File(array('cacheDir' => dirname(__FILE__) . '/',
@@ -162,7 +161,10 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 
         $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket);
         $this->assertEquals('Counter', $continuation->getView());
-        $this->assertEquals(0, $GLOBALS['Counter']);
+
+        $counter = &Piece_Flow_Action_Factory::factory('Piece_Flow_CounterAction');
+
+        $this->assertEquals(0, $counter->counter);
     }
 
     function testSecondTimeInvocationWithLinearFlowControl()
@@ -177,7 +179,10 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 
         $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket1);
         $this->assertEquals('Counter', $continuation->getView());
-        $this->assertEquals(1, $GLOBALS['Counter']);
+
+        $counter = &Piece_Flow_Action_Factory::factory('Piece_Flow_CounterAction');
+
+        $this->assertEquals(1, $counter->counter);
         $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket2);
     }
 
@@ -200,7 +205,10 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 
         $this->assertRegexp('/[0-9a-f]{40}/', $this->_flowExecutionTicket);
         $this->assertEquals('Counter', $continuation->getView());
-        $this->assertEquals(1, $GLOBALS['Counter']);
+
+        $counter = &Piece_Flow_Action_Factory::factory('Piece_Flow_CounterAction');
+
+        $this->assertEquals(1, $counter->counter);
         $this->assertEquals($this->_flowExecutionTicket, $flowExecutionTicket);
     }
 
@@ -221,8 +229,12 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket1);
         $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket2);
         $this->assertEquals('SecondCounter', $continuation->getView());
-        $this->assertEquals(0, $GLOBALS['Counter']);
-        $this->assertEquals(0, $GLOBALS['SecondCounter']);
+
+        $counter = &Piece_Flow_Action_Factory::factory('Piece_Flow_CounterAction');
+        $secondCounter = &Piece_Flow_Action_Factory::factory('Piece_Flow_SecondCounterAction');
+
+        $this->assertEquals(0, $counter->counter);
+        $this->assertEquals(0, $secondCounter->counter);
         $this->assertTrue($flowExecutionTicket1 != $flowExecutionTicket2);
 
         $this->_flowExecutionTicket = $flowExecutionTicket1;
@@ -230,8 +242,8 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $flowExecutionTicket3 = $continuation->invoke();
 
         $this->assertEquals('Counter', $continuation->getView());
-        $this->assertEquals(1, $GLOBALS['Counter']);
-        $this->assertEquals(0, $GLOBALS['SecondCounter']);
+        $this->assertEquals(1, $counter->counter);
+        $this->assertEquals(0, $secondCounter->counter);
         $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket3);
 
         $this->_flowExecutionTicket = $flowExecutionTicket2;
@@ -239,18 +251,18 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $flowExecutionTicket4 = $continuation->invoke();
 
         $this->assertEquals('SecondCounter', $continuation->getView());
-        $this->assertEquals(1, $GLOBALS['Counter']);
-        $this->assertEquals(1, $GLOBALS['SecondCounter']);
+        $this->assertEquals(1, $counter->counter);
+        $this->assertEquals(1, $secondCounter->counter);
         $this->assertEquals($flowExecutionTicket2, $flowExecutionTicket4);
 
         $this->_flowExecutionTicket = null;
-        unset($GLOBALS['SecondCounter']);
+        $secondCounter->counter = null;
         $this->_flowName = 'SecondCounter';
         $flowExecutionTicket5 = $continuation->invoke();
 
         $this->assertEquals('SecondCounter', $continuation->getView());
-        $this->assertEquals(1, $GLOBALS['Counter']);
-        $this->assertEquals(0, $GLOBALS['SecondCounter']);
+        $this->assertEquals(1, $counter->counter);
+        $this->assertEquals(0, $secondCounter->counter);
         $this->assertTrue($flowExecutionTicket2 != $flowExecutionTicket5);
     }
 
@@ -268,7 +280,9 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $continuation->invoke();
 
         $this->assertFalse(PEAR_ErrorStack::staticHasErrors());
-        $this->assertEquals(1, $GLOBALS['Counter']);
+
+        $counter = &Piece_Flow_Action_Factory::factory('Piece_Flow_CounterAction');
+        $this->assertEquals(1, $counter->counter);
     }
 
     function testFailureOfContinuationByInvalidFlowNameWithoutLinearFlowControl()
@@ -350,8 +364,12 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket1);
         $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket3);
         $this->assertEquals('Counter', $continuation->getView());
-        $this->assertEquals(1, $GLOBALS['Counter']);
-        $this->assertEquals(0, $GLOBALS['SecondCounter']);
+
+        $counter = &Piece_Flow_Action_Factory::factory('Piece_Flow_CounterAction');
+        $secondCounter = &Piece_Flow_Action_Factory::factory('Piece_Flow_SecondCounterAction');
+
+        $this->assertEquals(1, $counter->counter);
+        $this->assertEquals(0, $secondCounter->counter);
         $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket2);
         $this->assertTrue($flowExecutionTicket1 != $flowExecutionTicket3);
     }
@@ -371,7 +389,10 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 
         $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket1);
         $this->assertEquals('Counter', $continuation->getView());
-        $this->assertEquals(1, $GLOBALS['Counter']);
+
+        $counter = &Piece_Flow_Action_Factory::factory('Piece_Flow_CounterAction');
+
+        $this->assertEquals(1, $counter->counter);
         $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket2);
     }
 

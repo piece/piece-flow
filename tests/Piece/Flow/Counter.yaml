@@ -6,13 +6,13 @@ viewState:
   - name: displaying
     view: Counter
     entry:
-      class: Piece_Flow_ContinuationTestCaseCounter
+      class: Piece_Flow_CounterAction
       method: setup
     transition:
       - event: increase
         nextState: increased
         action:
-          class: Piece_Flow_ContinuationTestCaseCounter
+          class: Piece_Flow_CounterAction
           method: increase
 actionState:
   - name: increased
