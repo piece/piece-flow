@@ -77,6 +77,8 @@ class Piece_Flow_Continuation
     var $_flowNameCallback;
     var $_eventNameCallback;
     var $_exclusiveFlows = array();
+    var $_isFirstTime;
+    var $_flowName;
 
     /**#@-*/
 
@@ -147,72 +149,22 @@ class Piece_Flow_Continuation
      * Invokes a flow and returns a flow execution ticket.
      *
      * @return string
+     * @throws PEAR_ErrorStack
      */
     function &invoke()
     {
-        if ($this->_useLinearFlowControl) {
-            $flowExecutionTickets = array_keys($this->_flows);
-            if (count($flowExecutionTickets)) {
-                $isFirstTime = false;
-                $flowExecutionTicket = $flowExecutionTickets[0];
-            } else {
-                $isFirstTime = true;
-                $flowNames = array_keys($this->_flowDefinitions);
-                $flowName = $flowNames[0];
-            }
-        } else {
-            $flowExecutionTicket = call_user_func($this->_flowExecutionTicketCallback);
-            if (array_key_exists($flowExecutionTicket, $this->_flows)) {
-                $isFirstTime = false;
-            } else {
-                $isFirstTime = true;
-                $flowName = call_user_func($this->_flowNameCallback);
-                if (array_key_exists($flowName, $this->_exclusiveFlows)) {
-                    $isFirstTime = false;
-                    $flowExecutionTicket = $this->_exclusiveFlows[$flowName];
-                }
-            }
-        }
+        $this->_prepare();
 
-        if (!$isFirstTime) {
-            $eventName = call_user_func($this->_eventNameCallback);
-            $this->_flows[$flowExecutionTicket]->triggerEvent($eventName);
+        if (!$this->_isFirstTime) {
+            $this->_continue();
         } else {
-            if (!array_key_exists($flowName, $this->_flowDefinitions)) {
-                $error = &Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_FOUND,
-                                                       "The flow name [ $flowName ] not found in the flow definitions."
-                                                       );
-                return $error;
-            }
-
-            $flow = &new Piece_Flow();
-            $result = &$flow->configure($this->_flowDefinitions[$flowName]['file'],
-                                        null,
-                                        $this->_cacheDirectory
-                                        );
+            $result = &$this->_start();
             if (Piece_Flow_Error::isError($result)) {
                 return $result;
             }
-
-            $flow->start();
-
-            while (true) {
-                $flowExecutionTicket = $this->_generateFlowExecutionTicket();
-                if (!array_key_exists($flowExecutionTicket, $this->_flows)) {
-                    $this->_flows[$flowExecutionTicket] = &$flow;
-                    break;
-                }
-            }
-
-            if (!$this->_useLinearFlowControl
-                && $this->_flowDefinitions[$flowName]['isExclusive']
-                ) {
-                $this->_exclusiveFlows[$flowName] = $flowExecutionTicket;
-            }
         }
 
-        $this->_flowExecutionTicket = $flowExecutionTicket;
-        return $flowExecutionTicket;
+        return $this->_flowExecutionTicket;
     }
 
     // }}}
@@ -296,6 +248,99 @@ class Piece_Flow_Continuation
     function _generateFlowExecutionTicket()
     {
         return sha1(uniqid(mt_rand(), true));
+    }
+
+    // }}}
+    // {{{ _prepare()
+
+    /**
+     * Prepares the flow execution ticket, the flow name, and whether the
+     * flow invocation is the first time or not.
+     */
+    function _prepare()
+    {
+        if ($this->_useLinearFlowControl) {
+            $flowExecutionTickets = array_keys($this->_flows);
+            if (count($flowExecutionTickets)) {
+                $this->_isFirstTime = false;
+                $this->_flowExecutionTicket = $flowExecutionTickets[0];
+            } else {
+                $this->_isFirstTime = true;
+                $flowNames = array_keys($this->_flowDefinitions);
+                $this->_flowName = $flowNames[0];
+            }
+        } else {
+            $this->_flowExecutionTicket = call_user_func($this->_flowExecutionTicketCallback);
+            if (array_key_exists($this->_flowExecutionTicket, $this->_flows)) {
+                $this->_isFirstTime = false;
+            } else {
+                $this->_flowName = call_user_func($this->_flowNameCallback);
+                if (array_key_exists($this->_flowName, $this->_exclusiveFlows)) {
+                    $this->_isFirstTime = false;
+                    $this->_flowExecutionTicket = $this->_exclusiveFlows[$this->_flowName];
+                } else {
+                    $this->_isFirstTime = true;
+                }
+            }
+        }
+    }
+
+    // }}}
+    // {{{ _continue()
+
+    /**
+     * Continues with the current continuation.
+     */
+    function _continue()
+    {
+        $this->_flows[$this->_flowExecutionTicket]->triggerEvent(call_user_func($this->_eventNameCallback));
+    }
+
+    // }}}
+    // {{{ _start()
+
+    /**
+     * Starts a new flow.
+     *
+     * @throws PEAR_ErrorStack
+     */
+    function &_start()
+    {
+        if (!array_key_exists($this->_flowName, $this->_flowDefinitions)) {
+            $error = &Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_FOUND,
+                                                   "The flow name [ {$this->_flowName} ] not found in the flow definitions."
+                                                   );
+            return $error;
+        }
+
+        $flow = &new Piece_Flow();
+        $result = &$flow->configure($this->_flowDefinitions[$this->_flowName]['file'],
+                                    null,
+                                    $this->_cacheDirectory
+                                    );
+        if (Piece_Flow_Error::isError($result)) {
+            return $result;
+        }
+
+        $flow->start();
+
+        while (true) {
+            $flowExecutionTicket = $this->_generateFlowExecutionTicket();
+            if (!array_key_exists($flowExecutionTicket, $this->_flows)) {
+                $this->_flows[$flowExecutionTicket] = &$flow;
+                $this->_flowExecutionTicket = $flowExecutionTicket;
+                break;
+            }
+        }
+
+        if (!$this->_useLinearFlowControl
+            && $this->_flowDefinitions[$this->_flowName]['isExclusive']
+            ) {
+            $this->_exclusiveFlows[$this->_flowName] = $this->_flowExecutionTicket;
+        }
+
+        $return = null;
+        return $return;
     }
 
     /**#@-*/
