@@ -128,52 +128,48 @@ class Piece_Flow_Action_Factory
     /**
      * Loads a action class corresponding to the given class name.
      *
-     * @param string $className
+     * @param string $class
      * @throws PEAR_ErrorStack
      * @static
      */
-    function &_load($className)
+    function _load($class)
     {
         if (is_null($GLOBALS['PIECE_FLOW_Action_Path'])) {
-            $error = &Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_GIVEN,
-                                                   'The action path was not given.'
-                                                   );
-            return $error;
+            return Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_GIVEN,
+                                                'The action path was not given.'
+                                                );
         }
 
-        $file = realpath("{$GLOBALS['PIECE_FLOW_Action_Path']}/" . str_replace('_', '/', $className) . '.php');
+        $file = realpath("{$GLOBALS['PIECE_FLOW_Action_Path']}/" . str_replace('_', '/', $class) . '.php');
 
         if (!$file) {
-            $error = &Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_FOUND,
-                                                   "The action file for the class [ $className ] not found."
-                                                   );
-            return $error;
+            return Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_FOUND,
+                                                "The action file for the class [ $class ] not found."
+                                                );
         }
 
         if (!is_readable($file)) {
-            $error = &Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_READABLE,
-                                                   "The action file [ $file ] was not readable."
-                                                   );
-            return $error;
+            return Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_READABLE,
+                                                "The action file [ $file ] was not readable."
+                                                );
         }
 
         if (!@include_once $file) {
-            $error = &Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_FOUND,
-                                                   "The action file [ $file ] not found or was not readable."
-                                                   );
-            return $error;
+            return Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_FOUND,
+                                                "The action file [ $file ] not found or was not readable."
+                                                );
         }
 
         if (version_compare(phpversion(), '5.0.0', '<')) {
-            $result = class_exists($className);
+            $result = class_exists($class);
         } else {
-            $result = class_exists($className, false);
+            $result = class_exists($class, false);
         }
 
         if (!$result) {
-            $error = &Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_FOUND,
-                                                   "The action [ $className ] not defined in the file [ $file ]."
-                                                   );
+            return Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_FOUND,
+                                                "The action [ $class ] not defined in the file [ $file ]."
+                                                );
             return $error;
         }
 

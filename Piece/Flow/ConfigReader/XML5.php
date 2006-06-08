@@ -231,7 +231,7 @@ class Piece_Flow_ConfigReader_XML5 extends Piece_Flow_ConfigReader_Common
      * @return array
      * @throws PEAR_ErrorStack
      */
-    function &_parseFile()
+    function _parseFile()
     {
         $dom = DOMDocument::loadXML(file_get_contents($this->_source));
         ob_start();

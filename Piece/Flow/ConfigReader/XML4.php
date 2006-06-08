@@ -94,7 +94,7 @@ class Piece_Flow_ConfigReader_XML4 extends Piece_Flow_ConfigReader_Common
      * @return array
      * @throws PEAR_ErrorStack
      */
-    function &_parseFile()
+    function _parseFile()
     {
         ob_start();
         $dom = domxml_open_mem(file_get_contents($this->_source));

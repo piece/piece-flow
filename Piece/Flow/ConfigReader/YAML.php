@@ -100,7 +100,7 @@ class Piece_Flow_ConfigReader_YAML extends Piece_Flow_ConfigReader_Common
      * @return array
      * @throws PEAR_ErrorStack
      */
-    function &_parseFile()
+    function _parseFile()
     {
         $flow = Spyc::YAMLLoad($this->_source);
         return $flow;

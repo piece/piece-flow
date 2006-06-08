@@ -102,9 +102,9 @@ class Piece_Flow_ConfigReader_Common
      * @return Piece_Flow_Config
      * @throws PEAR_ErrorStack
      */
-    function &configure($cacheDirectory = null)
+    function configure($cacheDirectory = null)
     {
-        $flow = &$this->parse($cacheDirectory);
+        $flow = $this->parse($cacheDirectory);
         if (Piece_Flow_Error::isError($flow)) {
             return $flow;
         }
@@ -135,22 +135,20 @@ class Piece_Flow_ConfigReader_Common
      * @return array
      * @throws PEAR_ErrorStack
      */
-    function &parse($cacheDirectory)
+    function parse($cacheDirectory)
     {
         $absolutePathOfConfigFile = realpath($this->_source);
 
         if (!$absolutePathOfConfigFile) {
-            $error = &Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_FOUND,
-                                                   "The configuration file [ {$this->_source} ] not found."
-                                                   );
-            return $error;
+            return Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_FOUND,
+                                                "The configuration file [ {$this->_source} ] not found."
+                                                );
         }
 
         if (!is_readable($absolutePathOfConfigFile)) {
-            $error = &Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_READABLE,
-                                                   "The configuration file [ {$this->_source} ] was not readable."
-                                                   );
-            return $error;
+            return Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_READABLE,
+                                                "The configuration file [ {$this->_source} ] was not readable."
+                                                );
         }
 
         if (is_null($cacheDirectory)) {
@@ -165,7 +163,7 @@ class Piece_Flow_ConfigReader_Common
                                           );
             PEAR_ErrorStack::staticPopCallback();
 
-            $flow = &$this->_parseFile($absolutePathOfConfigFile);
+            $flow = $this->_parseFile($absolutePathOfConfigFile);
             return $flow;
         }
 
@@ -178,7 +176,7 @@ class Piece_Flow_ConfigReader_Common
                                           );
             PEAR_ErrorStack::staticPopCallback();
 
-            $flow = &$this->_parseFile($absolutePathOfConfigFile);
+            $flow = $this->_parseFile($absolutePathOfConfigFile);
             return $flow;
         }
 
@@ -280,12 +278,12 @@ class Piece_Flow_ConfigReader_Common
             Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_CANNOT_READ,
                                          "Cannot read the cache file in the directory [ $cacheDirectory ]."
                                          );
-            $flow = &$this->_parseFile($masterFile);
+            $flow = $this->_parseFile($masterFile);
             return $flow;
         }
 
         if (!$flow) {
-            $flow = &$this->_parseFile($masterFile);
+            $flow = $this->_parseFile($masterFile);
             if (Piece_Flow_Error::isError($flow)) {
                 return $flow;
             }
@@ -295,7 +293,7 @@ class Piece_Flow_ConfigReader_Common
                 Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_CANNOT_WRITE,
                                              "Cannot write the Piece_Flow object to the cache file in the directory [ $cacheDirectory ]."
                                              );
-                $flow = &$this->_parseFile($masterFile);
+                $flow = $this->_parseFile($masterFile);
                 return $flow;
             }
         }
@@ -316,7 +314,7 @@ class Piece_Flow_ConfigReader_Common
      * @return array
      * @throws PEAR_ErrorStack
      */
-    function &_parseFile() {}
+    function _parseFile() {}
 
     /**#@-*/
 

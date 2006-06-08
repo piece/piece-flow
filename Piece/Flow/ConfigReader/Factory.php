@@ -100,7 +100,7 @@ class Piece_Flow_ConfigReader_Factory
 
         $class = "Piece_Flow_ConfigReader_$driverName";
         if (!class_exists($class)) {
-            $result = &Piece_Flow_ConfigReader_Factory::_loadDriver($class);
+            $result = Piece_Flow_ConfigReader_Factory::_loadDriver($class);
             if (Piece_Flow_Error::isError($result)) {
                 return $result;
             }
@@ -161,14 +161,13 @@ class Piece_Flow_ConfigReader_Factory
      * @param string $class
      * @return string
      */
-    function &_loadDriver($class)
+    function _loadDriver($class)
     {
         $file = str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php';
         if (!@include_once $file) {
-            $error = &Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_FOUND,
-                                                   "File [ $file ] not found or was not readable."
-                                                   );
-            return $error;
+            return Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_FOUND,
+                                                "File [ $file ] not found or was not readable."
+                                                );
         }
 
         if (!class_exists($class)) {
