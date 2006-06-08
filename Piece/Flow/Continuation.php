@@ -181,11 +181,16 @@ class Piece_Flow_Continuation
             }
 
             $flow = &new Piece_Flow();
-            $flow->configure($this->_flowDefinitions[$flowName]['file'],
-                             null,
-                             $this->_cacheDirectory
-                             );
+            $result = &$flow->configure($this->_flowDefinitions[$flowName]['file'],
+                                        null,
+                                        $this->_cacheDirectory
+                                        );
+            if (Piece_Flow_Error::isError($result)) {
+                return $result;
+            }
+
             $flow->start();
+
             while (true) {
                 $flowExecutionTicket = $this->_generateFlowExecutionTicket();
                 if (!array_key_exists($flowExecutionTicket, $this->_flows)) {
