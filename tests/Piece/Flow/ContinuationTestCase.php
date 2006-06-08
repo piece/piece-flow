@@ -330,6 +330,44 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         return $this->_flowName;
     }
 
+    function testInvocationWithoutLinearFlowControlByExclusiveMode()
+    {
+        $continuation = &new Piece_Flow_Continuation();
+        $continuation->setCacheDirectory(dirname(__FILE__));
+        $continuation->addFlow('Counter', dirname(__FILE__) . '/Counter.yaml', true);
+        $continuation->setEventNameCallback(array(&$this, 'getEventName'));
+        $continuation->setFlowExecutionTicketCallback(array(&$this, 'getFlowExecutionTicket'));
+        $continuation->setFlowNameCallback(array(&$this, 'getFlowName'));
+
+        $flowExecutionTicket1 = $continuation->invoke();
+        $this->_flowExecutionTicket = null;
+        $flowExecutionTicket2 = $continuation->invoke();
+
+        $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket1);
+        $this->assertEquals('Counter', $continuation->getView());
+        $this->assertEquals(1, $GLOBALS['Counter']);
+        $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket2);
+    }
+
+    function testInvocationWithLinearFlowControlByExclusiveMode()
+    {
+        $continuation = &new Piece_Flow_Continuation(true);
+        $continuation->setCacheDirectory(dirname(__FILE__));
+        $continuation->addFlow('Counter', dirname(__FILE__) . '/Counter.yaml', true);
+        $continuation->setEventNameCallback(array(&$this, 'getEventName'));
+        $continuation->setFlowExecutionTicketCallback(array(&$this, 'getFlowExecutionTicket'));
+        $continuation->setFlowNameCallback(array(&$this, 'getFlowName'));
+
+        $flowExecutionTicket1 = $continuation->invoke();
+        $this->_flowExecutionTicket = null;
+        $flowExecutionTicket2 = $continuation->invoke();
+
+        $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket1);
+        $this->assertEquals('Counter', $continuation->getView());
+        $this->assertEquals(1, $GLOBALS['Counter']);
+        $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket2);
+    }
+
     /**#@-*/
 
     /**#@+
