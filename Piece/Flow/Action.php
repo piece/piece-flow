@@ -39,6 +39,8 @@
  * @since      File available since Release 0.1.0
  */
 
+require_once 'Piece/Flow/Action/Factory.php';
+
 // {{{ Piece_Flow_Action
 
 /**
@@ -108,7 +110,8 @@ class Piece_Flow_Action
      */
     function invoke(&$fsm, &$event, &$payload)
     {
-        return call_user_func_array(array($this->_class, $this->_method),
+        $action = &Piece_Flow_Action_Factory::factory($this->_class);
+        return call_user_func_array(array(&$action, $this->_method),
                                     array(&$this->_flow, $event->getName(), &$payload)
                                     );
     }
@@ -125,7 +128,8 @@ class Piece_Flow_Action
      */
     function invokeAndTriggerEvent(&$fsm, &$event, &$payload)
     {
-        $result = call_user_func_array(array($this->_class, $this->_method),
+        $action = &Piece_Flow_Action_Factory::factory($this->_class);
+        $result = call_user_func_array(array(&$action, $this->_method),
                                        array(&$this->_flow, $event->getName(), &$payload)
                                        );
         if (!is_null($result)) {
