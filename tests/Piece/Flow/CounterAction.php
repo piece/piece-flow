@@ -61,8 +61,6 @@ class Piece_Flow_CounterAction
      * @access public
      */
 
-    var $counter;
-
     /**#@-*/
 
     /**#@+
@@ -77,14 +75,14 @@ class Piece_Flow_CounterAction
 
     function setup(&$flow, $event, &$payload)
     {
-        if (is_null($this->counter)) {
-            $this->counter = 0;
+        if (!$flow->hasAttribute('counter')) {
+            $flow->setAttribute('counter', 0);
         }
     }
 
     function increase(&$flow, $event, &$payload)
     {
-        ++$this->counter;
+        $flow->setAttribute('counter', $flow->getAttribute('counter') + 1);
         return 'succeed';
     }
 
