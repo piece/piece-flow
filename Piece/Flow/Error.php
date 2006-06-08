@@ -44,14 +44,15 @@ require_once 'PEAR/ErrorStack.php';
 /*
  * Error codes
  */
-define('PIECE_FLOW_ERROR_NOT_FOUND',      -1);
-define('PIECE_FLOW_ERROR_INVALID_FORMAT', -2);
-define('PIECE_FLOW_ERROR_INVALID_DRIVER', -3);
-define('PIECE_FLOW_ERROR_NOT_READABLE',   -4);
-define('PIECE_FLOW_ERROR_CANNOT_READ',    -5);
-define('PIECE_FLOW_ERROR_CANNOT_WRITE',   -6);
-define('PIECE_FLOW_ERROR_ALREADY_EXISTS', -7);
-define('PIECE_FLOW_ERROR_NOT_GIVEN',      -8);
+define('PIECE_FLOW_ERROR_NOT_FOUND',         -1);
+define('PIECE_FLOW_ERROR_INVALID_FORMAT',    -2);
+define('PIECE_FLOW_ERROR_INVALID_DRIVER',    -3);
+define('PIECE_FLOW_ERROR_NOT_READABLE',      -4);
+define('PIECE_FLOW_ERROR_CANNOT_READ',       -5);
+define('PIECE_FLOW_ERROR_CANNOT_WRITE',      -6);
+define('PIECE_FLOW_ERROR_ALREADY_EXISTS',    -7);
+define('PIECE_FLOW_ERROR_NOT_GIVEN',         -8);
+define('PIECE_FLOW_ERROR_INVALID_OPERATION', -9);
 
 // }}}
 // {{{ Piece_Flow_Error
