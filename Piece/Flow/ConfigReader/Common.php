@@ -139,9 +139,16 @@ class Piece_Flow_ConfigReader_Common
     {
         $absolutePathOfConfigFile = realpath($this->_source);
 
+        if (!$absolutePathOfConfigFile) {
+            $error = &Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_FOUND,
+                                                   "The configuration file [ {$this->_source} ] not found."
+                                                   );
+            return $error;
+        }
+
         if (!is_readable($absolutePathOfConfigFile)) {
             $error = &Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_READABLE,
-                                                   "The configuration file [ $absolutePathOfConfigFile ] was not readable."
+                                                   "The configuration file [ {$this->_source} ] was not readable."
                                                    );
             return $error;
         }
