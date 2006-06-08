@@ -109,7 +109,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
 
     function testConfiguration()
     {
-        $flow = &new Piece_Flow(new stdClass());
+        $flow = &new Piece_Flow();
         $flow->configure($this->_source, null, dirname(__FILE__));
 
         $this->assertEquals($this->_config->getName(), $flow->getName());
@@ -118,7 +118,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
     function testGettingView()
     {
         $viewStates = $this->_config->getViewStates();
-        $flow = &new Piece_Flow(new stdClass());
+        $flow = &new Piece_Flow();
         $flow->configure($this->_source, null, dirname(__FILE__));
         $flow->start();
 
@@ -131,7 +131,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
     {
         $GLOBALS['validateCalled'] = false;
         $viewStates = $this->_config->getViewStates();
-        $flow = &new Piece_Flow(new stdClass());
+        $flow = &new Piece_Flow();
         $flow->configure($this->_source, null, dirname(__FILE__));
         $flow->start();
         $flow->triggerEvent('submit');
@@ -146,7 +146,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
 
     function testGettingPreviousStateName()
     {
-        $flow = &new Piece_Flow(new stdClass());
+        $flow = &new Piece_Flow();
         $flow->configure($this->_source, null, dirname(__FILE__));
         $flow->start();
         $flow->triggerEvent('submit');
@@ -156,7 +156,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
 
     function testGettingCurrentStateName()
     {
-        $flow = &new Piece_Flow(new stdClass());
+        $flow = &new Piece_Flow();
         $flow->configure($this->_source, null, dirname(__FILE__));
         $flow->start();
         $flow->triggerEvent('submit');
@@ -167,7 +167,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
     function testTriggeringEventAndInvokingTransitionAction()
     {
         $viewStates = $this->_config->getViewStates();
-        $flow = &new Piece_Flow(new stdClass());
+        $flow = &new Piece_Flow();
         $flow->configure($this->_source, null, dirname(__FILE__));
         $flow->start();
         $flow->triggerEvent('submit');
@@ -186,7 +186,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
     {
         $GLOBALS['hasErrors'] = true;
         $viewStates = $this->_config->getViewStates();
-        $flow = &new Piece_Flow(new stdClass());
+        $flow = &new Piece_Flow();
         $flow->configure($this->_source, null, dirname(__FILE__));
         $flow->start();
         $flow->triggerEvent('submit');
@@ -201,7 +201,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
     function testActivity()
     {
         $GLOBALS['displayCounter'] = 0;
-        $flow = &new Piece_Flow(new stdClass());
+        $flow = &new Piece_Flow();
         $flow->configure($this->_source, null, dirname(__FILE__));
         $flow->start();
 
@@ -219,7 +219,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
     {
         $GLOBALS['setupFormCalled'] = false;
         $GLOBALS['teardownFormCalled'] = false;
-        $flow = &new Piece_Flow(new stdClass());
+        $flow = &new Piece_Flow();
         $flow->configure($this->_source, null, dirname(__FILE__));
         $flow->start();
 
@@ -233,7 +233,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
 
     function testSettingAttribute()
     {
-        $flow = &new Piece_Flow(new stdClass());
+        $flow = &new Piece_Flow();
         $flow->configure($this->_source, null, dirname(__FILE__));
         $flow->start();
         $flow->setAttribute('foo', 'bar');
@@ -244,9 +244,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
 
     function testFailureToSetAttributeBeforeStartingFlow()
     {
-        PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
-
-        $flow = &new Piece_Flow(new stdClass());
+        $flow = &new Piece_Flow();
         $flow->configure($this->_source, null, dirname(__FILE__));
         $flow->setAttribute('foo', 'bar');
 
@@ -256,8 +254,32 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $error = $stack->pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_INVALID_OPERATION, $error['code']);
+    }
 
-        PEAR_ErrorStack::staticPopCallback();
+    function testSettingPayload()
+    {
+        $flow = &new Piece_Flow();
+        $flow->configure($this->_source, null, dirname(__FILE__));
+        $flow->setPayload(new stdClass());
+
+        $stack = &Piece_Flow_Error::getErrorStack();
+        $error = $stack->pop();
+
+        $this->assertEquals(PIECE_FLOW_ERROR_NOT_FOUND, $error['code']);
+        $this->assertFalse(PEAR_ErrorStack::staticHasErrors());
+    }
+
+    function testFailureToSetPayloadBeforeConfiguringFlow()
+    {
+        $flow = &new Piece_Flow();
+        $flow->setPayload(new stdClass());
+
+        $this->assertTrue(PEAR_ErrorStack::staticHasErrors());
+
+        $stack = &Piece_Flow_Error::getErrorStack();
+        $error = $stack->pop();
+
+        $this->assertEquals(PIECE_FLOW_ERROR_INVALID_OPERATION, $error['code']);
     }
 
     /**#@-*/
