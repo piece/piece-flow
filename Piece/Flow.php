@@ -44,7 +44,7 @@
  */
 
 require_once 'Stagehand/FSM.php';
-require_once 'Piece/Flow/Action.php';
+require_once 'Piece/Flow/ActionInvoker.php';
 require_once 'Piece/Flow/ConfigReader/Factory.php';
 
 // {{{ Piece_Flow
@@ -293,9 +293,9 @@ class Piece_Flow
     // {{{ _wrapAction()
 
     /**
-     * Wraps a simple action up with a Piece_Flow_Action object and returns a
-     * callback. The simple action means that the action is entry action or
-     * exit action or guard.
+     * Wraps a simple action up with a Piece_Flow_ActionInvoker object and
+     * returns a callback. The simple action means that the action is entry
+     * action or exit action or guard.
      *
      * @param array $action
      * @return array
@@ -306,10 +306,10 @@ class Piece_Flow
             return $action;
         }
 
-        $flowAction = &new Piece_Flow_Action($this,
-                                             $action['class'],
-                                             $action['method']
-                                             );
+        $flowAction = &new Piece_Flow_ActionInvoker($this,
+                                                    $action['class'],
+                                                    $action['method']
+                                                    );
         return array(&$flowAction, 'invoke');
     }
 
@@ -344,10 +344,10 @@ class Piece_Flow
             return $action;
         }
 
-        $flowAction = &new Piece_Flow_Action($this,
-                                             $action['class'],
-                                             $action['method']
-                                             );
+        $flowAction = &new Piece_Flow_ActionInvoker($this,
+                                                    $action['class'],
+                                                    $action['method']
+                                                    );
         return array(&$flowAction, 'invokeAndTriggerEvent');
     }
 
