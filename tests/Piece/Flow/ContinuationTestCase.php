@@ -335,18 +335,25 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $continuation = &new Piece_Flow_Continuation();
         $continuation->setCacheDirectory(dirname(__FILE__));
         $continuation->addFlow('Counter', dirname(__FILE__) . '/Counter.yaml', true);
+        $continuation->addFlow('SecondCounter', dirname(__FILE__) . '/SecondCounter.yaml');
         $continuation->setEventNameCallback(array(&$this, 'getEventName'));
         $continuation->setFlowExecutionTicketCallback(array(&$this, 'getFlowExecutionTicket'));
         $continuation->setFlowNameCallback(array(&$this, 'getFlowName'));
 
         $flowExecutionTicket1 = $continuation->invoke();
+        $this->_flowName = 'SecondCounter';
+        $flowExecutionTicket3 = $continuation->invoke();
+        $this->_flowName = 'Counter';
         $this->_flowExecutionTicket = null;
         $flowExecutionTicket2 = $continuation->invoke();
 
         $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket1);
+        $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket3);
         $this->assertEquals('Counter', $continuation->getView());
         $this->assertEquals(1, $GLOBALS['Counter']);
+        $this->assertEquals(0, $GLOBALS['SecondCounter']);
         $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket2);
+        $this->assertTrue($flowExecutionTicket1 != $flowExecutionTicket3);
     }
 
     function testInvocationWithLinearFlowControlByExclusiveMode()
