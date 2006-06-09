@@ -1,4 +1,4 @@
-# $Id: registrationFlow.yaml 74 2006-06-09 01:56:34Z iteman $
+# $Id$
 name: optional
 firstState: foo
 viewState:
