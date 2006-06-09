@@ -342,6 +342,20 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
     }
 
+    function testFailureToGetViewBeforeStartingFlow()
+    {
+        $flow = &new Piece_Flow();
+        $flow->configure($this->_source, null, dirname(__FILE__));
+        $flow->getView();
+
+        $this->assertTrue(PEAR_ErrorStack::staticHasErrors());
+
+        $stack = &Piece_Flow_Error::getErrorStack();
+        $error = $stack->pop();
+
+        $this->assertEquals(PIECE_FLOW_ERROR_INVALID_OPERATION, $error['code']);
+    }
+
     /**#@-*/
 
     /**#@+
