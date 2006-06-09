@@ -128,6 +128,10 @@ class Piece_FlowTestCaseAction
         }
     }
 
+    function initialize(&$flow, $event, &$payload) {}
+
+    function finalize(&$flow, $event, &$payload) {}
+
     /**#@-*/
 
     /**#@+
