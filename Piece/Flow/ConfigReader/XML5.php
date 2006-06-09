@@ -83,25 +83,27 @@ class Piece_Flow_ConfigReader_XML5 extends Piece_Flow_ConfigReader_Common
         <data type="string"/>
       </attribute>
       <interleave>
-        <element name="lastState">
-          <attribute name="name">
-            <data type="string"/>
-          </attribute>
-          <attribute name="view">
-            <data type="string"/>
-          </attribute>
-          <interleave>
-            <optional>
-              <ref name="entry"/>
-            </optional>
-            <optional>
-              <ref name="exit"/>
-            </optional>
-            <optional>
-              <ref name="activity"/>
-            </optional>
-          </interleave>
-        </element>
+        <optional>
+          <element name="lastState">
+            <attribute name="name">
+              <data type="string"/>
+            </attribute>
+            <attribute name="view">
+              <data type="string"/>
+            </attribute>
+            <interleave>
+              <optional>
+                <ref name="entry"/>
+              </optional>
+              <optional>
+                <ref name="exit"/>
+              </optional>
+              <optional>
+                <ref name="activity"/>
+              </optional>
+            </interleave>
+          </element>
+        </optional>
         <ref name="viewStates"/>
         <ref name="actionStates"/>
       </interleave>
@@ -117,7 +119,9 @@ class Piece_Flow_ConfigReader_XML5 extends Piece_Flow_ConfigReader_Common
           <data type="string"/>
         </attribute>
         <interleave>
+          <optional>
           <ref name="transitions"/>
+          </optional>
           <optional>
             <ref name="entry"/>
           </optional>
@@ -132,7 +136,7 @@ class Piece_Flow_ConfigReader_XML5 extends Piece_Flow_ConfigReader_Common
     </oneOrMore>
   </define>
   <define name="actionStates">
-    <oneOrMore>
+    <zeroOrMore>
       <element name="actionState">
         <attribute name="name">
           <data type="string"/>
@@ -150,7 +154,7 @@ class Piece_Flow_ConfigReader_XML5 extends Piece_Flow_ConfigReader_Common
           </optional>
         </interleave>
       </element>
-    </oneOrMore>
+    </zeroOrMore>
   </define>
   <define name="transitions">
     <oneOrMore>
@@ -248,10 +252,14 @@ $contents"
         $element = $dom->getElementsByTagName('flow')->item(0);
         $flow['name'] = $element->getAttribute('name');
         $flow['firstState'] = $element->getAttribute('firstState');
+
         $lastState = $element->getElementsByTagName('lastState')->item(0);
-        $flow['lastState'] = array('name' => $lastState->getAttribute('name'),
-                                   'view' => $lastState->getAttribute('view')
-                                   );
+        if (!is_null($lastState)) {
+            $flow['lastState'] = array('name' => $lastState->getAttribute('name'),
+                                       'view' => $lastState->getAttribute('view')
+                                       );
+        }
+
         $flow['viewState'] =
             $this->_parseViewStates($element->getElementsByTagName('viewState'));
         $flow['actionState'] =

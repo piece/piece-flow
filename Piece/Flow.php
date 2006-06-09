@@ -125,7 +125,12 @@ class Piece_Flow
         $this->_fsm = &new Stagehand_FSM($config->getFirstState());
         $this->_name = $config->getName();
         $this->_fsm->setName($this->_name);
-        $this->_configureViewState($config->getLastState());
+
+        $lastState = $config->getLastState();
+        if (!is_null($lastState)) {
+            $this->_configureViewState($config->getLastState());
+        }
+
         $this->_configureViewStates($config->getViewStates());
         $this->_configureActionStates($config->getActionStates());
     }

@@ -112,11 +112,18 @@ class Piece_Flow_ConfigReader_Common
         $this->_config = &new Piece_Flow_Config();
         $this->_config->setName($flow['name']);
         $this->_config->setFirstState($flow['firstState']);
-        $this->_config->setLastState($flow['lastState']['name'],
-                                     $flow['lastState']['view']
-                                     );
+
+        if (array_key_exists('lastState', $flow)) {
+            $this->_config->setLastState($flow['lastState']['name'],
+                                         $flow['lastState']['view']
+                                         );
+        }
+
         $this->_configureViewStates($flow['viewState']);
-        $this->_configureActionStates($flow['actionState']);
+
+        if (array_key_exists('actionState', $flow)) {
+            $this->_configureActionStates($flow['actionState']);
+        }
 
         return $this->_config;
     }
@@ -237,14 +244,16 @@ class Piece_Flow_ConfigReader_Common
      */
     function _configureState($state)
     {
-        for ($i = 0; $i < count($state['transition']); ++$i) {
-            $this->_config->addTransition($state['name'],
-                                          $state['transition'][$i]['event'],
-                                          $state['transition'][$i]['nextState'],
-                                          @$state['transition'][$i]['action'],
-                                          @$state['transition'][$i]['guard']
-                                          );
+        if (array_key_exists('transition', $state)) {
+            for ($i = 0; $i < count($state['transition']); ++$i) {
+                $this->_config->addTransition($state['name'],
+                                              $state['transition'][$i]['event'],
+                                              $state['transition'][$i]['nextState'],
+                                              @$state['transition'][$i]['action'],
+                                              @$state['transition'][$i]['guard']
+                                              );
 
+            }
         }
 
         $this->_config->setEntryAction($state['name'], @$state['entry']);
