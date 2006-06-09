@@ -110,10 +110,14 @@ $contents"
         $element = $dom->document_element();
         $flow['name'] = $element->get_attribute('name');
         $flow['firstState'] = $element->get_attribute('firstState');
+
         $lastState = $element->get_elements_by_tagname('lastState');
-        $flow['lastState'] = array('name' => $lastState[0]->get_attribute('name'),
-                                   'view' => $lastState[0]->get_attribute('view')
-                                   );
+        if (count($lastState)) {
+            $flow['lastState'] = array('name' => $lastState[0]->get_attribute('name'),
+                                       'view' => $lastState[0]->get_attribute('view')
+                                       );
+        }
+
         $viewStates = $element->get_elements_by_tagname('viewState');
         $flow['viewState'] = $this->_parseViewStates($viewStates);
         $actionState = $element->get_elements_by_tagname('actionState');
