@@ -9,6 +9,12 @@
       <attribute name="name">
         <data type="string"/>
       </attribute>
+      <optional>
+        <ref name="initial"/>
+      </optional>
+      <optional>
+        <ref name="final"/>
+      </optional>
       <attribute name="firstState">
         <data type="string"/>
       </attribute>
@@ -134,6 +140,16 @@
   </define>
   <define name="activity">
     <element name="activity">
+      <ref name="service"/>
+    </element>
+  </define>
+  <define name="initial">
+    <element name="initial">
+      <ref name="service"/>
+    </element>
+  </define>
+  <define name="final">
+    <element name="final">
       <ref name="service"/>
     </element>
   </define>

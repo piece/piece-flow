@@ -63,3 +63,5 @@ mapping:
       "entry": *service
       "exit": *service
       "activity": *service
+  "initial": *service
+  "final": *service
