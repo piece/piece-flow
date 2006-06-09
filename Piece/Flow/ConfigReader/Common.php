@@ -125,6 +125,14 @@ class Piece_Flow_ConfigReader_Common
             $this->_configureActionStates($flow['actionState']);
         }
 
+        if (array_key_exists('initial', $flow)) {
+            $this->_config->setInitialAction($flow['initial']);
+        }
+
+        if (array_key_exists('final', $flow)) {
+            $this->_config->setFinalAction($flow['final']);
+        }
+
         return $this->_config;
     }
 
@@ -246,19 +254,35 @@ class Piece_Flow_ConfigReader_Common
     {
         if (array_key_exists('transition', $state)) {
             for ($i = 0; $i < count($state['transition']); ++$i) {
+                if (!array_key_exists('action', $state['transition'][$i])) {
+                    $state['transition'][$i]['action'] = null;
+                }
+
+                if (!array_key_exists('guard', $state['transition'][$i])) {
+                    $state['transition'][$i]['guard'] = null;
+                }
+
                 $this->_config->addTransition($state['name'],
                                               $state['transition'][$i]['event'],
                                               $state['transition'][$i]['nextState'],
-                                              @$state['transition'][$i]['action'],
-                                              @$state['transition'][$i]['guard']
+                                              $state['transition'][$i]['action'],
+                                              $state['transition'][$i]['guard']
                                               );
 
             }
         }
 
-        $this->_config->setEntryAction($state['name'], @$state['entry']);
-        $this->_config->setExitAction($state['name'], @$state['exit']);
-        $this->_config->setActivity($state['name'], @$state['activity']);
+        if (array_key_exists('entry', $state)) {
+            $this->_config->setEntryAction($state['name'], $state['entry']);
+        }
+
+        if (array_key_exists('exit', $state)) {
+            $this->_config->setExitAction($state['name'], $state['exit']);
+        }
+
+        if (array_key_exists('activity', $state)) {
+            $this->_config->setActivity($state['name'], $state['activity']);
+        }
     }
 
     // }}}

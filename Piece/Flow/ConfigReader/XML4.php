@@ -123,6 +123,16 @@ $contents"
         $actionState = $element->get_elements_by_tagname('actionState');
         $flow['actionState'] = $this->_parseActionStates($actionState);
 
+        $initial = $element->get_elements_by_tagname('initial');
+        if (count($initial)) {
+            $flow['initial'] = $this->_parseAction($initial[0]);
+        }
+
+        $final = $element->get_elements_by_tagname('final');
+        if (count($final)) {
+            $flow['final'] = $this->_parseAction($final[0]);
+        }
+
         return $flow;
     }
 
@@ -198,10 +208,17 @@ $contents"
                 $transitions[$i]->get_attribute('event');
             $parsedTransition['nextState'] =
                 $transitions[$i]->get_attribute('nextState');
+
             $action = $transitions[$i]->get_elements_by_tagname('action');
-            $parsedTransition['action'] = $this->_parseAction(@$action[0]);
+            if (count($action)) {
+                $parsedTransition['action'] = $this->_parseAction($action[0]);
+            }
+
             $guard = $transitions[$i]->get_elements_by_tagname('guard');
-            $parsedTransition['guard'] = $this->_parseAction(@$guard[0]);
+            if (count($guard)) {
+                $parsedTransition['guard'] = $this->_parseAction($guard[0]);
+            }
+
             array_push($parsedTransitions, $parsedTransition);
         }
         if (count($parsedTransitions)) {
@@ -209,11 +226,19 @@ $contents"
         }
 
         $entry = $state->get_elements_by_tagname('entry');
-        $parsedState['entry'] = $this->_parseAction(@$entry[0]);
+        if (count($entry)) {
+            $parsedState['entry'] = $this->_parseAction($entry[0]);
+        }
+
         $exit = $state->get_elements_by_tagname('exit');
-        $parsedState['exit'] = $this->_parseAction(@$exit[0]);
+        if (count($exit)) {
+            $parsedState['exit'] = $this->_parseAction($exit[0]);
+        }
+
         $activity = $state->get_elements_by_tagname('activity');
-        $parsedState['activity'] = $this->_parseAction(@$activity[0]);
+        if (count($activity)) {
+            $parsedState['activity'] = $this->_parseAction($activity[0]);
+        }
 
         return $parsedState;
     }

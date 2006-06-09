@@ -79,6 +79,12 @@ class Piece_Flow_ConfigReader_XML5 extends Piece_Flow_ConfigReader_Common
       <attribute name="name">
         <data type="string"/>
       </attribute>
+      <optional>
+        <ref name="initial"/>
+      </optional>
+      <optional>
+        <ref name="final"/>
+      </optional>
       <attribute name="firstState">
         <data type="string"/>
       </attribute>
@@ -207,6 +213,16 @@ class Piece_Flow_ConfigReader_XML5 extends Piece_Flow_ConfigReader_Common
       <ref name="service"/>
     </element>
   </define>
+  <define name="initial">
+    <element name="initial">
+      <ref name="service"/>
+    </element>
+  </define>
+  <define name="final">
+    <element name="final">
+      <ref name="service"/>
+    </element>
+  </define>
 </grammar>
 ';
 
@@ -264,6 +280,16 @@ $contents"
             $this->_parseViewStates($element->getElementsByTagName('viewState'));
         $flow['actionState'] =
             $this->_parseActionStates($element->getElementsByTagName('actionState'));
+
+        $initial = $element->getElementsByTagName('initial')->item(0);
+        if (!is_null($initial)) {
+            $flow['initial'] = $this->_parseAction($initial);
+        }
+
+        $final = $element->getElementsByTagName('final')->item(0);
+        if (!is_null($final)) {
+            $flow['final'] = $this->_parseAction($final);
+        }
 
         return $flow;
     }
@@ -340,22 +366,37 @@ $contents"
             $parsedTransition['event'] = $transition->getAttribute('event');
             $parsedTransition['nextState'] =
                 $transition->getAttribute('nextState');
-            $parsedTransition['action'] =
-                $this->_parseAction($transition->getElementsByTagName('action')->item(0));
-            $parsedTransition['guard'] =
-                $this->_parseAction($transition->getElementsByTagName('guard')->item(0));
+
+            $action = $transition->getElementsByTagName('action')->item(0);
+            if (!is_null($action)) {
+                $parsedTransition['action'] = $this->_parseAction($action);
+            }
+
+            $guard = $transition->getElementsByTagName('guard')->item(0);
+            if (!is_null($guard)) {
+                $parsedTransition['guard'] = $this->_parseAction($guard);
+            }
+
             array_push($parsedTransitions, $parsedTransition);
         }
         if (count($parsedTransitions)) {
             $parsedState['transition'] = $parsedTransitions;
         }
 
-        $parsedState['entry'] =
-            $this->_parseAction($state->getElementsByTagName('entry')->item(0));
-        $parsedState['exit'] =
-            $this->_parseAction($state->getElementsByTagName('exit')->item(0));
-        $parsedState['activity'] =
-            $this->_parseAction($state->getElementsByTagName('activity')->item(0));
+        $entry = $state->getElementsByTagName('entry')->item(0);
+        if (!is_null($entry)) {
+            $parsedState['entry'] = $this->_parseAction($entry);
+        }
+
+        $exit = $state->getElementsByTagName('exit')->item(0);
+        if (!is_null($exit)) {
+            $parsedState['exit'] = $this->_parseAction($exit);
+        }
+
+        $activity = $state->getElementsByTagName('activity')->item(0);
+        if (!is_null($activity)) {
+            $parsedState['activity'] = $this->_parseAction($activity);
+        }
 
         return $parsedState;
     }
