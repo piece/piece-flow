@@ -1,0 +1,9 @@
+# $Id: registrationFlow.yaml 74 2006-06-09 01:56:34Z iteman $
+name: initial
+firstState: foo
+initial:
+  class: Piece_FlowInitialAction
+  method: initialize
+viewState:
+  - name: foo
+    view: foo
