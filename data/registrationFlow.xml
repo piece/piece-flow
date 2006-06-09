@@ -6,20 +6,23 @@
     <entry class="Piece_FlowTestCaseAction" method="setupForm"/>
     <exit class="Piece_FlowTestCaseAction" method="teardownForm"/>
     <activity class="Piece_FlowTestCaseAction" method="countDisplay"/>
-    <transition event="submit" nextState="validated">
-      <action class="Piece_FlowTestCaseAction" method="validate"/>
+    <transition event="submit" nextState="inputValidated">
+      <action class="Piece_FlowTestCaseAction" method="validateInput"/>
       <guard class="Piece_FlowTestCaseAction" method="isPermitted"/>
     </transition>
   </viewState>
   <viewState name="confirming" view="confirmation">
-    <transition event="submit" nextState="validated">
-      <action class="Piece_FlowTestCaseAction" method="validate"/>
+    <transition event="submit" nextState="confirmationValidated">
+      <action class="Piece_FlowTestCaseAction" method="validateConfirmation"/>
     </transition>
   </viewState>
-  <actionState name="validated">
+  <actionState name="inputValidated">
     <transition event="raiseError" nextState="displaying"/>
-    <transition event="succeedInValidatingViaDisplaying" nextState="confirming"/>
-    <transition event="succeedInValidatingViaConfirming" nextState="registered">
+    <transition event="succeed" nextState="confirming"/>
+  </actionState>
+  <actionState name="confirmationValidated">
+    <transition event="raiseError" nextState="displaying"/>
+    <transition event="succeed" nextState="registered">
       <action class="Piece_FlowTestCaseAction" method="register"/>
     </transition>
   </actionState>

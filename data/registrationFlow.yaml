@@ -16,10 +16,10 @@ viewState:
       method: countDisplay
     transition:
       - event: submit
-        nextState: validated
+        nextState: inputValidated
         action:
           class: Piece_FlowTestCaseAction
-          method: validate
+          method: validateInput
         guard:
           class: Piece_FlowTestCaseAction
           method: isPermitted
@@ -27,18 +27,22 @@ viewState:
     view: confirmation
     transition:
       - event: submit
-        nextState: validated
+        nextState: confirmationValidated
         action:
           class: Piece_FlowTestCaseAction
-          method: validate
+          method: validateConfirmation
 actionState:
-  - name: validated
+  - name: inputValidated
     transition:
       - event: raiseError
         nextState: displaying
-      - event: succeedInValidatingViaDisplaying
+      - event: succeed
         nextState: confirming
-      - event: succeedInValidatingViaConfirming
+  - name: confirmationValidated
+    transition:
+      - event: raiseError
+        nextState: displaying
+      - event: succeed
         nextState: registered
         action:
           class: Piece_FlowTestCaseAction
