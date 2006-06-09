@@ -166,6 +166,17 @@ class Piece_Flow
      */
     function getView()
     {
+        if (!is_a($this->_fsm, 'Stagehand_FSM')
+            || is_null($this->_fsm->getCurrentState())
+            ) {
+            PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+            $error = Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                                  __FUNCTION__ . ' method must be called after starting flows.'
+                                                  );
+            PEAR_ErrorStack::staticPopCallback();
+            return $error;
+        }
+
         $stateName = $this->getCurrentStateName();
         if ($stateName == STAGEHAND_FSM_STATE_FINAL) {
             return @$this->_views[$this->getPreviousStateName()];
