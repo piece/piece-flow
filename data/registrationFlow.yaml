@@ -53,3 +53,9 @@ actionState:
         nextState: displaying
       - event: succeed
         nextState: finishing
+initial:
+  class: Piece_FlowTestCaseAction
+  method: initialize
+final:
+  class: Piece_FlowTestCaseAction
+  method: finalize
