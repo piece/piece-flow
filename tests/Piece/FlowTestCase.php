@@ -291,6 +291,23 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $this->assertEquals(PIECE_FLOW_ERROR_INVALID_OPERATION, $error['code']);
     }
 
+    function testOptionalElements()
+    {
+        $flow = &new Piece_Flow();
+        $flow->configure(dirname(__FILE__) . '/optional.xml', null, dirname(__FILE__));
+        $flow->setPayload(new stdClass());
+        $flow->start();
+
+        $this->assertEquals('foo', $flow->getView());
+
+        $flow = &new Piece_Flow();
+        $flow->configure(dirname(__FILE__) . '/optional.yaml', null, dirname(__FILE__));
+        $flow->setPayload(new stdClass());
+        $flow->start();
+
+        $this->assertEquals('foo', $flow->getView());
+    }
+
     /**#@-*/
 
     /**#@+
