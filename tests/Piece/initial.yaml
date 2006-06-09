@@ -1,9 +1,16 @@
-# $Id: registrationFlow.yaml 74 2006-06-09 01:56:34Z iteman $
+# $Id$
 name: initial
-firstState: foo
+firstState: starting
 initial:
   class: Piece_FlowInitialAction
   method: initialize
+final:
+  class: Piece_FlowInitialAction
+  method: finalize
+lastState: { name: ending, view: end }
 viewState:
-  - name: foo
-    view: foo
+  - name: starting
+    view: start
+    transition:
+      - event: go
+        nextState: ending
