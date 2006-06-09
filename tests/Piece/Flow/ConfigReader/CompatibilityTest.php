@@ -82,6 +82,12 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
         $name = 'registrationFlow';
         $firstState = 'displaying';
         $lastState = array('name' => 'finishing', 'view' => 'finish');
+        $initial = array('class' => 'Piece_FlowTestCaseAction',
+                         'method' => 'initialize'
+                         );
+        $final = array('class' => 'Piece_FlowTestCaseAction',
+                       'method' => 'finalize'
+                       );
 
         $viewState5 = array('name' => 'displaying', 'view' => 'input',
                             'entry' => 
@@ -143,6 +149,8 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
         $this->_config->setName($name);
         $this->_config->setFirstState($firstState);
         $this->_config->setLastState($lastState['name'], $lastState['view']);
+        $this->_config->setInitialAction($initial);
+        $this->_config->setFinalAction($final);
         $this->_config->addViewState($viewState5['name'], $viewState5['view']);
         $this->_config->setEntryAction($viewState5['name'], $viewState5['entry']);
         $this->_config->setExitAction($viewState5['name'], $viewState5['exit']);
@@ -221,6 +229,12 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
                             );
         $this->assertEquals($this->_config->getActionStates(),
                             $config->getActionStates()
+                            );
+        $this->assertEquals($this->_config->getInitialAction(),
+                            $config->getInitialAction()
+                            );
+        $this->assertEquals($this->_config->getFinalAction(),
+                            $config->getFinalAction()
                             );
     }
 
