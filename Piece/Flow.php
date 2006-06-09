@@ -178,11 +178,19 @@ class Piece_Flow
         }
 
         $stateName = $this->getCurrentStateName();
-        if ($stateName == STAGEHAND_FSM_STATE_FINAL) {
-            return @$this->_views[$this->getPreviousStateName()];
+        if ($stateName != STAGEHAND_FSM_STATE_FINAL) {
+            $viewIndex = $stateName;
+        } else {
+            $viewIndex = $this->getPreviousStateName();
         }
 
-        return @$this->_views[$stateName];
+        if (!array_key_exists($viewIndex, $this->_views)) {
+            return Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_TRANSITION,
+                                                "A invalid transition detected. The state [$viewIndex] has not a view. Maybe The state [$viewIndex] is an action state. Check the definition of the flow [{$this->_name}]."
+                                                );
+        }
+
+        return $this->_views[$viewIndex];
     }
 
     // }}}
