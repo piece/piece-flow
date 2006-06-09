@@ -308,14 +308,65 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $this->assertEquals('foo', $flow->getView());
     }
 
-    function testInitialAndFinalActions()
+    function testInitialAndFinalActionsWithXML()
+    {
+        $this->_assertInitialAndFinalActions('/initial.xml');
+    }
+
+    function testInitialAndFinalActionsWithYAML()
+    {
+        $this->_assertInitialAndFinalActions('/initial.yaml');
+    }
+
+    function testFailureToGetViewBeforeStartingFlow()
+    {
+        $flow = &new Piece_Flow();
+        $flow->configure($this->_source, null, dirname(__FILE__));
+        $flow->getView();
+
+        $this->assertTrue(PEAR_ErrorStack::staticHasErrors());
+
+        $stack = &Piece_Flow_Error::getErrorStack();
+        $error = $stack->pop();
+
+        $this->assertEquals(PIECE_FLOW_ERROR_INVALID_OPERATION, $error['code']);
+    }
+
+    function testInvalidTransition()
+    {
+        PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+
+        $flow = &new Piece_Flow();
+        $flow->configure(dirname(__FILE__) . '/invalid.yaml', null, dirname(__FILE__));
+        $flow->setPayload(new stdClass());
+        $flow->start();
+        $flow->triggerEvent('go');
+        $flow->getView();
+
+        $this->assertTrue(PEAR_ErrorStack::staticHasErrors());
+
+        $stack = &Piece_Flow_Error::getErrorStack();
+        $error = $stack->pop();
+
+        $this->assertEquals(PIECE_FLOW_ERROR_INVALID_TRANSITION, $error['code']);
+
+        PEAR_ErrorStack::staticPopCallback();
+    }
+
+    /**#@-*/
+
+    /**#@+
+     * @access private
+     */
+
+    function _assertInitialAndFinalActions($source)
     {
         PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
         $GLOBALS['initializeCalled'] = false;
         $GLOBALS['finalizeCalled'] = false;
 
         $flow = &new Piece_Flow();
-        $flow->configure(dirname(__FILE__) . '/initial.xml', null, dirname(__FILE__));
+        $flow->configure(dirname(__FILE__) . $source, null, dirname(__FILE__));
         $flow->setPayload(new stdClass());
         $flow->start();
 
@@ -341,26 +392,6 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         unset($GLOBALS['finalizeCalled']);
         PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
     }
-
-    function testFailureToGetViewBeforeStartingFlow()
-    {
-        $flow = &new Piece_Flow();
-        $flow->configure($this->_source, null, dirname(__FILE__));
-        $flow->getView();
-
-        $this->assertTrue(PEAR_ErrorStack::staticHasErrors());
-
-        $stack = &Piece_Flow_Error::getErrorStack();
-        $error = $stack->pop();
-
-        $this->assertEquals(PIECE_FLOW_ERROR_INVALID_OPERATION, $error['code']);
-    }
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
 
     /**#@-*/
 
