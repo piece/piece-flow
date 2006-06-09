@@ -82,7 +82,8 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
         $name = 'registrationFlow';
         $firstState = 'displaying';
         $lastState = array('name' => 'finishing', 'view' => 'finish');
-        $viewState1 = array('name' => 'displaying', 'view' => 'input',
+
+        $viewState5 = array('name' => 'displaying', 'view' => 'input',
                             'entry' => 
                             array('class' => 'Piece_FlowTestCaseAction',
                                   'method' => 'setupForm'),
@@ -93,85 +94,98 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
                             array('class' => 'Piece_FlowTestCaseAction',
                                   'method' => 'countDisplay')
                             );
-        $transition1 = array('event' => 'submit',
-                             'nextState' => 'validated',
-                             'action' =>
-                             array('class' => 'Piece_FlowTestCaseAction',
-                                   'method' => 'validate'),
-                             'guard' =>
-                             array('class' => 'Piece_FlowTestCaseAction',
-                                   'method' => 'isPermitted')
-                             );
-        $viewState2 = array('name' => 'confirming', 'view' => 'confirmation');
-        $transition2 = array('event' => 'submit',
-                             'nextState' => 'validated',
-                             'action' =>
-                             array('class' => 'Piece_FlowTestCaseAction',
-                                   'method' => 'validate')
-                             );
-        $actionState1 = 'validated';
-        $transition3 = array('event' => 'raiseError',
-                             'nextState' => 'displaying'
-                             );
-        $transition4 = array('event' => 'succeedInValidatingViaDisplaying',
-                             'nextState' => 'confirming'
-                             );
-        $transition5 = array('event' => 'succeedInValidatingViaConfirming',
-                             'nextState' => 'registered',
-                             'action' =>
-                             array('class' => 'Piece_FlowTestCaseAction',
-                                   'method' => 'register')
-                             );
+        $transition51 = array('event' => 'submit',
+                              'nextState' => 'inputValidated',
+                              'action' =>
+                              array('class' => 'Piece_FlowTestCaseAction',
+                                    'method' => 'validateInput'),
+                              'guard' =>
+                              array('class' => 'Piece_FlowTestCaseAction',
+                                    'method' => 'isPermitted')
+                              );
+
+        $viewState6 = array('name' => 'confirming', 'view' => 'confirmation');
+        $transition61 = array('event' => 'submit',
+                              'nextState' => 'confirmationValidated',
+                              'action' =>
+                              array('class' => 'Piece_FlowTestCaseAction',
+                                    'method' => 'validateConfirmation')
+                              );
+
+        $actionState1 = 'inputValidated';
+        $transition11 = array('event' => 'raiseError',
+                              'nextState' => 'displaying'
+                              );
+        $transition12 = array('event' => 'succeed',
+                              'nextState' => 'confirming'
+                              );
+
+        $actionState7 = 'confirmationValidated';
+        $transition71 = array('event' => 'raiseError',
+                              'nextState' => 'displaying'
+                              );
+        $transition72 = array('event' => 'succeed',
+                              'nextState' => 'registered',
+                              'action' =>
+                              array('class' => 'Piece_FlowTestCaseAction',
+                                    'method' => 'register')
+                              );
+
         $actionState2 = 'registered';
-        $transition6 = array('event' => 'raiseError',
-                             'nextState' => 'displaying'
-                             );
-        $transition7 = array('event' => 'succeed',
-                             'nextState' => 'finishing'
-                             );
-                                  
+        $transition21 = array('event' => 'raiseError',
+                              'nextState' => 'displaying'
+                              );
+        $transition22 = array('event' => 'succeed',
+                              'nextState' => 'finishing'
+                              );
+
         $this->_config = new Piece_Flow_Config();
         $this->_config->setName($name);
         $this->_config->setFirstState($firstState);
         $this->_config->setLastState($lastState['name'], $lastState['view']);
-        $this->_config->addViewState($viewState1['name'], $viewState1['view']);
-        $this->_config->setEntryAction($viewState1['name'], $viewState1['entry']);
-        $this->_config->setExitAction($viewState1['name'], $viewState1['exit']);
-        $this->_config->setActivity($viewState1['name'], $viewState1['activity']);
-        $this->_config->addViewState($viewState2['name'], $viewState2['view']);
-        $this->_config->addTransition($viewState1['name'],
-                                      $transition1['event'],
-                                      $transition1['nextState'],
-                                      $transition1['action'],
-                                      $transition1['guard']
+        $this->_config->addViewState($viewState5['name'], $viewState5['view']);
+        $this->_config->setEntryAction($viewState5['name'], $viewState5['entry']);
+        $this->_config->setExitAction($viewState5['name'], $viewState5['exit']);
+        $this->_config->setActivity($viewState5['name'], $viewState5['activity']);
+        $this->_config->addViewState($viewState6['name'], $viewState6['view']);
+        $this->_config->addTransition($viewState5['name'],
+                                      $transition51['event'],
+                                      $transition51['nextState'],
+                                      $transition51['action'],
+                                      $transition51['guard']
                                       );
-        $this->_config->addTransition($viewState2['name'],
-                                      $transition2['event'],
-                                      $transition2['nextState'],
-                                      $transition1['action']
+        $this->_config->addTransition($viewState6['name'],
+                                      $transition61['event'],
+                                      $transition61['nextState'],
+                                      $transition61['action']
                                       );
         $this->_config->addActionState($actionState1);
         $this->_config->addTransition($actionState1,
-                                      $transition3['event'],
-                                      $transition3['nextState']
+                                      $transition11['event'],
+                                      $transition11['nextState']
                                       );
         $this->_config->addTransition($actionState1,
-                                      $transition4['event'],
-                                      $transition4['nextState']
+                                      $transition12['event'],
+                                      $transition12['nextState']
                                       );
-        $this->_config->addTransition($actionState1,
-                                      $transition5['event'],
-                                      $transition5['nextState'],
-                                      $transition5['action']
+        $this->_config->addActionState($actionState7);
+        $this->_config->addTransition($actionState7,
+                                      $transition71['event'],
+                                      $transition71['nextState']
+                                      );
+        $this->_config->addTransition($actionState7,
+                                      $transition72['event'],
+                                      $transition72['nextState'],
+                                      $transition72['action']
                                       );
         $this->_config->addActionState($actionState2);
         $this->_config->addTransition($actionState2,
-                                      $transition6['event'],
-                                      $transition6['nextState']
+                                      $transition21['event'],
+                                      $transition21['nextState']
                                       );
         $this->_config->addTransition($actionState2,
-                                      $transition7['event'],
-                                      $transition7['nextState']
+                                      $transition22['event'],
+                                      $transition22['nextState']
                                       );
     }
 
@@ -192,7 +206,7 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
 
     function testConfiguration()
     {
-        $config = $this->getConfig();
+        $config = $this->_getConfig();
 
         $this->assertTrue(is_a($config, 'Piece_Flow_Config'));
         $this->assertEquals($this->_config->getName(), $config->getName());
@@ -210,13 +224,13 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
                             );
     }
 
-    function getConfig() {}
-
     /**#@-*/
 
     /**#@+
      * @access private
      */
+
+    function _getConfig() {}
 
     /**#@-*/
 

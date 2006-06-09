@@ -129,19 +129,19 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
 
     function testInvokingCallback()
     {
-        $GLOBALS['validateCalled'] = false;
+        $GLOBALS['validateInputCalled'] = false;
         $viewStates = $this->_config->getViewStates();
         $flow = &new Piece_Flow();
         $flow->configure($this->_source, null, dirname(__FILE__));
         $flow->start();
         $flow->triggerEvent('submit');
 
-        $this->assertTrue($GLOBALS['validateCalled']);
+        $this->assertTrue($GLOBALS['validateInputCalled']);
         $this->assertEquals($viewStates['confirming']['view'],
                             $flow->getView()
                             );
 
-        unset($GLOBALS['validateCalled']);
+        unset($GLOBALS['validateInputCalled']);
     }
 
     function testGettingPreviousStateName()
@@ -151,7 +151,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $flow->start();
         $flow->triggerEvent('submit');
 
-        $this->assertEquals('validated', $flow->getPreviousStateName());
+        $this->assertEquals('inputValidated', $flow->getPreviousStateName());
     }
 
     function testGettingCurrentStateName()
@@ -166,20 +166,29 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
 
     function testTriggeringEventAndInvokingTransitionAction()
     {
+        $GLOBALS['validateInputCalled'] = false;
+        $GLOBALS['validateConfirmationCalled'] = false;
         $viewStates = $this->_config->getViewStates();
         $flow = &new Piece_Flow();
         $flow->configure($this->_source, null, dirname(__FILE__));
         $flow->start();
         $flow->triggerEvent('submit');
 
+        $this->assertTrue($GLOBALS['validateInputCalled']);
         $this->assertEquals($viewStates['confirming']['view'],
                             $flow->getView()
                             );
 
         $flow->triggerEvent('submit');
+
+        $this->assertTrue($GLOBALS['validateConfirmationCalled']);
+
         $lastState = $this->_config->getLastState();
 
         $this->assertEquals($lastState['view'], $flow->getView());
+
+        unset($GLOBALS['validateInputCalled']);
+        unset($GLOBALS['validateConfirmationCalled']);
     }
 
     function testTriggeringRaiseErrorEvent()

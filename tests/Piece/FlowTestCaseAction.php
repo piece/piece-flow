@@ -75,9 +75,9 @@ class Piece_FlowTestCaseAction
      * @access public
      */
 
-    function validate(&$flow, $event, &$payload)
+    function validateInput(&$flow, $event, &$payload)
     {
-        $GLOBALS['validateCalled'] = true;
+        $GLOBALS['validateInputCalled'] = true;
 
         if (array_key_exists('hasErrors', $GLOBALS)
             && $GLOBALS['hasErrors']
@@ -85,11 +85,20 @@ class Piece_FlowTestCaseAction
             return 'raiseError';
         }
 
-        if ($flow->getPreviousStateName() == 'displaying') {
-            return 'succeedInValidatingViaDisplaying';
-        } elseif ($flow->getPreviousStateName() == 'confirming') {
-            return 'succeedInValidatingViaConfirming';
+        return 'succeed';
+    }
+
+    function validateConfirmation(&$flow, $event, &$payload)
+    {
+        $GLOBALS['validateConfirmationCalled'] = true;
+
+        if (array_key_exists('hasErrors', $GLOBALS)
+            && $GLOBALS['hasErrors']
+            ) {
+            return 'raiseError';
         }
+
+        return 'succeed';
     }
 
     function register(&$flow, $event, &$payload)

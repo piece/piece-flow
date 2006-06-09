@@ -88,12 +88,6 @@ class Piece_Flow_ConfigReader_XML5TestCase extends Piece_Flow_ConfigReader_Compa
         $this->_source = dirname(__FILE__) .'/../../../../data/registrationFlow.xml';
     }
 
-    function getConfig()
-    {
-        $xml = new Piece_Flow_ConfigReader_XML5($this->_source);
-        return $xml->configure(dirname(__FILE__));
-    }
-
     function testInvalidFormat()
     {
         PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
@@ -121,6 +115,12 @@ class Piece_Flow_ConfigReader_XML5TestCase extends Piece_Flow_ConfigReader_Compa
     /**#@+
      * @access private
      */
+
+    function _getConfig()
+    {
+        $xml = new Piece_Flow_ConfigReader_XML5($this->_source);
+        return $xml->configure(dirname(__FILE__));
+    }
 
     /**#@-*/
 
