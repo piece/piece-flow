@@ -40,8 +40,8 @@
 
 require_once 'PEAR/PackageFileManager2.php';
 
-$version = '0.4.0';
-$notes = 'The first release of Piece_Flow.';
+$version = '0.5.0';
+$notes = '';
 
 $package = new PEAR_PackageFileManager2();
 $result = $package->setOptions(array('filelistgenerator' => 'svn',

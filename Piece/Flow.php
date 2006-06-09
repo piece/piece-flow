@@ -92,6 +92,7 @@ class Piece_Flow
     var $_name;
     var $_views;
     var $_attributes = array();
+    var $_lastState;
 
     /**#@-*/
 
@@ -128,11 +129,30 @@ class Piece_Flow
 
         $lastState = $config->getLastState();
         if (!is_null($lastState)) {
-            $this->_configureViewState($config->getLastState());
+            $this->_fsm->addTransition($lastState['name'],
+                                       STAGEHAND_FSM_EVENT_END,
+                                       STAGEHAND_FSM_STATE_FINAL
+                                       );
+            $this->_lastState = $lastState;
+            $this->_configureViewState($lastState);
         }
 
         $this->_configureViewStates($config->getViewStates());
         $this->_configureActionStates($config->getActionStates());
+
+        $initial = $config->getInitialAction();
+        if (!is_null($initial)) {
+            $this->_fsm->setExitAction(STAGEHAND_FSM_STATE_INITIAL,
+                                       $this->_wrapAction($initial)
+                                       );
+        }
+
+        $final = $config->getFinalAction();
+        if (!is_null($final)) {
+            $this->_fsm->setEntryAction(STAGEHAND_FSM_STATE_FINAL,
+                                        $this->_wrapAction($final)
+                                        );
+        }
     }
 
     // }}}
@@ -146,8 +166,12 @@ class Piece_Flow
      */
     function getView()
     {
-        $state = &$this->_fsm->getCurrentState();
-        return $this->_views[$state->getName()];
+        $stateName = $this->getCurrentStateName();
+        if ($stateName == STAGEHAND_FSM_STATE_FINAL) {
+            return @$this->_views[$this->getPreviousStateName()];
+        }
+
+        return @$this->_views[$stateName];
     }
 
     // }}}
@@ -183,12 +207,29 @@ class Piece_Flow
      * @param string $eventName
      * @param boolean $transitionToHistoryMarker
      * @return Stagehand_FSM_State
+     * @throws PEAR_ErrorStack
      */
     function &triggerEvent($eventName, $transitionToHistoryMarker = false)
     {
-        return $this->_fsm->triggerEvent($eventName,
-                                         $transitionToHistoryMarker
-                                         );
+        PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_IGNORE . ';'));
+        $state = &$this->_fsm->triggerEvent($eventName,
+                                            $transitionToHistoryMarker
+                                            );
+        PEAR_ErrorStack::staticPopCallback();
+        if (Stagehand_FSM_Error::isError($state)) {
+            $error = &Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                                   'The flow [{$this->_name}] was already shutdown.'
+                                                   );
+            return $error;
+        }
+
+        if (!is_null($this->_lastState)
+            && $state->getName() == $this->_lastState['name']
+            ) {
+            $state = &$this->_fsm->triggerEvent(STAGEHAND_FSM_EVENT_END);
+        }
+
+        return $state;
     }
 
     // }}}
@@ -343,8 +384,6 @@ class Piece_Flow
      */
     function _configureState($state)
     {
-        $this->_fsm->addState($state['name']);
-
         for ($i = 0; $i < count(@$state['transitions']); ++$i) {
             $this->_fsm->addTransition($state['name'],
                                        $state['transitions'][$i]['event'],

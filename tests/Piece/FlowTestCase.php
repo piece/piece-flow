@@ -308,6 +308,40 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $this->assertEquals('foo', $flow->getView());
     }
 
+    function testInitialAndFinalActions()
+    {
+        PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+        $GLOBALS['initializeCalled'] = false;
+        $GLOBALS['finalizeCalled'] = false;
+
+        $flow = &new Piece_Flow();
+        $flow->configure(dirname(__FILE__) . '/initial.xml', null, dirname(__FILE__));
+        $flow->setPayload(new stdClass());
+        $flow->start();
+
+        $this->assertEquals('start', $flow->getView());
+        $this->assertTrue($GLOBALS['initializeCalled']);
+        $this->assertFalse($GLOBALS['finalizeCalled']);
+
+        $flow->triggerEvent('go');
+
+        $this->assertEquals('end', $flow->getView());
+        $this->assertTrue($GLOBALS['finalizeCalled']);
+
+        $flow->triggerEvent('go');
+
+        $this->assertTrue(PEAR_ErrorStack::staticHasErrors());
+
+        $stack = &Piece_Flow_Error::getErrorStack();
+        $error = $stack->pop();
+
+        $this->assertEquals(PIECE_FLOW_ERROR_INVALID_OPERATION, $error['code']);
+
+        unset($GLOBALS['initializeCalled']);
+        unset($GLOBALS['finalizeCalled']);
+        PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+    }
+
     /**#@-*/
 
     /**#@+
