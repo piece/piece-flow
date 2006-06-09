@@ -70,6 +70,8 @@ class Piece_Flow_Config
     var $_lastState;
     var $_viewStates = array();
     var $_actionStates = array();
+    var $_initialAction;
+    var $_finalAction;
 
     /**#@-*/
 
@@ -294,6 +296,55 @@ class Piece_Flow_Config
     function getActionStates()
     {
         return $this->_actionStates;
+    }
+
+    // }}}
+    // {{{ setInitialAction()
+
+    /**
+     * Sets the initial action of the flow.
+     *
+     * @param array $action
+     */
+    function setInitialAction($action)
+    {
+        $this->_initialAction = $action;
+    }
+
+    // }}}
+    // {{{ getInitialAction()
+
+    /**
+     * Gets the initial action of the flow.
+     *
+     * @return array
+     */
+    function getInitialAction()
+    {
+        return $this->_initialAction;
+    }
+
+    /**
+     * Sets the final action of the flow.
+     *
+     * @param array $action
+     */
+    function setFinalAction($action)
+    {
+        $this->_finalAction = $action;
+    }
+
+    // }}}
+    // {{{ getFinalAction()
+
+    /**
+     * Gets the final action of the flow.
+     *
+     * @return array
+     */
+    function getFinalAction()
+    {
+        return $this->_finalAction;
     }
 
     /**#@-*/
