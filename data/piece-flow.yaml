@@ -16,7 +16,7 @@ mapping:
           "view": { type: str, required: yes }
           "transition":
             type: seq
-            required: yes
+            required: no
             sequence:
               - type: map
                 required: yes
@@ -34,7 +34,7 @@ mapping:
           "activity": *service
   "actionState": &state
     type: seq
-    required: yes
+    required: no
     sequence:
       - type: map
         required: yes
@@ -56,7 +56,7 @@ mapping:
           "activity": *service
   "lastState":
     type: map
-    required: yes
+    required: no
     mapping:
       "name": { type: str, required: yes }
       "view": { type: str, required: yes }

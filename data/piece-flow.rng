@@ -13,25 +13,27 @@
         <data type="string"/>
       </attribute>
       <interleave>
-        <element name="lastState">
-          <attribute name="name">
-            <data type="string"/>
-          </attribute>
-          <attribute name="view">
-            <data type="string"/>
-          </attribute>
-          <interleave>
-            <optional>
-              <ref name="entry"/>
-            </optional>
-            <optional>
-              <ref name="exit"/>
-            </optional>
-            <optional>
-              <ref name="activity"/>
-            </optional>
-          </interleave>
-        </element>
+        <optional>
+          <element name="lastState">
+            <attribute name="name">
+              <data type="string"/>
+            </attribute>
+            <attribute name="view">
+              <data type="string"/>
+            </attribute>
+            <interleave>
+              <optional>
+                <ref name="entry"/>
+              </optional>
+              <optional>
+                <ref name="exit"/>
+              </optional>
+              <optional>
+                <ref name="activity"/>
+              </optional>
+            </interleave>
+          </element>
+        </optional>
         <ref name="viewStates"/>
         <ref name="actionStates"/>
       </interleave>
@@ -47,7 +49,9 @@
           <data type="string"/>
         </attribute>
         <interleave>
+          <optional>
           <ref name="transitions"/>
+          </optional>
           <optional>
             <ref name="entry"/>
           </optional>
@@ -62,7 +66,7 @@
     </oneOrMore>
   </define>
   <define name="actionStates">
-    <oneOrMore>
+    <zeroOrMore>
       <element name="actionState">
         <attribute name="name">
           <data type="string"/>
@@ -80,7 +84,7 @@
           </optional>
         </interleave>
       </element>
-    </oneOrMore>
+    </zeroOrMore>
   </define>
   <define name="transitions">
     <oneOrMore>
