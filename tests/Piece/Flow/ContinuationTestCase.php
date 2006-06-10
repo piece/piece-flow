@@ -35,7 +35,7 @@
  * @version    SVN: $Id$
  * @link       http://iteman.typepad.jp/piece/
  * @see        Piece_Flow_Continuation
- * @since      File available since Release 0.1.0
+ * @since      File available since Release 1.0.0
  */
 
 require_once 'Piece/Flow/Continuation.php';
@@ -54,7 +54,7 @@ require_once 'Cache/Lite/File.php';
  * @version    Release: @package_version@
  * @link       http://iteman.typepad.jp/piece/
  * @see        Piece_Flow_Continuation
- * @since      Class available since Release 0.1.0
+ * @since      Class available since Release 1.0.0
  */
 class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 {

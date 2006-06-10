@@ -35,6 +35,7 @@
  * @version    SVN: $Id$
  * @link       http://iteman.typepad.jp/piece/
  * @see        Piece_Flow_Action_Factory
+ * @since      File available since Release 1.0.0
  */
 
 // {{{ Piece_Flow_Action_BarAction
@@ -49,6 +50,7 @@
  * @version    Release: @package_version@
  * @link       http://iteman.typepad.jp/piece/
  * @see        Piece_Flow_Action_Factory
+ * @since      Class available since Release 1.0.0
  */
 class Piece_Flow_Action_BarAction
 {

@@ -35,6 +35,7 @@
  * @version    SVN: $Id$
  * @link       http://iteman.typepad.jp/piece/
  * @see        Piece_Flow_Action_Factory
+ * @since      File available since Release 1.0.0
  */
 
 // {{{ Piece_Flow_Action_FooAction
@@ -48,6 +49,7 @@
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
  * @link       http://iteman.typepad.jp/piece/
+ * @since      Class available since Release 1.0.0
  */
 class Piece_Flow_FooAction
 {

@@ -36,7 +36,7 @@
  * @version    SVN: $Id$
  * @link       http://iteman.typepad.jp/piece/
  * @see        Stagehand_TestRunner_PHPUnitTestRunner::run()
- * @since      File available since Release 0.1.0
+ * @since      File available since Release 1.0.0
  */
 
 error_reporting(E_ALL);

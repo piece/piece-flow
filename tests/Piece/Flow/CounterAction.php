@@ -35,7 +35,7 @@
  * @version    SVN: $Id$
  * @link       http://iteman.typepad.jp/piece/
  * @see        Piece_Flow_ContinuationTestCase
- * @since      File available since Release 0.1.0
+ * @since      File available since Release 1.0.0
  */
 
 // {{{ Piece_Flow_CounterAction
@@ -50,7 +50,7 @@
  * @version    Release: @package_version@
  * @link       http://iteman.typepad.jp/piece/
  * @see        Piece_Flow_ContinuationTestCase
- * @since      Class available since Release 0.1.0
+ * @since      Class available since Release 1.0.0
  */
 class Piece_Flow_CounterAction
 {

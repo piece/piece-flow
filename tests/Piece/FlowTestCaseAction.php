@@ -36,7 +36,7 @@
  * @version    SVN: $Id$
  * @link       http://iteman.typepad.jp/piece/
  * @see        Piece_Flow
- * @since      File available since Release 0.1.0
+ * @since      File available since Release 1.0.0
  */
 
 // {{{ Piece_FlowTestCaseAction
@@ -52,7 +52,7 @@
  * @version    Release: @package_version@
  * @link       http://iteman.typepad.jp/piece/
  * @see        Piece_Flow
- * @since      Class available since Release 0.1.0
+ * @since      Class available since Release 1.0.0
  */
 class Piece_FlowTestCaseAction
 {

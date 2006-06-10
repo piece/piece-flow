@@ -34,6 +34,7 @@
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
  * @link       http://iteman.typepad.jp/piece/
+ * @since      File available since Release 1.0.0
  */
 
 require_once 'Piece/Flow/Error.php';
@@ -55,6 +56,7 @@ $GLOBALS['PIECE_FLOW_Action_Path'] = null;
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
  * @link       http://iteman.typepad.jp/piece/
+ * @since      Class available since Release 1.0.0
  */
 class Piece_Flow_Action_Factory
 {
