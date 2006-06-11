@@ -50,12 +50,12 @@ require_once 'Piece/Flow/ConfigReader/Factory.php';
 // {{{ Piece_Flow
 
 /**
- * A web flow engine which to handle the page flow of a web application.
+ * A web flow engine which to handle page flows of web applications.
  *
- * Piece_Flow provides a web flow engine based on Finite State Machine (FSM).
+ * Piece_Flow provides a web flow engine based on Finite State Machine(FSM).
  * Piece_Flow can handle two different states. The view state is a state
- * associated with a view string. The action state is a simple state, which
- * has no association with all views.
+ * which is associated with a view string. The action state is a simple
+ * state, which has no association with all views.
  * If the engine once started, the application will be put under control of
  * it.
  *
