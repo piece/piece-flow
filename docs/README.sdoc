@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding="UTF-8"?>
+<!-- $Id$ -->
+<doc>
+  <head>
+    <title locale="ja">Piece_Flow - Webフローエンジン/継続サーバ</title>
+    <title locale="en">Piece_Flow - A web flow engine/A continuation server</title>
+    <author>KUBO Atsuhiro &lt;iteman2002@yahoo.co.jp&gt;</author>
+    <date>2006-06-11</date>
+  </head>
+  <body>
+    <section>
+      <title locale="ja">はじめに</title>
+      <title locale="en">Introduction</title>
+
+      <p locale="ja">Piece_Flowは有限状態マシン(Finite State Machine - FSM)に基づいた汎用Webフローエンジン及び継続サーバです。Piece_Flowは開発者に対してステートフルなプログラミングモデルを提供し、アプリケーションに対して高いセキュリティを提供します。</p>
+      <p locale="en">Piece_Flow is a generic web flow engine and a continuation server based on Finite State Machine(FSM). Piece_Flow provides a stateful programming model for developers, and high secrity for applications.</p>
+    </section>
+  </body>
+</doc>
