@@ -163,6 +163,7 @@ class Piece_Flow
      * state.
      *
      * @return string
+     * @throws PEAR_ErrorStack
      */
     function getView()
     {
@@ -177,16 +178,15 @@ class Piece_Flow
             return $error;
         }
 
-        $stateName = $this->getCurrentStateName();
-        if ($stateName != STAGEHAND_FSM_STATE_FINAL) {
-            $viewIndex = $stateName;
+        if (!$this->isFinalState()) {
+            $viewIndex = $this->getCurrentStateName();
         } else {
             $viewIndex = $this->getPreviousStateName();
         }
 
         if (!array_key_exists($viewIndex, $this->_views)) {
             return Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_TRANSITION,
-                                                "A invalid transition detected. The state [$viewIndex] has not a view. Maybe The state [$viewIndex] is an action state. Check the definition of the flow [{$this->_name}]."
+                                                "A invalid transition detected. The state [ $viewIndex ] has not a view. Maybe The state [ $viewIndex ] is an action state. Check the definition of the flow [ {$this->_name} ]."
                                                 );
         }
 
@@ -237,7 +237,7 @@ class Piece_Flow
         PEAR_ErrorStack::staticPopCallback();
         if (Stagehand_FSM_Error::isError($state)) {
             $error = &Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_OPERATION,
-                                                   'The flow [{$this->_name}] was already shutdown.'
+                                                   "The flow [ {$this->_name} ] was already shutdown."
                                                    );
             return $error;
         }
@@ -355,6 +355,28 @@ class Piece_Flow
         }
 
         $this->_fsm->setPayload($payload);
+    }
+
+    // }}}
+    // {{{ isFinalState()
+
+    /**
+     * Returns whether the current state is the final state of this flow.
+     *
+     * @return boolean
+     */
+    function isFinalState()
+    {
+        if (!is_a($this->_fsm, 'Stagehand_FSM')) {
+            PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+            $error = Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                                __FUNCTION__ . ' method must be called after configuring flows.'
+                                                );
+            PEAR_ErrorStack::staticPopCallback();
+            return $error;
+        }
+
+        return $this->getCurrentStateName() == STAGEHAND_FSM_STATE_FINAL;
     }
 
     /**#@-*/
