@@ -353,6 +353,20 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         PEAR_ErrorStack::staticPopCallback();
     }
 
+    function testCheckingWhetherCurrentStateIsFinalState()
+    {
+        $flow = &new Piece_Flow();
+        $flow->configure(dirname(__FILE__) . '/initial.yaml', null, dirname(__FILE__));
+        $flow->setPayload(new stdClass());
+        $flow->start();
+
+        $this->assertFalse($flow->isFinalState());
+
+        $flow->triggerEvent('go');
+
+        $this->assertTrue($flow->isFinalState());
+    }
+
     /**#@-*/
 
     /**#@+
