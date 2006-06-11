@@ -40,8 +40,8 @@
 
 require_once 'PEAR/PackageFileManager2.php';
 
-$version = '0.5.0';
-$notes = '';
+$version = '1.0.0';
+$notes = '- The first stable release of Piece_Flow.';
 
 $package = new PEAR_PackageFileManager2();
 $result = $package->setOptions(array('filelistgenerator' => 'svn',
@@ -59,23 +59,20 @@ if (PEAR::isError($result)) {
 
 $package->setPackage('Piece_Flow');
 $package->setPackageType('php');
-$package->setSummary('A web flow engine which to handle the page flow of a web application.');
-$package->setDescription('Piece_Flow provides a web flow engine based on Finite State Machine (FSM).
-Piece_Flow can handle two different states. The view state is a state associated with a view string. The action state is a simple state, which has no association with all views.
-If the engine once started, the application will be put under control of it.');
+$package->setSummary('A web flow engine/A continuation server');
+$package->setDescription('Piece_Flow is a generic web flow engine and a continuation server based on Finite State Machine(FSM). Piece_Flow provides a stateful programming model for developers, and high secrity for applications.');
 $package->setChannel('pear.hatotech.org');
 $package->setLicense('BSD License (revised)',
                      'http://www.opensource.org/licenses/bsd-license.php'
                      );
-$package->setAPIVersion('0.4.0');
-$package->setAPIStability('beta');
+$package->setAPIVersion('1.0.0');
+$package->setAPIStability('stable');
 $package->setReleaseVersion($version);
-$package->setReleaseStability('beta');
+$package->setReleaseStability('stable');
 $package->setNotes($notes);
 $package->setPhpDep('4.3.0');
 $package->setPearinstallerDep('1.4.3');
-$package->addMaintainer('lead', 'kubo', 'KUBO Atsuhiro', 'iteman2002@yahoo.co.jp');
-$package->addMaintainer('developer', 'miya', 'MIYAI Fumihiko', 'fumichz@yahoo.co.jp');
+$package->addMaintainer('lead', 'iteman', 'KUBO Atsuhiro', 'iteman2002@yahoo.co.jp');
 $package->addIgnore(array('package.php', 'package.xml', 'package2.xml'));
 $package->addGlobalReplacement('package-info', '@package_version@', 'version');
 $package->generateContents();
