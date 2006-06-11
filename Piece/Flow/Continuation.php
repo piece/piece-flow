@@ -69,7 +69,7 @@ class Piece_Flow_Continuation
      */
 
     var $_flowDefinitions = array();
-    var $_useSingleFlowExecution;
+    var $_enableSingleFlowMode;
     var $_cacheDirectory;
     var $_flows = array();
     var $_flowExecutionTicket;
@@ -90,14 +90,14 @@ class Piece_Flow_Continuation
     // {{{ constructor
 
     /**
-     * Sets whether the continuation server restricts to one flow definition
-     * and one flow execution.
+     * Sets whether the continuation server should be work in the single flow
+     * mode.
      *
-     * @param boolean $useSingleFlowExecution
+     * @param boolean $enableSingleFlowMode
      */
-    function Piece_Flow_Continuation($useSingleFlowExecution = false)
+    function Piece_Flow_Continuation($enableSingleFlowMode = false)
     {
-        $this->_useSingleFlowExecution = $useSingleFlowExecution;
+        $this->_enableSingleFlowMode = $enableSingleFlowMode;
     }
 
     // }}}
@@ -112,7 +112,7 @@ class Piece_Flow_Continuation
      */
      function addFlow($name, $file, $isExclusive = false)
      {
-         if ($this->_useSingleFlowExecution && count(array_keys($this->_flowDefinitions))) {
+         if ($this->_enableSingleFlowMode && count(array_keys($this->_flowDefinitions))) {
              return Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_ALREADY_EXISTS,
                                                  'A flow definition already exists in the continuation object.'
                                                  );
@@ -331,7 +331,7 @@ class Piece_Flow_Continuation
      */
     function _prepare()
     {
-        if ($this->_useSingleFlowExecution) {
+        if ($this->_enableSingleFlowMode) {
             $flowExecutionTickets = array_keys($this->_flows);
             if (count($flowExecutionTickets)) {
                 $this->_isFirstTime = false;
@@ -409,7 +409,7 @@ class Piece_Flow_Continuation
             }
         }
 
-        if (!$this->_useSingleFlowExecution
+        if (!$this->_enableSingleFlowMode
             && $this->_flowDefinitions[$this->_flowName]['isExclusive']
             ) {
             $this->_exclusiveFlows[$this->_flowName] = $this->_flowExecutionTicket;
