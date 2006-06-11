@@ -73,6 +73,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 
     var $_flowExecutionTicket;
     var $_flowName;
+    var $_eventName;
 
     /**#@-*/
 
@@ -85,12 +86,14 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         PEAR_ErrorStack::staticPushCallback(create_function('$error', 'var_dump($error); return ' . PEAR_ERRORSTACK_DIE . ';'));
         Piece_Flow_Action_Factory::setActionPath(dirname(__FILE__) . '/../..');
         $this->_flowName = 'Counter';
+        $this->_eventName = 'increase';
     }
 
     function tearDown()
     {
         $GLOBALS['PIECE_FLOW_Action_Instances'] = array();
         $GLOBALS['PIECE_FLOW_Action_Path'] = null;
+        $this->_eventName = null;
         $this->_flowName = null;
         $this->_flowExecutionTicket = null;
         $cache = &new Cache_Lite_File(array('cacheDir' => dirname(__FILE__) . '/',
@@ -102,6 +105,21 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $stack = &Piece_Flow_Error::getErrorStack();
         $stack->getErrors(true);
         PEAR_ErrorStack::staticPopCallback();
+    }
+
+    function getFlowExecutionTicket()
+    {
+        return $this->_flowExecutionTicket;
+    }
+
+    function getFlowName()
+    {
+        return $this->_flowName;
+    }
+
+    function getEventName()
+    {
+        return $this->_eventName;
     }
 
     function testAddingFlowInSingleFlowMode()
@@ -186,11 +204,6 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket2);
     }
 
-    function getEventName()
-    {
-        return 'increase';
-    }
-
     function testInvocationInMultipleFlowExecutionModeByNonExclusiveMode()
     {
         $continuation = &new Piece_Flow_Continuation();
@@ -245,7 +258,6 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
          * Continuing the first 'Counter'.
          */
         $this->_flowExecutionTicket = $flowExecutionTicket1;
-        $this->_flowName = 'Counter';
         $flowExecutionTicket3 = $continuation->invoke(new stdClass());
 
         $this->assertEquals(1, $continuation->getAttribute('counter'));
@@ -257,7 +269,6 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
          * Continuing the first 'SecondCounter'.
          */
         $this->_flowExecutionTicket = $flowExecutionTicket2;
-        $this->_flowName = 'SecondCounter';
         $flowExecutionTicket4 = $continuation->invoke(new stdClass());
 
         $this->assertEquals('SecondCounter', $continuation->getView());
@@ -343,16 +354,6 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->assertEquals(PIECE_FLOW_ERROR_NOT_FOUND, $error['code']);
 
         PEAR_ErrorStack::staticPopCallback();
-    }
-
-    function getFlowExecutionTicket()
-    {
-        return $this->_flowExecutionTicket;
-    }
-
-    function getFlowName()
-    {
-        return $this->_flowName;
     }
 
     function testInvocationInMultipleFlowExecutionModeByExclusiveMode()
@@ -465,6 +466,50 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $error = $stack->pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_INVALID_OPERATION, $error['code']);
+    }
+
+    function testStartingNewFlowAfterFlowWasShutdown()
+    {
+        PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+        $GLOBALS['ShutdownCount'] = 0;
+
+        $continuation = &new Piece_Flow_Continuation();
+        $continuation->setCacheDirectory(dirname(__FILE__));
+        $continuation->addFlow('Shutdown', dirname(__FILE__) . '/Shutdown.yaml');
+        $continuation->setEventNameCallback(array(&$this, 'getEventName'));
+        $continuation->setFlowExecutionTicketCallback(array(&$this, 'getFlowExecutionTicket'));
+        $continuation->setFlowNameCallback(array(&$this, 'getFlowName'));
+
+        /*
+         * Starting a new 'Shutdown'.
+         */
+        $this->_flowName = 'Shutdown';
+        $flowExecutionTicket1 = $continuation->invoke(new stdClass());
+        $this->_flowExecutionTicket = $flowExecutionTicket1;
+        $this->_eventName = 'go';
+        $flowExecutionTicket2 = $continuation->invoke(new stdClass());
+        $continuation->removeFlowExecution();
+
+        $this->assertEquals(1, $GLOBALS['ShutdownCount']);
+        $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket2);
+
+        /*
+         * Failure to continue the 'Shutdown' from the previous flow
+         * execution ticket.
+         */
+        $this->_flowName = null;
+        $this->_eventName = 'go';
+        $continuation->invoke(new stdClass());
+
+        $this->assertTrue(PEAR_ErrorStack::staticHasErrors());
+
+        $stack = &Piece_Flow_Error::getErrorStack();
+        $error = $stack->pop();
+
+        $this->assertEquals(PIECE_FLOW_ERROR_NOT_GIVEN, $error['code']);
+
+        unset($GLOBALS['ShutdownCount']);
+        PEAR_ErrorStack::staticPopCallback();
     }
 
     /**#@-*/
