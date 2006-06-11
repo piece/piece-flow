@@ -104,7 +104,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         PEAR_ErrorStack::staticPopCallback();
     }
 
-    function testAddingFlowInSingleFlowExecutionMode()
+    function testAddingFlowInSingleFlowMode()
     {
         $continuation = &new Piece_Flow_Continuation(true);
         $continuation->setCacheDirectory(dirname(__FILE__));
@@ -114,7 +114,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->assertFalse($continuation->hasFlow('bar'));
     }
 
-    function testFailureToAddFlowForSecondTimeInSingleFlowExecutionMode()
+    function testFailureToAddFlowForSecondTimeInSingleFlowMode()
     {
         PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
@@ -151,7 +151,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->assertFalse($continuation->hasFlow('baz'));
     }
 
-    function testFirstTimeInvocationInSingleFlowExecutionMode()
+    function testFirstTimeInvocationInSingleFlowMode()
     {
         $continuation = &new Piece_Flow_Continuation(true);
         $continuation->setCacheDirectory(dirname(__FILE__));
@@ -167,7 +167,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->assertEquals(0, $continuation->getAttribute('counter'));
     }
 
-    function testSecondTimeInvocationInSingleFlowExecutionMode()
+    function testSecondTimeInvocationInSingleFlowMode()
     {
         $continuation = &new Piece_Flow_Continuation(true);
         $continuation->setCacheDirectory(dirname(__FILE__));
@@ -277,7 +277,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->assertTrue($flowExecutionTicket2 != $flowExecutionTicket5);
     }
 
-    function testSuccessOfContinuationByInvalidFlowNameInSingleFlowExecutionMode()
+    function testSuccessOfContinuationByInvalidFlowNameInSingleFlowMode()
     {
         $continuation = &new Piece_Flow_Continuation(true);
         $continuation->setCacheDirectory(dirname(__FILE__));
@@ -387,7 +387,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->assertTrue($flowExecutionTicket1 != $flowExecutionTicket3);
     }
 
-    function testInvocationInSingleFlowExecutionModeByExclusiveMode()
+    function testInvocationInSingleFlowModeByExclusiveMode()
     {
         $continuation = &new Piece_Flow_Continuation(true);
         $continuation->setCacheDirectory(dirname(__FILE__));
