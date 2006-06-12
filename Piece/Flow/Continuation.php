@@ -78,13 +78,15 @@ class Piece_Flow_Continuation
     var $_enableSingleFlowMode;
     var $_cacheDirectory;
     var $_flowExecutions = array();
-    var $_flowExecutionTicket;
     var $_flowExecutionTicketCallback;
     var $_flowNameCallback;
     var $_eventNameCallback;
     var $_exclusiveFlows = array();
+    var $_flowExecutionTicket;
     var $_isFirstTime;
     var $_flowName;
+    var $_currentFlowExecutionTicket;
+    var $_activated = false;
 
     /**#@-*/
 
@@ -115,6 +117,7 @@ class Piece_Flow_Continuation
      * @param string  $name
      * @param string  $file
      * @param boolean $isExclusive
+     * @throws PEAR_ErrorStack
      */
      function addFlow($name, $file, $isExclusive = false)
      {
@@ -130,21 +133,6 @@ class Piece_Flow_Continuation
 
          $return = null;
          return $return;
-    }
-
-    // }}}
-    // {{{ hasFlow()
-
-    /**
-     * Returns whether the Piece_Flow_Continuation object has a flow with the
-     * given name.
-     *
-     * @param string $name
-     * @return boolean
-     */
-    function hasFlow($name)
-    {
-        return array_key_exists($name, $this->_flowDefinitions);
     }
 
     // }}}
@@ -165,21 +153,25 @@ class Piece_Flow_Continuation
         }
 
         if (!$this->_isFirstTime) {
-            $this->_continue($payload);
+            $currentFlowExecutionTicket = $this->_continue($payload);
         } else {
-            $resultOfStart = $this->_start($payload);
-            if (Piece_Flow_Error::isError($resultOfStart)) {
-                return $resultOfStart;
-            }
+            $currentFlowExecutionTicket = $this->_start($payload);
         }
+
+        if (Piece_Flow_Error::isError($currentFlowExecutionTicket)) {
+            return $currentFlowExecutionTicket;
+        }
+
+        $this->_activated = true;
+        $this->_currentFlowExecutionTicket = $currentFlowExecutionTicket;
 
         $GLOBALS['PIECE_FLOW_Continuation_Active_Instances'][] = &$this;
         if (!$GLOBALS['PIECE_FLOW_Continuation_Shutdown_Registered']) {
             $GLOBALS['PIECE_FLOW_Continuation_Shutdown_Registered'] = true;
-            register_shutdown_function(array(__CLASS__, 'removeFlowExecution'));
+            register_shutdown_function(array(__CLASS__, 'shutdown'));
         }
 
-        return $this->_flowExecutionTicket;
+        return $this->_currentFlowExecutionTicket;
     }
 
     // }}}
@@ -190,10 +182,20 @@ class Piece_Flow_Continuation
      * state.
      *
      * @return string
+     * @throws PEAR_ErrorStack
      */
     function getView()
     {
-        return $this->_flowExecutions[$this->_flowExecutionTicket]->getView();
+        if (!$this->_activated()) {
+            PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+            $error = Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                                  __FUNCTION__ . ' method must be called after starting/continuing flows.'
+                                                  );
+            PEAR_ErrorStack::staticPopCallback();
+            return $error;
+        }
+
+        return $this->_flowExecutions[$this->_currentFlowExecutionTicket]->getView();
     }
 
     // }}}
@@ -260,7 +262,7 @@ class Piece_Flow_Continuation
      */
     function setAttribute($name, $value)
     {
-        if (!array_key_exists($this->_flowExecutionTicket, $this->_flowExecutions)) {
+        if (!$this->_activated()) {
             PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
             $error = Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_OPERATION,
                                                   __FUNCTION__ . ' method must be called after starting/continuing flows.'
@@ -269,7 +271,7 @@ class Piece_Flow_Continuation
             return $error;
         }
 
-        $this->_flowExecutions[$this->_flowExecutionTicket]->setAttribute($name, $value);
+        $this->_flowExecutions[$this->_currentFlowExecutionTicket]->setAttribute($name, $value);
     }
 
     // }}}
@@ -284,7 +286,7 @@ class Piece_Flow_Continuation
      */
     function hasAttribute($name)
     {
-        if (!array_key_exists($this->_flowExecutionTicket, $this->_flowExecutions)) {
+        if (!$this->_activated()) {
             PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
             $error = Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_OPERATION,
                                                   __FUNCTION__ . ' method must be called after starting/continuing flows.'
@@ -293,7 +295,7 @@ class Piece_Flow_Continuation
             return $error;
         }
 
-        return $this->_flowExecutions[$this->_flowExecutionTicket]->hasAttribute($name);
+        return $this->_flowExecutions[$this->_currentFlowExecutionTicket]->hasAttribute($name);
     }
 
     // }}}
@@ -308,7 +310,7 @@ class Piece_Flow_Continuation
      */
     function getAttribute($name)
     {
-        if (!array_key_exists($this->_flowExecutionTicket, $this->_flowExecutions)) {
+        if (!$this->_activated()) {
             PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
             $error = Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_OPERATION,
                                                   __FUNCTION__ . ' method must be called after starting/continuing flows.'
@@ -317,18 +319,18 @@ class Piece_Flow_Continuation
             return $error;
         }
 
-        return $this->_flowExecutions[$this->_flowExecutionTicket]->getAttribute($name);
+        return $this->_flowExecutions[$this->_currentFlowExecutionTicket]->getAttribute($name);
     }
 
     // }}}
-    // {{{ removeFlowExecution()
+    // {{{ shutdown()
 
     /**
-     * Removes the current flow execution if it was already shutdown.
+     * Shutdown the continuation server for next events.
      *
      * @static
      */
-    function removeFlowExecution()
+    function shutdown()
     {
         $count = count($GLOBALS['PIECE_FLOW_Continuation_Active_Instances']);
         for ($i = 0; $i < $count; ++$i) {
@@ -337,17 +339,32 @@ class Piece_Flow_Continuation
                 unset($GLOBALS['PIECE_FLOW_Continuation_Active_Instances'][$i]);
                 continue;
             }
+            $instance->clear();
+        }
+    }
 
-            if (array_key_exists($instance->_flowExecutionTicket, $instance->_flowExecutions)
-                && $instance->_flowExecutions[$instance->_flowExecutionTicket]->isFinalState()
-                ) {
-                unset($instance->_flowExecutions[$instance->_flowExecutionTicket]);
-                if (array_key_exists($instance->_flowName, $instance->_exclusiveFlows)
-                    && $instance->_flowDefinitions[$instance->_flowName]['isExclusive']) {
-                    unset($instance->_exclusiveFlows[$instance->_flowName]);
-                }
+    // }}}
+    // {{{ clear()
+
+    /**
+     * Clears some properties for next events.
+     */
+    function clear()
+    {
+        if (array_key_exists($this->_flowExecutionTicket, $this->_flowExecutions)
+            && $this->_flowExecutions[$this->_currentFlowExecutionTicket]->isFinalState()
+            ) {
+            unset($this->_flowExecutions[$this->_currentFlowExecutionTicket]);
+            if (array_key_exists($this->_flowName, $this->_exclusiveFlows)) {
+                unset($this->_exclusiveFlows[$this->_flowName]);
             }
         }
+
+        $this->_flowExecutionTicket = null;
+        $this->_isFirstTime = null;
+        $this->_flowName = null;
+        $this->_currentFlowExecutionTicket = null;
+        $this->_activated = false;
     }
 
     /**#@-*/
@@ -390,13 +407,13 @@ class Piece_Flow_Continuation
             }
         } else {
             $this->_flowExecutionTicket = call_user_func($this->_flowExecutionTicketCallback);
-            if (array_key_exists($this->_flowExecutionTicket, $this->_flowExecutions)) {
+            if ($this->_hasFlowExecutionTicket($this->_flowExecutionTicket)) {
                 $this->_isFirstTime = false;
             } else {
                 $this->_flowName = call_user_func($this->_flowNameCallback);
                 if (is_null($this->_flowName) || !strlen($this->_flowName)) {
                     return Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_GIVEN,
-                                                        "A flow name must be given in this case."
+                                                        'A flow name must be given in this case.'
                                                         );
                 }
 
@@ -408,9 +425,6 @@ class Piece_Flow_Continuation
                 }
             }
         }
-
-        $return = null;
-        return $return;
     }
 
     // }}}
@@ -420,11 +434,17 @@ class Piece_Flow_Continuation
      * Continues with the current continuation.
      *
      * @param mixed &$payload
+     * @throws PEAR_ErrorStack
      */
     function _continue(&$payload)
     {
         $this->_flowExecutions[$this->_flowExecutionTicket]->setPayload($payload);
-        $this->_flowExecutions[$this->_flowExecutionTicket]->triggerEvent(call_user_func($this->_eventNameCallback));
+        $result = $this->_flowExecutions[$this->_flowExecutionTicket]->triggerEvent(call_user_func($this->_eventNameCallback));
+        if (Piece_Flow_Error::isError($result)) {
+            return $result;
+        }
+
+        return $this->_flowExecutionTicket;
     }
 
     // }}}
@@ -434,6 +454,7 @@ class Piece_Flow_Continuation
      * Starts a new flow.
      *
      * @param mixed &$payload
+     * @return string
      * @throws PEAR_ErrorStack
      */
     function _start(&$payload)
@@ -458,9 +479,8 @@ class Piece_Flow_Continuation
 
         while (true) {
             $flowExecutionTicket = $this->_generateFlowExecutionTicket();
-            if (!array_key_exists($flowExecutionTicket, $this->_flowExecutions)) {
+            if (!$this->_hasFlowExecutionTicket($flowExecutionTicket)) {
                 $this->_flowExecutions[$flowExecutionTicket] = &$flow;
-                $this->_flowExecutionTicket = $flowExecutionTicket;
                 break;
             }
         }
@@ -468,11 +488,37 @@ class Piece_Flow_Continuation
         if (!$this->_enableSingleFlowMode
             && $this->_flowDefinitions[$this->_flowName]['isExclusive']
             ) {
-            $this->_exclusiveFlows[$this->_flowName] = $this->_flowExecutionTicket;
+            $this->_exclusiveFlows[$this->_flowName] = $flowExecutionTicket;
         }
 
-        $return = null;
-        return $return;
+        return $flowExecutionTicket;
+    }
+
+    // }}}
+    // {{{ _activated()
+
+    /**
+     * Returns whether the current flow has activated or not.
+     *
+     * @return boolean
+     */
+    function _activated()
+    {
+        return $this->_activated;
+    }
+
+    // }}}
+    // {{{ _hasFlowExecutionTicket()
+
+    /**
+     * Returns whether the current flow has the flow execution ticket or not.
+     *
+     * @param string $flowExecutionTicket
+     * @return boolean
+     */
+    function _hasFlowExecutionTicket($flowExecutionTicket)
+    {
+        return array_key_exists($flowExecutionTicket, $this->_flowExecutions);
     }
 
     /**#@-*/
