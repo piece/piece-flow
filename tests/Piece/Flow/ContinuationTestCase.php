@@ -124,12 +124,15 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 
     function testAddingFlowInSingleFlowMode()
     {
+        PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+
         $continuation = &new Piece_Flow_Continuation(true);
         $continuation->setCacheDirectory(dirname(__FILE__));
         $continuation->addFlow('foo', '/path/to/foo.xml');
 
-        $this->assertTrue($continuation->hasFlow('foo'));
-        $this->assertFalse($continuation->hasFlow('bar'));
+        $this->assertFalse(PEAR_ErrorStack::staticHasErrors());
+
+        PEAR_ErrorStack::staticPopCallback();
     }
 
     function testFailureToAddFlowForSecondTimeInSingleFlowMode()
@@ -139,9 +142,6 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $continuation = &new Piece_Flow_Continuation(true);
         $continuation->setCacheDirectory(dirname(__FILE__));
         $continuation->addFlow('foo', '/path/to/foo.xml');
-
-        $this->assertTrue($continuation->hasFlow('foo'));
-
         $continuation->addFlow('bar', '/path/to/bar.xml');
 
         $this->assertTrue(PEAR_ErrorStack::staticHasErrors());
@@ -159,14 +159,16 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 
     function testSettingFlowInMultipleFlowMode()
     {
+        PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+
         $continuation = &new Piece_Flow_Continuation();
         $continuation->setCacheDirectory(dirname(__FILE__));
         $continuation->addFlow('foo', '/path/to/foo.xml');
         $continuation->addFlow('bar', '/path/to/bar.xml');
 
-        $this->assertTrue($continuation->hasFlow('foo'));
-        $this->assertTrue($continuation->hasFlow('bar'));
-        $this->assertFalse($continuation->hasFlow('baz'));
+        $this->assertFalse(PEAR_ErrorStack::staticHasErrors());
+
+        PEAR_ErrorStack::staticPopCallback();
     }
 
     function testFirstTimeInvocationInSingleFlowMode()
@@ -489,7 +491,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->_flowName = null;
         $this->_eventName = 'go';
         $flowExecutionTicket2 = $continuation->invoke(new stdClass());
-        $continuation->removeFlowExecution();
+        $continuation->shutdown();
 
         $this->assertEquals(1, $GLOBALS['ShutdownCount']);
         $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket2);
@@ -533,7 +535,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->_flowName = null;
         $this->_eventName = 'go';
         $flowExecutionTicket2 = $continuation->invoke(new stdClass());
-        $continuation->removeFlowExecution();
+        $continuation->shutdown();
 
         $this->assertEquals(1, $GLOBALS['ShutdownCount']);
         $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket2);
@@ -567,7 +569,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $flowExecutionTicket1 = $continuation->invoke(new stdClass());
         $this->_eventName = 'go';
         $flowExecutionTicket2 = $continuation->invoke(new stdClass());
-        $continuation->removeFlowExecution();
+        $continuation->shutdown();
 
         $this->assertEquals(1, $GLOBALS['ShutdownCount']);
         $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket2);
