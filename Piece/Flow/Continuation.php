@@ -330,7 +330,14 @@ class Piece_Flow_Continuation
      */
     function removeFlowExecution()
     {
-        foreach ($GLOBALS['PIECE_FLOW_Continuation_Active_Instances'] as $instance) {
+        $count = count($GLOBALS['PIECE_FLOW_Continuation_Active_Instances']);
+        for ($i = 0; $i < $count; ++$i) {
+            $instance = &$GLOBALS['PIECE_FLOW_Continuation_Active_Instances'][$i];
+            if (!is_a($instance, __CLASS__)) {
+                unset($GLOBALS['PIECE_FLOW_Continuation_Active_Instances'][$i]);
+                continue;
+            }
+
             if (array_key_exists($instance->_flowExecutionTicket, $instance->_flowExecutions)
                 && $instance->_flowExecutions[$instance->_flowExecutionTicket]->isFinalState()
                 ) {
