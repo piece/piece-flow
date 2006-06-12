@@ -157,7 +157,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         PEAR_ErrorStack::staticPopCallback();
     }
 
-    function testSettingFlowInMultipleFlowExecutionMode()
+    function testSettingFlowInMultipleFlowMode()
     {
         $continuation = &new Piece_Flow_Continuation();
         $continuation->setCacheDirectory(dirname(__FILE__));
@@ -204,7 +204,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket2);
     }
 
-    function testInvocationInMultipleFlowExecutionModeAndFlowInNonExclusiveMode()
+    function testInvocationInMultipleFlowModeAndFlowInNonExclusiveMode()
     {
         $continuation = &new Piece_Flow_Continuation();
         $continuation->setCacheDirectory(dirname(__FILE__));
@@ -225,7 +225,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->assertEquals($this->_flowExecutionTicket, $flowExecutionTicket);
     }
 
-    function testMultipleInvocationInMultipleFlowExecutionModeAndFlowInNonExclusiveMode()
+    function testMultipleInvocationInMultipleFlowModeAndFlowInNonExclusiveMode()
     {
         $continuation = &new Piece_Flow_Continuation();
         $continuation->setCacheDirectory(dirname(__FILE__));
@@ -307,7 +307,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->assertEquals(1, $continuation->getAttribute('counter'));
     }
 
-    function testFailureOfContinuationByInvalidFlowNameInMultipleFlowExecutionMode()
+    function testFailureOfContinuationByInvalidFlowNameInMultipleFlowMode()
     {
         PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
@@ -356,7 +356,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         PEAR_ErrorStack::staticPopCallback();
     }
 
-    function testInvocationInMultipleFlowExecutionModeAndFlowInExclusiveMode()
+    function testInvocationInMultipleFlowModeAndFlowInExclusiveMode()
     {
         $continuation = &new Piece_Flow_Continuation();
         $continuation->setCacheDirectory(dirname(__FILE__));
@@ -543,6 +543,39 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
          * execution ticket. And starting a new 'Shutdown'.
          */
         $this->_flowName = 'Shutdown';
+        $flowExecutionTicket3 = $continuation->invoke(new stdClass());
+
+        $this->assertTrue($flowExecutionTicket1 != $flowExecutionTicket3);
+
+        unset($GLOBALS['ShutdownCount']);
+    }
+
+    function testStartingNewFlowAfterFlowWasShutdownInSingleFlowMode()
+    {
+        $GLOBALS['ShutdownCount'] = 0;
+
+        $continuation = &new Piece_Flow_Continuation(true);
+        $continuation->setCacheDirectory(dirname(__FILE__));
+        $continuation->addFlow('Shutdown', dirname(__FILE__) . '/Shutdown.yaml');
+        $continuation->setEventNameCallback(array(&$this, 'getEventName'));
+        $continuation->setFlowExecutionTicketCallback(array(&$this, 'getFlowExecutionTicket'));
+        $continuation->setFlowNameCallback(array(&$this, 'getFlowName'));
+
+        /*
+         * Starting a new 'Shutdown'.
+         */
+        $flowExecutionTicket1 = $continuation->invoke(new stdClass());
+        $this->_eventName = 'go';
+        $flowExecutionTicket2 = $continuation->invoke(new stdClass());
+        $continuation->removeFlowExecution();
+
+        $this->assertEquals(1, $GLOBALS['ShutdownCount']);
+        $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket2);
+
+        /*
+         * Failure to continue the 'Shutdown' from the previous flow
+         * execution ticket. And starting a new 'Shutdown'.
+         */
         $flowExecutionTicket3 = $continuation->invoke(new stdClass());
 
         $this->assertTrue($flowExecutionTicket1 != $flowExecutionTicket3);
