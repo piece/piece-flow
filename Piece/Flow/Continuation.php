@@ -40,6 +40,12 @@
 require_once 'Piece/Flow.php';
 require_once 'Piece/Flow/Error.php';
 
+// {{{ GLOBALS
+
+$GLOBALS['PIECE_FLOW_Continuation_Active_Instances'] = array();
+$GLOBALS['PIECE_FLOW_Continuation_Shutdown_Registered'] = false;
+
+// }}}
 // {{{ Piece_Flow_Continuation
 
 /**
@@ -153,8 +159,6 @@ class Piece_Flow_Continuation
      */
     function invoke(&$payload)
     {
-        register_shutdown_function(array(&$this, 'removeFlowExecution'));
-
         $resultOfPrepare = $this->_prepare();
         if (Piece_Flow_Error::isError($resultOfPrepare)) {
             return $resultOfPrepare;
@@ -167,6 +171,12 @@ class Piece_Flow_Continuation
             if (Piece_Flow_Error::isError($resultOfStart)) {
                 return $resultOfStart;
             }
+        }
+
+        $GLOBALS['PIECE_FLOW_Continuation_Active_Instances'][] = &$this;
+        if (!$GLOBALS['PIECE_FLOW_Continuation_Shutdown_Registered']) {
+            $GLOBALS['PIECE_FLOW_Continuation_Shutdown_Registered'] = true;
+            register_shutdown_function(array(__CLASS__, 'removeFlowExecution'));
         }
 
         return $this->_flowExecutionTicket;
@@ -315,13 +325,21 @@ class Piece_Flow_Continuation
 
     /**
      * Removes the current flow execution if it was already shutdown.
+     *
+     * @static
      */
     function removeFlowExecution()
     {
-        if (array_key_exists($this->_flowExecutionTicket, $this->_flowExecutions)
-            && $this->_flowExecutions[$this->_flowExecutionTicket]->isFinalState()
-            ) {
-            unset($this->_flowExecutions[$this->_flowExecutionTicket]);
+        foreach ($GLOBALS['PIECE_FLOW_Continuation_Active_Instances'] as $instance) {
+            if (array_key_exists($instance->_flowExecutionTicket, $instance->_flowExecutions)
+                && $instance->_flowExecutions[$instance->_flowExecutionTicket]->isFinalState()
+                ) {
+                unset($instance->_flowExecutions[$instance->_flowExecutionTicket]);
+                if (array_key_exists($instance->_flowName, $instance->_exclusiveFlows)
+                    && $instance->_flowDefinitions[$instance->_flowName]['isExclusive']) {
+                    unset($instance->_exclusiveFlows[$instance->_flowName]);
+                }
+            }
         }
     }
 
@@ -369,7 +387,7 @@ class Piece_Flow_Continuation
                 $this->_isFirstTime = false;
             } else {
                 $this->_flowName = call_user_func($this->_flowNameCallback);
-                if (is_null($this->_flowName)) {
+                if (is_null($this->_flowName) || !strlen($this->_flowName)) {
                     return Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_GIVEN,
                                                         "A flow name must be given in this case."
                                                         );
