@@ -204,7 +204,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket2);
     }
 
-    function testInvocationInMultipleFlowExecutionModeByNonExclusiveMode()
+    function testInvocationInMultipleFlowExecutionModeAndFlowInNonExclusiveMode()
     {
         $continuation = &new Piece_Flow_Continuation();
         $continuation->setCacheDirectory(dirname(__FILE__));
@@ -225,7 +225,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->assertEquals($this->_flowExecutionTicket, $flowExecutionTicket);
     }
 
-    function testMultipleInvocationInMultipleFlowExecutionModeByNonExclusiveMode()
+    function testMultipleInvocationInMultipleFlowExecutionModeAndFlowInNonExclusiveMode()
     {
         $continuation = &new Piece_Flow_Continuation();
         $continuation->setCacheDirectory(dirname(__FILE__));
@@ -356,7 +356,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         PEAR_ErrorStack::staticPopCallback();
     }
 
-    function testInvocationInMultipleFlowExecutionModeByExclusiveMode()
+    function testInvocationInMultipleFlowExecutionModeAndFlowInExclusiveMode()
     {
         $continuation = &new Piece_Flow_Continuation();
         $continuation->setCacheDirectory(dirname(__FILE__));
@@ -388,7 +388,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->assertTrue($flowExecutionTicket1 != $flowExecutionTicket3);
     }
 
-    function testInvocationInSingleFlowModeByExclusiveMode()
+    function testInvocationInSingleFlowModeAndFlowInExclusiveMode()
     {
         $continuation = &new Piece_Flow_Continuation(true);
         $continuation->setCacheDirectory(dirname(__FILE__));
@@ -468,7 +468,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->assertEquals(PIECE_FLOW_ERROR_INVALID_OPERATION, $error['code']);
     }
 
-    function testStartingNewFlowAfterFlowWasShutdownByNonExclusiveMode()
+    function testStartingNewFlowAfterFlowWasShutdownInNonExclusiveMode()
     {
         PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
         $GLOBALS['ShutdownCount'] = 0;
@@ -513,7 +513,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         PEAR_ErrorStack::staticPopCallback();
     }
 
-    function testStartingNewFlowAfterFlowWasShutdownByExclusiveMode()
+    function testStartingNewFlowAfterFlowWasShutdownInExclusiveMode()
     {
         $GLOBALS['ShutdownCount'] = 0;
 
