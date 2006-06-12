@@ -468,7 +468,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->assertEquals(PIECE_FLOW_ERROR_INVALID_OPERATION, $error['code']);
     }
 
-    function testStartingNewFlowAfterFlowWasShutdown()
+    function testStartingNewFlowAfterFlowWasShutdownByNonExclusiveMode()
     {
         PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
         $GLOBALS['ShutdownCount'] = 0;
@@ -486,6 +486,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->_flowName = 'Shutdown';
         $flowExecutionTicket1 = $continuation->invoke(new stdClass());
         $this->_flowExecutionTicket = $flowExecutionTicket1;
+        $this->_flowName = null;
         $this->_eventName = 'go';
         $flowExecutionTicket2 = $continuation->invoke(new stdClass());
         $continuation->removeFlowExecution();
@@ -510,6 +511,43 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 
         unset($GLOBALS['ShutdownCount']);
         PEAR_ErrorStack::staticPopCallback();
+    }
+
+    function testStartingNewFlowAfterFlowWasShutdownByExclusiveMode()
+    {
+        $GLOBALS['ShutdownCount'] = 0;
+
+        $continuation = &new Piece_Flow_Continuation();
+        $continuation->setCacheDirectory(dirname(__FILE__));
+        $continuation->addFlow('Shutdown', dirname(__FILE__) . '/Shutdown.yaml', true);
+        $continuation->setEventNameCallback(array(&$this, 'getEventName'));
+        $continuation->setFlowExecutionTicketCallback(array(&$this, 'getFlowExecutionTicket'));
+        $continuation->setFlowNameCallback(array(&$this, 'getFlowName'));
+
+        /*
+         * Starting a new 'Shutdown'.
+         */
+        $this->_flowName = 'Shutdown';
+        $flowExecutionTicket1 = $continuation->invoke(new stdClass());
+        $this->_flowExecutionTicket = $flowExecutionTicket1;
+        $this->_flowName = null;
+        $this->_eventName = 'go';
+        $flowExecutionTicket2 = $continuation->invoke(new stdClass());
+        $continuation->removeFlowExecution();
+
+        $this->assertEquals(1, $GLOBALS['ShutdownCount']);
+        $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket2);
+
+        /*
+         * Failure to continue the 'Shutdown' from the previous flow
+         * execution ticket. And starting a new 'Shutdown'.
+         */
+        $this->_flowName = 'Shutdown';
+        $flowExecutionTicket3 = $continuation->invoke(new stdClass());
+
+        $this->assertTrue($flowExecutionTicket1 != $flowExecutionTicket3);
+
+        unset($GLOBALS['ShutdownCount']);
     }
 
     /**#@-*/
