@@ -153,6 +153,50 @@ class Piece_Flow_Error
         return false;
     }
 
+    // }}}
+    // {{{ pushCallback()
+
+    /**
+     * Pushes a callback. This method is a wrapper for
+     * PEAR_ErrorStack::staticPushCallback method.
+     *
+     * @param callback $callback
+     */
+    function pushCallback($callback)
+    {
+        PEAR_ErrorStack::staticPushCallback($callback);
+    }
+
+    // }}}
+    // {{{ popCallback()
+
+    /**
+     * Pops a callback. This method is a wrapper for
+     * PEAR_ErrorStack::staticPopCallback method.
+     *
+     * @return callback
+     */
+    function popCallback()
+    {
+        return PEAR_ErrorStack::staticPopCallback();
+    }
+
+    // }}}
+    // {{{ hasErrors()
+
+    /**
+     * Returns whether the stack has errors or not. This method is a wrapper
+     * for PEAR_ErrorStack::staticHasErrors method.
+     *
+     * @param string $package
+     * @param string $level
+     * @return callback
+     */
+    function hasErrors($package = false, $level = false)
+    {
+        return PEAR_ErrorStack::staticHasErrors($package, $level);
+    }
+
     /**#@+
      * @access private
      */
