@@ -85,7 +85,7 @@ class Piece_Flow_ActionInvokerTestCase extends PHPUnit_TestCase
     function tearDown()
     {
         $GLOBALS['PIECE_FLOW_Action_Instances'] = array();
-        $GLOBALS['PIECE_FLOW_Action_Path'] = null;
+        $GLOBALS['PIECE_FLOW_Action_Directory'] = null;
         $stack = &Piece_Flow_Error::getErrorStack();
         $stack->getErrors(true);
         PEAR_ErrorStack::staticPopCallback();
@@ -93,7 +93,7 @@ class Piece_Flow_ActionInvokerTestCase extends PHPUnit_TestCase
 
     function testInvokingAction()
     {
-        Piece_Flow_Action_Factory::setActionPath(dirname(__FILE__) . '/../..');
+        Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/../..');
         $action = &new Piece_Flow_ActionInvoker(new stdClass(),
                                                 'Piece_Flow_FooAction',
                                                 'foo'

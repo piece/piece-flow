@@ -83,7 +83,7 @@ class Piece_Flow_Action_FactoryTestCase extends PHPUnit_TestCase
     function tearDown()
     {
         $GLOBALS['PIECE_FLOW_Action_Instances'] = array();
-        $GLOBALS['PIECE_FLOW_Action_Path'] = null;
+        $GLOBALS['PIECE_FLOW_Action_Directory'] = null;
         $stack = &Piece_Flow_Error::getErrorStack();
         $stack->getErrors(true);
         PEAR_ErrorStack::staticPopCallback();
@@ -112,7 +112,7 @@ class Piece_Flow_Action_FactoryTestCase extends PHPUnit_TestCase
     {
         PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
-        Piece_Flow_Action_Factory::setActionPath(dirname(__FILE__) . '/../../..');
+        Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/../../..');
         Piece_Flow_Action_Factory::factory('Piece_Flow_Action_NonExistingAction');
 
         $this->assertTrue(PEAR_ErrorStack::staticHasErrors());
@@ -132,7 +132,7 @@ class Piece_Flow_Action_FactoryTestCase extends PHPUnit_TestCase
     {
         PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
-        Piece_Flow_Action_Factory::setActionPath(dirname(__FILE__) . '/../../..');
+        Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/../../..');
         Piece_Flow_Action_Factory::factory('Piece_Flow_Action_InvalidAction');
 
         $this->assertTrue(PEAR_ErrorStack::staticHasErrors());
@@ -150,7 +150,7 @@ class Piece_Flow_Action_FactoryTestCase extends PHPUnit_TestCase
 
     function testFactory()
     {
-        Piece_Flow_Action_Factory::setActionPath(dirname(__FILE__) . '/../../..');
+        Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/../../..');
         $fooAction = &Piece_Flow_Action_Factory::factory('Piece_Flow_Action_FooAction');
 
         $this->assertTrue(is_a($fooAction, 'Piece_Flow_Action_FooAction'));

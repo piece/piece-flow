@@ -84,7 +84,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
     function setUp()
     {
         PEAR_ErrorStack::staticPushCallback(create_function('$error', 'var_dump($error); return ' . PEAR_ERRORSTACK_DIE . ';'));
-        Piece_Flow_Action_Factory::setActionPath(dirname(__FILE__) . '/../..');
+        Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/../..');
         $this->_flowName = 'Counter';
         $this->_eventName = 'increase';
     }
@@ -92,7 +92,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
     function tearDown()
     {
         $GLOBALS['PIECE_FLOW_Action_Instances'] = array();
-        $GLOBALS['PIECE_FLOW_Action_Path'] = null;
+        $GLOBALS['PIECE_FLOW_Action_Directory'] = null;
         $this->_eventName = null;
         $this->_flowName = null;
         $this->_flowExecutionTicket = null;
