@@ -42,7 +42,6 @@
 require_once 'PHPUnit.php';
 require_once 'Piece/Flow.php';
 require_once 'Cache/Lite/File.php';
-require_once 'PEAR/ErrorStack.php';
 require_once 'Piece/Flow/ConfigReader/Factory.php';
 require_once 'Piece/Flow/Action/Factory.php';
 require_once 'Piece/Flow/Error.php';

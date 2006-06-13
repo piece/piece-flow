@@ -40,7 +40,6 @@
 
 require_once 'PHPUnit.php';
 require_once 'Piece/Flow/ConfigReader/Factory.php';
-require_once 'PEAR/ErrorStack.php';
 require_once 'Piece/Flow/Error.php';
 
 // {{{ Piece_Flow_ConfigReader_FactoryTestCase

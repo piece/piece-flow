@@ -47,7 +47,6 @@ require_once 'Stagehand/FSM.php';
 require_once 'Piece/Flow/ActionInvoker.php';
 require_once 'Piece/Flow/ConfigReader/Factory.php';
 require_once 'Piece/Flow/Error.php';
-require_once 'PEAR/ErrorStack.php';
 
 // {{{ Piece_Flow
 

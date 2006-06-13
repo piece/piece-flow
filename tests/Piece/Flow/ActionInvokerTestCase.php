@@ -41,7 +41,6 @@
 
 require_once 'PHPUnit.php';
 require_once 'Piece/Flow/ActionInvoker.php';
-require_once 'PEAR/ErrorStack.php';
 require_once 'Piece/Flow/Error.php';
 require_once 'Piece/Flow/Action/Factory.php';
 
