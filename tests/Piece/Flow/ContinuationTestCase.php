@@ -84,7 +84,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 
     function setUp()
     {
-        PEAR_ErrorStack::staticPushCallback(create_function('$error', 'var_dump($error); return ' . PEAR_ERRORSTACK_DIE . ';'));
+        Piece_Flow_Error::pushCallback(create_function('$error', 'var_dump($error); return ' . PEAR_ERRORSTACK_DIE . ';'));
         Piece_Flow_Continuation::setActionDirectory(dirname(__FILE__) . '/../..');
         $this->_flowName = 'Counter';
         $this->_eventName = 'increase';
@@ -105,7 +105,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $cache->clean();
         $stack = &Piece_Flow_Error::getErrorStack();
         $stack->getErrors(true);
-        PEAR_ErrorStack::staticPopCallback();
+        Piece_Flow_Error::popCallback();
     }
 
     function getFlowExecutionTicket()
@@ -125,27 +125,27 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 
     function testAddingFlowInSingleFlowMode()
     {
-        PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
         $continuation = &new Piece_Flow_Continuation(true);
         $continuation->setCacheDirectory(dirname(__FILE__));
         $continuation->addFlow('foo', '/path/to/foo.xml');
 
-        $this->assertFalse(PEAR_ErrorStack::staticHasErrors());
+        $this->assertFalse(Piece_Flow_Error::hasErrors());
 
-        PEAR_ErrorStack::staticPopCallback();
+        Piece_Flow_Error::popCallback();
     }
 
     function testFailureToAddFlowForSecondTimeInSingleFlowMode()
     {
-        PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
         $continuation = &new Piece_Flow_Continuation(true);
         $continuation->setCacheDirectory(dirname(__FILE__));
         $continuation->addFlow('foo', '/path/to/foo.xml');
         $continuation->addFlow('bar', '/path/to/bar.xml');
 
-        $this->assertTrue(PEAR_ErrorStack::staticHasErrors());
+        $this->assertTrue(Piece_Flow_Error::hasErrors());
 
         $stack = &Piece_Flow_Error::getErrorStack();
 
@@ -155,21 +155,21 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 
         $this->assertEquals(PIECE_FLOW_ERROR_ALREADY_EXISTS, $error['code']);
 
-        PEAR_ErrorStack::staticPopCallback();
+        Piece_Flow_Error::popCallback();
     }
 
     function testSettingFlowInMultipleFlowMode()
     {
-        PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
         $continuation = &new Piece_Flow_Continuation();
         $continuation->setCacheDirectory(dirname(__FILE__));
         $continuation->addFlow('foo', '/path/to/foo.xml');
         $continuation->addFlow('bar', '/path/to/bar.xml');
 
-        $this->assertFalse(PEAR_ErrorStack::staticHasErrors());
+        $this->assertFalse(Piece_Flow_Error::hasErrors());
 
-        PEAR_ErrorStack::staticPopCallback();
+        Piece_Flow_Error::popCallback();
     }
 
     function testFirstTimeInvocationInSingleFlowMode()
@@ -304,7 +304,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->_flowName = 'InvalidFlowName';
         $continuation->invoke(new stdClass());
 
-        $this->assertFalse(PEAR_ErrorStack::staticHasErrors());
+        $this->assertFalse(Piece_Flow_Error::hasErrors());
 
         $counter = &Piece_Flow_Action_Factory::factory('Piece_Flow_CounterAction');
         $this->assertEquals(1, $continuation->getAttribute('counter'));
@@ -312,7 +312,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 
     function testFailureOfContinuationByInvalidFlowNameInMultipleFlowMode()
     {
-        PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
         $continuation = &new Piece_Flow_Continuation();
         $continuation->setCacheDirectory(dirname(__FILE__));
@@ -325,19 +325,19 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->_flowName = 'InvalidFlowName';
         $continuation->invoke(new stdClass());
 
-        $this->assertTrue(PEAR_ErrorStack::staticHasErrors());
+        $this->assertTrue(Piece_Flow_Error::hasErrors());
 
         $stack = &Piece_Flow_Error::getErrorStack();
         $error = $stack->pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_NOT_FOUND, $error['code']);
 
-        PEAR_ErrorStack::staticPopCallback();
+        Piece_Flow_Error::popCallback();
     }
 
     function testFailureToInvokeByNonExistingFlowConfiguration()
     {
-        PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
         $continuation = &new Piece_Flow_Continuation();
         $continuation->setCacheDirectory(dirname(__FILE__));
@@ -349,14 +349,14 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->_flowName = 'NonExistingFile';
         $continuation->invoke(new stdClass());
 
-        $this->assertTrue(PEAR_ErrorStack::staticHasErrors());
+        $this->assertTrue(Piece_Flow_Error::hasErrors());
 
         $stack = &Piece_Flow_Error::getErrorStack();
         $error = $stack->pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_NOT_FOUND, $error['code']);
 
-        PEAR_ErrorStack::staticPopCallback();
+        Piece_Flow_Error::popCallback();
     }
 
     function testInvocationInMultipleFlowModeAndFlowInExclusiveMode()
@@ -444,7 +444,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 
         $continuation->setAttribute('foo', 'bar');
 
-        $this->assertTrue(PEAR_ErrorStack::staticHasErrors());
+        $this->assertTrue(Piece_Flow_Error::hasErrors());
 
         $stack = &Piece_Flow_Error::getErrorStack();
         $error = $stack->pop();
@@ -463,7 +463,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 
         $continuation->getAttribute('foo');
 
-        $this->assertTrue(PEAR_ErrorStack::staticHasErrors());
+        $this->assertTrue(Piece_Flow_Error::hasErrors());
 
         $stack = &Piece_Flow_Error::getErrorStack();
         $error = $stack->pop();
@@ -473,7 +473,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 
     function testStartingNewFlowAfterFlowWasShutdownInNonExclusiveMode()
     {
-        PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
         $GLOBALS['ShutdownCount'] = 0;
 
         $continuation = &new Piece_Flow_Continuation();
@@ -505,7 +505,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->_eventName = 'go';
         $continuation->invoke(new stdClass());
 
-        $this->assertTrue(PEAR_ErrorStack::staticHasErrors());
+        $this->assertTrue(Piece_Flow_Error::hasErrors());
 
         $stack = &Piece_Flow_Error::getErrorStack();
         $error = $stack->pop();
@@ -513,7 +513,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->assertEquals(PIECE_FLOW_ERROR_NOT_GIVEN, $error['code']);
 
         unset($GLOBALS['ShutdownCount']);
-        PEAR_ErrorStack::staticPopCallback();
+        Piece_Flow_Error::popCallback();
     }
 
     function testStartingNewFlowAfterFlowWasShutdownInExclusiveMode()

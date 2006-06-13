@@ -89,7 +89,7 @@ class Piece_Flow_ConfigReader_XML4TestCase extends Piece_Flow_ConfigReader_Compa
 
     function testInvalidFormat()
     {
-        PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
         $source = dirname(__FILE__) . '/broken.xml';
         $xml = new Piece_Flow_ConfigReader_XML4($source);
@@ -106,7 +106,7 @@ class Piece_Flow_ConfigReader_XML4TestCase extends Piece_Flow_ConfigReader_Compa
                             );
         $this->assertEquals(PIECE_FLOW_ERROR_INVALID_FORMAT, $error['code']);
 
-        PEAR_ErrorStack::staticPopCallback();
+        Piece_Flow_Error::popCallback();
     }
 
     /**#@-*/

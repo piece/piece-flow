@@ -82,7 +82,7 @@ class Piece_Flow_ActionInvokerTestCase extends PHPUnit_TestCase
 
     function setUp()
     {
-        PEAR_ErrorStack::staticPushCallback(create_function('$error', 'var_dump($error); return ' . PEAR_ERRORSTACK_DIE . ';'));
+        Piece_Flow_Error::pushCallback(create_function('$error', 'var_dump($error); return ' . PEAR_ERRORSTACK_DIE . ';'));
     }
 
     function tearDown()
@@ -91,7 +91,7 @@ class Piece_Flow_ActionInvokerTestCase extends PHPUnit_TestCase
         $GLOBALS['PIECE_FLOW_Action_Directory'] = null;
         $stack = &Piece_Flow_Error::getErrorStack();
         $stack->getErrors(true);
-        PEAR_ErrorStack::staticPopCallback();
+        Piece_Flow_Error::popCallback();
     }
 
     function testInvokingAction()

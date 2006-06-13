@@ -83,7 +83,7 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
 
     function setUp()
     {
-        PEAR_ErrorStack::staticPushCallback(create_function('$error', 'var_dump($error); return ' . PEAR_ERRORSTACK_DIE . ';'));
+        Piece_Flow_Error::pushCallback(create_function('$error', 'var_dump($error); return ' . PEAR_ERRORSTACK_DIE . ';'));
         $name = 'registrationFlow';
         $firstState = 'displaying';
         $lastState = array('name' => 'finishing', 'view' => 'finish');
@@ -214,7 +214,7 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
         $this->_config = null;
         $stack = &Piece_Flow_Error::getErrorStack();
         $stack->getErrors(true);
-        PEAR_ErrorStack::staticPopCallback();
+        Piece_Flow_Error::popCallback();
     }
 
     function testConfiguration()

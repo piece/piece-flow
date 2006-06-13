@@ -188,11 +188,11 @@ class Piece_Flow_Continuation
     function getView()
     {
         if (!$this->_activated()) {
-            PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+            Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
             $error = Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_OPERATION,
                                                   __FUNCTION__ . ' method must be called after starting/continuing flows.'
                                                   );
-            PEAR_ErrorStack::staticPopCallback();
+            Piece_Flow_Error::popCallback();
             return $error;
         }
 
@@ -264,11 +264,11 @@ class Piece_Flow_Continuation
     function setAttribute($name, $value)
     {
         if (!$this->_activated()) {
-            PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+            Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
             $error = Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_OPERATION,
                                                   __FUNCTION__ . ' method must be called after starting/continuing flows.'
                                                   );
-            PEAR_ErrorStack::staticPopCallback();
+            Piece_Flow_Error::popCallback();
             return $error;
         }
 
@@ -288,11 +288,11 @@ class Piece_Flow_Continuation
     function hasAttribute($name)
     {
         if (!$this->_activated()) {
-            PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+            Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
             $error = Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_OPERATION,
                                                   __FUNCTION__ . ' method must be called after starting/continuing flows.'
                                                   );
-            PEAR_ErrorStack::staticPopCallback();
+            Piece_Flow_Error::popCallback();
             return $error;
         }
 
@@ -312,11 +312,11 @@ class Piece_Flow_Continuation
     function getAttribute($name)
     {
         if (!$this->_activated()) {
-            PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+            Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
             $error = Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_OPERATION,
                                                   __FUNCTION__ . ' method must be called after starting/continuing flows.'
                                                   );
-            PEAR_ErrorStack::staticPopCallback();
+            Piece_Flow_Error::popCallback();
             return $error;
         }
 

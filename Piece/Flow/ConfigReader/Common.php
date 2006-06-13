@@ -172,11 +172,11 @@ class Piece_Flow_ConfigReader_Common
 
         $absolutePathOfCacheDirectory = realpath($cacheDirectory);
         if (!$absolutePathOfCacheDirectory) {
-            PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+            Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
             Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_FOUND,
                                          "The cache directory [ $cacheDirectory ] not found."
                                           );
-            PEAR_ErrorStack::staticPopCallback();
+            Piece_Flow_Error::popCallback();
 
             $flow = $this->_parseFile($absolutePathOfConfigFile);
             return $flow;
@@ -185,11 +185,11 @@ class Piece_Flow_ConfigReader_Common
         if (!is_readable($absolutePathOfCacheDirectory)
             || !is_writable($absolutePathOfCacheDirectory)
             ) {
-            PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+            Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
             Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_READABLE,
                                          "The cache directory [ $absolutePathOfCacheDirectory ] was not readable or writable."
                                           );
-            PEAR_ErrorStack::staticPopCallback();
+            Piece_Flow_Error::popCallback();
 
             $flow = $this->_parseFile($absolutePathOfConfigFile);
             return $flow;

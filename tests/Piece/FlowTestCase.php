@@ -87,7 +87,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
 
     function setUp()
     {
-        PEAR_ErrorStack::staticPushCallback(create_function('$error', 'var_dump($error); return ' . PEAR_ERRORSTACK_DIE . ';'));
+        Piece_Flow_Error::pushCallback(create_function('$error', 'var_dump($error); return ' . PEAR_ERRORSTACK_DIE . ';'));
         $this->_source =
             dirname(__FILE__) . '/../../data/registrationFlow.yaml';
         $driver = &Piece_Flow_ConfigReader_Factory::factory($this->_source);
@@ -109,7 +109,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $this->_config = null;
         $stack = &Piece_Flow_Error::getErrorStack();
         $stack->getErrors(true);
-        PEAR_ErrorStack::staticPopCallback();
+        Piece_Flow_Error::popCallback();
      }
 
     function testConfiguration()
@@ -262,7 +262,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $flow->configure($this->_source, null, dirname(__FILE__));
         $flow->setAttribute('foo', 'bar');
 
-        $this->assertTrue(PEAR_ErrorStack::staticHasErrors());
+        $this->assertTrue(Piece_Flow_Error::hasErrors());
 
         $stack = &Piece_Flow_Error::getErrorStack();
         $error = $stack->pop();
@@ -280,7 +280,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $error = $stack->pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_NOT_FOUND, $error['code']);
-        $this->assertFalse(PEAR_ErrorStack::staticHasErrors());
+        $this->assertFalse(Piece_Flow_Error::hasErrors());
     }
 
     function testFailureToSetPayloadBeforeConfiguringFlow()
@@ -288,7 +288,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $flow = &new Piece_Flow();
         $flow->setPayload(new stdClass());
 
-        $this->assertTrue(PEAR_ErrorStack::staticHasErrors());
+        $this->assertTrue(Piece_Flow_Error::hasErrors());
 
         $stack = &Piece_Flow_Error::getErrorStack();
         $error = $stack->pop();
@@ -329,7 +329,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $flow->configure($this->_source, null, dirname(__FILE__));
         $flow->getView();
 
-        $this->assertTrue(PEAR_ErrorStack::staticHasErrors());
+        $this->assertTrue(Piece_Flow_Error::hasErrors());
 
         $stack = &Piece_Flow_Error::getErrorStack();
         $error = $stack->pop();
@@ -339,7 +339,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
 
     function testInvalidTransition()
     {
-        PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
         $flow = &new Piece_Flow();
         $flow->configure(dirname(__FILE__) . '/invalid.yaml', null, dirname(__FILE__));
@@ -348,14 +348,14 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $flow->triggerEvent('go');
         $flow->getView();
 
-        $this->assertTrue(PEAR_ErrorStack::staticHasErrors());
+        $this->assertTrue(Piece_Flow_Error::hasErrors());
 
         $stack = &Piece_Flow_Error::getErrorStack();
         $error = $stack->pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_INVALID_TRANSITION, $error['code']);
 
-        PEAR_ErrorStack::staticPopCallback();
+        Piece_Flow_Error::popCallback();
     }
 
     function testCheckingWhetherCurrentStateIsFinalState()
@@ -380,7 +380,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
 
     function _assertInitialAndFinalActions($source)
     {
-        PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
         $GLOBALS['initializeCalled'] = false;
         $GLOBALS['finalizeCalled'] = false;
 
@@ -400,7 +400,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
 
         $flow->triggerEvent('go');
 
-        $this->assertTrue(PEAR_ErrorStack::staticHasErrors());
+        $this->assertTrue(Piece_Flow_Error::hasErrors());
 
         $stack = &Piece_Flow_Error::getErrorStack();
         $error = $stack->pop();
@@ -409,7 +409,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
 
         unset($GLOBALS['initializeCalled']);
         unset($GLOBALS['finalizeCalled']);
-        PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
     }
 
     /**#@-*/

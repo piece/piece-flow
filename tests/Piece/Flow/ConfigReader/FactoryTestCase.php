@@ -79,14 +79,14 @@ class Piece_Flow_ConfigReader_FactoryTestCase extends PHPUnit_TestCase
 
     function setUp()
     {
-        PEAR_ErrorStack::staticPushCallback(create_function('$error', 'var_dump($error); return ' . PEAR_ERRORSTACK_DIE . ';'));
+        Piece_Flow_Error::pushCallback(create_function('$error', 'var_dump($error); return ' . PEAR_ERRORSTACK_DIE . ';'));
     }
 
     function tearDown()
     {
         $stack = &Piece_Flow_Error::getErrorStack();
         $stack->getErrors(true);
-        PEAR_ErrorStack::staticPopCallback();
+        Piece_Flow_Error::popCallback();
     }
 
     function testGuessingFromFileExtension()
@@ -115,7 +115,7 @@ class Piece_Flow_ConfigReader_FactoryTestCase extends PHPUnit_TestCase
 
     function testNonExistentDriver()
     {
-        PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
         Piece_Flow_ConfigReader_Factory::factory('foo.bar');
         $stack = &Piece_Flow_Error::getErrorStack();
@@ -126,12 +126,12 @@ class Piece_Flow_ConfigReader_FactoryTestCase extends PHPUnit_TestCase
 
         $this->assertEquals(PIECE_FLOW_ERROR_NOT_FOUND, $error['code']);
 
-        PEAR_ErrorStack::staticPopCallback();
+        Piece_Flow_Error::popCallback();
     }
 
     function testInvalidDriver()
     {
-        PEAR_ErrorStack::staticPushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
         $includePath = ini_get('include_path');
         ini_set('include_path',
@@ -153,7 +153,7 @@ class Piece_Flow_ConfigReader_FactoryTestCase extends PHPUnit_TestCase
         $this->assertEquals(PIECE_FLOW_ERROR_INVALID_DRIVER, $error['code']);
 
         ini_set('include_path', $includePath);
-        PEAR_ErrorStack::staticPopCallback();
+        Piece_Flow_Error::popCallback();
     }
 
     /**#@-*/
