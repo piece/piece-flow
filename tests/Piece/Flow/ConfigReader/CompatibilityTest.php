@@ -38,6 +38,12 @@
  * @since      File available since Release 0.1.0
  */
 
+require_once 'PHPUnit.php';
+require_once 'PEAR/ErrorStack.php';
+require_once 'Piece/Flow/Error.php';
+require_once 'Piece/Flow/Config.php';
+require_once 'Cache/Lite/File.php';
+
 // {{{ Piece_Flow_ConfigReader_CompatibilityTest
 
 /**

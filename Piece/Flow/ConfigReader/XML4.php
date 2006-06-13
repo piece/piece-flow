@@ -39,6 +39,7 @@
  */
 
 require_once 'Piece/Flow/ConfigReader/Common.php';
+require_once 'Piece/Flow/Error.php';
 
 // {{{ Piece_Flow_ConfigReader_XML4
 

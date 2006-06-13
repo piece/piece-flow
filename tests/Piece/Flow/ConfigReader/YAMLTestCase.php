@@ -38,9 +38,8 @@
  * @since      File available since Release 0.1.0
  */
 
-require_once 'Piece/Flow/ConfigReader/YAML.php';
-
 require_once dirname(__FILE__) . '/CompatibilityTest.php';
+require_once 'Piece/Flow/ConfigReader/YAML.php';
 
 // {{{ Piece_Flow_ConfigReader_YAMLTestCase
 

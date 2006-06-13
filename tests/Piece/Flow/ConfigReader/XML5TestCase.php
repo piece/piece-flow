@@ -42,10 +42,10 @@ if (version_compare(phpversion(), '5.0.0', '<')) {
     return;
 }
 
-require_once 'Piece/Flow/ConfigReader/XML5.php';
-
 require_once dirname(__FILE__) . '/CompatibilityTest.php';
-// require_once 'Piece/Flow/Config.php';
+require_once 'Piece/Flow/ConfigReader/XML5.php';
+require_once 'PEAR/ErrorStack.php';
+require_once 'Piece/Flow/Error.php';
 
 // {{{ Piece_Flow_ConfigReader_XML5TestCase
 
