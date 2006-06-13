@@ -40,6 +40,7 @@
 require_once 'Piece/Flow.php';
 require_once 'Piece/Flow/Error.php';
 require_once 'PEAR/ErrorStack.php';
+require_once 'Piece/Flow/Action/Factory.php';
 
 // {{{ GLOBALS
 
@@ -366,6 +367,20 @@ class Piece_Flow_Continuation
         $this->_flowName = null;
         $this->_currentFlowExecutionTicket = null;
         $this->_activated = false;
+    }
+
+    // }}}
+    // {{{ setActionDirectory()
+
+    /**
+     * Sets a action directory.
+     *
+     * @param string $actionDirectory
+     * @static
+     */
+    function setActionDirectory($actionDirectory)
+    {
+        Piece_Flow_Action_Factory::setActionDirectory($actionDirectory);
     }
 
     /**#@-*/
