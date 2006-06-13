@@ -42,7 +42,7 @@ require_once 'Piece/Flow/Error.php';
 // {{{ GLOBALS
 
 $GLOBALS['PIECE_FLOW_Action_Instances'] = array();
-$GLOBALS['PIECE_FLOW_Action_Path'] = null;
+$GLOBALS['PIECE_FLOW_Action_Directory'] = null;
 
 // }}}
 // {{{ Piece_Flow_Action_Factory
@@ -106,16 +106,16 @@ class Piece_Flow_Action_Factory
     }
 
     // }}}
-    // {{{ setActionPath()
+    // {{{ setActionDirectory()
 
     /**
-     * Sets a action path.
+     * Sets a action directory.
      *
-     * @param string $actionPath
+     * @param string $actionDirectory
      */
-    function setActionPath($actionPath)
+    function setActionDirectory($actionDirectory)
     {
-        $GLOBALS['PIECE_FLOW_Action_Path'] = $actionPath;
+        $GLOBALS['PIECE_FLOW_Action_Directory'] = $actionDirectory;
     }
 
     /**#@-*/
@@ -136,13 +136,13 @@ class Piece_Flow_Action_Factory
      */
     function _load($class)
     {
-        if (is_null($GLOBALS['PIECE_FLOW_Action_Path'])) {
+        if (is_null($GLOBALS['PIECE_FLOW_Action_Directory'])) {
             return Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_GIVEN,
                                                 'The action path was not given.'
                                                 );
         }
 
-        $file = realpath("{$GLOBALS['PIECE_FLOW_Action_Path']}/" . str_replace('_', '/', $class) . '.php');
+        $file = realpath("{$GLOBALS['PIECE_FLOW_Action_Directory']}/" . str_replace('_', '/', $class) . '.php');
 
         if (!$file) {
             return Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_FOUND,
