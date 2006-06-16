@@ -97,7 +97,7 @@ class Piece_Flow_Error
     /**
      * Returns a single error stack for the package.
      *
-     * @param string  $package
+     * @param string $package
      * @return PEAR_ErrorStack
      */
     function &getErrorStack($package = 'Piece_Flow')
