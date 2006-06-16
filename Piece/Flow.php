@@ -237,9 +237,9 @@ class Piece_Flow
                                             );
         Piece_Flow_Error::popCallback();
         if (Stagehand_FSM_Error::isError($state)) {
-            $error = &Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_OPERATION,
-                                                   "The flow [ {$this->_name} ] was already shutdown."
-                                                   );
+            $error = Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                                  "The flow [ {$this->_name} ] was already shutdown."
+                                                  );
             return $error;
         }
 
