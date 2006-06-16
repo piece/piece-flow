@@ -128,10 +128,6 @@ class Piece_Flow_ConfigReader_Factory
      */
     function _guessDriver($source)
     {
-        if (is_callable($source)) {
-            return 'Callback';
-        }
-
         return strtoupper(substr(strrchr($source, '.'), 1));
     }
 
@@ -166,19 +162,15 @@ class Piece_Flow_ConfigReader_Factory
         $file = str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php';
         if (!@include_once $file) {
             return Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_FOUND,
-                                                "File [ $file ] not found or was not readable."
+                                                "The driver file [ $file ] not found or was not readable."
                                                 );
         }
 
         if (!class_exists($class)) {
-            $error = &Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_DRIVER,
-                                                   "Driver class [ $class ] not defined in file [ $file ]."
-                                                   );
-            return $error;
+            return Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_DRIVER,
+                                                "The driver [ $class ] not defined in the file [ $file ]."
+                                                );
         }
-
-        $return = null;
-        return $return;
     }
 
     /**#@-*/
