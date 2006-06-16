@@ -119,12 +119,12 @@ class Piece_Flow_Error
      * @param array   $backtrace
      * @return PEAR_ErrorStack
      */
-    function &raiseError($code,
-                         $message = false,
-                         $params = array(),
-                         $package = 'Piece_Flow',
-                         $backtrace = false
-                         )
+    function raiseError($code,
+                        $message = false,
+                        $params = array(),
+                        $package = 'Piece_Flow',
+                        $backtrace = false
+                        )
     {
         if (!$backtrace) {
             $backtrace = debug_backtrace();
