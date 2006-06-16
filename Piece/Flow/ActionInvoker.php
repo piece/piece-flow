@@ -87,7 +87,7 @@ class Piece_Flow_ActionInvoker
     /**
      * Wraps a action up with a Piece_Flow_ActionInvoker object.
      *
-     * @param Piece_Flow $flow
+     * @param Piece_Flow &$flow
      * @param string     $class
      * @param string     $method
      */
@@ -104,9 +104,9 @@ class Piece_Flow_ActionInvoker
     /**
      * Invokes the action.
      *
-     * @param Stagehand_FSM       $fsm
-     * @param Stagehand_FSM_Event $event
-     * @param mixed               $payload
+     * @param Stagehand_FSM       &$fsm
+     * @param Stagehand_FSM_Event &$event
+     * @param mixed               &$payload
      */
     function invoke(&$fsm, &$event, &$payload)
     {
@@ -122,9 +122,9 @@ class Piece_Flow_ActionInvoker
     /**
      * Invokes the action and triggers an event returned from the action.
      *
-     * @param Stagehand_FSM       $fsm
-     * @param Stagehand_FSM_Event $event
-     * @param mixed               $payload
+     * @param Stagehand_FSM       &$fsm
+     * @param Stagehand_FSM_Event &$event
+     * @param mixed               &$payload
      */
     function invokeAndTriggerEvent(&$fsm, &$event, &$payload)
     {
