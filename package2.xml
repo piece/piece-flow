@@ -13,8 +13,8 @@
   <email>iteman2002@yahoo.co.jp</email>
   <active>yes</active>
  </lead>
- <date>2006-06-11</date>
- <time>11:30:37</time>
+ <date>2006-06-17</date>
+ <time>17:32:58</time>
  <version>
   <release>1.0.0</release>
   <api>1.0.0</api>
@@ -160,6 +160,12 @@
       <file name="SecondCounterAction.php" role="test">
        <tasks:replace from="@package_version@" to="version" type="package-info" />
       </file>
+      <file name="Shutdown.yaml" role="test">
+       <tasks:replace from="@package_version@" to="version" type="package-info" />
+      </file>
+      <file name="ShutdownAction.php" role="test">
+       <tasks:replace from="@package_version@" to="version" type="package-info" />
+      </file>
       <file name="TestRunner.php" role="test">
        <tasks:replace from="@package_version@" to="version" type="package-info" />
       </file>
@@ -236,7 +242,7 @@
     <release>stable</release>
     <api>stable</api>
    </stability>
-   <date>2006-06-11</date>
+   <date>2006-06-17</date>
    <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License (revised)</license>
    <notes>- The first stable release of Piece_Flow.</notes>
   </release>

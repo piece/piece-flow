@@ -15,7 +15,7 @@
   </maintainers>
  <release>
   <version>1.0.0</version>
-  <date>2006-06-11</date>
+  <date>2006-06-17</date>
   <license>BSD License (revised)</license>
   <state>stable</state>
   <notes>- The first stable release of Piece_Flow.
@@ -161,6 +161,12 @@
        <file role="test" name="SecondCounterAction.php">
         <replace from="@package_version@" to="version" type="package-info"/>
        </file>
+       <file role="test" name="Shutdown.yaml">
+        <replace from="@package_version@" to="version" type="package-info"/>
+       </file>
+       <file role="test" name="ShutdownAction.php">
+        <replace from="@package_version@" to="version" type="package-info"/>
+       </file>
        <file role="test" name="TestRunner.php">
         <replace from="@package_version@" to="version" type="package-info"/>
        </file>
@@ -203,7 +209,7 @@
  <changelog>
    <release>
     <version>1.0.0</version>
-    <date>2006-06-11</date>
+    <date>2006-06-17</date>
     <license>BSD License (revised)</license>
     <state>stable</state>
     <notes>- The first stable release of Piece_Flow.
