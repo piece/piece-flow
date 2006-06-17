@@ -252,7 +252,7 @@ class Piece_Flow_Continuation
     // {{{ setAttribute()
 
     /**
-     * Sets an attribute for this flow.
+     * Sets an attribute for the current flow.
      *
      * @param string $name
      * @param mixed  $value
@@ -300,7 +300,7 @@ class Piece_Flow_Continuation
     // {{{ getAttribute()
 
     /**
-     * Gets an attribute for this flow.
+     * Gets an attribute for the current flow.
      *
      * @param string $name
      * @return mixed
@@ -377,6 +377,29 @@ class Piece_Flow_Continuation
     function setActionDirectory($actionDirectory)
     {
         Piece_Flow_Action_Factory::setActionDirectory($actionDirectory);
+    }
+
+    // }}}
+    // {{{ getCurrentFlowExecutionTicket()
+
+    /**
+     * Gets the current flow execution ticket for the current flow.
+     *
+     * @return string
+     * @throws PEAR_ErrorStack
+     */
+    function getCurrentFlowExecutionTicket()
+    {
+        if (!$this->_activated()) {
+            Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+            $error = Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                                  __FUNCTION__ . ' method must be called after starting/continuing flows.'
+                                                  );
+            Piece_Flow_Error::popCallback();
+            return $error;
+        }
+
+        return $this->_currentFlowExecutionTicket;
     }
 
     /**#@-*/
