@@ -586,6 +586,20 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         unset($GLOBALS['ShutdownCount']);
     }
 
+    function testGettingCurrentFlowExecutionTicket()
+    {
+        $continuation = &new Piece_Flow_Continuation();
+        $continuation->setCacheDirectory(dirname(__FILE__));
+        $continuation->addFlow('Counter', dirname(__FILE__) . '/Counter.yaml');
+        $continuation->setEventNameCallback(array(&$this, 'getEventName'));
+        $continuation->setFlowExecutionTicketCallback(array(&$this, 'getFlowExecutionTicket'));
+        $continuation->setFlowNameCallback(array(&$this, 'getFlowName'));
+
+        $flowExecutionTicket = $continuation->invoke(new stdClass());
+
+        $this->assertEquals($flowExecutionTicket, $continuation->getCurrentFlowExecutionTicket());
+    }
+
     /**#@-*/
 
     /**#@+
