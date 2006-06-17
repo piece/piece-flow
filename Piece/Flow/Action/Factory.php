@@ -174,9 +174,6 @@ class Piece_Flow_Action_Factory
                                                 );
             return $error;
         }
-
-        $return = null;
-        return $return;
     }
 
     /**#@-*/

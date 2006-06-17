@@ -131,9 +131,6 @@ class Piece_Flow_Continuation
          $this->_flowDefinitions[$name] = array('file' => $file,
                                                 'isExclusive' => $isExclusive
                                                 );
-
-         $return = null;
-         return $return;
     }
 
     // }}}
