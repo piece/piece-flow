@@ -372,6 +372,24 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $this->assertTrue($flow->isFinalState());
     }
 
+    function testSettingAttributeByReference()
+    {
+        $flow = &new Piece_Flow();
+        $flow->configure($this->_source, null, dirname(__FILE__));
+        $flow->start();
+
+        $foo1 = &new stdClass();
+        $flow->setAttributeByRef('foo', $foo1);
+        $foo1->bar = 'baz';
+
+        $this->assertTrue($flow->hasAttribute('foo'));
+
+        $foo2 = &$flow->getAttribute('foo');
+
+        $this->assertTrue(array_key_exists('bar', $foo2));
+        $this->assertEquals('baz', $foo2->bar);
+    }
+
     /**#@-*/
 
     /**#@+
