@@ -49,7 +49,7 @@ if (version_compare(phpversion(), '5.0.0', '<')) {
 // {{{ Piece_Flow_ConfigReader_YAML
 
 /**
- * A Piece_Flow_Config driver for YAML.
+ * A configuration reader for YAML.
  *
  * @package    Piece_Flow
  * @author     KUBO Atsuhiro <iteman2002@yahoo.co.jp>

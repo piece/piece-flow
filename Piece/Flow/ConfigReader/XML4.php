@@ -44,7 +44,7 @@ require_once 'Piece/Flow/Error.php';
 // {{{ Piece_Flow_ConfigReader_XML4
 
 /**
- * A Piece_Flow_Config driver for XML under PHP 4.
+ * A configuration reader for XML under PHP 4.
  *
  * @package    Piece_Flow
  * @author     KUBO Atsuhiro <iteman2002@yahoo.co.jp>
