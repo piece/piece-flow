@@ -304,8 +304,32 @@ class Piece_Flow
         }
 
         $this->_attributes[$name] = $value;
-        $return = null;
-        return $return;
+    }
+
+    // }}}
+    // {{{ setAttributeByRef()
+
+    /**
+     * Sets an attribute by reference for this flow.
+     *
+     * @param string $name
+     * @param mixed  &$value
+     * @throws PEAR_ErrorStack
+     */
+    function setAttributeByRef($name, &$value)
+    {
+        if (!is_a($this->_fsm, 'Stagehand_FSM')
+            || is_null($this->_fsm->getCurrentState())
+            ) {
+            Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+            $error = Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                                  __FUNCTION__ . ' method must be called after starting flows.'
+                                                  );
+            Piece_Flow_Error::popCallback();
+            return $error;
+        }
+
+        $this->_attributes[$name] = &$value;
     }
 
     // }}}
@@ -331,9 +355,10 @@ class Piece_Flow
      * @param string $name
      * @return mixed
      */
-    function getAttribute($name)
+    function &getAttribute($name)
     {
-        return @$this->_attributes[$name];
+        $attribute = &$this->_attributes[$name];
+        return $attribute;
     }
 
     // }}}
