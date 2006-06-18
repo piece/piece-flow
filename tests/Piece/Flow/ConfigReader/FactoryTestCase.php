@@ -118,7 +118,7 @@ class Piece_Flow_ConfigReader_FactoryTestCase extends PHPUnit_TestCase
 
         Piece_Flow_ConfigReader_Factory::factory('foo.bar');
 
-        $this->assertTrue(Piece_Flow_Error::hasErrors());
+        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
 
         $error = Piece_Flow_Error::pop();
 
@@ -143,7 +143,7 @@ class Piece_Flow_ConfigReader_FactoryTestCase extends PHPUnit_TestCase
 
         Piece_Flow_ConfigReader_Factory::factory('foo.bar', 'Baz');
 
-        $this->assertTrue(Piece_Flow_Error::hasErrors());
+        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
 
         $error = Piece_Flow_Error::pop();
 

@@ -95,7 +95,7 @@ class Piece_Flow_ConfigReader_XML4TestCase extends Piece_Flow_ConfigReader_Compa
         $xml = new Piece_Flow_ConfigReader_XML4($source);
         $xml->configure(dirname(__FILE__));
 
-        $this->assertTrue(Piece_Flow_Error::hasErrors());
+        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
 
         $error = Piece_Flow_Error::pop();
 
