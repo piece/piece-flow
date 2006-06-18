@@ -85,7 +85,8 @@ class Piece_Flow_ConfigReader_Factory
      * @param string $driverName
      * @param string $cacheDirectory
      * @return mixed
-     * @throws PEAR_ErrorStack
+     * @throws PIECE_FLOW_ERROR_NOT_FOUND
+     * @throws PIECE_FLOW_ERROR_INVALID_DRIVER
      * @static
      */
     function &factory($source, $driverName = null)
@@ -100,9 +101,10 @@ class Piece_Flow_ConfigReader_Factory
 
         $class = "Piece_Flow_ConfigReader_$driverName";
         if (!class_exists($class)) {
-            $result = Piece_Flow_ConfigReader_Factory::_loadDriver($class);
-            if (Piece_Flow_Error::isError($result)) {
-                return $result;
+            Piece_Flow_ConfigReader_Factory::_loadDriver($class);
+            if (Piece_Flow_Error::hasErrors('exception')) {
+                $return = null;
+                return $return;
             }
         }
 
@@ -156,20 +158,23 @@ class Piece_Flow_ConfigReader_Factory
      *
      * @param string $class
      * @return string
+     * @throws PIECE_FLOW_ERROR_NOT_FOUND
+     * @throws PIECE_FLOW_ERROR_INVALID_DRIVER
      */
     function _loadDriver($class)
     {
         $file = str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php';
         if (!@include_once $file) {
-            return Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_FOUND,
-                                                "The driver file [ $file ] not found or was not readable."
-                                                );
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
+                                   "The driver file [ $file ] not found or was not readable."
+                                   );
+            return;
         }
 
         if (!class_exists($class)) {
-            return Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_DRIVER,
-                                                "The driver [ $class ] not defined in the file [ $file ]."
-                                                );
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_DRIVER,
+                                   "The driver [ $class ] not defined in the file [ $file ]."
+                                   );
         }
     }
 

@@ -250,7 +250,7 @@ class Piece_Flow_ConfigReader_XML5 extends Piece_Flow_ConfigReader_Common
      * file.
      *
      * @return array
-     * @throws PEAR_ErrorStack
+     * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
      */
     function _parseFile()
     {
@@ -260,10 +260,11 @@ class Piece_Flow_ConfigReader_XML5 extends Piece_Flow_ConfigReader_Common
         $contents = ob_get_contents();
         ob_end_clean();
         if (!$validationResult) {
-            return Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                                "The file [{$this->_source}] containts invalid format. See below for more details.
-$contents"
-                                                );
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
+                                   "The file [{$this->_source}] containts invalid format. See below for more details.
+ $contents"
+                                   );
+            return;
         }
 
         $element = $dom->getElementsByTagName('flow')->item(0);
