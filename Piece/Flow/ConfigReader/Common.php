@@ -104,11 +104,12 @@ class Piece_Flow_ConfigReader_Common
      * @throws PIECE_FLOW_ERROR_NOT_READABLE
      * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
      */
-    function configure($cacheDirectory = null)
+    function &configure($cacheDirectory = null)
     {
         $flow = $this->parse($cacheDirectory);
         if (Piece_Flow_Error::hasErrors('exception')) {
-            return;
+            $return = null;
+            return $return;
         }
 
         $this->_config = &new Piece_Flow_Config();
