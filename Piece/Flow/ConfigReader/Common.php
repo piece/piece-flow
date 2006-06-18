@@ -100,7 +100,9 @@ class Piece_Flow_ConfigReader_Common
      *
      * @param string $cacheDirectory
      * @return Piece_Flow_Config
-     * @throws PEAR_ErrorStack
+     * @throws PIECE_FLOW_ERROR_NOT_FOUND
+     * @throws PIECE_FLOW_ERROR_NOT_READABLE
+     * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
      */
     function configure($cacheDirectory = null)
     {
