@@ -89,8 +89,7 @@ class Piece_Flow_ActionInvokerTestCase extends PHPUnit_TestCase
     {
         $GLOBALS['PIECE_FLOW_Action_Instances'] = array();
         $GLOBALS['PIECE_FLOW_Action_Directory'] = null;
-        $stack = &Piece_Flow_Error::getErrorStack();
-        $stack->getErrors(true);
+        Piece_Flow_Error::clearErrors();
         Piece_Flow_Error::popCallback();
     }
 
