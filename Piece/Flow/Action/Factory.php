@@ -87,15 +87,18 @@ class Piece_Flow_Action_Factory
      *
      * @param string $class
      * @return mixed
-     * @throws PEAR_ErrorStack
+     * @throws PIECE_FLOW_ERROR_NOT_GIVEN
+     * @throws PIECE_FLOW_ERROR_NOT_FOUND
+     * @throws PIECE_FLOW_ERROR_NOT_READABLE
      * @static
      */
     function &factory($class)
     {
         if (!array_key_exists($class, $GLOBALS['PIECE_FLOW_Action_Instances'])) {
-            $result = &Piece_Flow_Action_Factory::_load($class);
-            if (Piece_Flow_Error::isError($result)) {
-                return $result;
+            Piece_Flow_Action_Factory::_load($class);
+            if (Piece_Flow_Error::hasErrors()) {
+                $return = null;
+                return $return;
             }
 
             $instance = &new $class();
@@ -131,35 +134,41 @@ class Piece_Flow_Action_Factory
      * Loads a action class corresponding to the given class name.
      *
      * @param string $class
-     * @throws PEAR_ErrorStack
+     * @throws PIECE_FLOW_ERROR_NOT_GIVEN
+     * @throws PIECE_FLOW_ERROR_NOT_FOUND
+     * @throws PIECE_FLOW_ERROR_NOT_READABLE
      * @static
      */
     function _load($class)
     {
         if (is_null($GLOBALS['PIECE_FLOW_Action_Directory'])) {
-            return Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_GIVEN,
-                                                'The action path was not given.'
-                                                );
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_GIVEN,
+                                   'The action directory was not given.'
+                                   );
+            return;
         }
 
         $file = realpath("{$GLOBALS['PIECE_FLOW_Action_Directory']}/" . str_replace('_', '/', $class) . '.php');
 
         if (!$file) {
-            return Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_FOUND,
-                                                "The action file for the class [ $class ] not found."
-                                                );
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
+                                   "The action file for the class [ $class ] not found."
+                                   );
+            return;
         }
 
         if (!is_readable($file)) {
-            return Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_READABLE,
-                                                "The action file [ $file ] was not readable."
-                                                );
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_READABLE,
+                                   "The action file [ $file ] was not readable."
+                                   );
+            return;
         }
 
         if (!@include_once $file) {
-            return Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_FOUND,
-                                                "The action file [ $file ] not found or was not readable."
-                                                );
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
+                                   "The action file [ $file ] not found or was not readable."
+                                   );
+            return;
         }
 
         if (version_compare(phpversion(), '5.0.0', '<')) {
@@ -169,10 +178,9 @@ class Piece_Flow_Action_Factory
         }
 
         if (!$result) {
-            return Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_FOUND,
-                                                "The action [ $class ] not defined in the file [ $file ]."
-                                                );
-            return $error;
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
+                                   "The action [ $class ] not defined in the file [ $file ]."
+                                   );
         }
     }
 
