@@ -103,8 +103,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
                                             'errorHandlingAPIBreak' => true)
                                       );
         $cache->clean();
-        $stack = &Piece_Flow_Error::getErrorStack();
-        $stack->getErrors(true);
+        Piece_Flow_Error::clearErrors();
         Piece_Flow_Error::popCallback();
     }
 
@@ -131,7 +130,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $continuation->setCacheDirectory(dirname(__FILE__));
         $continuation->addFlow('foo', '/path/to/foo.xml');
 
-        $this->assertFalse(Piece_Flow_Error::hasErrors());
+        $this->assertFalse(Piece_Flow_Error::hasErrors('exception'));
 
         Piece_Flow_Error::popCallback();
     }
@@ -145,13 +144,9 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $continuation->addFlow('foo', '/path/to/foo.xml');
         $continuation->addFlow('bar', '/path/to/bar.xml');
 
-        $this->assertTrue(Piece_Flow_Error::hasErrors());
+        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
 
-        $stack = &Piece_Flow_Error::getErrorStack();
-
-        $this->assertTrue($stack->hasErrors());
-
-        $error = $stack->pop();
+        $error = Piece_Flow_Error::pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_ALREADY_EXISTS, $error['code']);
 
@@ -167,7 +162,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $continuation->addFlow('foo', '/path/to/foo.xml');
         $continuation->addFlow('bar', '/path/to/bar.xml');
 
-        $this->assertFalse(Piece_Flow_Error::hasErrors());
+        $this->assertFalse(Piece_Flow_Error::hasErrors('exception'));
 
         Piece_Flow_Error::popCallback();
     }
@@ -304,7 +299,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->_flowName = 'InvalidFlowName';
         $continuation->invoke(new stdClass());
 
-        $this->assertFalse(Piece_Flow_Error::hasErrors());
+        $this->assertFalse(Piece_Flow_Error::hasErrors('exception'));
 
         $counter = &Piece_Flow_Action_Factory::factory('Piece_Flow_CounterAction');
         $this->assertEquals(1, $continuation->getAttribute('counter'));
@@ -325,10 +320,9 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->_flowName = 'InvalidFlowName';
         $continuation->invoke(new stdClass());
 
-        $this->assertTrue(Piece_Flow_Error::hasErrors());
+        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
 
-        $stack = &Piece_Flow_Error::getErrorStack();
-        $error = $stack->pop();
+        $error = Piece_Flow_Error::pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_NOT_FOUND, $error['code']);
 
@@ -349,10 +343,9 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->_flowName = 'NonExistingFile';
         $continuation->invoke(new stdClass());
 
-        $this->assertTrue(Piece_Flow_Error::hasErrors());
+        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
 
-        $stack = &Piece_Flow_Error::getErrorStack();
-        $error = $stack->pop();
+        $error = Piece_Flow_Error::pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_NOT_FOUND, $error['code']);
 
@@ -444,10 +437,9 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 
         $continuation->setAttribute('foo', 'bar');
 
-        $this->assertTrue(Piece_Flow_Error::hasErrors());
+        $this->assertTrue(Piece_Flow_Error::hasErrors('warning'));
 
-        $stack = &Piece_Flow_Error::getErrorStack();
-        $error = $stack->pop();
+        $error = Piece_Flow_Error::pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_INVALID_OPERATION, $error['code']);
     }
@@ -463,10 +455,9 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 
         $continuation->getAttribute('foo');
 
-        $this->assertTrue(Piece_Flow_Error::hasErrors());
+        $this->assertTrue(Piece_Flow_Error::hasErrors('warning'));
 
-        $stack = &Piece_Flow_Error::getErrorStack();
-        $error = $stack->pop();
+        $error = Piece_Flow_Error::pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_INVALID_OPERATION, $error['code']);
     }
@@ -505,10 +496,9 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->_eventName = 'go';
         $continuation->invoke(new stdClass());
 
-        $this->assertTrue(Piece_Flow_Error::hasErrors());
+        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
 
-        $stack = &Piece_Flow_Error::getErrorStack();
-        $error = $stack->pop();
+        $error = Piece_Flow_Error::pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_NOT_GIVEN, $error['code']);
 
