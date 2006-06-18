@@ -92,65 +92,30 @@ class Piece_Flow_Error
      */
 
     // }}}
-    // {{{ getErrorStack()
+    // {{{ push()
 
     /**
-     * Returns a single error stack for the package.
-     *
-     * @param string $package
-     * @return PEAR_ErrorStack
-     */
-    function &getErrorStack($package = 'Piece_Flow')
-    {
-        $stack = &PEAR_ErrorStack::singleton(strtolower($package));
-        return $stack;
-    }
-
-    // }}}
-    // {{{ raiseError()
-
-    /**
-     * Returns a PEAR_ErrorStack object for the package.
+     * Adds an error to the stack for the package. This method is a wrapper
+     * for PEAR_ErrorStack::staticPush() method.
      *
      * @param integer $code
      * @param string  $message
+     * @param string  $level
      * @param array   $params
-     * @param string  $package
+     * @param array   $repackage
      * @param array   $backtrace
-     * @return PEAR_ErrorStack
+     * @see PEAR_ErrorStack::staticPush()
+     * @since Method available since Release 1.4.0
      */
-    function raiseError($code,
-                        $message = false,
-                        $params = array(),
-                        $package = 'Piece_Flow',
-                        $backtrace = false
-                        )
+    function push($code, $message = false, $level = 'exception',
+                  $params = array(), $repackage = false, $backtrace = false
+                  )
     {
         if (!$backtrace) {
             $backtrace = debug_backtrace();
         }
 
-        $stack = &Piece_Flow_Error::getErrorStack($package);
-        $stack->push($code, 'error', $params, $message, false, $backtrace);
-        return $stack;
-    }
-
-    // }}}
-    // {{{ isError()
-
-    /**
-     * Returns whether the value is a PEAR_ErrorStack object.
-     *
-     * @param mixed $error
-     * @return boolean
-     */
-    function isError($error)
-    {
-        if (is_object($error) && is_a($error, 'PEAR_ErrorStack')) {
-            return true;
-        }
-
-        return false;
+        PEAR_ErrorStack::staticPush('Piece_Flow', $code, $level, $params, $message, $repackage, $backtrace);
     }
 
     // }}}
@@ -158,9 +123,11 @@ class Piece_Flow_Error
 
     /**
      * Pushes a callback. This method is a wrapper for
-     * PEAR_ErrorStack::staticPushCallback method.
+     * PEAR_ErrorStack::staticPushCallback() method.
      *
      * @param callback $callback
+     * @see PEAR_ErrorStack::staticPushCallback()
+     * @since Method available since Release 1.4.0
      */
     function pushCallback($callback)
     {
@@ -172,9 +139,11 @@ class Piece_Flow_Error
 
     /**
      * Pops a callback. This method is a wrapper for
-     * PEAR_ErrorStack::staticPopCallback method.
+     * PEAR_ErrorStack::staticPopCallback() method.
      *
      * @return callback
+     * @see PEAR_ErrorStack::staticPopCallback()
+     * @since Method available since Release 1.4.0
      */
     function popCallback()
     {
@@ -186,15 +155,42 @@ class Piece_Flow_Error
 
     /**
      * Returns whether the stack has errors or not. This method is a wrapper
-     * for PEAR_ErrorStack::staticHasErrors method.
+     * for PEAR_ErrorStack::staticHasErrors() method.
      *
-     * @param string $package
      * @param string $level
-     * @return callback
+     * @return boolean
+     * @see PEAR_ErrorStack::staticHasErrors()
+     * @since Method available since Release 1.4.0
      */
-    function hasErrors($package = false, $level = false)
+    function hasErrors($level = false)
     {
-        return PEAR_ErrorStack::staticHasErrors($package, $level);
+        return PEAR_ErrorStack::staticHasErrors('Piece_Flow', $level);
+    }
+
+    /**
+     * Pops an error off of the error stack for the package. This method is a
+     * wrapper for PEAR_ErrorStack::pop() method.
+     *
+     * @return array
+     * @see PEAR_ErrorStack::pop()
+     * @since Method available since Release 1.4.0
+     */
+    function pop()
+    {
+        $stack = &PEAR_ErrorStack::singleton('Piece_Flow');
+        return $stack->pop();
+    }
+
+    /**
+     * Clears the error stack for the package.
+     *
+     * @see PEAR_ErrorStack::getErrors()
+     * @since Method available since Release 1.4.0
+     */
+    function clearErrors()
+    {
+        $stack = &PEAR_ErrorStack::singleton('Piece_Flow');
+        $stack->getErrors(true);
     }
 
     /**#@+
