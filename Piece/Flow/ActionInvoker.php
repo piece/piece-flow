@@ -107,10 +107,17 @@ class Piece_Flow_ActionInvoker
      * @param Stagehand_FSM       &$fsm
      * @param Stagehand_FSM_Event &$event
      * @param mixed               &$payload
+     * @throws PIECE_FLOW_ERROR_NOT_GIVEN
+     * @throws PIECE_FLOW_ERROR_NOT_FOUND
+     * @throws PIECE_FLOW_ERROR_NOT_READABLE
      */
     function invoke(&$fsm, &$event, &$payload)
     {
         $action = &Piece_Flow_Action_Factory::factory($this->_class);
+        if (Piece_Flow_Error::hasErrors('exception')) {
+            return;
+        }
+
         return call_user_func_array(array(&$action, $this->_method),
                                     array(&$this->_flow, $event->getName(), &$payload)
                                     );
@@ -125,15 +132,26 @@ class Piece_Flow_ActionInvoker
      * @param Stagehand_FSM       &$fsm
      * @param Stagehand_FSM_Event &$event
      * @param mixed               &$payload
+     * @throws PIECE_FLOW_ERROR_NOT_GIVEN
+     * @throws PIECE_FLOW_ERROR_NOT_FOUND
+     * @throws PIECE_FLOW_ERROR_NOT_READABLE
+     * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
      */
     function invokeAndTriggerEvent(&$fsm, &$event, &$payload)
     {
         $action = &Piece_Flow_Action_Factory::factory($this->_class);
+        if (Piece_Flow_Error::hasErrors('exception')) {
+            return;
+        }
+
         $result = call_user_func_array(array(&$action, $this->_method),
                                        array(&$this->_flow, $event->getName(), &$payload)
                                        );
         if (!is_null($result)) {
             $this->_flow->triggerEvent($result);
+            if (Piece_Flow_Error::hasErrors('exception')) {
+                return;
+            }
         }
     }
 
