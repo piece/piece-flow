@@ -84,8 +84,7 @@ class Piece_Flow_ConfigReader_FactoryTestCase extends PHPUnit_TestCase
 
     function tearDown()
     {
-        $stack = &Piece_Flow_Error::getErrorStack();
-        $stack->getErrors(true);
+        Piece_Flow_Error::clearErrors();
         Piece_Flow_Error::popCallback();
     }
 
@@ -118,11 +117,10 @@ class Piece_Flow_ConfigReader_FactoryTestCase extends PHPUnit_TestCase
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
         Piece_Flow_ConfigReader_Factory::factory('foo.bar');
-        $stack = &Piece_Flow_Error::getErrorStack();
 
-        $this->assertTrue($stack->hasErrors());
+        $this->assertTrue(Piece_Flow_Error::hasErrors());
 
-        $error = $stack->pop();
+        $error = Piece_Flow_Error::pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_NOT_FOUND, $error['code']);
 
@@ -144,11 +142,10 @@ class Piece_Flow_ConfigReader_FactoryTestCase extends PHPUnit_TestCase
 
 
         Piece_Flow_ConfigReader_Factory::factory('foo.bar', 'Baz');
-        $stack = &Piece_Flow_Error::getErrorStack();
 
-        $this->assertTrue($stack->hasErrors());
+        $this->assertTrue(Piece_Flow_Error::hasErrors());
 
-        $error = $stack->pop();
+        $error = Piece_Flow_Error::pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_INVALID_DRIVER, $error['code']);
 

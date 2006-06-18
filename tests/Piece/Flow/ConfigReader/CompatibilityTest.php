@@ -212,8 +212,7 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
         $cache->clean();
         $this->_source = null;
         $this->_config = null;
-        $stack = &Piece_Flow_Error::getErrorStack();
-        $stack->getErrors(true);
+        Piece_Flow_Error::clearErrors();
         Piece_Flow_Error::popCallback();
     }
 
