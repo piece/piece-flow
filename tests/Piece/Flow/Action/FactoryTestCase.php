@@ -86,24 +86,19 @@ class Piece_Flow_Action_FactoryTestCase extends PHPUnit_TestCase
     {
         $GLOBALS['PIECE_FLOW_Action_Instances'] = array();
         $GLOBALS['PIECE_FLOW_Action_Directory'] = null;
-        $stack = &Piece_Flow_Error::getErrorStack();
-        $stack->getErrors(true);
+        Piece_Flow_Error::clearErrors();
         Piece_Flow_Error::popCallback();
     }
 
-    function testFailureToCreateByEmptyActionPath()
+    function testFailureToCreateByEmptyActionDirectory()
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
         Piece_Flow_Action_Factory::factory('Piece_Flow_Action_FooAction');
 
-        $this->assertTrue(Piece_Flow_Error::hasErrors());
+        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
 
-        $stack = &Piece_Flow_Error::getErrorStack();
-
-        $this->assertTrue($stack->hasErrors());
-
-        $error = $stack->pop();
+        $error = Piece_Flow_Error::pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_NOT_GIVEN, $error['code']);
 
@@ -117,13 +112,9 @@ class Piece_Flow_Action_FactoryTestCase extends PHPUnit_TestCase
         Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/../../..');
         Piece_Flow_Action_Factory::factory('Piece_Flow_Action_NonExistingAction');
 
-        $this->assertTrue(Piece_Flow_Error::hasErrors());
+        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
 
-        $stack = &Piece_Flow_Error::getErrorStack();
-
-        $this->assertTrue($stack->hasErrors());
-
-        $error = $stack->pop();
+        $error = Piece_Flow_Error::pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_NOT_FOUND, $error['code']);
 
@@ -137,13 +128,9 @@ class Piece_Flow_Action_FactoryTestCase extends PHPUnit_TestCase
         Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/../../..');
         Piece_Flow_Action_Factory::factory('Piece_Flow_Action_InvalidAction');
 
-        $this->assertTrue(Piece_Flow_Error::hasErrors());
+        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
 
-        $stack = &Piece_Flow_Error::getErrorStack();
-
-        $this->assertTrue($stack->hasErrors());
-
-        $error = $stack->pop();
+        $error = Piece_Flow_Error::pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_NOT_FOUND, $error['code']);
 
