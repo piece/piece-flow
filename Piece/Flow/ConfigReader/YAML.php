@@ -98,7 +98,6 @@ class Piece_Flow_ConfigReader_YAML extends Piece_Flow_ConfigReader_Common
      * file.
      *
      * @return array
-     * @throws PEAR_ErrorStack
      */
     function _parseFile()
     {
