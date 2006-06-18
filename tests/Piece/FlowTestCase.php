@@ -107,8 +107,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $cache->clean();
         $this->_source = null;
         $this->_config = null;
-        $stack = &Piece_Flow_Error::getErrorStack();
-        $stack->getErrors(true);
+        Piece_Flow_Error::clearErrors();
         Piece_Flow_Error::popCallback();
      }
 
@@ -262,10 +261,9 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $flow->configure($this->_source, null, dirname(__FILE__));
         $flow->setAttribute('foo', 'bar');
 
-        $this->assertTrue(Piece_Flow_Error::hasErrors());
+        $this->assertTrue(Piece_Flow_Error::hasErrors('warning'));
 
-        $stack = &Piece_Flow_Error::getErrorStack();
-        $error = $stack->pop();
+        $error = Piece_Flow_Error::pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_INVALID_OPERATION, $error['code']);
     }
@@ -276,11 +274,15 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $flow->configure($this->_source, null, dirname(__FILE__));
         $flow->setPayload(new stdClass());
 
-        $stack = &Piece_Flow_Error::getErrorStack();
-        $error = $stack->pop();
+        $stack = &PEAR_ErrorStack::singleton('Piece_Flow');
+
+        $this->assertTrue(Piece_Flow_Error::hasErrors('warning'));
+
+        $error = Piece_Flow_Error::pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_NOT_FOUND, $error['code']);
-        $this->assertFalse(Piece_Flow_Error::hasErrors());
+
+        $this->assertFalse(Piece_Flow_Error::hasErrors('warning'));
     }
 
     function testFailureToSetPayloadBeforeConfiguringFlow()
@@ -288,10 +290,9 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $flow = &new Piece_Flow();
         $flow->setPayload(new stdClass());
 
-        $this->assertTrue(Piece_Flow_Error::hasErrors());
+        $this->assertTrue(Piece_Flow_Error::hasErrors('warning'));
 
-        $stack = &Piece_Flow_Error::getErrorStack();
-        $error = $stack->pop();
+        $error = Piece_Flow_Error::pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_INVALID_OPERATION, $error['code']);
     }
@@ -329,10 +330,9 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $flow->configure($this->_source, null, dirname(__FILE__));
         $flow->getView();
 
-        $this->assertTrue(Piece_Flow_Error::hasErrors());
+        $this->assertTrue(Piece_Flow_Error::hasErrors('warning'));
 
-        $stack = &Piece_Flow_Error::getErrorStack();
-        $error = $stack->pop();
+        $error = Piece_Flow_Error::pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_INVALID_OPERATION, $error['code']);
     }
@@ -348,10 +348,9 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $flow->triggerEvent('go');
         $flow->getView();
 
-        $this->assertTrue(Piece_Flow_Error::hasErrors());
+        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
 
-        $stack = &Piece_Flow_Error::getErrorStack();
-        $error = $stack->pop();
+        $error = Piece_Flow_Error::pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_INVALID_TRANSITION, $error['code']);
 
@@ -418,16 +417,15 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
 
         $flow->triggerEvent('go');
 
-        $this->assertTrue(Piece_Flow_Error::hasErrors());
+        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
 
-        $stack = &Piece_Flow_Error::getErrorStack();
-        $error = $stack->pop();
+        $error = Piece_Flow_Error::pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_INVALID_OPERATION, $error['code']);
 
         unset($GLOBALS['initializeCalled']);
         unset($GLOBALS['finalizeCalled']);
-        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+        Piece_Flow_Error::pop();
     }
 
     /**#@-*/
