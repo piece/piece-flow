@@ -118,14 +118,15 @@ class Piece_Flow_Continuation
      * @param string  $name
      * @param string  $file
      * @param boolean $isExclusive
-     * @throws PEAR_ErrorStack
+     * @throws PIECE_FLOW_ERROR_ALREADY_EXISTS
      */
      function addFlow($name, $file, $isExclusive = false)
      {
          if ($this->_enableSingleFlowMode && count(array_keys($this->_flowDefinitions))) {
-             return Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_ALREADY_EXISTS,
-                                                 'A flow definition already exists in the continuation object.'
-                                                 );
+             Piece_Flow_Error::push(PIECE_FLOW_ERROR_ALREADY_EXISTS,
+                                    'A flow definition already exists in the continuation object.'
+                                    );
+             return;
          }
 
          $this->_flowDefinitions[$name] = array('file' => $file,
@@ -141,13 +142,18 @@ class Piece_Flow_Continuation
      *
      * @param mixed &$payload
      * @return string
-     * @throws PEAR_ErrorStack
+     * @throws PIECE_FLOW_ERROR_NOT_GIVEN
+     * @throws PIECE_FLOW_ERROR_NOT_FOUND
+     * @throws PIECE_FLOW_ERROR_INVALID_DRIVER
+     * @throws PIECE_FLOW_ERROR_NOT_READABLE
+     * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
+     * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
      */
     function invoke(&$payload)
     {
-        $resultOfPrepare = $this->_prepare();
-        if (Piece_Flow_Error::isError($resultOfPrepare)) {
-            return $resultOfPrepare;
+        $this->_prepare();
+        if (Piece_Flow_Error::hasErrors('exception')) {
+            return;
         }
 
         if (!$this->_isFirstTime) {
@@ -156,8 +162,8 @@ class Piece_Flow_Continuation
             $currentFlowExecutionTicket = $this->_start($payload);
         }
 
-        if (Piece_Flow_Error::isError($currentFlowExecutionTicket)) {
-            return $currentFlowExecutionTicket;
+        if (Piece_Flow_Error::hasErrors('exception')) {
+            return;
         }
 
         $this->_activated = true;
@@ -180,17 +186,18 @@ class Piece_Flow_Continuation
      * state.
      *
      * @return string
-     * @throws PEAR_ErrorStack
+     * @throws PIECE_FLOW_ERROR_INVALID_TRANSITION
      */
     function getView()
     {
         if (!$this->_activated()) {
             Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
-            $error = Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_OPERATION,
-                                                  __FUNCTION__ . ' method must be called after starting/continuing flows.'
-                                                  );
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                   __FUNCTION__ . ' method must be called after starting/continuing flows.',
+                                   'warning'
+                                   );
             Piece_Flow_Error::popCallback();
-            return $error;
+            return;
         }
 
         return $this->_flowExecutions[$this->_currentFlowExecutionTicket]->getView();
@@ -256,17 +263,17 @@ class Piece_Flow_Continuation
      *
      * @param string $name
      * @param mixed  $value
-     * @throws PEAR_ErrorStack
      */
     function setAttribute($name, $value)
     {
         if (!$this->_activated()) {
             Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
-            $error = Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_OPERATION,
-                                                  __FUNCTION__ . ' method must be called after starting/continuing flows.'
-                                                  );
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                   __FUNCTION__ . ' method must be called after starting/continuing flows.',
+                                   'warning'
+                                   );
             Piece_Flow_Error::popCallback();
-            return $error;
+            return;
         }
 
         $this->_flowExecutions[$this->_currentFlowExecutionTicket]->setAttribute($name, $value);
@@ -280,17 +287,17 @@ class Piece_Flow_Continuation
      *
      * @param string $name
      * @return boolean
-     * @throws PEAR_ErrorStack
      */
     function hasAttribute($name)
     {
         if (!$this->_activated()) {
             Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
-            $error = Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_OPERATION,
-                                                  __FUNCTION__ . ' method must be called after starting/continuing flows.'
-                                                  );
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                   __FUNCTION__ . ' method must be called after starting/continuing flows.',
+                                   'warning'
+                                   );
             Piece_Flow_Error::popCallback();
-            return $error;
+            return;
         }
 
         return $this->_flowExecutions[$this->_currentFlowExecutionTicket]->hasAttribute($name);
@@ -304,17 +311,17 @@ class Piece_Flow_Continuation
      *
      * @param string $name
      * @return mixed
-     * @throws PEAR_ErrorStack
      */
     function getAttribute($name)
     {
         if (!$this->_activated()) {
             Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
-            $error = Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_OPERATION,
-                                                  __FUNCTION__ . ' method must be called after starting/continuing flows.'
-                                                  );
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                   __FUNCTION__ . ' method must be called after starting/continuing flows.',
+                                   'warning'
+                                   );
             Piece_Flow_Error::popCallback();
-            return $error;
+            return;
         }
 
         return $this->_flowExecutions[$this->_currentFlowExecutionTicket]->getAttribute($name);
@@ -386,17 +393,17 @@ class Piece_Flow_Continuation
      * Gets the current flow execution ticket for the current flow.
      *
      * @return string
-     * @throws PEAR_ErrorStack
      */
     function getCurrentFlowExecutionTicket()
     {
         if (!$this->_activated()) {
             Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
-            $error = Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_OPERATION,
-                                                  __FUNCTION__ . ' method must be called after starting/continuing flows.'
-                                                  );
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                   __FUNCTION__ . ' method must be called after starting/continuing flows.',
+                                   'warning'
+                                   );
             Piece_Flow_Error::popCallback();
-            return $error;
+            return;
         }
 
         return $this->_currentFlowExecutionTicket;
@@ -426,7 +433,7 @@ class Piece_Flow_Continuation
      * Prepares the flow execution ticket, the flow name, and whether the
      * flow invocation is the first time or not.
      *
-     * @throws PEAR_ErrorStack
+     * @throws PIECE_FLOW_ERROR_NOT_GIVEN
      */
     function _prepare()
     {
@@ -447,9 +454,10 @@ class Piece_Flow_Continuation
             } else {
                 $this->_flowName = call_user_func($this->_flowNameCallback);
                 if (is_null($this->_flowName) || !strlen($this->_flowName)) {
-                    return Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_GIVEN,
-                                                        'A flow name must be given in this case.'
-                                                        );
+                    Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_GIVEN,
+                                           'A flow name must be given in this case.'
+                                           );
+                    return;
                 }
 
                 if (array_key_exists($this->_flowName, $this->_exclusiveFlows)) {
@@ -469,14 +477,14 @@ class Piece_Flow_Continuation
      * Continues with the current continuation.
      *
      * @param mixed &$payload
-     * @throws PEAR_ErrorStack
+     * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
      */
     function _continue(&$payload)
     {
         $this->_flowExecutions[$this->_flowExecutionTicket]->setPayload($payload);
-        $result = $this->_flowExecutions[$this->_flowExecutionTicket]->triggerEvent(call_user_func($this->_eventNameCallback));
-        if (Piece_Flow_Error::isError($result)) {
-            return $result;
+        $this->_flowExecutions[$this->_flowExecutionTicket]->triggerEvent(call_user_func($this->_eventNameCallback));
+        if (Piece_Flow_Error::hasErrors('exception')) {
+            return;
         }
 
         return $this->_flowExecutionTicket;
@@ -490,14 +498,19 @@ class Piece_Flow_Continuation
      *
      * @param mixed &$payload
      * @return string
-     * @throws PEAR_ErrorStack
+     * @throws PIECE_FLOW_ERROR_NOT_FOUND
+     * @throws PIECE_FLOW_ERROR_INVALID_DRIVER
+     * @throws PIECE_FLOW_ERROR_NOT_READABLE
+     * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
+     * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
      */
     function _start(&$payload)
     {
         if (!array_key_exists($this->_flowName, $this->_flowDefinitions)) {
-            return Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_NOT_FOUND,
-                                                "The flow name [ {$this->_flowName} ] not found in the flow definitions."
-                                                );
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
+                                   "The flow name [ {$this->_flowName} ] not found in the flow definitions."
+                                   );
+            return;
         }
 
         $flow = &new Piece_Flow();
@@ -505,12 +518,15 @@ class Piece_Flow_Continuation
                                     null,
                                     $this->_cacheDirectory
                                     );
-        if (Piece_Flow_Error::isError($result)) {
-            return $result;
+        if (Piece_Flow_Error::hasErrors('exception')) {
+            return;
         }
 
         $flow->setPayload($payload);
         $flow->start();
+        if (Piece_Flow_Error::hasErrors('exception')) {
+            return;
+        }
 
         while (true) {
             $flowExecutionTicket = $this->_generateFlowExecutionTicket();
