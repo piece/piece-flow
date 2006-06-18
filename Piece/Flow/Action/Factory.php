@@ -96,7 +96,7 @@ class Piece_Flow_Action_Factory
     {
         if (!array_key_exists($class, $GLOBALS['PIECE_FLOW_Action_Instances'])) {
             Piece_Flow_Action_Factory::_load($class);
-            if (Piece_Flow_Error::hasErrors()) {
+            if (Piece_Flow_Error::hasErrors('exception')) {
                 $return = null;
                 return $return;
             }
