@@ -105,7 +105,7 @@ class Piece_Flow_Error
      * @param array   $repackage
      * @param array   $backtrace
      * @see PEAR_ErrorStack::staticPush()
-     * @since Method available since Release 1.4.0
+     * @since Method available since Release 1.0.0
      */
     function push($code, $message = false, $level = 'exception',
                   $params = array(), $repackage = false, $backtrace = false
@@ -127,7 +127,7 @@ class Piece_Flow_Error
      *
      * @param callback $callback
      * @see PEAR_ErrorStack::staticPushCallback()
-     * @since Method available since Release 1.4.0
+     * @since Method available since Release 1.0.0
      */
     function pushCallback($callback)
     {
@@ -143,7 +143,7 @@ class Piece_Flow_Error
      *
      * @return callback
      * @see PEAR_ErrorStack::staticPopCallback()
-     * @since Method available since Release 1.4.0
+     * @since Method available since Release 1.0.0
      */
     function popCallback()
     {
@@ -160,7 +160,7 @@ class Piece_Flow_Error
      * @param string $level
      * @return boolean
      * @see PEAR_ErrorStack::staticHasErrors()
-     * @since Method available since Release 1.4.0
+     * @since Method available since Release 1.0.0
      */
     function hasErrors($level = false)
     {
@@ -173,7 +173,7 @@ class Piece_Flow_Error
      *
      * @return array
      * @see PEAR_ErrorStack::pop()
-     * @since Method available since Release 1.4.0
+     * @since Method available since Release 1.0.0
      */
     function pop()
     {
@@ -185,7 +185,7 @@ class Piece_Flow_Error
      * Clears the error stack for the package.
      *
      * @see PEAR_ErrorStack::getErrors()
-     * @since Method available since Release 1.4.0
+     * @since Method available since Release 1.0.0
      */
     function clearErrors()
     {
