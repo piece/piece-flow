@@ -217,10 +217,22 @@ class Piece_Flow
 
     /**
      * Starts the Finite State Machine.
+     *
+     * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
      */
     function start()
     {
+        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
         $this->_fsm->start();
+        Piece_Flow_Error::popCallback();
+        if (Stagehand_FSM_Error::hasErrors('exception')) {
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                   "The flow [ {$this->_name} ] was already shutdown.",
+                                   'exception',
+                                   array(),
+                                   Stagehand_FSM_Error::pop()
+                                   );
+        }
     }
 
     // }}}
