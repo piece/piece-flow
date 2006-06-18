@@ -274,8 +274,6 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $flow->configure($this->_source, null, dirname(__FILE__));
         $flow->setPayload(new stdClass());
 
-        $stack = &PEAR_ErrorStack::singleton('Piece_Flow');
-
         $this->assertTrue(Piece_Flow_Error::hasErrors('warning'));
 
         $error = Piece_Flow_Error::pop();
