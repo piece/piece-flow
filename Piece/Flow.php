@@ -110,18 +110,21 @@ class Piece_Flow
      * @param mixed  $source
      * @param string $type
      * @param string $cacheDirectory
-     * @throws PEAR_ErrorStack
+     * @throws PIECE_FLOW_ERROR_NOT_FOUND
+     * @throws PIECE_FLOW_ERROR_INVALID_DRIVER
+     * @throws PIECE_FLOW_ERROR_NOT_READABLE
+     * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
      */
     function configure($source, $type = null, $cacheDirectory = null)
     {
         $driver = &Piece_Flow_ConfigReader_Factory::factory($source, $type);
-        if (Piece_Flow_Error::isError($driver)) {
-            return $driver;
+        if (Piece_Flow_Error::hasErrors('exception')) {
+            return;
         }
 
         $config = &$driver->configure($cacheDirectory);
-        if (Piece_Flow_Error::isError($config)) {
-            return $config;
+        if (Piece_Flow_Error::hasErrors('exception')) {
+            return;
         }
 
         $this->_fsm = &new Stagehand_FSM($config->getFirstState());
@@ -164,7 +167,7 @@ class Piece_Flow
      * state.
      *
      * @return string
-     * @throws PEAR_ErrorStack
+     * @throws PIECE_FLOW_ERROR_INVALID_TRANSITION
      */
     function getView()
     {
@@ -172,11 +175,12 @@ class Piece_Flow
             || is_null($this->_fsm->getCurrentState())
             ) {
             Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
-            $error = Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_OPERATION,
-                                                  __FUNCTION__ . ' method must be called after starting flows.'
-                                                  );
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                   __FUNCTION__ . ' method must be called after starting flows.',
+                                   'warning'
+                                   );
             Piece_Flow_Error::popCallback();
-            return $error;
+            return;
         }
 
         if (!$this->isFinalState()) {
@@ -186,9 +190,10 @@ class Piece_Flow
         }
 
         if (!array_key_exists($viewIndex, $this->_views)) {
-            return Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_TRANSITION,
-                                                "A invalid transition detected. The state [ $viewIndex ] has not a view. Maybe The state [ $viewIndex ] is an action state. Check the definition of the flow [ {$this->_name} ]."
-                                                );
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_TRANSITION,
+                                   "A invalid transition detected. The state [ $viewIndex ] has not a view. Maybe The state [ $viewIndex ] is an action state. Check the definition of the flow [ {$this->_name} ]."
+                                   );
+            return;
         }
 
         return $this->_views[$viewIndex];
@@ -227,26 +232,42 @@ class Piece_Flow
      * @param string $eventName
      * @param boolean $transitionToHistoryMarker
      * @return Stagehand_FSM_State
-     * @throws PEAR_ErrorStack
+     * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
      */
     function &triggerEvent($eventName, $transitionToHistoryMarker = false)
     {
-        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_IGNORE . ';'));
+        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
         $state = &$this->_fsm->triggerEvent($eventName,
                                             $transitionToHistoryMarker
                                             );
         Piece_Flow_Error::popCallback();
-        if (Stagehand_FSM_Error::isError($state)) {
-            $error = Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_OPERATION,
-                                                  "The flow [ {$this->_name} ] was already shutdown."
-                                                  );
-            return $error;
+        if (Stagehand_FSM_Error::hasErrors('exception')) {
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                   "The flow [ {$this->_name} ] was already shutdown.",
+                                   'exception',
+                                   array(),
+                                   Stagehand_FSM_Error::pop()
+                                   );
+            $return = null;
+            return $return;
         }
 
         if (!is_null($this->_lastState)
             && $state->getName() == $this->_lastState['name']
             ) {
+            Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
             $state = &$this->_fsm->triggerEvent(STAGEHAND_FSM_EVENT_END);
+            Piece_Flow_Error::popCallback();
+            if (Stagehand_FSM_Error::hasErrors('exception')) {
+                Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                       "The flow [ {$this->_name} ] was already shutdown.",
+                                       'exception',
+                                       array(),
+                                       Stagehand_FSM_Error::pop()
+                                       );
+                $return = null;
+                return $return;
+            }
         }
 
         return $state;
@@ -288,7 +309,6 @@ class Piece_Flow
      *
      * @param string $name
      * @param mixed  $value
-     * @throws PEAR_ErrorStack
      */
     function setAttribute($name, $value)
     {
@@ -296,11 +316,12 @@ class Piece_Flow
             || is_null($this->_fsm->getCurrentState())
             ) {
             Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
-            $error = Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_OPERATION,
-                                                  __FUNCTION__ . ' method must be called after starting flows.'
-                                                  );
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                   __FUNCTION__ . ' method must be called after starting flows.',
+                                   'warning'
+                                   );
             Piece_Flow_Error::popCallback();
-            return $error;
+            return;
         }
 
         $this->_attributes[$name] = $value;
@@ -314,7 +335,6 @@ class Piece_Flow
      *
      * @param string $name
      * @param mixed  &$value
-     * @throws PEAR_ErrorStack
      */
     function setAttributeByRef($name, &$value)
     {
@@ -322,11 +342,12 @@ class Piece_Flow
             || is_null($this->_fsm->getCurrentState())
             ) {
             Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
-            $error = Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_OPERATION,
-                                                  __FUNCTION__ . ' method must be called after starting flows.'
-                                                  );
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                   __FUNCTION__ . ' method must be called after starting flows.',
+                                   'warning'
+                                   );
             Piece_Flow_Error::popCallback();
-            return $error;
+            return;
         }
 
         $this->_attributes[$name] = &$value;
@@ -343,6 +364,18 @@ class Piece_Flow
      */
     function hasAttribute($name)
     {
+        if (!is_a($this->_fsm, 'Stagehand_FSM')
+            || is_null($this->_fsm->getCurrentState())
+            ) {
+            Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                   __FUNCTION__ . ' method must be called after starting flows.',
+                                   'warning'
+                                   );
+            Piece_Flow_Error::popCallback();
+            return;
+        }
+
         return array_key_exists($name, $this->_attributes);
     }
 
@@ -357,6 +390,19 @@ class Piece_Flow
      */
     function &getAttribute($name)
     {
+        if (!is_a($this->_fsm, 'Stagehand_FSM')
+            || is_null($this->_fsm->getCurrentState())
+            ) {
+            Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                   __FUNCTION__ . ' method must be called after starting flows.',
+                                   'warning'
+                                   );
+            Piece_Flow_Error::popCallback();
+            $return = null;
+            return $return;
+        }
+
         $attribute = &$this->_attributes[$name];
         return $attribute;
     }
@@ -373,11 +419,12 @@ class Piece_Flow
     {
         if (!is_a($this->_fsm, 'Stagehand_FSM')) {
             Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
-            $error = Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_OPERATION,
-                                                __FUNCTION__ . ' method must be called after configuring flows.'
-                                                );
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                   __FUNCTION__ . ' method must be called after configuring flows.',
+                                   'warning'
+                                   );
             Piece_Flow_Error::popCallback();
-            return $error;
+            return;
         }
 
         $this->_fsm->setPayload($payload);
@@ -395,11 +442,12 @@ class Piece_Flow
     {
         if (!is_a($this->_fsm, 'Stagehand_FSM')) {
             Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
-            $error = Piece_Flow_Error::raiseError(PIECE_FLOW_ERROR_INVALID_OPERATION,
-                                                __FUNCTION__ . ' method must be called after configuring flows.'
-                                                );
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                   __FUNCTION__ . ' method must be called after configuring flows.',
+                                   'warning'
+                                   );
             Piece_Flow_Error::popCallback();
-            return $error;
+            return;
         }
 
         return $this->getCurrentStateName() == STAGEHAND_FSM_STATE_FINAL;
