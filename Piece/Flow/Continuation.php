@@ -454,7 +454,7 @@ class Piece_Flow_Continuation
             } else {
                 $this->_flowName = call_user_func($this->_flowNameCallback);
                 if (is_null($this->_flowName) || !strlen($this->_flowName)) {
-                    Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_GIVEN,
+                    Piece_Flow_Error::push(PIECE_FLOW_ERROR_FLOW_NAME_NOT_GIVEN,
                                            'A flow name must be given in this case.'
                                            );
                     return;

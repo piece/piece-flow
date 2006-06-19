@@ -500,7 +500,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 
         $error = Piece_Flow_Error::pop();
 
-        $this->assertEquals(PIECE_FLOW_ERROR_NOT_GIVEN, $error['code']);
+        $this->assertEquals(PIECE_FLOW_ERROR_FLOW_NAME_NOT_GIVEN, $error['code']);
 
         unset($GLOBALS['ShutdownCount']);
         Piece_Flow_Error::popCallback();
