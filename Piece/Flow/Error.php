@@ -168,6 +168,9 @@ class Piece_Flow_Error
         return PEAR_ErrorStack::staticHasErrors('Piece_Flow', $level);
     }
 
+    // }}}
+    // {{{ pop()
+
     /**
      * Pops an error off of the error stack for the package. This method is a
      * wrapper for PEAR_ErrorStack::pop() method.
@@ -181,6 +184,9 @@ class Piece_Flow_Error
         $stack = &PEAR_ErrorStack::singleton('Piece_Flow');
         return $stack->pop();
     }
+
+    // }}}
+    // {{{ clearErrors()
 
     /**
      * Clears the error stack for the package.
