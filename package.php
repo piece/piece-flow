@@ -41,7 +41,7 @@
 require_once 'PEAR/PackageFileManager2.php';
 
 $version = '1.0.0';
-$notes = '- The first stable release of Piece_Flow.';
+$notes = 'The first stable release of Piece_Flow.';
 
 $package = new PEAR_PackageFileManager2();
 $result = $package->setOptions(array('filelistgenerator' => 'svn',
