@@ -495,7 +495,7 @@ class Piece_Flow_Continuation
     // {{{ _start()
 
     /**
-     * Starts a new flow.
+     * Starts a new continuation with a flow.
      *
      * @param mixed &$payload
      * @return string
