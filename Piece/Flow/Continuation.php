@@ -148,6 +148,7 @@ class Piece_Flow_Continuation
      * @throws PIECE_FLOW_ERROR_NOT_READABLE
      * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
      * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
+     * @throws PIECE_FLOW_ERROR_FLOW_NAME_NOT_GIVEN
      */
     function invoke(&$payload)
     {
@@ -433,7 +434,7 @@ class Piece_Flow_Continuation
      * Prepares the flow execution ticket, the flow name, and whether the
      * flow invocation is the first time or not.
      *
-     * @throws PIECE_FLOW_ERROR_NOT_GIVEN
+     * @throws PIECE_FLOW_ERROR_FLOW_NAME_NOT_GIVEN
      */
     function _prepare()
     {
