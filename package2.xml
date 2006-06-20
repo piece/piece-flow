@@ -231,7 +231,50 @@
    </package>
   </optional>
  </dependencies>
- <phprelease />
+ <phprelease>
+  <filelist>
+   <install as="piece-flow.rng" name="data/piece-flow.rng" />
+   <install as="piece-flow.yaml" name="data/piece-flow.yaml" />
+   <install as="registrationFlow.xml" name="data/registrationFlow.xml" />
+   <install as="registrationFlow.yaml" name="data/registrationFlow.yaml" />
+   <install as="LICENSE" name="docs/LICENSE" />
+   <install as="README.sdoc" name="docs/README.sdoc" />
+   <install as="Piece/Flow/Action/BarAction.php" name="tests/Piece/Flow/Action/BarAction.php" />
+   <install as="Piece/Flow/Action/FactoryTestCase.php" name="tests/Piece/Flow/Action/FactoryTestCase.php" />
+   <install as="Piece/Flow/Action/FooAction.php" name="tests/Piece/Flow/Action/FooAction.php" />
+   <install as="Piece/Flow/Action/InvalidAction.php" name="tests/Piece/Flow/Action/InvalidAction.php" />
+   <install as="Piece/Flow/Action/TestRunner.php" name="tests/Piece/Flow/Action/TestRunner.php" />
+   <install as="Piece/Flow/ConfigReader/Baz.php" name="tests/Piece/Flow/ConfigReader/Baz.php" />
+   <install as="Piece/Flow/ConfigReader/broken.xml" name="tests/Piece/Flow/ConfigReader/broken.xml" />
+   <install as="Piece/Flow/ConfigReader/CompatibilityTest.php" name="tests/Piece/Flow/ConfigReader/CompatibilityTest.php" />
+   <install as="Piece/Flow/ConfigReader/FactoryTestCase.php" name="tests/Piece/Flow/ConfigReader/FactoryTestCase.php" />
+   <install as="Piece/Flow/ConfigReader/invalid.xml" name="tests/Piece/Flow/ConfigReader/invalid.xml" />
+   <install as="Piece/Flow/ConfigReader/TestRunner.php" name="tests/Piece/Flow/ConfigReader/TestRunner.php" />
+   <install as="Piece/Flow/ConfigReader/XML4TestCase.php" name="tests/Piece/Flow/ConfigReader/XML4TestCase.php" />
+   <install as="Piece/Flow/ConfigReader/XML5TestCase.php" name="tests/Piece/Flow/ConfigReader/XML5TestCase.php" />
+   <install as="Piece/Flow/ConfigReader/YAMLTestCase.php" name="tests/Piece/Flow/ConfigReader/YAMLTestCase.php" />
+   <install as="Piece/Flow/ActionInvokerTestCase.php" name="tests/Piece/Flow/ActionInvokerTestCase.php" />
+   <install as="Piece/Flow/ContinuationTestCase.php" name="tests/Piece/Flow/ContinuationTestCase.php" />
+   <install as="Piece/Flow/Counter.yaml" name="tests/Piece/Flow/Counter.yaml" />
+   <install as="Piece/Flow/CounterAction.php" name="tests/Piece/Flow/CounterAction.php" />
+   <install as="Piece/Flow/FooAction.php" name="tests/Piece/Flow/FooAction.php" />
+   <install as="Piece/Flow/SecondCounter.yaml" name="tests/Piece/Flow/SecondCounter.yaml" />
+   <install as="Piece/Flow/SecondCounterAction.php" name="tests/Piece/Flow/SecondCounterAction.php" />
+   <install as="Piece/Flow/Shutdown.yaml" name="tests/Piece/Flow/Shutdown.yaml" />
+   <install as="Piece/Flow/ShutdownAction.php" name="tests/Piece/Flow/ShutdownAction.php" />
+   <install as="Piece/Flow/TestRunner.php" name="tests/Piece/Flow/TestRunner.php" />
+   <install as="Piece/FlowInitialAction.php" name="tests/Piece/FlowInitialAction.php" />
+   <install as="Piece/FlowTestCase.php" name="tests/Piece/FlowTestCase.php" />
+   <install as="Piece/FlowTestCaseAction.php" name="tests/Piece/FlowTestCaseAction.php" />
+   <install as="Piece/initial.xml" name="tests/Piece/initial.xml" />
+   <install as="Piece/initial.yaml" name="tests/Piece/initial.yaml" />
+   <install as="Piece/invalid.yaml" name="tests/Piece/invalid.yaml" />
+   <install as="Piece/optional.xml" name="tests/Piece/optional.xml" />
+   <install as="Piece/optional.yaml" name="tests/Piece/optional.yaml" />
+   <install as="Piece/TestRunner.php" name="tests/Piece/TestRunner.php" />
+   <install as="AllTestRunner.php" name="tests/AllTestRunner.php" />
+  </filelist>
+ </phprelease>
  <changelog>
   <release>
    <version>

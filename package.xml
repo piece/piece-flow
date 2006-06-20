@@ -29,24 +29,24 @@
   <filelist>
    <dir name="/" baseinstalldir="/">
     <dir name="data">
-     <file role="data" name="piece-flow.rng">
+     <file role="data" name="piece-flow.rng" install-as="piece-flow.rng">
       <replace from="@package_version@" to="version" type="package-info"/>
      </file>
-     <file role="data" name="piece-flow.yaml">
+     <file role="data" name="piece-flow.yaml" install-as="piece-flow.yaml">
       <replace from="@package_version@" to="version" type="package-info"/>
      </file>
-     <file role="data" name="registrationFlow.xml">
+     <file role="data" name="registrationFlow.xml" install-as="registrationFlow.xml">
       <replace from="@package_version@" to="version" type="package-info"/>
      </file>
-     <file role="data" name="registrationFlow.yaml">
+     <file role="data" name="registrationFlow.yaml" install-as="registrationFlow.yaml">
       <replace from="@package_version@" to="version" type="package-info"/>
      </file>
     </dir> <!-- /data -->
     <dir name="docs">
-     <file role="doc" name="LICENSE">
+     <file role="doc" name="LICENSE" install-as="LICENSE">
       <replace from="@package_version@" to="version" type="package-info"/>
      </file>
-     <file role="doc" name="README.sdoc">
+     <file role="doc" name="README.sdoc" install-as="README.sdoc">
       <replace from="@package_version@" to="version" type="package-info"/>
      </file>
     </dir> <!-- /docs -->
@@ -95,111 +95,111 @@
      <dir name="Piece">
       <dir name="Flow">
        <dir name="Action">
-        <file role="test" name="BarAction.php">
+        <file role="test" name="BarAction.php" install-as="Piece/Flow/Action/BarAction.php">
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
-        <file role="test" name="FactoryTestCase.php">
+        <file role="test" name="FactoryTestCase.php" install-as="Piece/Flow/Action/FactoryTestCase.php">
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
-        <file role="test" name="FooAction.php">
+        <file role="test" name="FooAction.php" install-as="Piece/Flow/Action/FooAction.php">
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
-        <file role="test" name="InvalidAction.php">
+        <file role="test" name="InvalidAction.php" install-as="Piece/Flow/Action/InvalidAction.php">
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
-        <file role="test" name="TestRunner.php">
+        <file role="test" name="TestRunner.php" install-as="Piece/Flow/Action/TestRunner.php">
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
        </dir> <!-- /tests/Piece/Flow/Action -->
        <dir name="ConfigReader">
-        <file role="test" name="Baz.php">
+        <file role="test" name="Baz.php" install-as="Piece/Flow/ConfigReader/Baz.php">
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
-        <file role="test" name="broken.xml">
+        <file role="test" name="broken.xml" install-as="Piece/Flow/ConfigReader/broken.xml">
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
-        <file role="test" name="CompatibilityTest.php">
+        <file role="test" name="CompatibilityTest.php" install-as="Piece/Flow/ConfigReader/CompatibilityTest.php">
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
-        <file role="test" name="FactoryTestCase.php">
+        <file role="test" name="FactoryTestCase.php" install-as="Piece/Flow/ConfigReader/FactoryTestCase.php">
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
-        <file role="test" name="invalid.xml">
+        <file role="test" name="invalid.xml" install-as="Piece/Flow/ConfigReader/invalid.xml">
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
-        <file role="test" name="TestRunner.php">
+        <file role="test" name="TestRunner.php" install-as="Piece/Flow/ConfigReader/TestRunner.php">
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
-        <file role="test" name="XML4TestCase.php">
+        <file role="test" name="XML4TestCase.php" install-as="Piece/Flow/ConfigReader/XML4TestCase.php">
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
-        <file role="test" name="XML5TestCase.php">
+        <file role="test" name="XML5TestCase.php" install-as="Piece/Flow/ConfigReader/XML5TestCase.php">
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
-        <file role="test" name="YAMLTestCase.php">
+        <file role="test" name="YAMLTestCase.php" install-as="Piece/Flow/ConfigReader/YAMLTestCase.php">
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
        </dir> <!-- /tests/Piece/Flow/ConfigReader -->
-       <file role="test" name="ActionInvokerTestCase.php">
+       <file role="test" name="ActionInvokerTestCase.php" install-as="Piece/Flow/ActionInvokerTestCase.php">
         <replace from="@package_version@" to="version" type="package-info"/>
        </file>
-       <file role="test" name="ContinuationTestCase.php">
+       <file role="test" name="ContinuationTestCase.php" install-as="Piece/Flow/ContinuationTestCase.php">
         <replace from="@package_version@" to="version" type="package-info"/>
        </file>
-       <file role="test" name="Counter.yaml">
+       <file role="test" name="Counter.yaml" install-as="Piece/Flow/Counter.yaml">
         <replace from="@package_version@" to="version" type="package-info"/>
        </file>
-       <file role="test" name="CounterAction.php">
+       <file role="test" name="CounterAction.php" install-as="Piece/Flow/CounterAction.php">
         <replace from="@package_version@" to="version" type="package-info"/>
        </file>
-       <file role="test" name="FooAction.php">
+       <file role="test" name="FooAction.php" install-as="Piece/Flow/FooAction.php">
         <replace from="@package_version@" to="version" type="package-info"/>
        </file>
-       <file role="test" name="SecondCounter.yaml">
+       <file role="test" name="SecondCounter.yaml" install-as="Piece/Flow/SecondCounter.yaml">
         <replace from="@package_version@" to="version" type="package-info"/>
        </file>
-       <file role="test" name="SecondCounterAction.php">
+       <file role="test" name="SecondCounterAction.php" install-as="Piece/Flow/SecondCounterAction.php">
         <replace from="@package_version@" to="version" type="package-info"/>
        </file>
-       <file role="test" name="Shutdown.yaml">
+       <file role="test" name="Shutdown.yaml" install-as="Piece/Flow/Shutdown.yaml">
         <replace from="@package_version@" to="version" type="package-info"/>
        </file>
-       <file role="test" name="ShutdownAction.php">
+       <file role="test" name="ShutdownAction.php" install-as="Piece/Flow/ShutdownAction.php">
         <replace from="@package_version@" to="version" type="package-info"/>
        </file>
-       <file role="test" name="TestRunner.php">
+       <file role="test" name="TestRunner.php" install-as="Piece/Flow/TestRunner.php">
         <replace from="@package_version@" to="version" type="package-info"/>
        </file>
       </dir> <!-- /tests/Piece/Flow -->
-      <file role="test" name="FlowInitialAction.php">
+      <file role="test" name="FlowInitialAction.php" install-as="Piece/FlowInitialAction.php">
        <replace from="@package_version@" to="version" type="package-info"/>
       </file>
-      <file role="test" name="FlowTestCase.php">
+      <file role="test" name="FlowTestCase.php" install-as="Piece/FlowTestCase.php">
        <replace from="@package_version@" to="version" type="package-info"/>
       </file>
-      <file role="test" name="FlowTestCaseAction.php">
+      <file role="test" name="FlowTestCaseAction.php" install-as="Piece/FlowTestCaseAction.php">
        <replace from="@package_version@" to="version" type="package-info"/>
       </file>
-      <file role="test" name="initial.xml">
+      <file role="test" name="initial.xml" install-as="Piece/initial.xml">
        <replace from="@package_version@" to="version" type="package-info"/>
       </file>
-      <file role="test" name="initial.yaml">
+      <file role="test" name="initial.yaml" install-as="Piece/initial.yaml">
        <replace from="@package_version@" to="version" type="package-info"/>
       </file>
-      <file role="test" name="invalid.yaml">
+      <file role="test" name="invalid.yaml" install-as="Piece/invalid.yaml">
        <replace from="@package_version@" to="version" type="package-info"/>
       </file>
-      <file role="test" name="optional.xml">
+      <file role="test" name="optional.xml" install-as="Piece/optional.xml">
        <replace from="@package_version@" to="version" type="package-info"/>
       </file>
-      <file role="test" name="optional.yaml">
+      <file role="test" name="optional.yaml" install-as="Piece/optional.yaml">
        <replace from="@package_version@" to="version" type="package-info"/>
       </file>
-      <file role="test" name="TestRunner.php">
+      <file role="test" name="TestRunner.php" install-as="Piece/TestRunner.php">
        <replace from="@package_version@" to="version" type="package-info"/>
       </file>
      </dir> <!-- /tests/Piece -->
-     <file role="test" name="AllTestRunner.php">
+     <file role="test" name="AllTestRunner.php" install-as="AllTestRunner.php">
       <replace from="@package_version@" to="version" type="package-info"/>
      </file>
     </dir> <!-- /tests -->
