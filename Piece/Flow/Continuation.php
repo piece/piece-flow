@@ -82,12 +82,13 @@ class Piece_Flow_Continuation
     var $_flowExecutionTicketCallback;
     var $_flowNameCallback;
     var $_eventNameCallback;
-    var $_exclusiveFlows = array();
+    var $_exclusiveFlowExecutionTicketsByFlowName = array();
     var $_flowExecutionTicket;
     var $_isFirstTime;
     var $_flowName;
     var $_currentFlowExecutionTicket;
     var $_activated = false;
+    var $_exclusiveFlowNamesByFlowExecutionTicket = array();
 
     /**#@-*/
 
@@ -357,12 +358,13 @@ class Piece_Flow_Continuation
      */
     function clear()
     {
-        if (array_key_exists($this->_flowExecutionTicket, $this->_flowExecutions)
+        if (array_key_exists($this->_currentFlowExecutionTicket, $this->_flowExecutions)
             && $this->_flowExecutions[$this->_currentFlowExecutionTicket]->isFinalState()
             ) {
             unset($this->_flowExecutions[$this->_currentFlowExecutionTicket]);
-            if (array_key_exists($this->_flowName, $this->_exclusiveFlows)) {
-                unset($this->_exclusiveFlows[$this->_flowName]);
+            if (array_key_exists($this->_flowName, $this->_exclusiveFlowExecutionTicketsByFlowName)) {
+                unset($this->_exclusiveFlowExecutionTicketsByFlowName[$this->_flowName]);
+                unset($this->_exclusiveFlowNamesByFlowExecutionTicket[$this->_flowExecutionTicket]);
             }
         }
 
@@ -451,6 +453,11 @@ class Piece_Flow_Continuation
         } else {
             $this->_flowExecutionTicket = call_user_func($this->_flowExecutionTicketCallback);
             if ($this->_hasFlowExecutionTicket($this->_flowExecutionTicket)) {
+                if (array_key_exists($this->_flowExecutionTicket, $this->_exclusiveFlowNamesByFlowExecutionTicket)) {
+
+                    $this->_flowName = $this->_exclusiveFlowNamesByFlowExecutionTicket[$this->_flowExecutionTicket];
+                }
+
                 $this->_isFirstTime = false;
             } else {
                 $this->_flowName = call_user_func($this->_flowNameCallback);
@@ -461,9 +468,9 @@ class Piece_Flow_Continuation
                     return;
                 }
 
-                if (array_key_exists($this->_flowName, $this->_exclusiveFlows)) {
+                if (array_key_exists($this->_flowName, $this->_exclusiveFlowExecutionTicketsByFlowName)) {
                     $this->_isFirstTime = false;
-                    $this->_flowExecutionTicket = $this->_exclusiveFlows[$this->_flowName];
+                    $this->_flowExecutionTicket = $this->_exclusiveFlowExecutionTicketsByFlowName[$this->_flowName];
                 } else {
                     $this->_isFirstTime = true;
                 }
@@ -540,7 +547,8 @@ class Piece_Flow_Continuation
         if (!$this->_enableSingleFlowMode
             && $this->_flowDefinitions[$this->_flowName]['isExclusive']
             ) {
-            $this->_exclusiveFlows[$this->_flowName] = $flowExecutionTicket;
+            $this->_exclusiveFlowExecutionTicketsByFlowName[$this->_flowName] = $flowExecutionTicket;
+            $this->_exclusiveFlowNamesByFlowExecutionTicket[$flowExecutionTicket] = $this->_flowName;
         }
 
         return $flowExecutionTicket;
