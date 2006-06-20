@@ -40,22 +40,19 @@
 
 require_once 'PEAR/PackageFileManager2.php';
 
+PEAR::staticPushErrorHandling(PEAR_ERROR_CALLBACK, create_function('$error', 'var_dump($error); exit();'));
+
 $version = '1.0.0';
 $notes = 'The first stable release of Piece_Flow.';
 
 $package = new PEAR_PackageFileManager2();
-$result = $package->setOptions(array('filelistgenerator' => 'svn',
-                                     'changelogoldtonew' => false,
-                                     'simpleoutput'      => true,
-                                     'baseinstalldir'    => '/',
-                                     'packagefile'       => 'package2.xml',
-                                     'packagedirectory'  => '.')
-                               );
-
-if (PEAR::isError($result)) {
-    print $result->getMessage();
-    exit();
-}
+$package->setOptions(array('filelistgenerator' => 'svn',
+                           'changelogoldtonew' => false,
+                           'simpleoutput'      => true,
+                           'baseinstalldir'    => '/',
+                           'packagefile'       => 'package2.xml',
+                           'packagedirectory'  => '.')
+                     );
 
 $package->setPackage('Piece_Flow');
 $package->setPackageType('php');
@@ -81,15 +78,11 @@ $package1 = &$package->exportCompatiblePackageFile1();
 if (array_key_exists(1, $_SERVER['argv'])
     && $_SERVER['argv'][1] == 'make'
     ) {
-    $result = $package->writePackageFile();
-    $result = $package1->writePackageFile();
+    $package->writePackageFile();
+    $package1->writePackageFile();
 } else {
-    $result = $package->debugPackageFile();
-    $result = $package1->debugPackageFile();
-}
-
-if (PEAR::isError($result)) {
-    print $result->getMessage();
+    $package->debugPackageFile();
+    $package1->debugPackageFile();
 }
 
 exit();
