@@ -56,7 +56,7 @@ $package->setOptions(array('filelistgenerator' => 'svn',
 
 $package->setPackage('Piece_Flow');
 $package->setPackageType('php');
-$package->setSummary('A web flow engine/A continuation server');
+$package->setSummary('A web flow engine and a continuation server');
 $package->setDescription('Piece_Flow is a generic web flow engine and a continuation server based on Finite State Machine(FSM). Piece_Flow provides a stateful programming model for developers, and high secrity for applications.');
 $package->setChannel('pear.hatotech.org');
 $package->setLicense('BSD License (revised)',
