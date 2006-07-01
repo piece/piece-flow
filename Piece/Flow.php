@@ -317,7 +317,7 @@ class Piece_Flow
     // {{{ setAttribute()
 
     /**
-     * Sets an attribute for this flow.
+     * Sets an attribute for the flow.
      *
      * @param string $name
      * @param mixed  $value
@@ -343,7 +343,7 @@ class Piece_Flow
     // {{{ setAttributeByRef()
 
     /**
-     * Sets an attribute by reference for this flow.
+     * Sets an attribute by reference for the flow.
      *
      * @param string $name
      * @param mixed  &$value
@@ -369,7 +369,7 @@ class Piece_Flow
     // {{{ hasAttribute()
 
     /**
-     * Returns whether this flow has an attribute with a given name.
+     * Returns whether the flow has an attribute with a given name.
      *
      * @param string $name
      * @return boolean
@@ -395,7 +395,7 @@ class Piece_Flow
     // {{{ getAttribute()
 
     /**
-     * Gets an attribute for this flow.
+     * Gets an attribute for the flow.
      *
      * @param string $name
      * @return mixed
@@ -446,7 +446,7 @@ class Piece_Flow
     // {{{ isFinalState()
 
     /**
-     * Returns whether the current state is the final state of this flow.
+     * Returns whether the current state is the final state of the flow.
      *
      * @return boolean
      */
@@ -463,6 +463,54 @@ class Piece_Flow
         }
 
         return $this->getCurrentStateName() == STAGEHAND_FSM_STATE_FINAL;
+    }
+
+    // }}}
+    // {{{ removeAttribute()
+
+    /**
+     * Removes an attribute from the flow.
+     *
+     * @param string $name
+     */
+    function removeAttribute($name)
+    {
+        if (!is_a($this->_fsm, 'Stagehand_FSM')
+            || is_null($this->_fsm->getCurrentState())
+            ) {
+            Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                   __FUNCTION__ . ' method must be called after starting flows.',
+                                   'warning'
+                                   );
+            Piece_Flow_Error::popCallback();
+            return;
+        }
+
+        unset($this->_attributes[$name]);
+    }
+
+    // }}}
+    // {{{ clearAttributes()
+
+    /**
+     * Removes all attributes from the flow.
+     */
+    function clearAttributes()
+    {
+        if (!is_a($this->_fsm, 'Stagehand_FSM')
+            || is_null($this->_fsm->getCurrentState())
+            ) {
+            Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                   __FUNCTION__ . ' method must be called after starting flows.',
+                                   'warning'
+                                   );
+            Piece_Flow_Error::popCallback();
+            return;
+        }
+
+        $this->_attributes = array();
     }
 
     /**#@-*/
