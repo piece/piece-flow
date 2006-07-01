@@ -387,6 +387,37 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $this->assertEquals('baz', $foo2->bar);
     }
 
+    function testRemovingAttribute()
+    {
+        $flow = &new Piece_Flow();
+        $flow->configure($this->_source, null, dirname(__FILE__));
+        $flow->start();
+        $flow->setAttribute('foo', 'bar');
+
+        $this->assertTrue($flow->hasAttribute('foo'));
+
+        $flow->removeAttribute('foo');
+
+        $this->assertFalse($flow->hasAttribute('foo'));
+    }
+
+    function testClearingAttributes()
+    {
+        $flow = &new Piece_Flow();
+        $flow->configure($this->_source, null, dirname(__FILE__));
+        $flow->start();
+        $flow->setAttribute('foo', 'bar');
+        $flow->setAttribute('bar', 'baz');
+
+        $this->assertTrue($flow->hasAttribute('foo'));
+        $this->assertTrue($flow->hasAttribute('bar'));
+
+        $flow->clearAttributes();
+
+        $this->assertFalse($flow->hasAttribute('foo'));
+        $this->assertFalse($flow->hasAttribute('bar'));
+    }
+
     /**#@-*/
 
     /**#@+
