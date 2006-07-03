@@ -42,8 +42,8 @@ require_once 'PEAR/PackageFileManager2.php';
 
 PEAR::staticPushErrorHandling(PEAR_ERROR_CALLBACK, create_function('$error', 'var_dump($error); exit();'));
 
-$version = '1.0.0';
-$notes = 'The first stable release of Piece_Flow.';
+$version = '1.1.0';
+$notes = '- Piece/Flow.php: Added removeAttribute()/clearAttributs() for removing attributes from flows.';
 
 $package = new PEAR_PackageFileManager2();
 $package->setOptions(array('filelistgenerator' => 'svn',

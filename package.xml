@@ -14,11 +14,11 @@
   </maintainer>
   </maintainers>
  <release>
-  <version>1.0.0</version>
-  <date>2006-06-19</date>
+  <version>1.1.0</version>
+  <date>2006-07-04</date>
   <license>BSD License (revised)</license>
   <state>stable</state>
-  <notes>The first stable release of Piece_Flow.
+  <notes>- Piece/Flow.php: Added removeAttribute()/clearAttributs() for removing attributes from flows.
   </notes>
   <deps>
    <dep type="php" rel="ge" version="4.3.0" optional="no"/>
@@ -207,6 +207,14 @@
   </filelist>
  </release>
  <changelog>
+   <release>
+    <version>1.1.0</version>
+    <date>2006-07-04</date>
+    <license>BSD License (revised)</license>
+    <state>stable</state>
+    <notes>- Piece/Flow.php: Added removeAttribute()/clearAttributs() for removing attributes from flows.
+    </notes>
+   </release>
    <release>
     <version>1.0.0</version>
     <date>2006-06-19</date>

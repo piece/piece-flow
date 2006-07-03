@@ -13,10 +13,10 @@
   <email>iteman2002@yahoo.co.jp</email>
   <active>yes</active>
  </lead>
- <date>2006-06-19</date>
- <time>09:28:30</time>
+ <date>2006-07-04</date>
+ <time>07:57:14</time>
  <version>
-  <release>1.0.0</release>
+  <release>1.1.0</release>
   <api>1.0.0</api>
  </version>
  <stability>
@@ -24,7 +24,7 @@
   <api>stable</api>
  </stability>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License (revised)</license>
- <notes>The first stable release of Piece_Flow.</notes>
+ <notes>- Piece/Flow.php: Added removeAttribute()/clearAttributs() for removing attributes from flows.</notes>
  <contents>
   <dir baseinstalldir="/" name="/">
    <dir name="data">
@@ -276,6 +276,19 @@
   </filelist>
  </phprelease>
  <changelog>
+  <release>
+   <version>
+    <release>1.1.0</release>
+    <api>1.0.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2006-07-04</date>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License (revised)</license>
+   <notes>- Piece/Flow.php: Added removeAttribute()/clearAttributs() for removing attributes from flows.</notes>
+  </release>
   <release>
    <version>
     <release>1.0.0</release>
