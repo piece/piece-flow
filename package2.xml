@@ -13,10 +13,10 @@
   <email>iteman2002@yahoo.co.jp</email>
   <active>yes</active>
  </lead>
- <date>2006-07-04</date>
- <time>07:57:14</time>
+ <date>2006-07-07</date>
+ <time>16:15:07</time>
  <version>
-  <release>1.1.0</release>
+  <release>1.1.1</release>
   <api>1.0.0</api>
  </version>
  <stability>
@@ -24,7 +24,9 @@
   <api>stable</api>
  </stability>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License (revised)</license>
- <notes>- Piece/Flow.php: Added removeAttribute()/clearAttributs() for removing attributes from flows.</notes>
+ <notes>This is a bug fix release.
+
+- Fixed the problem that relative path cannot be used as the cache directory and action cirectory with Solaris.</notes>
  <contents>
   <dir baseinstalldir="/" name="/">
    <dir name="data">
@@ -276,6 +278,21 @@
   </filelist>
  </phprelease>
  <changelog>
+  <release>
+   <version>
+    <release>1.1.1</release>
+    <api>1.0.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2006-07-07</date>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License (revised)</license>
+   <notes>This is a bug fix release.
+
+- Fixed the problem that relative path cannot be used as the cache directory and action cirectory with Solaris.</notes>
+  </release>
   <release>
    <version>
     <release>1.1.0</release>

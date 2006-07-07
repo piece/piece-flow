@@ -42,8 +42,10 @@ require_once 'PEAR/PackageFileManager2.php';
 
 PEAR::staticPushErrorHandling(PEAR_ERROR_CALLBACK, create_function('$error', 'var_dump($error); exit();'));
 
-$version = '1.1.0';
-$notes = '- Piece/Flow.php: Added removeAttribute()/clearAttributs() for removing attributes from flows.';
+$version = '1.1.1';
+$notes = 'This is a bug fix release.
+
+- Fixed the problem that relative path cannot be used as the cache directory and action cirectory with Solaris.';
 
 $package = new PEAR_PackageFileManager2();
 $package->setOptions(array('filelistgenerator' => 'svn',

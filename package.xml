@@ -14,11 +14,13 @@
   </maintainer>
   </maintainers>
  <release>
-  <version>1.1.0</version>
-  <date>2006-07-04</date>
+  <version>1.1.1</version>
+  <date>2006-07-07</date>
   <license>BSD License (revised)</license>
   <state>stable</state>
-  <notes>- Piece/Flow.php: Added removeAttribute()/clearAttributs() for removing attributes from flows.
+  <notes>This is a bug fix release.
+
+- Fixed the problem that relative path cannot be used as the cache directory and action cirectory with Solaris.
   </notes>
   <deps>
    <dep type="php" rel="ge" version="4.3.0" optional="no"/>
@@ -207,6 +209,16 @@
   </filelist>
  </release>
  <changelog>
+   <release>
+    <version>1.1.1</version>
+    <date>2006-07-07</date>
+    <license>BSD License (revised)</license>
+    <state>stable</state>
+    <notes>This is a bug fix release.
+
+- Fixed the problem that relative path cannot be used as the cache directory and action cirectory with Solaris.
+    </notes>
+   </release>
    <release>
     <version>1.1.0</version>
     <date>2006-07-04</date>
