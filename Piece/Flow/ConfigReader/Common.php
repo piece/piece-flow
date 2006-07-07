@@ -72,6 +72,7 @@ class Piece_Flow_ConfigReader_Common
 
     var $_source;
     var $_config;
+    var $_cacheDirectory;
 
     /**#@-*/
 
@@ -106,7 +107,8 @@ class Piece_Flow_ConfigReader_Common
      */
     function &configure($cacheDirectory = null)
     {
-        $flow = $this->parse($cacheDirectory);
+        $this->_cacheDirectory = $cacheDirectory;
+        $flow = $this->parse();
         if (Piece_Flow_Error::hasErrors('exception')) {
             $return = null;
             return $return;
@@ -149,62 +151,56 @@ class Piece_Flow_ConfigReader_Common
      * This method is to be overriden by the appropriate driver for the given
      * source.
      *
-     * @param string $cacheDirectory
      * @return array
      * @throws PIECE_FLOW_ERROR_NOT_FOUND
      * @throws PIECE_FLOW_ERROR_NOT_READABLE
      * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
      */
-    function parse($cacheDirectory)
+    function parse()
     {
-        $absolutePathOfConfigFile = realpath($this->_source);
-
-        if (!$absolutePathOfConfigFile) {
+        if (!file_exists($this->_source)) {
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
                                    "The configuration file [ {$this->_source} ] not found."
                                    );
             return;
         }
 
-        if (!is_readable($absolutePathOfConfigFile)) {
+        if (!is_readable($this->_source)) {
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_READABLE,
                                    "The configuration file [ {$this->_source} ] was not readable."
                                    );
             return;
         }
 
-        if (is_null($cacheDirectory)) {
-            $cacheDirectory = './cache';
+        if (is_null($this->_cacheDirectory)) {
+            $this->_cacheDirectory = './cache';
         }
 
-        $absolutePathOfCacheDirectory = realpath($cacheDirectory);
-        if (!$absolutePathOfCacheDirectory) {
+        if (!file_exists($this->_cacheDirectory)) {
             Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
-                                   "The cache directory [ $cacheDirectory ] not found.",
+                                   "The cache directory [ {$this->_cacheDirectory} ] not found.",
                                    'warning'
                                    );
             Piece_Flow_Error::popCallback();
 
-            return $this->_parseFile($absolutePathOfConfigFile);
+            return $this->_parseFile();
         }
 
-        if (!is_readable($absolutePathOfCacheDirectory)
-            || !is_writable($absolutePathOfCacheDirectory)
+        if (!is_readable($this->_cacheDirectory)
+            || !is_writable($this->_cacheDirectory)
             ) {
             Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_READABLE,
-                                   "The cache directory [ $absolutePathOfCacheDirectory ] was not readable or writable.",
+                                   "The cache directory [ {$this->_cacheDirectory} ] was not readable or writable.",
                                    'warning'
                                    );
             Piece_Flow_Error::popCallback();
 
-            return $this->_parseFile($absolutePathOfConfigFile);
+            return $this->_parseFile();
         }
 
-        return $this->_getConfiguration($absolutePathOfCacheDirectory,
-                                        $absolutePathOfConfigFile
-                                        );
+        return $this->_getConfiguration();
     }
 
     /**#@-*/
@@ -296,15 +292,13 @@ class Piece_Flow_ConfigReader_Common
     /**
      * Gets a Piece_Flow_Config object from a configuration file or a cache.
      *
-     * @param string $cacheDirectory
-     * @param string $masterFile
      * @return array
      * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
      */
-    function _getConfiguration($cacheDirectory, $masterFile)
+    function _getConfiguration()
     {
-        $cache = &new Cache_Lite_File(array('cacheDir' => "$cacheDirectory/",
-                                            'masterFile' => $masterFile,
+        $cache = &new Cache_Lite_File(array('cacheDir' => "{$this->_cacheDirectory}/",
+                                            'masterFile' => $this->_source,
                                             'automaticSerialization' => true,
                                             'errorHandlingAPIBreak' => true)
                                       );
@@ -312,19 +306,19 @@ class Piece_Flow_ConfigReader_Common
          * The Cache_Lite class always specifies PEAR_ERROR_RETURN when
          * calling PEAR::raiseError in default.
          */
-        $flow = $cache->get($masterFile);
+        $flow = $cache->get($this->_source);
         if (PEAR::isError($flow)) {
             Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_CANNOT_READ,
-                                   "Cannot read the cache file in the directory [ $cacheDirectory ].",
+                                   "Cannot read the cache file in the directory [ {$this->_cacheDirectory} ].",
                                    'warning'
                                    );
             Piece_Flow_Error::popCallback();
-            return $this->_parseFile($masterFile);
+            return $this->_parseFile();
         }
 
         if (!$flow) {
-            $flow = $this->_parseFile($masterFile);
+            $flow = $this->_parseFile();
             if (Piece_Flow_Error::hasErrors('exception')) {
                 return;
             }
@@ -333,7 +327,7 @@ class Piece_Flow_ConfigReader_Common
             if (PEAR::isError($result)) {
                 Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
                 Piece_Flow_Error::push(PIECE_FLOW_ERROR_CANNOT_WRITE,
-                                       "Cannot write the Piece_Flow object to the cache file in the directory [ $cacheDirectory ].",
+                                       "Cannot write the Piece_Flow object to the cache file in the directory [ {$this->_cacheDirectory} ].",
                                        'warning'
                                        );
                 Piece_Flow_Error::popCallback();

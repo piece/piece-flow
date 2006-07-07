@@ -148,9 +148,9 @@ class Piece_Flow_Action_Factory
             return;
         }
 
-        $file = realpath("{$GLOBALS['PIECE_FLOW_Action_Directory']}/" . str_replace('_', '/', $class) . '.php');
+        $file = "{$GLOBALS['PIECE_FLOW_Action_Directory']}/" . str_replace('_', '/', $class) . '.php';
 
-        if (!$file) {
+        if (!file_exists($file)) {
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
                                    "The action file for the class [ $class ] not found."
                                    );
