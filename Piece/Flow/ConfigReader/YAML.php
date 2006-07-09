@@ -4,7 +4,7 @@
 /**
  * PHP versions 4 and 5
  *
- * Copyright (c) 2006, KUBO Atsuhiro <iteman2002@yahoo.co.jp>
+ * Copyright (c) 2006, KUBO Atsuhiro <iteman@users.sourceforge.net>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,8 +29,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @author     KUBO Atsuhiro <iteman2002@yahoo.co.jp>
- * @copyright  2006 KUBO Atsuhiro <iteman2002@yahoo.co.jp>
+ * @author     KUBO Atsuhiro <iteman@users.sourceforge.net>
+ * @copyright  2006 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
  * @link       http://spyc.sourceforge.net/
@@ -52,8 +52,8 @@ if (version_compare(phpversion(), '5.0.0', '<')) {
  * A configuration reader for YAML.
  *
  * @package    Piece_Flow
- * @author     KUBO Atsuhiro <iteman2002@yahoo.co.jp>
- * @copyright  2006 KUBO Atsuhiro <iteman2002@yahoo.co.jp>
+ * @author     KUBO Atsuhiro <iteman@users.sourceforge.net>
+ * @copyright  2006 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
  * @link       http://spyc.sourceforge.net/

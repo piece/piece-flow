@@ -4,7 +4,7 @@
   <head>
     <title locale="ja">Piece_Flow - Webフローエンジン及び継続サーバ</title>
     <title locale="en">Piece_Flow - A web flow engine and a continuation server</title>
-    <author>KUBO Atsuhiro &lt;iteman2002@yahoo.co.jp&gt;</author>
+    <author>KUBO Atsuhiro &lt;iteman@users.sourceforge.net&gt;</author>
     <date>2006-06-11</date>
   </head>
   <body>
