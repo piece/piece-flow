@@ -41,7 +41,7 @@
 
 require_once 'Piece/Flow/Action/Factory.php';
 
-// {{{ Piece_Flow_ActionInvoker
+// {{{ Piece_Flow_Action
 
 /**
  * The action wrapper and invoker for the Piece_Flow package.
@@ -56,7 +56,7 @@ require_once 'Piece/Flow/Action/Factory.php';
  * @see        Piece_Flow
  * @since      Class available since Release 0.1.0
  */
-class Piece_Flow_ActionInvoker
+class Piece_Flow_Action
 {
 
     // {{{ properties
@@ -85,13 +85,13 @@ class Piece_Flow_ActionInvoker
     // {{{ constructor
 
     /**
-     * Wraps a action up with a Piece_Flow_ActionInvoker object.
+     * Wraps a action up with a Piece_Flow_Action object.
      *
      * @param Piece_Flow &$flow
      * @param string     $class
      * @param string     $method
      */
-    function Piece_Flow_ActionInvoker(&$flow, $class, $method)
+    function Piece_Flow_Action(&$flow, $class, $method)
     {
         $this->_flow = &$flow;
         $this->_class = $class;
