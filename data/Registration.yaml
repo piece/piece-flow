@@ -1,10 +1,10 @@
 # $Id$
-name: registrationFlow
-firstState: displaying
-lastState: { name: finishing, view: finish }
+name: Registration
+firstState: DisplayForm
+lastState: { name: Finish, view: Finish }
 viewState:
-  - name: displaying
-    view: input
+  - name: DisplayForm
+    view: Form
     entry:
       class: Piece_FlowTestCaseAction
       method: setupForm
@@ -16,43 +16,43 @@ viewState:
       method: countDisplay
     transition:
       - event: submit
-        nextState: inputValidated
+        nextState: processSubmitDisplayForm
         action:
           class: Piece_FlowTestCaseAction
           method: validateInput
         guard:
           class: Piece_FlowTestCaseAction
           method: isPermitted
-  - name: confirming
-    view: confirmation
+  - name: ConfirmForm
+    view: Confirmation
     transition:
       - event: submit
-        nextState: confirmationValidated
+        nextState: processSubmitConfirmForm
         action:
           class: Piece_FlowTestCaseAction
           method: validateConfirmation
 actionState:
-  - name: inputValidated
+  - name: processSubmitDisplayForm
     transition:
       - event: raiseError
-        nextState: displaying
+        nextState: DisplayForm
       - event: succeed
-        nextState: confirming
-  - name: confirmationValidated
+        nextState: ConfirmForm
+  - name: processSubmitConfirmForm
     transition:
       - event: raiseError
-        nextState: displaying
+        nextState: DisplayForm
       - event: succeed
-        nextState: registered
+        nextState: Register
         action:
           class: Piece_FlowTestCaseAction
           method: register
-  - name: registered
+  - name: Register
     transition:
       - event: raiseError
-        nextState: displaying
+        nextState: DisplayForm
       - event: succeed
-        nextState: finishing
+        nextState: Finish
 initial:
   class: Piece_FlowTestCaseAction
   method: initialize

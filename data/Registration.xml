@@ -1,35 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- $Id$ -->
-<flow name="registrationFlow" firstState="displaying">
+<flow name="Registration" firstState="DisplayForm">
   <initial class="Piece_FlowTestCaseAction" method="initialize"/>
   <final class="Piece_FlowTestCaseAction" method="finalize"/>
-  <lastState name="finishing" view="finish"/>
-  <viewState name="displaying" view="input">
+  <lastState name="Finish" view="Finish"/>
+  <viewState name="DisplayForm" view="Form">
     <entry class="Piece_FlowTestCaseAction" method="setupForm"/>
     <exit class="Piece_FlowTestCaseAction" method="teardownForm"/>
     <activity class="Piece_FlowTestCaseAction" method="countDisplay"/>
-    <transition event="submit" nextState="inputValidated">
+    <transition event="submit" nextState="processSubmitDisplayForm">
       <action class="Piece_FlowTestCaseAction" method="validateInput"/>
       <guard class="Piece_FlowTestCaseAction" method="isPermitted"/>
     </transition>
   </viewState>
-  <viewState name="confirming" view="confirmation">
-    <transition event="submit" nextState="confirmationValidated">
+  <viewState name="ConfirmForm" view="Confirmation">
+    <transition event="submit" nextState="processSubmitConfirmForm">
       <action class="Piece_FlowTestCaseAction" method="validateConfirmation"/>
     </transition>
   </viewState>
-  <actionState name="inputValidated">
-    <transition event="raiseError" nextState="displaying"/>
-    <transition event="succeed" nextState="confirming"/>
+  <actionState name="processSubmitDisplayForm">
+    <transition event="raiseError" nextState="DisplayForm"/>
+    <transition event="succeed" nextState="ConfirmForm"/>
   </actionState>
-  <actionState name="confirmationValidated">
-    <transition event="raiseError" nextState="displaying"/>
-    <transition event="succeed" nextState="registered">
+  <actionState name="processSubmitConfirmForm">
+    <transition event="raiseError" nextState="DisplayForm"/>
+    <transition event="succeed" nextState="Register">
       <action class="Piece_FlowTestCaseAction" method="register"/>
     </transition>
   </actionState>
-  <actionState name="registered">
-    <transition event="raiseError" nextState="displaying"/>
-    <transition event="succeed" nextState="finishing"/>
+  <actionState name="Register">
+    <transition event="raiseError" nextState="DisplayForm"/>
+    <transition event="succeed" nextState="Finish"/>
   </actionState>
 </flow>
