@@ -42,7 +42,7 @@
 // {{{ Piece_FlowTestCaseAction
 
 /**
- * An action class for 'registrationFlow'.
+ * An action class for 'Registration'.
  *
  * @package    Piece_Flow
  * @author     KUBO Atsuhiro <iteman2002@yahoo.co.jp>

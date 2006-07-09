@@ -84,9 +84,9 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
     function setUp()
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'var_dump($error); return ' . PEAR_ERRORSTACK_DIE . ';'));
-        $name = 'registrationFlow';
-        $firstState = 'displaying';
-        $lastState = array('name' => 'finishing', 'view' => 'finish');
+        $name = 'Registration';
+        $firstState = 'DisplayForm';
+        $lastState = array('name' => 'Finish', 'view' => 'Finish');
         $initial = array('class' => 'Piece_FlowTestCaseAction',
                          'method' => 'initialize'
                          );
@@ -94,7 +94,7 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
                        'method' => 'finalize'
                        );
 
-        $viewState5 = array('name' => 'displaying', 'view' => 'input',
+        $viewState5 = array('name' => 'DisplayForm', 'view' => 'Form',
                             'entry' => 
                             array('class' => 'Piece_FlowTestCaseAction',
                                   'method' => 'setupForm'),
@@ -106,7 +106,7 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
                                   'method' => 'countDisplay')
                             );
         $transition51 = array('event' => 'submit',
-                              'nextState' => 'inputValidated',
+                              'nextState' => 'processSubmitDisplayForm',
                               'action' =>
                               array('class' => 'Piece_FlowTestCaseAction',
                                     'method' => 'validateInput'),
@@ -115,39 +115,39 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
                                     'method' => 'isPermitted')
                               );
 
-        $viewState6 = array('name' => 'confirming', 'view' => 'confirmation');
+        $viewState6 = array('name' => 'ConfirmForm', 'view' => 'Confirmation');
         $transition61 = array('event' => 'submit',
-                              'nextState' => 'confirmationValidated',
+                              'nextState' => 'processSubmitConfirmForm',
                               'action' =>
                               array('class' => 'Piece_FlowTestCaseAction',
                                     'method' => 'validateConfirmation')
                               );
 
-        $actionState1 = 'inputValidated';
+        $actionState1 = 'processSubmitDisplayForm';
         $transition11 = array('event' => 'raiseError',
-                              'nextState' => 'displaying'
+                              'nextState' => 'DisplayForm'
                               );
         $transition12 = array('event' => 'succeed',
-                              'nextState' => 'confirming'
+                              'nextState' => 'ConfirmForm'
                               );
 
-        $actionState7 = 'confirmationValidated';
+        $actionState7 = 'processSubmitConfirmForm';
         $transition71 = array('event' => 'raiseError',
-                              'nextState' => 'displaying'
+                              'nextState' => 'DisplayForm'
                               );
         $transition72 = array('event' => 'succeed',
-                              'nextState' => 'registered',
+                              'nextState' => 'Register',
                               'action' =>
                               array('class' => 'Piece_FlowTestCaseAction',
                                     'method' => 'register')
                               );
 
-        $actionState2 = 'registered';
+        $actionState2 = 'Register';
         $transition21 = array('event' => 'raiseError',
-                              'nextState' => 'displaying'
+                              'nextState' => 'DisplayForm'
                               );
         $transition22 = array('event' => 'succeed',
-                              'nextState' => 'finishing'
+                              'nextState' => 'Finish'
                               );
 
         $this->_config = new Piece_Flow_Config();

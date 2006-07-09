@@ -89,7 +89,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'var_dump($error); return ' . PEAR_ERRORSTACK_DIE . ';'));
         $this->_source =
-            dirname(__FILE__) . '/../../data/registrationFlow.yaml';
+            dirname(__FILE__) . '/../../data/Registration.yaml';
         $driver = &Piece_Flow_ConfigReader_Factory::factory($this->_source);
         $this->_config = &$driver->configure();
         Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/..');
@@ -126,7 +126,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $flow->configure($this->_source, null, dirname(__FILE__));
         $flow->start();
 
-        $this->assertEquals($viewStates['displaying']['view'],
+        $this->assertEquals($viewStates['DisplayForm']['view'],
                             $flow->getView()
                             );
     }
@@ -141,7 +141,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $flow->triggerEvent('submit');
 
         $this->assertTrue($GLOBALS['validateInputCalled']);
-        $this->assertEquals($viewStates['confirming']['view'],
+        $this->assertEquals($viewStates['ConfirmForm']['view'],
                             $flow->getView()
                             );
 
@@ -155,7 +155,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $flow->start();
         $flow->triggerEvent('submit');
 
-        $this->assertEquals('inputValidated', $flow->getPreviousStateName());
+        $this->assertEquals('processSubmitDisplayForm', $flow->getPreviousStateName());
     }
 
     function testGettingCurrentStateName()
@@ -165,7 +165,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $flow->start();
         $flow->triggerEvent('submit');
 
-        $this->assertEquals('confirming', $flow->getCurrentStateName());
+        $this->assertEquals('ConfirmForm', $flow->getCurrentStateName());
     }
 
     function testTriggeringEventAndInvokingTransitionAction()
@@ -179,7 +179,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $flow->triggerEvent('submit');
 
         $this->assertTrue($GLOBALS['validateInputCalled']);
-        $this->assertEquals($viewStates['confirming']['view'],
+        $this->assertEquals($viewStates['ConfirmForm']['view'],
                             $flow->getView()
                             );
 
@@ -204,7 +204,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $flow->start();
         $flow->triggerEvent('submit');
 
-        $this->assertEquals($viewStates['displaying']['view'],
+        $this->assertEquals($viewStates['DisplayForm']['view'],
                             $flow->getView()
                             );
 

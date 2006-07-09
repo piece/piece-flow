@@ -1,9 +1,9 @@
 # $Id$
 name: SecondCounter
-firstState: displaying
-lastState: { name: finishing, view: finish }
+firstState: DisplayForm
+lastState: { name: Finish, view: Finish }
 viewState:
-  - name: displaying
+  - name: DisplayForm
     view: SecondCounter
     entry:
       class: Piece_Flow_SecondCounterAction
@@ -18,4 +18,4 @@ actionState:
   - name: increased
     transition:
       - event: succeed
-        nextState: displaying
+        nextState: DisplayForm

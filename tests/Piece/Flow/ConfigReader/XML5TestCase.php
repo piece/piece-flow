@@ -84,7 +84,7 @@ class Piece_Flow_ConfigReader_XML5TestCase extends Piece_Flow_ConfigReader_Compa
     function setUp()
     {
         parent::setUp();
-        $this->_source = dirname(__FILE__) .'/../../../../data/registrationFlow.xml';
+        $this->_source = dirname(__FILE__) .'/../../../../data/Registration.xml';
     }
 
     function testInvalidFormat()
