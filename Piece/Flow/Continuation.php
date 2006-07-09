@@ -522,10 +522,10 @@ class Piece_Flow_Continuation
         }
 
         $flow = &new Piece_Flow();
-        $result = &$flow->configure($this->_flowDefinitions[$this->_flowName]['file'],
-                                    null,
-                                    $this->_cacheDirectory
-                                    );
+        $flow->configure($this->_flowDefinitions[$this->_flowName]['file'],
+                         null,
+                         $this->_cacheDirectory
+                         );
         if (Piece_Flow_Error::hasErrors('exception')) {
             return;
         }
