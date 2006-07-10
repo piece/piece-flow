@@ -35,19 +35,19 @@
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
  * @link       http://iteman.typepad.jp/piece/
- * @see        Piece_Flow_ActionInvoker
+ * @see        Piece_Flow_Action
  * @since      File available since Release 0.1.0
  */
 
 require_once 'PHPUnit.php';
-require_once 'Piece/Flow/ActionInvoker.php';
+require_once 'Piece/Flow/Action.php';
 require_once 'Piece/Flow/Error.php';
 require_once 'Piece/Flow/Action/Factory.php';
 
-// {{{ Piece_Flow_ActionInvokerTestCase
+// {{{ Piece_Flow_ActionTestCase
 
 /**
- * TestCase for Piece_Flow_ActionInvoker
+ * TestCase for Piece_Flow_Action
  *
  * @package    Piece_Flow
  * @author     KUBO Atsuhiro <iteman@users.sourceforge.net>
@@ -56,10 +56,10 @@ require_once 'Piece/Flow/Action/Factory.php';
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
  * @link       http://iteman.typepad.jp/piece/
- * @see        Piece_Flow_ActionInvoker
+ * @see        Piece_Flow_Action
  * @since      Class available since Release 0.1.0
  */
-class Piece_Flow_ActionInvokerTestCase extends PHPUnit_TestCase
+class Piece_Flow_ActionTestCase extends PHPUnit_TestCase
 {
 
     // {{{ properties
@@ -96,12 +96,12 @@ class Piece_Flow_ActionInvokerTestCase extends PHPUnit_TestCase
     function testInvokingAction()
     {
         Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/../..');
-        $action = &new Piece_Flow_ActionInvoker(new stdClass(),
-                                                'Piece_Flow_FooAction',
-                                                'foo'
-                                                );
+        $action = &new Piece_Flow_Action(new stdClass(),
+                                         'Piece_Flow_FooAction',
+                                         'foo'
+                                         );
         $action->invoke(new stdClass(),
-                        new Piece_Flow_ActionInvokerTestCaseMockEvent(),
+                        new Piece_Flow_ActionTestCaseMockEvent(),
                         new stdClass()
                         );
 
@@ -123,7 +123,7 @@ class Piece_Flow_ActionInvokerTestCase extends PHPUnit_TestCase
 
 // }}}
 
-class Piece_Flow_ActionInvokerTestCaseMockEvent
+class Piece_Flow_ActionTestCaseMockEvent
 {
     function getName() {}
 }
