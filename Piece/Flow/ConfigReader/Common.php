@@ -45,7 +45,7 @@ require_once 'PEAR.php';
 // {{{ Piece_Flow_ConfigReader_Common
 
 /**
- * Base class for Piece_Flow_Config drivers.
+ * The base class for Piece_Flow_Config drivers.
  *
  * @package    Piece_Flow
  * @author     KUBO Atsuhiro <iteman@users.sourceforge.net>
