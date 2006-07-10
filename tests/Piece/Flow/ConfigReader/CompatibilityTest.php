@@ -46,7 +46,7 @@ require_once 'Cache/Lite/File.php';
 // {{{ Piece_Flow_ConfigReader_CompatibilityTest
 
 /**
- * Base class for compatibility test of Piece_Flow_Config drivers.
+ * The base class for compatibility test of Piece_Flow_Config drivers.
  *
  * @package    Piece_Flow
  * @author     KUBO Atsuhiro <iteman@users.sourceforge.net>
