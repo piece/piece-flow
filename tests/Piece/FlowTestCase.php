@@ -189,7 +189,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
 
         $lastState = $this->_config->getLastState();
 
-        $this->assertEquals($lastState['view'], $flow->getView());
+        $this->assertEquals($viewStates[$lastState]['view'], $flow->getView());
 
         unset($GLOBALS['validateInputCalled']);
         unset($GLOBALS['validateConfirmationCalled']);

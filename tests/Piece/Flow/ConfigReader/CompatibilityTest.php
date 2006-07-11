@@ -86,7 +86,17 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
         Piece_Flow_Error::pushCallback(create_function('$error', 'var_dump($error); return ' . PEAR_ERRORSTACK_DIE . ';'));
         $name = 'Registration';
         $firstState = 'DisplayForm';
-        $lastState = array('name' => 'Finish', 'view' => 'Finish');
+        $lastState = array('name' => 'Finish', 'view' => 'Finish',
+                           'entry' => 
+                           array('class' => 'Piece_FlowTestCaseAction',
+                                 'method' => 'setupForm'),
+                           'exit' => 
+                           array('class' => 'Piece_FlowTestCaseAction',
+                                 'method' => 'teardownForm'),
+                           'activity' => 
+                           array('class' => 'Piece_FlowTestCaseAction',
+                                 'method' => 'countDisplay')
+                           );
         $initial = array('class' => 'Piece_FlowTestCaseAction',
                          'method' => 'initialize'
                          );
@@ -154,6 +164,9 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
         $this->_config->setName($name);
         $this->_config->setFirstState($firstState);
         $this->_config->setLastState($lastState['name'], $lastState['view']);
+        $this->_config->setEntryAction($lastState['name'], $lastState['entry']);
+        $this->_config->setExitAction($lastState['name'], $lastState['exit']);
+        $this->_config->setActivity($lastState['name'], $lastState['activity']);
         $this->_config->setInitialAction($initial);
         $this->_config->setFinalAction($final);
         $this->_config->addViewState($viewState5['name'], $viewState5['view']);

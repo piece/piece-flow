@@ -118,6 +118,7 @@ class Piece_Flow_ConfigReader_XML4 extends Piece_Flow_ConfigReader_Common
             $flow['lastState'] = array('name' => $lastState[0]->get_attribute('name'),
                                        'view' => $lastState[0]->get_attribute('view')
                                        );
+            $flow['lastState'] = array_merge($flow['lastState'], $this->_parseState($states[$i]));
         }
 
         $viewStates = $element->get_elements_by_tagname('viewState');

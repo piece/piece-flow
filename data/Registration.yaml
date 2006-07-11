@@ -1,7 +1,18 @@
 # $Id$
 name: Registration
 firstState: DisplayForm
-lastState: { name: Finish, view: Finish }
+lastState:
+  name: Finish
+  view: Finish
+  entry:
+    class: Piece_FlowTestCaseAction
+    method: setupForm
+  exit:
+    class: Piece_FlowTestCaseAction
+    method: teardownForm
+  activity:
+    class: Piece_FlowTestCaseAction
+    method: countDisplay
 viewState:
   - name: DisplayForm
     view: Form

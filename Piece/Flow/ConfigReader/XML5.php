@@ -276,6 +276,7 @@ class Piece_Flow_ConfigReader_XML5 extends Piece_Flow_ConfigReader_Common
             $flow['lastState'] = array('name' => $lastState->getAttribute('name'),
                                        'view' => $lastState->getAttribute('view')
                                        );
+            $flow['lastState'] = array_merge($flow['lastState'], $this->_parseState($lastState));
         }
 
         $flow['viewState'] =

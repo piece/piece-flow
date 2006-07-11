@@ -133,12 +133,11 @@ class Piece_Flow
 
         $lastState = $config->getLastState();
         if (!is_null($lastState)) {
-            $this->_fsm->addTransition($lastState['name'],
+            $this->_fsm->addTransition($lastState,
                                        STAGEHAND_FSM_EVENT_END,
                                        STAGEHAND_FSM_STATE_FINAL
                                        );
             $this->_lastState = $lastState;
-            $this->_configureViewState($lastState);
         }
 
         $this->_configureViewStates($config->getViewStates());
@@ -265,7 +264,7 @@ class Piece_Flow
         }
 
         if (!is_null($this->_lastState)
-            && $state->getName() == $this->_lastState['name']
+            && $state->getName() == $this->_lastState
             ) {
             Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
             $state = &$this->_fsm->triggerEvent(STAGEHAND_FSM_EVENT_END);

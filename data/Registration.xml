@@ -3,7 +3,11 @@
 <flow name="Registration" firstState="DisplayForm">
   <initial class="Piece_FlowTestCaseAction" method="initialize"/>
   <final class="Piece_FlowTestCaseAction" method="finalize"/>
-  <lastState name="Finish" view="Finish"/>
+  <lastState name="Finish" view="Finish">
+    <entry class="Piece_FlowTestCaseAction" method="setupForm"/>
+    <exit class="Piece_FlowTestCaseAction" method="teardownForm"/>
+    <activity class="Piece_FlowTestCaseAction" method="countDisplay"/>
+  </lastState>
   <viewState name="DisplayForm" view="Form">
     <entry class="Piece_FlowTestCaseAction" method="setupForm"/>
     <exit class="Piece_FlowTestCaseAction" method="teardownForm"/>

@@ -122,6 +122,7 @@ class Piece_Flow_ConfigReader_Common
             $this->_config->setLastState($flow['lastState']['name'],
                                          $flow['lastState']['view']
                                          );
+            $this->_configureState($flow['lastState']);
         }
 
         $this->_configureViewStates($flow['viewState']);

@@ -116,12 +116,8 @@ class Piece_Flow_Config
      */
     function setLastState($state, $view)
     {
-        $this->_lastState = array('name' => $state,
-                                  'view' => $view,
-                                  'entry' => null,
-                                  'exit' => null,
-                                  'activity' => null
-                                  );
+        $this->_lastState = $state;
+        $this->addViewState($state, $view);
     }
 
     // }}}
