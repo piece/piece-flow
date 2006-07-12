@@ -419,7 +419,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
     }
 
     /**
-     * @since Method available since Release 1.1.2
+     * @since Method available since Release 1.2.0
      */
     function testToPreventTriggeringProtectedEvents()
     {
@@ -468,7 +468,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
     }
 
     /**
-     * @since Method available since Release 1.1.2
+     * @since Method available since Release 1.2.0
      */
     function testProtectedEvents()
     {
@@ -487,7 +487,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
     }
 
     /**
-     * @since Method available since Release 1.1.2
+     * @since Method available since Release 1.2.0
      */
     function testProtectedStates()
     {

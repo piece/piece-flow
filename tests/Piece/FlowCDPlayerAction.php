@@ -36,7 +36,7 @@
  * @version    SVN: $Id$
  * @link       http://iteman.typepad.jp/piece/
  * @see        Piece_Flow
- * @since      File available since Release 1.1.2
+ * @since      File available since Release 1.2.0
  */
 
 // {{{ Piece_FlowCDPlayerAction
@@ -52,7 +52,7 @@
  * @version    Release: @package_version@
  * @link       http://iteman.typepad.jp/piece/
  * @see        Piece_Flow
- * @since      Class available since Release 1.1.2
+ * @since      Class available since Release 1.2.0
  */
 class Piece_FlowCDPlayerAction
 {
