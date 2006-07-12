@@ -14,25 +14,11 @@
   </maintainer>
   </maintainers>
  <release>
-  <version>1.2.0</version>
+  <version>1.2.1</version>
   <date>2006-07-12</date>
   <license>BSD License (revised)</license>
   <state>stable</state>
-  <notes>This release includes a few enhancements and fixing two problems as follows:
-
-Enhancements:
-
-* Piece_Flow
-- Added support to prevent configuring protected events and states.
-- Added error handling for failure to invoke actions.
-
-* Example flow definitions
-- Changed some state names and view names to conform the Spring Web Flow best practices.
-
-Defect fixes:
-
-- Fixed the problem that the protected events of the FSM can be triggered by users.
-- Fixed the problem that &apos;entry&apos;, &apos;exit&apos;, and &apos;activity&apos; for the last state could not be added.
+  <notes>- Fixed the wrong version number of Stagehand_FSM package from 1.4.0 to 1.5.0.
   </notes>
   <deps>
    <dep type="php" rel="ge" version="4.3.0" optional="no"/>
@@ -233,6 +219,14 @@ Defect fixes:
   </filelist>
  </release>
  <changelog>
+   <release>
+    <version>1.2.1</version>
+    <date>2006-07-12</date>
+    <license>BSD License (revised)</license>
+    <state>stable</state>
+    <notes>- Fixed the wrong version number of Stagehand_FSM package from 1.4.0 to 1.5.0.
+    </notes>
+   </release>
    <release>
     <version>1.2.0</version>
     <date>2006-07-12</date>
