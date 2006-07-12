@@ -36,7 +36,7 @@ Defect fixes:
   </notes>
   <deps>
    <dep type="php" rel="ge" version="4.3.0" optional="no"/>
-   <dep type="pkg" rel="ge" version="1.4.0" optional="no">Stagehand_FSM</dep>
+   <dep type="pkg" rel="ge" version="1.5.0" optional="no">Stagehand_FSM</dep>
    <dep type="pkg" rel="ge" version="1.7.0" optional="no">Cache_Lite</dep>
    <dep type="pkg" rel="ge" version="0.3.0" optional="yes">Stagehand_TestRunner</dep>
   </deps>
