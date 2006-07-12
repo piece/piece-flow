@@ -1,0 +1,14 @@
+# $Id$
+name: CDPlayer
+firstState: Stop
+viewState:
+  - name: Stop
+    view: Stop
+    activity:
+      class: Piece_FlowCDPlayerAction
+      method: increase
+    transition:
+      - event: play
+        nextState: Playing
+  - name: Playing
+    view: Playing

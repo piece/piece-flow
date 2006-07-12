@@ -1,0 +1,10 @@
+# $Id$
+name: ProtectedStates
+firstState: Stop
+viewState:
+  - name: Stop
+    view: Stop
+  - name: Playingd
+    view: Playing
+  - name: _Stagehand_FSM_State_Initial
+    view: _Stagehand_FSM_State_Initial
