@@ -5,7 +5,7 @@
     http://pear.php.net/dtd/package-2.0.xsd">
  <name>Piece_Flow</name>
  <channel>pear.hatotech.org</channel>
- <summary>A web flow engine/A continuation server</summary>
+ <summary>A web flow engine and a continuation server</summary>
  <description>Piece_Flow is a generic web flow engine and a continuation server based on Finite State Machine(FSM). Piece_Flow provides a stateful programming model for developers, and high secrity for applications.</description>
  <lead>
   <name>KUBO Atsuhiro</name>
@@ -13,10 +13,10 @@
   <email>iteman@users.sourceforge.net</email>
   <active>yes</active>
  </lead>
- <date>2006-07-07</date>
- <time>16:15:07</time>
+ <date>2006-07-12</date>
+ <time>09:38:14</time>
  <version>
-  <release>1.1.1</release>
+  <release>1.2.0</release>
   <api>1.0.0</api>
  </version>
  <stability>
@@ -24,9 +24,21 @@
   <api>stable</api>
  </stability>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License (revised)</license>
- <notes>This is a bug fix release.
+ <notes>This release includes a few enhancements and fixing two problems as follows:
 
-- Fixed the problem that relative path cannot be used as the cache directory and action cirectory with Solaris.</notes>
+Enhancements:
+
+* Piece_Flow
+- Added support to prevent configuring protected events and states.
+- Added error handling for failure to invoke actions.
+
+* Example flow definitions
+- Changed some state names and view names to conform the Spring Web Flow best practices.
+
+Defect fixes:
+
+- Fixed the problem that the protected events of the FSM can be triggered by users.
+- Fixed the problem that &apos;entry&apos;, &apos;exit&apos;, and &apos;activity&apos; for the last state could not be added.</notes>
  <contents>
   <dir baseinstalldir="/" name="/">
    <dir name="data">
@@ -36,10 +48,10 @@
     <file name="piece-flow.yaml" role="data">
      <tasks:replace from="@package_version@" to="version" type="package-info" />
     </file>
-    <file name="registrationFlow.xml" role="data">
+    <file name="Registration.xml" role="data">
      <tasks:replace from="@package_version@" to="version" type="package-info" />
     </file>
-    <file name="registrationFlow.yaml" role="data">
+    <file name="Registration.yaml" role="data">
      <tasks:replace from="@package_version@" to="version" type="package-info" />
     </file>
    </dir> <!-- /data -->
@@ -75,7 +87,7 @@
        <tasks:replace from="@package_version@" to="version" type="package-info" />
       </file>
      </dir> <!-- /Piece/Flow/ConfigReader -->
-     <file name="ActionInvoker.php" role="php">
+     <file name="Action.php" role="php">
       <tasks:replace from="@package_version@" to="version" type="package-info" />
      </file>
      <file name="Config.php" role="php">
@@ -141,7 +153,7 @@
         <tasks:replace from="@package_version@" to="version" type="package-info" />
        </file>
       </dir> <!-- /tests/Piece/Flow/ConfigReader -->
-      <file name="ActionInvokerTestCase.php" role="test">
+      <file name="ActionTestCase.php" role="test">
        <tasks:replace from="@package_version@" to="version" type="package-info" />
       </file>
       <file name="ContinuationTestCase.php" role="test">
@@ -172,6 +184,12 @@
        <tasks:replace from="@package_version@" to="version" type="package-info" />
       </file>
      </dir> <!-- /tests/Piece/Flow -->
+     <file name="CDPlayer.yaml" role="test">
+      <tasks:replace from="@package_version@" to="version" type="package-info" />
+     </file>
+     <file name="FlowCDPlayerAction.php" role="test">
+      <tasks:replace from="@package_version@" to="version" type="package-info" />
+     </file>
      <file name="FlowInitialAction.php" role="test">
       <tasks:replace from="@package_version@" to="version" type="package-info" />
      </file>
@@ -194,6 +212,12 @@
       <tasks:replace from="@package_version@" to="version" type="package-info" />
      </file>
      <file name="optional.yaml" role="test">
+      <tasks:replace from="@package_version@" to="version" type="package-info" />
+     </file>
+     <file name="ProtectedEvents.yaml" role="test">
+      <tasks:replace from="@package_version@" to="version" type="package-info" />
+     </file>
+     <file name="ProtectedStates.yaml" role="test">
       <tasks:replace from="@package_version@" to="version" type="package-info" />
      </file>
      <file name="TestRunner.php" role="test">
@@ -237,15 +261,18 @@
   <filelist>
    <install as="piece-flow.rng" name="data/piece-flow.rng" />
    <install as="piece-flow.yaml" name="data/piece-flow.yaml" />
-   <install as="registrationFlow.xml" name="data/registrationFlow.xml" />
-   <install as="registrationFlow.yaml" name="data/registrationFlow.yaml" />
+   <install as="Registration.xml" name="data/Registration.xml" />
+   <install as="Registration.yaml" name="data/Registration.yaml" />
    <install as="LICENSE" name="docs/LICENSE" />
    <install as="README.sdoc" name="docs/README.sdoc" />
+   <install as="AllTestRunner.php" name="tests/AllTestRunner.php" />
+   <install as="Piece/CDPlayer.yaml" name="tests/Piece/CDPlayer.yaml" />
    <install as="Piece/Flow/Action/BarAction.php" name="tests/Piece/Flow/Action/BarAction.php" />
    <install as="Piece/Flow/Action/FactoryTestCase.php" name="tests/Piece/Flow/Action/FactoryTestCase.php" />
    <install as="Piece/Flow/Action/FooAction.php" name="tests/Piece/Flow/Action/FooAction.php" />
    <install as="Piece/Flow/Action/InvalidAction.php" name="tests/Piece/Flow/Action/InvalidAction.php" />
    <install as="Piece/Flow/Action/TestRunner.php" name="tests/Piece/Flow/Action/TestRunner.php" />
+   <install as="Piece/Flow/ActionTestCase.php" name="tests/Piece/Flow/ActionTestCase.php" />
    <install as="Piece/Flow/ConfigReader/Baz.php" name="tests/Piece/Flow/ConfigReader/Baz.php" />
    <install as="Piece/Flow/ConfigReader/broken.xml" name="tests/Piece/Flow/ConfigReader/broken.xml" />
    <install as="Piece/Flow/ConfigReader/CompatibilityTest.php" name="tests/Piece/Flow/ConfigReader/CompatibilityTest.php" />
@@ -255,7 +282,6 @@
    <install as="Piece/Flow/ConfigReader/XML4TestCase.php" name="tests/Piece/Flow/ConfigReader/XML4TestCase.php" />
    <install as="Piece/Flow/ConfigReader/XML5TestCase.php" name="tests/Piece/Flow/ConfigReader/XML5TestCase.php" />
    <install as="Piece/Flow/ConfigReader/YAMLTestCase.php" name="tests/Piece/Flow/ConfigReader/YAMLTestCase.php" />
-   <install as="Piece/Flow/ActionInvokerTestCase.php" name="tests/Piece/Flow/ActionInvokerTestCase.php" />
    <install as="Piece/Flow/ContinuationTestCase.php" name="tests/Piece/Flow/ContinuationTestCase.php" />
    <install as="Piece/Flow/Counter.yaml" name="tests/Piece/Flow/Counter.yaml" />
    <install as="Piece/Flow/CounterAction.php" name="tests/Piece/Flow/CounterAction.php" />
@@ -265,6 +291,7 @@
    <install as="Piece/Flow/Shutdown.yaml" name="tests/Piece/Flow/Shutdown.yaml" />
    <install as="Piece/Flow/ShutdownAction.php" name="tests/Piece/Flow/ShutdownAction.php" />
    <install as="Piece/Flow/TestRunner.php" name="tests/Piece/Flow/TestRunner.php" />
+   <install as="Piece/FlowCDPlayerAction.php" name="tests/Piece/FlowCDPlayerAction.php" />
    <install as="Piece/FlowInitialAction.php" name="tests/Piece/FlowInitialAction.php" />
    <install as="Piece/FlowTestCase.php" name="tests/Piece/FlowTestCase.php" />
    <install as="Piece/FlowTestCaseAction.php" name="tests/Piece/FlowTestCaseAction.php" />
@@ -273,11 +300,39 @@
    <install as="Piece/invalid.yaml" name="tests/Piece/invalid.yaml" />
    <install as="Piece/optional.xml" name="tests/Piece/optional.xml" />
    <install as="Piece/optional.yaml" name="tests/Piece/optional.yaml" />
+   <install as="Piece/ProtectedEvents.yaml" name="tests/Piece/ProtectedEvents.yaml" />
+   <install as="Piece/ProtectedStates.yaml" name="tests/Piece/ProtectedStates.yaml" />
    <install as="Piece/TestRunner.php" name="tests/Piece/TestRunner.php" />
-   <install as="AllTestRunner.php" name="tests/AllTestRunner.php" />
   </filelist>
  </phprelease>
  <changelog>
+  <release>
+   <version>
+    <release>1.2.0</release>
+    <api>1.0.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2006-07-12</date>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License (revised)</license>
+   <notes>This release includes a few enhancements and fixing two problems as follows:
+
+Enhancements:
+
+* Piece_Flow
+- Added support to prevent configuring protected events and states.
+- Added error handling for failure to invoke actions.
+
+* Example flow definitions
+- Changed some state names and view names to conform the Spring Web Flow best practices.
+
+Defect fixes:
+
+- Fixed the problem that the protected events of the FSM can be triggered by users.
+- Fixed the problem that &apos;entry&apos;, &apos;exit&apos;, and &apos;activity&apos; for the last state could not be added.</notes>
+  </release>
   <release>
    <version>
     <release>1.1.1</release>

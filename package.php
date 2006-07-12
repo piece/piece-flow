@@ -42,10 +42,22 @@ require_once 'PEAR/PackageFileManager2.php';
 
 PEAR::staticPushErrorHandling(PEAR_ERROR_CALLBACK, create_function('$error', 'var_dump($error); exit();'));
 
-$version = '1.1.1';
-$notes = 'This is a bug fix release.
+$version = '1.2.0';
+$notes = "This release includes a few enhancements and fixing two problems as follows:
 
-- Fixed the problem that relative path cannot be used as the cache directory and action cirectory with Solaris.';
+Enhancements:
+
+* Piece_Flow
+- Added support to prevent configuring protected events and states.
+- Added error handling for failure to invoke actions.
+
+* Example flow definitions
+- Changed some state names and view names to conform the Spring Web Flow best practices.
+
+Defect fixes:
+
+- Fixed the problem that the protected events of the FSM can be triggered by users.
+- Fixed the problem that 'entry', 'exit', and 'activity' for the last state could not be added.";
 
 $package = new PEAR_PackageFileManager2();
 $package->setOptions(array('filelistgenerator' => 'svn',

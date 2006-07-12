@@ -2,7 +2,7 @@
 <!DOCTYPE package SYSTEM "http://pear.php.net/dtd/package-1.0">
 <package version="1.0" packagerversion="1.4.9">
  <name>Piece_Flow</name>
- <summary>A web flow engine/A continuation server</summary>
+ <summary>A web flow engine and a continuation server</summary>
  <description>Piece_Flow is a generic web flow engine and a continuation server based on Finite State Machine(FSM). Piece_Flow provides a stateful programming model for developers, and high secrity for applications.
  </description>
  <maintainers>
@@ -14,13 +14,25 @@
   </maintainer>
   </maintainers>
  <release>
-  <version>1.1.1</version>
-  <date>2006-07-07</date>
+  <version>1.2.0</version>
+  <date>2006-07-12</date>
   <license>BSD License (revised)</license>
   <state>stable</state>
-  <notes>This is a bug fix release.
+  <notes>This release includes a few enhancements and fixing two problems as follows:
 
-- Fixed the problem that relative path cannot be used as the cache directory and action cirectory with Solaris.
+Enhancements:
+
+* Piece_Flow
+- Added support to prevent configuring protected events and states.
+- Added error handling for failure to invoke actions.
+
+* Example flow definitions
+- Changed some state names and view names to conform the Spring Web Flow best practices.
+
+Defect fixes:
+
+- Fixed the problem that the protected events of the FSM can be triggered by users.
+- Fixed the problem that &apos;entry&apos;, &apos;exit&apos;, and &apos;activity&apos; for the last state could not be added.
   </notes>
   <deps>
    <dep type="php" rel="ge" version="4.3.0" optional="no"/>
@@ -37,10 +49,10 @@
      <file role="data" name="piece-flow.yaml" install-as="piece-flow.yaml">
       <replace from="@package_version@" to="version" type="package-info"/>
      </file>
-     <file role="data" name="registrationFlow.xml" install-as="registrationFlow.xml">
+     <file role="data" name="Registration.xml" install-as="Registration.xml">
       <replace from="@package_version@" to="version" type="package-info"/>
      </file>
-     <file role="data" name="registrationFlow.yaml" install-as="registrationFlow.yaml">
+     <file role="data" name="Registration.yaml" install-as="Registration.yaml">
       <replace from="@package_version@" to="version" type="package-info"/>
      </file>
     </dir> <!-- /data -->
@@ -76,7 +88,7 @@
         <replace from="@package_version@" to="version" type="package-info"/>
        </file>
       </dir> <!-- /Piece/Flow/ConfigReader -->
-      <file role="php" name="ActionInvoker.php">
+      <file role="php" name="Action.php">
        <replace from="@package_version@" to="version" type="package-info"/>
       </file>
       <file role="php" name="Config.php">
@@ -142,7 +154,7 @@
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
        </dir> <!-- /tests/Piece/Flow/ConfigReader -->
-       <file role="test" name="ActionInvokerTestCase.php" install-as="Piece/Flow/ActionInvokerTestCase.php">
+       <file role="test" name="ActionTestCase.php" install-as="Piece/Flow/ActionTestCase.php">
         <replace from="@package_version@" to="version" type="package-info"/>
        </file>
        <file role="test" name="ContinuationTestCase.php" install-as="Piece/Flow/ContinuationTestCase.php">
@@ -173,6 +185,12 @@
         <replace from="@package_version@" to="version" type="package-info"/>
        </file>
       </dir> <!-- /tests/Piece/Flow -->
+      <file role="test" name="CDPlayer.yaml" install-as="Piece/CDPlayer.yaml">
+       <replace from="@package_version@" to="version" type="package-info"/>
+      </file>
+      <file role="test" name="FlowCDPlayerAction.php" install-as="Piece/FlowCDPlayerAction.php">
+       <replace from="@package_version@" to="version" type="package-info"/>
+      </file>
       <file role="test" name="FlowInitialAction.php" install-as="Piece/FlowInitialAction.php">
        <replace from="@package_version@" to="version" type="package-info"/>
       </file>
@@ -197,6 +215,12 @@
       <file role="test" name="optional.yaml" install-as="Piece/optional.yaml">
        <replace from="@package_version@" to="version" type="package-info"/>
       </file>
+      <file role="test" name="ProtectedEvents.yaml" install-as="Piece/ProtectedEvents.yaml">
+       <replace from="@package_version@" to="version" type="package-info"/>
+      </file>
+      <file role="test" name="ProtectedStates.yaml" install-as="Piece/ProtectedStates.yaml">
+       <replace from="@package_version@" to="version" type="package-info"/>
+      </file>
       <file role="test" name="TestRunner.php" install-as="Piece/TestRunner.php">
        <replace from="@package_version@" to="version" type="package-info"/>
       </file>
@@ -209,6 +233,28 @@
   </filelist>
  </release>
  <changelog>
+   <release>
+    <version>1.2.0</version>
+    <date>2006-07-12</date>
+    <license>BSD License (revised)</license>
+    <state>stable</state>
+    <notes>This release includes a few enhancements and fixing two problems as follows:
+
+Enhancements:
+
+* Piece_Flow
+- Added support to prevent configuring protected events and states.
+- Added error handling for failure to invoke actions.
+
+* Example flow definitions
+- Changed some state names and view names to conform the Spring Web Flow best practices.
+
+Defect fixes:
+
+- Fixed the problem that the protected events of the FSM can be triggered by users.
+- Fixed the problem that &apos;entry&apos;, &apos;exit&apos;, and &apos;activity&apos; for the last state could not be added.
+    </notes>
+   </release>
    <release>
     <version>1.1.1</version>
     <date>2006-07-07</date>
