@@ -418,6 +418,93 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $this->assertFalse($flow->hasAttribute('bar'));
     }
 
+    /**
+     * @since Method available since Release 1.1.2
+     */
+    function testToPreventTriggeringProtectedEvents()
+    {
+        $flow = &new Piece_Flow();
+        $flow->configure(dirname(__FILE__) . '/CDPlayer.yaml', null, dirname(__FILE__));
+        $flow->setPayload(new stdClass());
+        $flow->start();
+
+        $this->assertEquals('Stop', $flow->getCurrentStateName());
+        $this->assertEquals(1, $flow->getAttribute('numberOfUpdate'));
+
+        $flow->triggerEvent('foo');
+
+        $this->assertEquals('Stop', $flow->getCurrentStateName());
+        $this->assertEquals(2, $flow->getAttribute('numberOfUpdate'));
+
+        $flow->triggerEvent(STAGEHAND_FSM_EVENT_ENTRY);
+
+        $this->assertEquals('Stop', $flow->getCurrentStateName());
+        $this->assertEquals(3, $flow->getAttribute('numberOfUpdate'));
+
+        $flow->triggerEvent(STAGEHAND_FSM_EVENT_EXIT);
+
+        $this->assertEquals('Stop', $flow->getCurrentStateName());
+        $this->assertEquals(4, $flow->getAttribute('numberOfUpdate'));
+
+        $flow->triggerEvent(STAGEHAND_FSM_EVENT_START);
+
+        $this->assertEquals('Stop', $flow->getCurrentStateName());
+        $this->assertEquals(5, $flow->getAttribute('numberOfUpdate'));
+
+        $flow->triggerEvent(STAGEHAND_FSM_EVENT_END);
+
+        $this->assertEquals('Stop', $flow->getCurrentStateName());
+        $this->assertEquals(6, $flow->getAttribute('numberOfUpdate'));
+
+        $flow->triggerEvent(STAGEHAND_FSM_EVENT_DO);
+
+        $this->assertEquals('Stop', $flow->getCurrentStateName());
+        $this->assertEquals(7, $flow->getAttribute('numberOfUpdate'));
+
+        $flow->triggerEvent('play');
+
+        $this->assertEquals('Playing', $flow->getCurrentStateName());
+        $this->assertEquals(7, $flow->getAttribute('numberOfUpdate'));
+    }
+
+    /**
+     * @since Method available since Release 1.1.2
+     */
+    function testProtectedEvents()
+    {
+        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+
+        $flow = &new Piece_Flow();
+        $flow->configure(dirname(__FILE__) . '/ProtectedEvents.yaml', null, dirname(__FILE__));
+
+        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
+
+        $error = Piece_Flow_Error::pop();
+
+        $this->assertEquals(PIECE_FLOW_ERROR_PROTECTED_EVENT, $error['code']);
+
+        Piece_Flow_Error::popCallback();
+    }
+
+    /**
+     * @since Method available since Release 1.1.2
+     */
+    function testProtectedStates()
+    {
+        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+
+        $flow = &new Piece_Flow();
+        $flow->configure(dirname(__FILE__) . '/ProtectedStates.yaml', null, dirname(__FILE__));
+
+        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
+
+        $error = Piece_Flow_Error::pop();
+
+        $this->assertEquals(PIECE_FLOW_ERROR_PROTECTED_STATE, $error['code']);
+
+        Piece_Flow_Error::popCallback();
+    }
+
     /**#@-*/
 
     /**#@+
@@ -454,7 +541,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
 
         unset($GLOBALS['initializeCalled']);
         unset($GLOBALS['finalizeCalled']);
-        Piece_Flow_Error::pop();
+        Piece_Flow_Error::popCallback();
     }
 
     /**#@-*/
