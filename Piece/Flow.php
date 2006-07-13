@@ -658,7 +658,7 @@ class Piece_Flow
     // {{{ _configureState()
 
     /**
-     * Configures the state.
+     * Configures a state.
      *
      * @param array $state
      * @throws PIECE_FLOW_ERROR_PROTECTED_EVENT
