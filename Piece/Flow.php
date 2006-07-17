@@ -249,9 +249,7 @@ class Piece_Flow
     /**
      * Starts the Finite State Machine.
      *
-     * @throws PIECE_FLOW_ERROR_NOT_GIVEN
-     * @throws PIECE_FLOW_ERROR_NOT_FOUND
-     * @throws PIECE_FLOW_ERROR_NOT_READABLE
+     * @throws PIECE_FLOW_ERROR_CANNOT_INVOKE
      * @throws PIECE_FLOW_ERROR_ALREADY_SHUTDOWN
      */
     function start()
@@ -288,10 +286,7 @@ class Piece_Flow
      * @param string $eventName
      * @param boolean $transitionToHistoryMarker
      * @return Stagehand_FSM_State
-     * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
-     * @throws PIECE_FLOW_ERROR_NOT_GIVEN
-     * @throws PIECE_FLOW_ERROR_NOT_FOUND
-     * @throws PIECE_FLOW_ERROR_NOT_READABLE
+     * @throws PIECE_FLOW_ERROR_CANNOT_INVOKE
      * @throws PIECE_FLOW_ERROR_ALREADY_SHUTDOWN
      */
     function &triggerEvent($eventName, $transitionToHistoryMarker = false)
@@ -325,11 +320,18 @@ class Piece_Flow
                                             );
         Piece_Flow_Error::popCallback();
         if (Piece_Flow_Error::hasErrors('exception')) {
+            $error = Piece_Flow_Error::pop();
+            if ($error['package'] == 'Piece_Flow'
+                && $error['code'] == PIECE_FLOW_ERROR_CANNOT_INVOKE
+                ) {
+                $error = $error['repackage'];
+            }
+
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_CANNOT_INVOKE,
                                    "An action could not be invoked for any reasons.",
                                    'exception',
                                    array(),
-                                   Piece_Flow_Error::pop()
+                                   $error
                                    );
             $return = null;
             return $return;
