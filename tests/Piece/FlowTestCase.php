@@ -505,6 +505,66 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         Piece_Flow_Error::popCallback();
     }
 
+    /**
+     * @since Method available since Release 1.3.0
+     */
+    function testInvalidEventFromATransitionActionsOrActivities()
+    {
+        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+        $GLOBALS['invalidEventFrom'] = 'register';
+
+        $flow1 = &new Piece_Flow();
+        $flow1->configure(dirname(__FILE__) . '/InvalidEventFromTransitionActionsOrActivities.yaml', null, dirname(__FILE__));
+        $flow1->setPayload(new stdClass());
+        $flow1->start();
+
+        $this->assertEquals('DisplayForm', $flow1->getCurrentStateName());
+
+        $flow1->triggerEvent('foo');
+
+        $this->assertEquals('DisplayForm', $flow1->getCurrentStateName());
+
+        $flow1->triggerEvent('register');
+
+        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
+
+        $error = Piece_Flow_Error::pop();
+
+        $this->assertEquals(PIECE_FLOW_ERROR_CANNOT_INVOKE, $error['code']);
+        $this->assertEquals(PIECE_FLOW_ERROR_INVALID_EVENT, $error['repackage']['code']);
+        $this->assertEquals('invalidEventFromRegister', $error['repackage']['params']['event']);
+        $this->assertEquals('Piece_FlowInvalidEventFromTransitionActionsOrActivitiesAction', $error['repackage']['params']['class']);
+        $this->assertEquals('register', $error['repackage']['params']['method']);
+
+        $GLOBALS['invalidEventFrom'] = 'setupFinish';
+
+        $flow2 = &new Piece_Flow();
+        $flow2->configure(dirname(__FILE__) . '/InvalidEventFromTransitionActionsOrActivities.yaml', null, dirname(__FILE__));
+        $flow2->setPayload(new stdClass());
+        $flow2->start();
+
+        $this->assertEquals('DisplayForm', $flow2->getCurrentStateName());
+
+        $flow2->triggerEvent('foo');
+
+        $this->assertEquals('DisplayForm', $flow2->getCurrentStateName());
+
+        $flow2->triggerEvent('register');
+
+        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
+
+        $error = Piece_Flow_Error::pop();
+
+        $this->assertEquals(PIECE_FLOW_ERROR_CANNOT_INVOKE, $error['code']);
+        $this->assertEquals(PIECE_FLOW_ERROR_INVALID_EVENT, $error['repackage']['code']);
+        $this->assertEquals('invalidEventFromSetupFinish', $error['repackage']['params']['event']);
+        $this->assertEquals('Piece_FlowInvalidEventFromTransitionActionsOrActivitiesAction', $error['repackage']['params']['class']);
+        $this->assertEquals('setupFinish', $error['repackage']['params']['method']);
+
+        unset($GLOBALS['invalidEventFrom']);
+        Piece_Flow_Error::popCallback();
+    }
+
     /**#@-*/
 
     /**#@+
