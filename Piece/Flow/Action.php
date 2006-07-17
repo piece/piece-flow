@@ -137,6 +137,7 @@ class Piece_Flow_Action
      * @throws PIECE_FLOW_ERROR_NOT_READABLE
      * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
      * @throws PIECE_FLOW_ERROR_ALREADY_SHUTDOWN
+     * @throws PIECE_FLOW_ERROR_INVALID_EVENT
      */
     function invokeAndTriggerEvent(&$fsm, &$event, &$payload)
     {
@@ -149,6 +150,17 @@ class Piece_Flow_Action
                                        array(&$this->_flow, $event->getName(), &$payload)
                                        );
         if (!is_null($result)) {
+            if (!$fsm->hasEvent($result)) {
+                Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_EVENT,
+                                       "An invalid event [ $result ] is returned from [ {$this->_class}::{$this->_method}() ] method. Check the flow definition and the action class.",
+                                       'exception',
+                                       array('event' => $result,
+                                             'class' => $this->_class,
+                                             'method' => $this->_method)
+                                       );
+                return;
+            }
+
             $this->_flow->triggerEvent($result);
             if (Piece_Flow_Error::hasErrors('exception')) {
                 return;
