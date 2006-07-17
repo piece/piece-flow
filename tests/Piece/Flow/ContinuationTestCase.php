@@ -473,7 +473,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->assertEquals(PIECE_FLOW_ERROR_INVALID_OPERATION, $error['code']);
     }
 
-    function testStartingNewFlowAfterFlowWasShutdownInNonExclusiveMode()
+    function testStartingNewFlowAfterShuttingDownFlowInNonExclusiveMode()
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
         $GLOBALS['ShutdownCount'] = 0;
@@ -518,7 +518,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         Piece_Flow_Error::popCallback();
     }
 
-    function testStartingNewFlowAfterFlowWasShutdownInExclusiveMode()
+    function testStartingNewFlowAfterShuttingDownFlowInExclusiveMode()
     {
         $GLOBALS['ShutdownCount'] = 0;
 
@@ -558,7 +558,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         unset($GLOBALS['ShutdownCount']);
     }
 
-    function testStartingNewFlowAfterFlowWasShutdownInSingleFlowMode()
+    function testStartingNewFlowAfterShuttingDownFlowInSingleFlowMode()
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
         $GLOBALS['ShutdownCount'] = 0;
