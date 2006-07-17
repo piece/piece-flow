@@ -249,10 +249,10 @@ class Piece_Flow
     /**
      * Starts the Finite State Machine.
      *
-     * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
      * @throws PIECE_FLOW_ERROR_NOT_GIVEN
      * @throws PIECE_FLOW_ERROR_NOT_FOUND
      * @throws PIECE_FLOW_ERROR_NOT_READABLE
+     * @throws PIECE_FLOW_ERROR_ALREADY_SHUTDOWN
      */
     function start()
     {
@@ -270,7 +270,7 @@ class Piece_Flow
         }
 
         if (Stagehand_FSM_Error::hasErrors('exception')) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_ALREADY_SHUTDOWN,
                                    "The flow [ {$this->_name} ] was already shutdown.",
                                    'exception',
                                    array(),
@@ -292,6 +292,7 @@ class Piece_Flow
      * @throws PIECE_FLOW_ERROR_NOT_GIVEN
      * @throws PIECE_FLOW_ERROR_NOT_FOUND
      * @throws PIECE_FLOW_ERROR_NOT_READABLE
+     * @throws PIECE_FLOW_ERROR_ALREADY_SHUTDOWN
      */
     function &triggerEvent($eventName, $transitionToHistoryMarker = false)
     {
@@ -335,7 +336,7 @@ class Piece_Flow
         }
 
         if (Stagehand_FSM_Error::hasErrors('exception')) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_ALREADY_SHUTDOWN,
                                    "The flow [ {$this->_name} ] was already shutdown.",
                                    'exception',
                                    array(),
@@ -352,7 +353,7 @@ class Piece_Flow
             $state = &$this->_fsm->triggerEvent(STAGEHAND_FSM_EVENT_END);
             Piece_Flow_Error::popCallback();
             if (Stagehand_FSM_Error::hasErrors('exception')) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                Piece_Flow_Error::push(PIECE_FLOW_ERROR_ALREADY_SHUTDOWN,
                                        "The flow [ {$this->_name} ] was already shutdown.",
                                        'exception',
                                        array(),
