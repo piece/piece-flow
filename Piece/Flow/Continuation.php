@@ -359,6 +359,7 @@ class Piece_Flow_Continuation
     function clear()
     {
         if (array_key_exists($this->_currentFlowExecutionTicket, $this->_flowExecutions)
+            && !$this->_enableSingleFlowMode
             && $this->_flowExecutions[$this->_currentFlowExecutionTicket]->isFinalState()
             ) {
             unset($this->_flowExecutions[$this->_currentFlowExecutionTicket]);
