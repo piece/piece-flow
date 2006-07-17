@@ -136,6 +136,7 @@ class Piece_Flow_Action
      * @throws PIECE_FLOW_ERROR_NOT_FOUND
      * @throws PIECE_FLOW_ERROR_NOT_READABLE
      * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
+     * @throws PIECE_FLOW_ERROR_ALREADY_SHUTDOWN
      */
     function invokeAndTriggerEvent(&$fsm, &$event, &$payload)
     {

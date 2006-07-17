@@ -487,6 +487,10 @@ class Piece_Flow_Continuation
      *
      * @param mixed &$payload
      * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
+     * @throws PIECE_FLOW_ERROR_NOT_GIVEN
+     * @throws PIECE_FLOW_ERROR_NOT_FOUND
+     * @throws PIECE_FLOW_ERROR_NOT_READABLE
+     * @throws PIECE_FLOW_ERROR_ALREADY_SHUTDOWN
      */
     function _continue(&$payload)
     {
@@ -512,6 +516,7 @@ class Piece_Flow_Continuation
      * @throws PIECE_FLOW_ERROR_NOT_READABLE
      * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
      * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
+     * @throws PIECE_FLOW_ERROR_ALREADY_SHUTDOWN
      */
     function _start(&$payload)
     {

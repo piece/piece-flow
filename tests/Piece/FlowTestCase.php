@@ -537,7 +537,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
 
         $error = Piece_Flow_Error::pop();
 
-        $this->assertEquals(PIECE_FLOW_ERROR_INVALID_OPERATION, $error['code']);
+        $this->assertEquals(PIECE_FLOW_ERROR_ALREADY_SHUTDOWN, $error['code']);
 
         unset($GLOBALS['initializeCalled']);
         unset($GLOBALS['finalizeCalled']);
