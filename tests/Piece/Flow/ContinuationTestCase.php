@@ -560,6 +560,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 
     function testStartingNewFlowAfterFlowWasShutdownInSingleFlowMode()
     {
+        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
         $GLOBALS['ShutdownCount'] = 0;
 
         $continuation = &new Piece_Flow_Continuation(true);
@@ -582,14 +583,20 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 
         /*
          * Failure to continue the 'Shutdown' from the previous flow
-         * execution ticket. And starting a new 'Shutdown'.
+         * execution ticket. The continuation server never starts a new
+         * 'Shutdown' again.
          */
         $continuation->shutdown();
-        $flowExecutionTicket3 = $continuation->invoke(new stdClass());
+        $continuation->invoke(new stdClass());
 
-        $this->assertTrue($flowExecutionTicket1 != $flowExecutionTicket3);
+        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
+
+        $error = Piece_Flow_Error::pop();
+
+        $this->assertEquals(PIECE_FLOW_ERROR_INVALID_OPERATION, $error['code']);
 
         unset($GLOBALS['ShutdownCount']);
+        Piece_Flow_Error::popCallback();
     }
 
     function testGettingCurrentFlowExecutionTicket()
