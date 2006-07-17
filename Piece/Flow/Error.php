@@ -59,6 +59,7 @@ define('PIECE_FLOW_ERROR_CANNOT_INVOKE',       -12);
 define('PIECE_FLOW_ERROR_PROTECTED_EVENT',     -13);
 define('PIECE_FLOW_ERROR_PROTECTED_STATE',     -14);
 define('PIECE_FLOW_ERROR_ALREADY_SHUTDOWN',    -15);
+define('PIECE_FLOW_ERROR_INVALID_EVENT',       -16);
 
 // }}}
 // {{{ Piece_Flow_Error
