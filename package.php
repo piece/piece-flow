@@ -42,8 +42,24 @@ require_once 'PEAR/PackageFileManager2.php';
 
 PEAR::staticPushErrorHandling(PEAR_ERROR_CALLBACK, create_function('$error', 'var_dump($error); exit();'));
 
-$version = '1.2.1';
-$notes = '- Fixed the wrong version number of Stagehand_FSM package from 1.4.0 to 1.5.0.';
+$version = '1.3.0';
+$apiVersion = '1.0.0';
+$notes = 'This release includes a few enhancements as follows:
+
+<<< Enhancements >>>
+
+* Piece_Flow_Action
+- Added support for raising an exception when an invalid event is returned from actions.
+
+* Piece_Flow
+- Changed the error code from PIECE_FLOW_ERROR_INVALID_OPERATION to PIECE_FLOW_ERROR_ALREADY_SHUTDOWN when triggering events after shutting down a flow.
+
+* Piece_Flow_Continuation
+- Changed the code so as never to start a new flow execution again after shtting down in single flow mode.
+
+* Piece_Flow_Error
+- Added PIECE_FLOW_ERROR_ALREADY_SHUTDOWN constant.
+- Added PIECE_FLOW_ERROR_INVALID_EVENT constant.';
 
 $package = new PEAR_PackageFileManager2();
 $package->setOptions(array('filelistgenerator' => 'svn',
@@ -62,7 +78,7 @@ $package->setChannel('pear.hatotech.org');
 $package->setLicense('BSD License (revised)',
                      'http://www.opensource.org/licenses/bsd-license.php'
                      );
-$package->setAPIVersion('1.0.0');
+$package->setAPIVersion($apiVersion);
 $package->setAPIStability('stable');
 $package->setReleaseVersion($version);
 $package->setReleaseStability('stable');
