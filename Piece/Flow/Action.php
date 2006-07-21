@@ -150,7 +150,9 @@ class Piece_Flow_Action
                                        array(&$this->_flow, $event->getName(), &$payload)
                                        );
         if (!is_null($result)) {
-            if (!$fsm->hasEvent($result)) {
+            if ($fsm->hasEvent($result)) {
+                $fsm->queueEvent($result);
+            } else {
                 Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_EVENT,
                                        "An invalid event [ $result ] is returned from [ {$this->_class}::{$this->_method}() ] method. Check the flow definition and the action class.",
                                        'exception',
@@ -158,12 +160,6 @@ class Piece_Flow_Action
                                              'class' => $this->_class,
                                              'method' => $this->_method)
                                        );
-                return;
-            }
-
-            $this->_flow->triggerEvent($result);
-            if (Piece_Flow_Error::hasErrors('exception')) {
-                return;
             }
         }
     }
