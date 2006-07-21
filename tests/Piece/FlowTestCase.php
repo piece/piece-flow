@@ -565,6 +565,25 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         Piece_Flow_Error::popCallback();
     }
 
+    /**
+     * @since Method available since Release 1.4.0
+     */
+    function testProblemThatActivityIsInvokedTwiceUnexpectedly()
+    {
+        $flow = &new Piece_Flow();
+        $flow->configure(dirname(__FILE__) . '/ProblemThatActivityIsInvokedTwiceUnexpectedly.yaml', null, dirname(__FILE__));
+        $flow->setPayload(new stdClass());
+        $flow->start();
+
+        $this->assertEquals(1, $flow->getAttribute('setupFormProblemThatActivityIsInvokedTwiceCalled'));
+
+        $flow->triggerEvent('confirmForm');
+
+        $this->assertEquals(1, $flow->getAttribute('setupFormProblemThatActivityIsInvokedTwiceCalled'));
+        $this->assertEquals(1, $flow->getAttribute('validateProblemThatActivityIsInvokedTwiceCalled'));
+        $this->assertEquals(1, $flow->getAttribute('setupConfirmationProblemThatActivityIsInvokedTwiceCalled'));
+    }
+
     /**#@-*/
 
     /**#@+
