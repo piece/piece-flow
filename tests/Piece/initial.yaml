@@ -1,5 +1,4 @@
 # $Id$
-name: initial
 firstState: starting
 initial:
   class: Piece_FlowInitialAction

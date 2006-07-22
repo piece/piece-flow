@@ -1,5 +1,4 @@
 # $Id$
-name: ProtectedStates
 firstState: Stop
 viewState:
   - name: Stop

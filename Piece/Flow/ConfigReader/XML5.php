@@ -77,9 +77,6 @@ class Piece_Flow_ConfigReader_XML5 extends Piece_Flow_ConfigReader_Common
   </start>
   <define name="flow">    
     <element name="flow">
-      <attribute name="name">
-        <data type="string"/>
-      </attribute>
       <optional>
         <ref name="initial"/>
       </optional>
@@ -268,7 +265,6 @@ class Piece_Flow_ConfigReader_XML5 extends Piece_Flow_ConfigReader_Common
         }
 
         $element = $dom->getElementsByTagName('flow')->item(0);
-        $flow['name'] = $element->getAttribute('name');
         $flow['firstState'] = $element->getAttribute('firstState');
 
         $lastState = $element->getElementsByTagName('lastState')->item(0);

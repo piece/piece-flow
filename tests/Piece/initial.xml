@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- $Id$ -->
-<flow name="initial" firstState="starting">
+<flow firstState="starting">
   <initial class="Piece_FlowInitialAction" method="initialize"/>
   <final class="Piece_FlowInitialAction" method="finalize"/>
   <lastState name="ending" view="end"/>

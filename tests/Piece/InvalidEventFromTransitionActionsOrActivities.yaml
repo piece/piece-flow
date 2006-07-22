@@ -1,5 +1,4 @@
 # $Id$
-name: InvalidEventFromTransitionActionsOrActivities
 firstState: DisplayForm
 viewState:
   - name: DisplayForm

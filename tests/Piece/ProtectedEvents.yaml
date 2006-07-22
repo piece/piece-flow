@@ -1,5 +1,4 @@
 # $Id$
-name: ProtectedEvents
 firstState: Stop
 viewState:
   - name: Stop

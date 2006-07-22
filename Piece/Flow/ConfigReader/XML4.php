@@ -110,7 +110,6 @@ class Piece_Flow_ConfigReader_XML4 extends Piece_Flow_ConfigReader_Common
         }
 
         $element = $dom->document_element();
-        $flow['name'] = $element->get_attribute('name');
         $flow['firstState'] = $element->get_attribute('firstState');
 
         $lastState = $element->get_elements_by_tagname('lastState');

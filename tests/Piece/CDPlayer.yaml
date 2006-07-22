@@ -1,5 +1,4 @@
 # $Id$
-name: CDPlayer
 firstState: Stop
 viewState:
   - name: Stop

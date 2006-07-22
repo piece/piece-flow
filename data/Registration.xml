@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- $Id$ -->
-<flow name="Registration" firstState="DisplayForm">
+<flow firstState="DisplayForm">
   <initial class="Piece_FlowTestCaseAction" method="initialize"/>
   <final class="Piece_FlowTestCaseAction" method="finalize"/>
   <lastState name="Finish" view="Finish">

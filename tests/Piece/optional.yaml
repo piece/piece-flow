@@ -1,5 +1,4 @@
 # $Id$
-name: optional
 firstState: foo
 viewState:
   - name: foo

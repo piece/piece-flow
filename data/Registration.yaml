@@ -1,5 +1,4 @@
 # $Id$
-name: Registration
 firstState: DisplayForm
 lastState:
   name: Finish
