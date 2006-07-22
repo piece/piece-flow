@@ -13,10 +13,10 @@
   <email>iteman@users.sourceforge.net</email>
   <active>yes</active>
  </lead>
- <date>2006-07-17</date>
- <time>12:38:06</time>
+ <date>2006-07-22</date>
+ <time>02:38:42</time>
  <version>
-  <release>1.3.0</release>
+  <release>1.4.0</release>
   <api>1.0.0</api>
  </version>
  <stability>
@@ -29,17 +29,14 @@
 &lt;&lt;&lt; Enhancements &gt;&gt;&gt;
 
 * Piece_Flow_Action
-- Added support for raising an exception when an invalid event is returned from actions.
+- Adjusted to changes in Stagehand_FSM package.
 
-* Piece_Flow
-- Changed the error code from PIECE_FLOW_ERROR_INVALID_OPERATION to PIECE_FLOW_ERROR_ALREADY_SHUTDOWN when triggering events after shutting down a flow.
+* Piece_Flow_ConfigReader_Common
+- Changed the code so as to get the flow name from the current source.
 
-* Piece_Flow_Continuation
-- Changed the code so as never to start a new flow execution again after shtting down in single flow mode.
-
-* Piece_Flow_Error
-- Added PIECE_FLOW_ERROR_ALREADY_SHUTDOWN constant.
-- Added PIECE_FLOW_ERROR_INVALID_EVENT constant.</notes>
+* the schema of flow definitions
+- Removed &apos;name&apos; attribute from &apos;flow&apos; element in piece-flow.rng.
+- Removed &apos;name&apos; element in piece-flow.yaml.</notes>
  <contents>
   <dir baseinstalldir="/" name="/">
    <dir name="data">
@@ -197,6 +194,9 @@
      <file name="FlowInvalidEventFromTransitionActionsOrActivitiesAction.php" role="test">
       <tasks:replace from="@package_version@" to="version" type="package-info" />
      </file>
+     <file name="FlowProblemThatActivityIsInvokedTwiceUnexpectedlyAction.php" role="test">
+      <tasks:replace from="@package_version@" to="version" type="package-info" />
+     </file>
      <file name="FlowTestCase.php" role="test">
       <tasks:replace from="@package_version@" to="version" type="package-info" />
      </file>
@@ -219,6 +219,9 @@
       <tasks:replace from="@package_version@" to="version" type="package-info" />
      </file>
      <file name="optional.yaml" role="test">
+      <tasks:replace from="@package_version@" to="version" type="package-info" />
+     </file>
+     <file name="ProblemThatActivityIsInvokedTwiceUnexpectedly.yaml" role="test">
       <tasks:replace from="@package_version@" to="version" type="package-info" />
      </file>
      <file name="ProtectedEvents.yaml" role="test">
@@ -248,7 +251,7 @@
    <package>
     <name>Stagehand_FSM</name>
     <channel>pear.hatotech.org</channel>
-    <min>1.6.0</min>
+    <min>1.7.0</min>
    </package>
    <package>
     <name>Cache_Lite</name>
@@ -301,6 +304,7 @@
    <install as="Piece/FlowCDPlayerAction.php" name="tests/Piece/FlowCDPlayerAction.php" />
    <install as="Piece/FlowInitialAction.php" name="tests/Piece/FlowInitialAction.php" />
    <install as="Piece/FlowInvalidEventFromTransitionActionsOrActivitiesAction.php" name="tests/Piece/FlowInvalidEventFromTransitionActionsOrActivitiesAction.php" />
+   <install as="Piece/FlowProblemThatActivityIsInvokedTwiceUnexpectedlyAction.php" name="tests/Piece/FlowProblemThatActivityIsInvokedTwiceUnexpectedlyAction.php" />
    <install as="Piece/FlowTestCase.php" name="tests/Piece/FlowTestCase.php" />
    <install as="Piece/FlowTestCaseAction.php" name="tests/Piece/FlowTestCaseAction.php" />
    <install as="Piece/initial.xml" name="tests/Piece/initial.xml" />
@@ -309,12 +313,38 @@
    <install as="Piece/InvalidEventFromTransitionActionsOrActivities.yaml" name="tests/Piece/InvalidEventFromTransitionActionsOrActivities.yaml" />
    <install as="Piece/optional.xml" name="tests/Piece/optional.xml" />
    <install as="Piece/optional.yaml" name="tests/Piece/optional.yaml" />
+   <install as="Piece/ProblemThatActivityIsInvokedTwiceUnexpectedly.yaml" name="tests/Piece/ProblemThatActivityIsInvokedTwiceUnexpectedly.yaml" />
    <install as="Piece/ProtectedEvents.yaml" name="tests/Piece/ProtectedEvents.yaml" />
    <install as="Piece/ProtectedStates.yaml" name="tests/Piece/ProtectedStates.yaml" />
    <install as="Piece/TestRunner.php" name="tests/Piece/TestRunner.php" />
   </filelist>
  </phprelease>
  <changelog>
+  <release>
+   <version>
+    <release>1.4.0</release>
+    <api>1.0.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2006-07-22</date>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License (revised)</license>
+   <notes>This release includes a few enhancements as follows:
+
+&lt;&lt;&lt; Enhancements &gt;&gt;&gt;
+
+* Piece_Flow_Action
+- Adjusted to changes in Stagehand_FSM package.
+
+* Piece_Flow_ConfigReader_Common
+- Changed the code so as to get the flow name from the current source.
+
+* the schema of flow definitions
+- Removed &apos;name&apos; attribute from &apos;flow&apos; element in piece-flow.rng.
+- Removed &apos;name&apos; element in piece-flow.yaml.</notes>
+  </release>
   <release>
    <version>
     <release>1.3.0</release>
@@ -326,7 +356,7 @@
    </stability>
    <date>2006-07-17</date>
    <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License (revised)</license>
- <notes>This release includes a few enhancements as follows:
+   <notes>This release includes a few enhancements as follows:
 
 &lt;&lt;&lt; Enhancements &gt;&gt;&gt;
 
