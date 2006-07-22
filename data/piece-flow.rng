@@ -6,9 +6,6 @@
   </start>
   <define name="flow">    
     <element name="flow">
-      <attribute name="name">
-        <data type="string"/>
-      </attribute>
       <optional>
         <ref name="initial"/>
       </optional>
