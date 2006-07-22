@@ -115,7 +115,7 @@ class Piece_Flow_ConfigReader_Common
         }
 
         $this->_config = &new Piece_Flow_Config();
-        $this->_config->setName($flow['name']);
+        $this->_config->setName($this->_getFlowNameFromSource());
         $this->_config->setFirstState($flow['firstState']);
 
         if (array_key_exists('lastState', $flow)) {
@@ -352,6 +352,25 @@ class Piece_Flow_ConfigReader_Common
      * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
      */
     function _parseFile() {}
+
+    // }}}
+    // {{{ _getFlowNameFromSource()
+
+    /**
+     * Gets the flow name from the current source.
+     *
+     * @return string
+     */
+    function _getFlowNameFromSource()
+    {
+        $name = basename($this->_source);
+        $positionOfExtension = strrpos($name, '.');
+        if ($positionOfExtension !== false) {
+            return substr($name, 0, $positionOfExtension);
+        }
+
+        return $name;
+    }
 
     /**#@-*/
 
