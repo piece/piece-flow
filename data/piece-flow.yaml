@@ -3,7 +3,6 @@ name: flow
 desc: the definition of Piece_Flow flow configuration file.
 type: map
 mapping:
-  "name": { type: str, required: yes }
   "firstState": { type: str, required: yes }
   "viewState":
     type: seq
