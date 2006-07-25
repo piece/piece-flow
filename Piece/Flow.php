@@ -254,9 +254,7 @@ class Piece_Flow
      */
     function start()
     {
-        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
         $this->_fsm->start();
-        Piece_Flow_Error::popCallback();
         if (Piece_Flow_Error::hasErrors('exception')) {
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_CANNOT_INVOKE,
                                    "An action could not be invoked for any reasons.",
@@ -314,11 +312,9 @@ class Piece_Flow
             $eventName = PIECE_FLOW_PROTECTED_EVENT;
         }
 
-        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
         $state = &$this->_fsm->triggerEvent($eventName,
                                             $transitionToHistoryMarker
                                             );
-        Piece_Flow_Error::popCallback();
         if (Piece_Flow_Error::hasErrors('exception')) {
             $error = Piece_Flow_Error::pop();
             if ($error['package'] == 'Piece_Flow'
