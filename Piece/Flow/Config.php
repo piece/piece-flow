@@ -176,12 +176,11 @@ class Piece_Flow_Config
                            )
     {
         $states = &$this->_getAppropriateStates($state);
-        array_push($states[$state]['transitions'],
-                   array('event' => $event,
-                         'nextState' => $nextState,
-                         'action' => $action,
-                         'guard' => $guard)
-                   );
+        $states[$state]['transitions'][] = array('event' => $event,
+                                                 'nextState' => $nextState,
+                                                 'action' => $action,
+                                                 'guard' => $guard
+                                                 );
     }
 
     // }}}

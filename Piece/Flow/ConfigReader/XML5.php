@@ -312,7 +312,7 @@ class Piece_Flow_ConfigReader_XML5 extends Piece_Flow_ConfigReader_Common
             $viewState['name'] = $state->getAttribute('name');
             $viewState['view'] = $state->getAttribute('view');
             $viewState = array_merge($viewState, $this->_parseState($state));
-            array_push($viewStates, $viewState);
+            $viewStates[] = $viewState;
         }
 
         return $viewStates;
@@ -338,7 +338,7 @@ class Piece_Flow_ConfigReader_XML5 extends Piece_Flow_ConfigReader_Common
             $actionState = array_merge($actionState,
                                        $this->_parseState($state)
                                        );
-            array_push($actionStates, $actionState);
+            $actionStates[] = $actionState;
         }
 
         return $actionStates;
@@ -376,7 +376,7 @@ class Piece_Flow_ConfigReader_XML5 extends Piece_Flow_ConfigReader_Common
                 $parsedTransition['guard'] = $this->_parseAction($guard);
             }
 
-            array_push($parsedTransitions, $parsedTransition);
+            $parsedTransitions[] = $parsedTransition;
         }
         if (count($parsedTransitions)) {
             $parsedState['transition'] = $parsedTransitions;
