@@ -152,7 +152,7 @@ class Piece_Flow_Action_Factory
 
         if (!file_exists($file)) {
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
-                                   "The action file for the class [ $class ] not found."
+                                   "The action file [ $file ] for the class [ $class ] not found."
                                    );
             return;
         }
@@ -164,7 +164,7 @@ class Piece_Flow_Action_Factory
             return;
         }
 
-        if (!@include_once $file) {
+        if (!include_once $file) {
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
                                    "The action file [ $file ] not found or was not readable."
                                    );
