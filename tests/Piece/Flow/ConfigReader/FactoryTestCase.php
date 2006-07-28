@@ -116,7 +116,7 @@ class Piece_Flow_ConfigReader_FactoryTestCase extends PHPUnit_TestCase
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
-        Piece_Flow_ConfigReader_Factory::factory('foo.bar');
+        @Piece_Flow_ConfigReader_Factory::factory('foo.bar');
 
         $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
 
