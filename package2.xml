@@ -13,10 +13,10 @@
   <email>iteman@users.sourceforge.net</email>
   <active>yes</active>
  </lead>
- <date>2006-07-22</date>
- <time>02:38:42</time>
+ <date>2006-07-28</date>
+ <time>03:01:15</time>
  <version>
-  <release>1.4.0</release>
+  <release>1.4.1</release>
   <api>1.0.0</api>
  </version>
  <stability>
@@ -24,19 +24,16 @@
   <api>stable</api>
  </stability>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License (revised)</license>
- <notes>This release includes a few enhancements as follows:
+ <notes>This release includes two defect fixes and an enhancement as follows:
+
+&lt;&lt;&lt; Defect fixes &gt;&gt;&gt;
+
+- Removed wrong error handling which disables the current callback.
+- Removed '@' operator from include_once.
 
 &lt;&lt;&lt; Enhancements &gt;&gt;&gt;
 
-* Piece_Flow_Action
-- Adjusted to changes in Stagehand_FSM package.
-
-* Piece_Flow_ConfigReader_Common
-- Changed the code so as to get the flow name from the current source.
-
-* the schema of flow definitions
-- Removed &apos;name&apos; attribute from &apos;flow&apos; element in piece-flow.rng.
-- Removed &apos;name&apos; element in piece-flow.yaml.</notes>
+- Changed the code so as to use $array[] = $value instead of array_push($array, $value).</notes>
  <contents>
   <dir baseinstalldir="/" name="/">
    <dir name="data">
@@ -320,6 +317,28 @@
   </filelist>
  </phprelease>
  <changelog>
+  <release>
+   <version>
+    <release>1.4.1</release>
+    <api>1.0.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2006-07-28</date>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License (revised)</license>
+   <notes>This release includes two defect fixes and an enhancement as follows:
+
+&lt;&lt;&lt; Defect fixes &gt;&gt;&gt;
+
+- Removed wrong error handling which disables the current callback.
+- Removed '@' operator from include_once.
+
+&lt;&lt;&lt; Enhancements &gt;&gt;&gt;
+
+- Changed the code so as to use $array[] = $value instead of array_push($array, $value).</notes>
+  </release>
   <release>
    <version>
     <release>1.4.0</release>

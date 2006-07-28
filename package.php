@@ -42,21 +42,18 @@ require_once 'PEAR/PackageFileManager2.php';
 
 PEAR::staticPushErrorHandling(PEAR_ERROR_CALLBACK, create_function('$error', 'var_dump($error); exit();'));
 
-$version = '1.4.0';
+$version = '1.4.1';
 $apiVersion = '1.0.0';
-$notes = "This release includes a few enhancements as follows:
+$notes = "This release includes two defect fixes and an enhancement as follows:
+
+<<< Defect fixes >>>
+
+- Removed wrong error handling which disables the current callback.
+- Removed '@' operator from include_once.
 
 <<< Enhancements >>>
 
-* Piece_Flow_Action
-- Adjusted to changes in Stagehand_FSM package.
-
-* Piece_Flow_ConfigReader_Common
-- Changed the code so as to get the flow name from the current source.
-
-* the schema of flow definitions
-- Removed 'name' attribute from 'flow' element in piece-flow.rng.
-- Removed 'name' element in piece-flow.yaml.";
+- Changed the code so as to use $array[] = $value instead of array_push($array, $value).";
 
 $package = new PEAR_PackageFileManager2();
 $package->setOptions(array('filelistgenerator' => 'svn',

@@ -14,23 +14,20 @@
   </maintainer>
   </maintainers>
  <release>
-  <version>1.4.0</version>
-  <date>2006-07-22</date>
+  <version>1.4.1</version>
+  <date>2006-07-28</date>
   <license>BSD License (revised)</license>
   <state>stable</state>
-  <notes>This release includes a few enhancements as follows:
+  <notes>This release includes two defect fixes and an enhancement as follows:
+
+&lt;&lt;&lt; Defect fixes &gt;&gt;&gt;
+
+- Removed wrong error handling which disables the current callback.
+- Removed '@' operator from include_once.
 
 &lt;&lt;&lt; Enhancements &gt;&gt;&gt;
 
-* Piece_Flow_Action
-- Adjusted to changes in Stagehand_FSM package.
-
-* Piece_Flow_ConfigReader_Common
-- Changed the code so as to get the flow name from the current source.
-
-* the schema of flow definitions
-- Removed &apos;name&apos; attribute from &apos;flow&apos; element in piece-flow.rng.
-- Removed &apos;name&apos; element in piece-flow.yaml.
+- Changed the code so as to use $array[] = $value instead of array_push($array, $value).
   </notes>
   <deps>
    <dep type="php" rel="ge" version="4.3.0" optional="no"/>
@@ -243,12 +240,29 @@
   </filelist>
  </release>
  <changelog>
-   <release>
-    <version>1.4.0</version>
-    <date>2006-07-22</date>
-    <license>BSD License (revised)</license>
-    <state>stable</state>
-    <notes>This release includes a few enhancements as follows:
+  <release>
+   <version>1.4.1</version>
+   <date>2006-07-28</date>
+   <license>BSD License (revised)</license>
+   <state>stable</state>
+   <notes>This release includes two defect fixes and an enhancement as follows:
+
+&lt;&lt;&lt; Defect fixes &gt;&gt;&gt;
+
+- Removed wrong error handling which disables the current callback.
+- Removed '@' operator from include_once.
+
+&lt;&lt;&lt; Enhancements &gt;&gt;&gt;
+
+- Changed the code so as to use $array[] = $value instead of array_push($array, $value).
+   </notes>
+  </release>
+  <release>
+   <version>1.4.0</version>
+   <date>2006-07-22</date>
+   <license>BSD License (revised)</license>
+   <state>stable</state>
+   <notes>This release includes a few enhancements as follows:
 
 &lt;&lt;&lt; Enhancements &gt;&gt;&gt;
 
@@ -261,14 +275,14 @@
 * the schema of flow definitions
 - Removed &apos;name&apos; attribute from &apos;flow&apos; element in piece-flow.rng.
 - Removed &apos;name&apos; element in piece-flow.yaml.
-    </notes>
-   </release>
-   <release>
-    <version>1.3.0</version>
-    <date>2006-07-17</date>
-    <license>BSD License (revised)</license>
-    <state>stable</state>
-    <notes>This release includes a few enhancements as follows:
+   </notes>
+  </release>
+  <release>
+   <version>1.3.0</version>
+   <date>2006-07-17</date>
+   <license>BSD License (revised)</license>
+   <state>stable</state>
+   <notes>This release includes a few enhancements as follows:
 
 &lt;&lt;&lt; Enhancements &gt;&gt;&gt;
 
@@ -284,22 +298,22 @@
 * Piece_Flow_Error
 - Added PIECE_FLOW_ERROR_ALREADY_SHUTDOWN constant.
 - Added PIECE_FLOW_ERROR_INVALID_EVENT constant.
-    </notes>
-   </release>
-   <release>
-    <version>1.2.1</version>
-    <date>2006-07-12</date>
-    <license>BSD License (revised)</license>
-    <state>stable</state>
-    <notes>- Fixed the wrong version number of Stagehand_FSM package from 1.4.0 to 1.5.0.
-    </notes>
-   </release>
-   <release>
-    <version>1.2.0</version>
-    <date>2006-07-12</date>
-    <license>BSD License (revised)</license>
-    <state>stable</state>
-    <notes>This release includes a few enhancements and fixing two problems as follows:
+   </notes>
+  </release>
+  <release>
+   <version>1.2.1</version>
+   <date>2006-07-12</date>
+   <license>BSD License (revised)</license>
+   <state>stable</state>
+   <notes>- Fixed the wrong version number of Stagehand_FSM package from 1.4.0 to 1.5.0.
+   </notes>
+  </release>
+  <release>
+   <version>1.2.0</version>
+   <date>2006-07-12</date>
+   <license>BSD License (revised)</license>
+   <state>stable</state>
+   <notes>This release includes a few enhancements and fixing two problems as follows:
 
 Enhancements:
 
@@ -314,41 +328,41 @@ Defect fixes:
 
 - Fixed the problem that the protected events of the FSM can be triggered by users.
 - Fixed the problem that &apos;entry&apos;, &apos;exit&apos;, and &apos;activity&apos; for the last state could not be added.
-    </notes>
-   </release>
-   <release>
-    <version>1.1.1</version>
-    <date>2006-07-07</date>
-    <license>BSD License (revised)</license>
-    <state>stable</state>
-    <notes>This is a bug fix release.
+   </notes>
+  </release>
+  <release>
+   <version>1.1.1</version>
+   <date>2006-07-07</date>
+   <license>BSD License (revised)</license>
+   <state>stable</state>
+   <notes>This is a bug fix release.
 
 - Fixed the problem that relative path cannot be used as the cache directory and action cirectory with Solaris.
-    </notes>
-   </release>
-   <release>
-    <version>1.1.0</version>
-    <date>2006-07-04</date>
-    <license>BSD License (revised)</license>
-    <state>stable</state>
-    <notes>- Piece/Flow.php: Added removeAttribute()/clearAttributs() for removing attributes from flows.
-    </notes>
-   </release>
-   <release>
-    <version>1.0.0</version>
-    <date>2006-06-19</date>
-    <license>BSD License (revised)</license>
-    <state>stable</state>
-    <notes>The first stable release of Piece_Flow.
-    </notes>
-   </release>
-   <release>
-    <version>0.4.0</version>
-    <date>2006-04-21</date>
-    <license>BSD License (revised)</license>
-    <state>beta</state>
-    <notes>The first release of Piece_Flow.
-    </notes>
-   </release>
+   </notes>
+  </release>
+  <release>
+   <version>1.1.0</version>
+   <date>2006-07-04</date>
+   <license>BSD License (revised)</license>
+   <state>stable</state>
+   <notes>- Piece/Flow.php: Added removeAttribute()/clearAttributs() for removing attributes from flows.
+   </notes>
+  </release>
+  <release>
+   <version>1.0.0</version>
+   <date>2006-06-19</date>
+   <license>BSD License (revised)</license>
+   <state>stable</state>
+   <notes>The first stable release of Piece_Flow.
+   </notes>
+  </release>
+  <release>
+   <version>0.4.0</version>
+   <date>2006-04-21</date>
+   <license>BSD License (revised)</license>
+   <state>beta</state>
+   <notes>The first release of Piece_Flow.
+   </notes>
+  </release>
  </changelog>
 </package>
