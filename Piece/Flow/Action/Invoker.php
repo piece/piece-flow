@@ -118,9 +118,11 @@ class Piece_Flow_Action_Invoker
             return;
         }
 
-        return call_user_func_array(array(&$action, $this->_method),
-                                    array(&$this->_flow, $event->getName(), &$payload)
-                                    );
+        $action->setFlow($this->_flow);
+        $action->setPayload($payload);
+        $action->setEvent($event->getName());
+
+        return call_user_func(array(&$action, $this->_method));
     }
 
     // }}}
@@ -146,9 +148,11 @@ class Piece_Flow_Action_Invoker
             return;
         }
 
-        $result = call_user_func_array(array(&$action, $this->_method),
-                                       array(&$this->_flow, $event->getName(), &$payload)
-                                       );
+        $action->setFlow($this->_flow);
+        $action->setPayload($payload);
+        $action->setEvent($event->getName());
+
+        $result = call_user_func(array(&$action, $this->_method));
         if (!is_null($result)) {
             if ($fsm->hasEvent($result)) {
                 $fsm->queueEvent($result);
