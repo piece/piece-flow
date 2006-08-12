@@ -38,7 +38,7 @@
  * @since      File available since Release 1.0.0
  */
 
-// {{{ Piece_Flow_Action_FooAction
+// {{{ Piece_Flow_FooAction
 
 /**
  * A class for unit tests.
