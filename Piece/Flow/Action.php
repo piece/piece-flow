@@ -67,6 +67,7 @@ class Piece_Flow_Action
 
     var $_flow;
     var $_payload;
+    var $_event;
 
     /**#@-*/
 
@@ -98,6 +99,19 @@ class Piece_Flow_Action
     function setPayload(&$payload)
     {
         $this->_payload = &$payload;
+    }
+
+    // }}}
+    // {{{ setEvent()
+
+    /**
+     * Sets the current event name to the current action.
+     *
+     * @param string $event
+     */
+    function setEvent($event)
+    {
+        $this->_event = $event;
     }
 
     /**#@-*/
