@@ -39,12 +39,12 @@
  * @link       http://opensource2.atlassian.com/confluence/spring/display/WEBFLOW/Home
  * @link       http://www-128.ibm.com/developerworks/java/library/j-cb03216/
  * @link       http://www-06.ibm.com/jp/developerworks/java/060412/j_j-cb03216.shtml
- * @see        Stagehand_FSM, Piece_Flow_Action
+ * @see        Stagehand_FSM, Piece_Flow_Action_Invoker
  * @since      File available since Release 0.1.0
  */
 
 require_once 'Stagehand/FSM.php';
-require_once 'Piece/Flow/Action.php';
+require_once 'Piece/Flow/Action/Invoker.php';
 require_once 'Piece/Flow/ConfigReader/Factory.php';
 require_once 'Piece/Flow/Error.php';
 
@@ -76,7 +76,7 @@ define('PIECE_FLOW_PROTECTED_EVENT', '_Piece_Flow_Protected_Event');
  * @link       http://opensource2.atlassian.com/confluence/spring/display/WEBFLOW/Home
  * @link       http://www-128.ibm.com/developerworks/java/library/j-cb03216/
  * @link       http://www-06.ibm.com/jp/developerworks/java/060412/j_j-cb03216.shtml
- * @see        Stagehand_FSM, Piece_Flow_Action
+ * @see        Stagehand_FSM, Piece_Flow_Action_Invoker
  * @since      Class available since Release 0.1.0
  */
 class Piece_Flow
@@ -718,8 +718,8 @@ class Piece_Flow
             return $action;
         }
 
-        $flowAction = &new Piece_Flow_Action($this, $action['class'], $action['method']);
-        return array(&$flowAction, 'invoke');
+        $invoker = &new Piece_Flow_Action_Invoker($this, $action['class'], $action['method']);
+        return array(&$invoker, 'invoke');
     }
 
     // }}}
@@ -754,8 +754,8 @@ class Piece_Flow
             return $action;
         }
 
-        $flowAction = &new Piece_Flow_Action($this, $action['class'], $action['method']);
-        return array(&$flowAction, 'invokeAndTriggerEvent');
+        $invoker = &new Piece_Flow_Action_Invoker($this, $action['class'], $action['method']);
+        return array(&$invoker, 'invokeAndTriggerEvent');
     }
 
     /**#@-*/

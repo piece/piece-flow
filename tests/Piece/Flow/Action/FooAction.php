@@ -49,7 +49,6 @@
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
  * @link       http://iteman.typepad.jp/piece/
- * @see        Piece_Flow_Action_Factory
  * @since      Class available since Release 1.0.0
  */
 class Piece_Flow_Action_FooAction
@@ -60,6 +59,8 @@ class Piece_Flow_Action_FooAction
     /**#@+
      * @access public
      */
+
+    var $fooCalled = false;
 
     /**#@-*/
 
@@ -72,6 +73,13 @@ class Piece_Flow_Action_FooAction
     /**#@+
      * @access public
      */
+
+    function foo(&$flow)
+    {
+        if (is_a($flow, 'stdClass')) {
+            $this->fooCalled = true;
+        }
+    }
 
     /**#@-*/
 

@@ -35,19 +35,19 @@
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
  * @link       http://iteman.typepad.jp/piece/
- * @see        Piece_Flow_Action
+ * @see        Piece_Flow_Action_Invoker
  * @since      File available since Release 0.1.0
  */
 
 require_once 'PHPUnit.php';
-require_once 'Piece/Flow/Action.php';
+require_once 'Piece/Flow/Action/Invoker.php';
 require_once 'Piece/Flow/Error.php';
 require_once 'Piece/Flow/Action/Factory.php';
 
-// {{{ Piece_Flow_ActionTestCase
+// {{{ Piece_Flow_Action_InvokerTestCase
 
 /**
- * TestCase for Piece_Flow_Action
+ * TestCase for Piece_Flow_Action_Invoker
  *
  * @package    Piece_Flow
  * @author     KUBO Atsuhiro <iteman@users.sourceforge.net>
@@ -56,10 +56,10 @@ require_once 'Piece/Flow/Action/Factory.php';
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
  * @link       http://iteman.typepad.jp/piece/
- * @see        Piece_Flow_Action
+ * @see        Piece_Flow_Action_Invoker
  * @since      Class available since Release 0.1.0
  */
-class Piece_Flow_ActionTestCase extends PHPUnit_TestCase
+class Piece_Flow_Action_InvokerTestCase extends PHPUnit_TestCase
 {
 
     // {{{ properties
@@ -95,17 +95,17 @@ class Piece_Flow_ActionTestCase extends PHPUnit_TestCase
 
     function testInvokingAction()
     {
-        Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/../..');
-        $action = &new Piece_Flow_Action(new stdClass(),
-                                         'Piece_Flow_FooAction',
+        Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/../../..');
+        $action = &new Piece_Flow_Action_Invoker(new stdClass(),
+                                         'Piece_Flow_Action_FooAction',
                                          'foo'
                                          );
         $action->invoke(new stdClass(),
-                        new Piece_Flow_ActionTestCaseMockEvent(),
+                        new Piece_Flow_Action_InvokerTestCaseMockEvent(),
                         new stdClass()
                         );
 
-        $fooAction = &Piece_Flow_Action_Factory::factory('Piece_Flow_FooAction');
+        $fooAction = &Piece_Flow_Action_Factory::factory('Piece_Flow_Action_FooAction');
 
         $this->assertTrue($fooAction->fooCalled);
     }
@@ -123,7 +123,7 @@ class Piece_Flow_ActionTestCase extends PHPUnit_TestCase
 
 // }}}
 
-class Piece_Flow_ActionTestCaseMockEvent
+class Piece_Flow_Action_InvokerTestCaseMockEvent
 {
     function getName() {}
 }
