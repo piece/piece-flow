@@ -39,6 +39,8 @@
  * @since      File available since Release 1.0.0
  */
 
+require_once 'Piece/Flow/Action.php';
+
 // {{{ Piece_FlowTestCaseAction
 
 /**
@@ -54,7 +56,7 @@
  * @see        Piece_Flow
  * @since      Class available since Release 1.0.0
  */
-class Piece_FlowTestCaseAction
+class Piece_FlowTestCaseAction extends Piece_Flow_Action
 {
 
     // {{{ properties
@@ -75,7 +77,7 @@ class Piece_FlowTestCaseAction
      * @access public
      */
 
-    function validateInput(&$flow, $event, &$payload)
+    function validateInput()
     {
         $GLOBALS['validateInputCalled'] = true;
 
@@ -88,7 +90,7 @@ class Piece_FlowTestCaseAction
         return 'succeed';
     }
 
-    function validateConfirmation(&$flow, $event, &$payload)
+    function validateConfirmation()
     {
         $GLOBALS['validateConfirmationCalled'] = true;
 
@@ -101,36 +103,36 @@ class Piece_FlowTestCaseAction
         return 'succeed';
     }
 
-    function register(&$flow, $event, &$payload)
+    function register()
     {
         return 'succeed';
     }
 
-    function isPermitted(&$flow, $event, &$payload)
+    function isPermitted()
     {
         return true;
     }
 
-    function setupForm(&$flow, $event, &$payload)
+    function setupForm()
     {
         $GLOBALS['setupFormCalled'] = true;
     }
 
-    function teardownForm(&$flow, $event, &$payload)
+    function teardownForm()
     {
         $GLOBALS['teardownFormCalled'] = true;
     }
 
-    function countDisplay(&$flow, $event, &$payload)
+    function countDisplay()
     {
         if (array_key_exists('displayCounter', $GLOBALS)) {
             ++$GLOBALS['displayCounter'];
         }
     }
 
-    function initialize(&$flow, $event, &$payload) {}
+    function initialize() {}
 
-    function finalize(&$flow, $event, &$payload) {}
+    function finalize() {}
 
     /**#@-*/
 

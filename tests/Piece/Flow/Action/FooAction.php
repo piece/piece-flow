@@ -38,6 +38,8 @@
  * @since      File available since Release 1.0.0
  */
 
+require_once 'Piece/Flow/Action.php';
+
 // {{{ Piece_Flow_Action_FooAction
 
 /**
@@ -51,7 +53,7 @@
  * @link       http://iteman.typepad.jp/piece/
  * @since      Class available since Release 1.0.0
  */
-class Piece_Flow_Action_FooAction
+class Piece_Flow_Action_FooAction extends Piece_Flow_Action
 {
 
     // {{{ properties
@@ -74,9 +76,9 @@ class Piece_Flow_Action_FooAction
      * @access public
      */
 
-    function foo(&$flow)
+    function foo()
     {
-        if (is_a($flow, 'stdClass')) {
+        if (is_a($this->_flow, 'stdClass')) {
             $this->fooCalled = true;
         }
     }

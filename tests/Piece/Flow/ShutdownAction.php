@@ -38,6 +38,8 @@
  * @since      File available since Release 1.0.0
  */
 
+require_once 'Piece/Flow/Action.php';
+
 // {{{ Piece_Flow_ShutdownAction
 
 /**
@@ -52,7 +54,7 @@
  * @see        Piece_Flow_ContinuationTestCase
  * @since      Class available since Release 1.0.0
  */
-class Piece_Flow_ShutdownAction
+class Piece_Flow_ShutdownAction extends Piece_Flow_Action
 {
 
     // {{{ properties
@@ -73,7 +75,7 @@ class Piece_Flow_ShutdownAction
      * @access public
      */
 
-    function finalize(&$flow, $event, &$payload)
+    function finalize()
     {
         ++$GLOBALS['ShutdownCount'];
     }

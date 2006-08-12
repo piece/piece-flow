@@ -39,6 +39,8 @@
  * @since      File available since Release 1.3.0
  */
 
+require_once 'Piece/Flow/Action.php';
+
 // {{{ Piece_FlowInvalidEventFromTransitionActionsOrActivitiesAction
 
 /**
@@ -54,7 +56,7 @@
  * @see        Piece_Flow
  * @since      Class available since Release 1.3.0
  */
-class Piece_FlowInvalidEventFromTransitionActionsOrActivitiesAction
+class Piece_FlowInvalidEventFromTransitionActionsOrActivitiesAction extends Piece_Flow_Action
 {
 
     // {{{ properties
@@ -75,7 +77,7 @@ class Piece_FlowInvalidEventFromTransitionActionsOrActivitiesAction
      * @access public
      */
 
-    function register(&$flow, $event, &$payload)
+    function register()
     {
         if ($GLOBALS['invalidEventFrom'] == 'register') {
             return 'invalidEventFromRegister';
@@ -84,7 +86,7 @@ class Piece_FlowInvalidEventFromTransitionActionsOrActivitiesAction
         return 'goDisplayFinish';
     }
 
-    function setupFinish(&$flow, $event, &$payload)
+    function setupFinish()
     {
         if ($GLOBALS['invalidEventFrom'] == 'setupFinish') {
             return 'invalidEventFromSetupFinish';

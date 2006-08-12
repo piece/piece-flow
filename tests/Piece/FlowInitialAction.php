@@ -39,6 +39,8 @@
  * @since      File available since Release 1.0.0
  */
 
+require_once 'Piece/Flow/Action.php';
+
 // {{{ Piece_FlowInitialAction
 
 /**
@@ -54,7 +56,7 @@
  * @see        Piece_Flow
  * @since      Class available since Release 1.0.0
  */
-class Piece_FlowInitialAction
+class Piece_FlowInitialAction extends Piece_Flow_Action
 {
 
     // {{{ properties
@@ -75,12 +77,12 @@ class Piece_FlowInitialAction
      * @access public
      */
 
-    function initialize(&$flow, $event, &$payload)
+    function initialize()
     {
         $GLOBALS['initializeCalled'] = true;
     }
 
-    function finalize(&$flow, $event, &$payload)
+    function finalize()
     {
         $GLOBALS['finalizeCalled'] = true;
     }

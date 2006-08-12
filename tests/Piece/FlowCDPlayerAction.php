@@ -39,6 +39,8 @@
  * @since      File available since Release 1.2.0
  */
 
+require_once 'Piece/Flow/Action.php';
+
 // {{{ Piece_FlowCDPlayerAction
 
 /**
@@ -54,7 +56,7 @@
  * @see        Piece_Flow
  * @since      Class available since Release 1.2.0
  */
-class Piece_FlowCDPlayerAction
+class Piece_FlowCDPlayerAction extends Piece_Flow_Action
 {
 
     // {{{ properties
@@ -75,16 +77,16 @@ class Piece_FlowCDPlayerAction
      * @access public
      */
 
-    function increase(&$flow, $event, &$payload)
+    function increase()
     {
-        if ($flow->hasAttribute('numberOfUpdate')) {
-            $numberOfUpdate = $flow->getAttribute('numberOfUpdate');
+        if ($this->_flow->hasAttribute('numberOfUpdate')) {
+            $numberOfUpdate = $this->_flow->getAttribute('numberOfUpdate');
         } else {
             $numberOfUpdate = 0;
         }
 
         ++$numberOfUpdate;
-        $flow->setAttribute('numberOfUpdate', $numberOfUpdate);
+        $this->_flow->setAttribute('numberOfUpdate', $numberOfUpdate);
     }
 
     /**#@-*/

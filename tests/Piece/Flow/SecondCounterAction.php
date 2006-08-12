@@ -38,6 +38,8 @@
  * @since      File available since Release 1.0.0
  */
 
+require_once 'Piece/Flow/Action.php';
+
 // {{{ Piece_Flow_SecondCounterAction
 
 /**
@@ -52,7 +54,7 @@
  * @see        Piece_Flow_ContinuationTestCase
  * @since      Class available since Release 1.0.0
  */
-class Piece_Flow_SecondCounterAction
+class Piece_Flow_SecondCounterAction extends Piece_Flow_Action
 {
 
     // {{{ properties
@@ -73,16 +75,18 @@ class Piece_Flow_SecondCounterAction
      * @access public
      */
 
-    function setup(&$flow, $event, &$payload)
+    function setup()
     {
-        if (!$flow->hasAttribute('counter')) {
-            $flow->setAttribute('counter', 0);
+        if (!$this->_flow->hasAttribute('counter')) {
+            $this->_flow->setAttribute('counter', 0);
         }
     }
 
-    function increase(&$flow, $event, &$payload)
+    function increase()
     {
-        $flow->setAttribute('counter', $flow->getAttribute('counter') + 1);
+        $this->_flow->setAttribute('counter',
+                                   $this->_flow->getAttribute('counter') + 1
+                                   );
         return 'succeed';
     }
 

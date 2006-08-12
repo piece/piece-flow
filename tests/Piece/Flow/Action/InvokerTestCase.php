@@ -96,14 +96,14 @@ class Piece_Flow_Action_InvokerTestCase extends PHPUnit_TestCase
     function testInvokingAction()
     {
         Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/../../..');
-        $action = &new Piece_Flow_Action_Invoker(new stdClass(),
-                                         'Piece_Flow_Action_FooAction',
-                                         'foo'
-                                         );
-        $action->invoke(new stdClass(),
-                        new Piece_Flow_Action_InvokerTestCaseMockEvent(),
-                        new stdClass()
-                        );
+        $invoker = &new Piece_Flow_Action_Invoker(new stdClass(),
+                                                 'Piece_Flow_Action_FooAction',
+                                                 'foo'
+                                                 );
+        $invoker->invoke(new stdClass(),
+                         new Piece_Flow_Action_InvokerTestCaseMockEvent(),
+                         new stdClass()
+                         );
 
         $fooAction = &Piece_Flow_Action_Factory::factory('Piece_Flow_Action_FooAction');
 
