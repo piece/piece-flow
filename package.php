@@ -33,7 +33,7 @@
  * @copyright  2006 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
- * @link       http://iteman.typepad.jp/piece/
+ * @link       http://piece-framework.com/piece-flow/
  * @see        PEAR_PackageFileManager2
  * @since      File available since Release 0.1.0
  */

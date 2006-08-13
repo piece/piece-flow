@@ -33,7 +33,7 @@
  * @copyright  2006 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
- * @link       http://piece-framework.com/
+ * @link       http://piece-framework.com/piece-flow/
  * @since      File available since Release 1.5.0
  */
 
@@ -47,7 +47,7 @@
  * @copyright  2006 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
- * @link       http://piece-framework.com/
+ * @link       http://piece-framework.com/piece-flow/
  * @since      Class available since Release 1.5.0
  */
 class Piece_Flow_Action

@@ -34,7 +34,7 @@
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
  * @link       http://www.php.net/manual/ja/ref.domxml.php
- * @link       http://iteman.typepad.jp/piece/
+ * @link       http://piece-framework.com/piece-flow/
  * @since      File available since Release 0.1.0
  */
 
@@ -52,7 +52,7 @@ require_once 'Piece/Flow/Error.php';
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
  * @link       http://www.php.net/manual/ja/ref.domxml.php
- * @link       http://iteman.typepad.jp/piece/
+ * @link       http://piece-framework.com/piece-flow/
  * @since      Class available since Release 0.1.0
  */
 class Piece_Flow_ConfigReader_XML4 extends Piece_Flow_ConfigReader_Common

@@ -34,7 +34,7 @@
  * @copyright  2006 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
- * @link       http://iteman.typepad.jp/piece/
+ * @link       http://piece-framework.com/piece-flow/
  * @link       http://www.martinfowler.com/eaaCatalog/applicationController.html
  * @link       http://opensource2.atlassian.com/confluence/spring/display/WEBFLOW/Home
  * @link       http://www-128.ibm.com/developerworks/java/library/j-cb03216/
@@ -71,7 +71,7 @@ define('PIECE_FLOW_PROTECTED_EVENT', '_Piece_Flow_Protected_Event');
  * @copyright  2006 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
- * @link       http://iteman.typepad.jp/piece/
+ * @link       http://piece-framework.com/piece-flow/
  * @link       http://www.martinfowler.com/eaaCatalog/applicationController.html
  * @link       http://opensource2.atlassian.com/confluence/spring/display/WEBFLOW/Home
  * @link       http://www-128.ibm.com/developerworks/java/library/j-cb03216/
