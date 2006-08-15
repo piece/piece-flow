@@ -455,7 +455,6 @@ class Piece_Flow_Continuation
             $this->_flowExecutionTicket = call_user_func($this->_flowExecutionTicketCallback);
             if ($this->_hasFlowExecutionTicket($this->_flowExecutionTicket)) {
                 if (array_key_exists($this->_flowExecutionTicket, $this->_exclusiveFlowNamesByFlowExecutionTicket)) {
-
                     $this->_flowName = $this->_exclusiveFlowNamesByFlowExecutionTicket[$this->_flowExecutionTicket];
                 }
 
