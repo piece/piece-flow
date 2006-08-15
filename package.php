@@ -42,18 +42,15 @@ require_once 'PEAR/PackageFileManager2.php';
 
 PEAR::staticPushErrorHandling(PEAR_ERROR_CALLBACK, create_function('$error', 'var_dump($error); exit();'));
 
-$version = '1.4.1';
-$apiVersion = '1.0.0';
-$notes = "This release includes two defect fixes and an enhancement as follows:
-
-<<< Defect fixes >>>
-
-- Removed wrong error handling which disables the current callback.
-- Removed '@' operator from include_once.
+$version = '1.5.0';
+$apiVersion = '1.5.0';
+$notes = "This release includes an enhancement and breaks backward compatibility as follows:
 
 <<< Enhancements >>>
 
-- Changed the code so as to use $array[] = $value instead of array_push($array, $value).";
+- Introduced Piece_Flow_Action as the base class for Piece_Flow actions.
+- Changed the interface of Piece_Flow actions so as to call setFlow(), setPayload(), and setEvent() methods for passing a Piece_Flow object, a payload, and the event name to an action instead of by the arguments of invoke() method.
+- The original Piece_Flow_Action class has been renamed as Piece_Flow_Action_Invoker.";
 
 $package = new PEAR_PackageFileManager2();
 $package->setOptions(array('filelistgenerator' => 'svn',

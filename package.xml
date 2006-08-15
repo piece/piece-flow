@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<!-- $Id$ -->
 <!DOCTYPE package SYSTEM "http://pear.php.net/dtd/package-1.0">
 <package version="1.0" packagerversion="1.4.9">
  <name>Piece_Flow</name>
@@ -14,20 +15,17 @@
   </maintainer>
   </maintainers>
  <release>
-  <version>1.4.1</version>
-  <date>2006-07-28</date>
+  <version>1.5.0</version>
+  <date>2006-08-15</date>
   <license>BSD License (revised)</license>
   <state>stable</state>
-  <notes>This release includes two defect fixes and an enhancement as follows:
-
-&lt;&lt;&lt; Defect fixes &gt;&gt;&gt;
-
-- Removed wrong error handling which disables the current callback.
-- Removed '@' operator from include_once.
+  <notes>This release includes an enhancement and breaks backward compatibility as follows:
 
 &lt;&lt;&lt; Enhancements &gt;&gt;&gt;
 
-- Changed the code so as to use $array[] = $value instead of array_push($array, $value).
+- Introduced Piece_Flow_Action as the base class for Piece_Flow actions.
+- Changed the interface of Piece_Flow actions so as to call setFlow(), setPayload(), and setEvent() methods for passing a Piece_Flow object, a payload, and the event name to an action instead of by the arguments of invoke() method.
+- The original Piece_Flow_Action class has been renamed as Piece_Flow_Action_Invoker.
   </notes>
   <deps>
    <dep type="php" rel="ge" version="4.3.0" optional="no"/>
@@ -63,6 +61,9 @@
      <dir name="Flow">
       <dir name="Action">
        <file role="php" name="Factory.php">
+        <replace from="@package_version@" to="version" type="package-info"/>
+       </file>
+       <file role="php" name="Invoker.php">
         <replace from="@package_version@" to="version" type="package-info"/>
        </file>
       </dir> <!-- /Piece/Flow/Action -->
@@ -116,6 +117,9 @@
         <file role="test" name="InvalidAction.php" install-as="Piece/Flow/Action/InvalidAction.php">
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
+        <file role="test" name="InvokerTestCase.php" install-as="Piece/Flow/Action/InvokerTestCase.php">
+         <replace from="@package_version@" to="version" type="package-info"/>
+        </file>
         <file role="test" name="TestRunner.php" install-as="Piece/Flow/Action/TestRunner.php">
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
@@ -149,9 +153,6 @@
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
        </dir> <!-- /tests/Piece/Flow/ConfigReader -->
-       <file role="test" name="ActionTestCase.php" install-as="Piece/Flow/ActionTestCase.php">
-        <replace from="@package_version@" to="version" type="package-info"/>
-       </file>
        <file role="test" name="ContinuationTestCase.php" install-as="Piece/Flow/ContinuationTestCase.php">
         <replace from="@package_version@" to="version" type="package-info"/>
        </file>
@@ -241,6 +242,20 @@
  </release>
  <changelog>
   <release>
+   <version>1.5.0</version>
+   <date>2006-08-15</date>
+   <license>BSD License (revised)</license>
+   <state>stable</state>
+   <notes>This release includes an enhancement and breaks backward compatibility as follows:
+
+&lt;&lt;&lt; Enhancements &gt;&gt;&gt;
+
+- Introduced Piece_Flow_Action as the base class for Piece_Flow actions.
+- Changed the interface of Piece_Flow actions so as to call setFlow(), setPayload(), and setEvent() methods for passing a Piece_Flow object, a payload, and the event name to an action instead of by the arguments of invoke() method.
+- The original Piece_Flow_Action class has been renamed as Piece_Flow_Action_Invoker.
+   </notes>
+  </release>
+  <release>
    <version>1.4.1</version>
    <date>2006-07-28</date>
    <license>BSD License (revised)</license>
@@ -250,7 +265,7 @@
 &lt;&lt;&lt; Defect fixes &gt;&gt;&gt;
 
 - Removed wrong error handling which disables the current callback.
-- Removed '@' operator from include_once.
+- Removed &apos;@&apos; operator from include_once.
 
 &lt;&lt;&lt; Enhancements &gt;&gt;&gt;
 
