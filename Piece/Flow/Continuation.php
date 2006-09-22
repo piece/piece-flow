@@ -159,17 +159,14 @@ class Piece_Flow_Continuation
         }
 
         if (!$this->_isFirstTime) {
-            $currentFlowExecutionTicket = $this->_continue($payload);
+            $this->_continue($payload);
         } else {
-            $currentFlowExecutionTicket = $this->_start($payload);
+            $this->_start($payload);
         }
 
         if (Piece_Flow_Error::hasErrors('exception')) {
             return;
         }
-
-        $this->_activated = true;
-        $this->_currentFlowExecutionTicket = $currentFlowExecutionTicket;
 
         $GLOBALS['PIECE_FLOW_Continuation_Active_Instances'][] = &$this;
         if (!$GLOBALS['PIECE_FLOW_Continuation_Shutdown_Registered']) {
@@ -413,6 +410,30 @@ class Piece_Flow_Continuation
         return $this->_currentFlowExecutionTicket;
     }
 
+    // }}}
+    // {{{ setAttributeByRef()
+
+    /**
+     * Sets an attribute by reference for the current flow.
+     *
+     * @param string $name
+     * @param mixed  &$value
+     */
+    function setAttributeByRef($name, &$value)
+    {
+        if (!$this->_activated()) {
+            Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                   __FUNCTION__ . ' method must be called after starting/continuing flows.',
+                                   'warning'
+                                   );
+            Piece_Flow_Error::popCallback();
+            return;
+        }
+
+        $this->_flowExecutions[$this->_currentFlowExecutionTicket]->setAttributeByRef($name, $value);
+    }
+
     /**#@-*/
 
     /**#@+
@@ -490,13 +511,10 @@ class Piece_Flow_Continuation
      */
     function _continue(&$payload)
     {
+        $this->_currentFlowExecutionTicket = $this->_flowExecutionTicket;
+        $this->_activated = true;
         $this->_flowExecutions[$this->_flowExecutionTicket]->setPayload($payload);
         $this->_flowExecutions[$this->_flowExecutionTicket]->triggerEvent(call_user_func($this->_eventNameCallback));
-        if (Piece_Flow_Error::hasErrors('exception')) {
-            return;
-        }
-
-        return $this->_flowExecutionTicket;
     }
 
     // }}}
@@ -534,18 +552,20 @@ class Piece_Flow_Continuation
             return;
         }
 
-        $flow->setPayload($payload);
-        $flow->start();
-        if (Piece_Flow_Error::hasErrors('exception')) {
-            return;
-        }
-
         while (true) {
             $flowExecutionTicket = $this->_generateFlowExecutionTicket();
             if (!$this->_hasFlowExecutionTicket($flowExecutionTicket)) {
                 $this->_flowExecutions[$flowExecutionTicket] = &$flow;
                 break;
             }
+        }
+
+        $this->_currentFlowExecutionTicket = $flowExecutionTicket;
+        $this->_activated = true;
+        $flow->setPayload($payload);
+        $flow->start();
+        if (Piece_Flow_Error::hasErrors('exception')) {
+            return;
         }
 
         if (!$this->_enableSingleFlowMode
