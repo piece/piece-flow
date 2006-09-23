@@ -418,6 +418,7 @@ class Piece_Flow_Continuation
      *
      * @param string $name
      * @param mixed  &$value
+     * @since Method available since Release 1.6.0
      */
     function setAttributeByRef($name, &$value)
     {
