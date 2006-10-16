@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!-- $Id$ -->
 <!DOCTYPE package SYSTEM "http://pear.php.net/dtd/package-1.0">
-<package version="1.0" packagerversion="1.4.9">
+<package version="1.0" packagerversion="1.5.0a1">
  <name>Piece_Flow</name>
  <summary>A web flow engine and a continuation server</summary>
  <description>Piece_Flow is a generic web flow engine and a continuation server based on Finite State Machine(FSM). Piece_Flow provides a stateful programming model for developers, and high secrity for applications.
@@ -15,24 +15,25 @@
   </maintainer>
   </maintainers>
  <release>
-  <version>1.5.0</version>
-  <date>2006-08-15</date>
+  <version>1.6.0</version>
+  <date>2006-10-16</date>
   <license>BSD License (revised)</license>
   <state>stable</state>
-  <notes>This release includes an enhancement and breaks backward compatibility as follows:
+  <notes>This is the first release with the new PEAR Channel Server pear.piece-framework.com.
 
-&lt;&lt;&lt; Enhancements &gt;&gt;&gt;
+This release includes a minor enhancement of Piece_Flow_Continuation class. See the following release notes for details.
 
-- Introduced Piece_Flow_Action as the base class for Piece_Flow actions.
-- Changed the interface of Piece_Flow actions so as to call setFlow(), setPayload(), and setEvent() methods for passing a Piece_Flow object, a payload, and the event name to an action instead of by the arguments of invoke() method.
-- The original Piece_Flow_Action class has been renamed as Piece_Flow_Action_Invoker.
+## Enhancements ##
+
+### Piece_Flow_Continuation ###
+- Moved the location of setting $_currentFlowExecutionTicket and $_activated properties to _start()/_continue() methods for using Piece_Unity_Continuation objects in actions.
   </notes>
   <deps>
    <dep type="php" rel="ge" version="4.3.0" optional="no"/>
-   <dep type="pkg" rel="ge" version="1.7.0" optional="no">Stagehand_FSM</dep>
+   <dep type="pkg" rel="ge" version="1.8.0" optional="no">Stagehand_FSM</dep>
    <dep type="pkg" rel="ge" version="1.7.0" optional="no">Cache_Lite</dep>
    <dep type="pkg" rel="ge" version="1.4.3" optional="no">PEAR</dep>
-   <dep type="pkg" rel="ge" version="0.3.0" optional="yes">Stagehand_TestRunner</dep>
+   <dep type="pkg" rel="ge" version="0.4.0" optional="yes">Stagehand_TestRunner</dep>
   </deps>
   <filelist>
    <dir name="/" baseinstalldir="/">
@@ -52,9 +53,6 @@
     </dir> <!-- /data -->
     <dir name="docs">
      <file role="doc" name="LICENSE" install-as="LICENSE">
-      <replace from="@package_version@" to="version" type="package-info"/>
-     </file>
-     <file role="doc" name="README.sdoc" install-as="README.sdoc">
       <replace from="@package_version@" to="version" type="package-info"/>
      </file>
     </dir> <!-- /docs -->
@@ -243,13 +241,28 @@
  </release>
  <changelog>
   <release>
+   <version>1.6.0</version>
+   <date>2006-10-16</date>
+   <license>BSD License (revised)</license>
+   <state>stable</state>
+   <notes>This is the first release with the new PEAR Channel Server pear.piece-framework.com.
+
+This release includes a minor enhancement of Piece_Flow_Continuation class. See the following release notes for details.
+
+## Enhancements ##
+
+### Piece_Flow_Continuation ###
+- Moved the location of setting $_currentFlowExecutionTicket and $_activated properties to _start()/_continue() methods for using Piece_Unity_Continuation objects in actions.
+   </notes>
+  </release>
+  <release>
    <version>1.5.0</version>
    <date>2006-08-15</date>
    <license>BSD License (revised)</license>
    <state>stable</state>
    <notes>This release includes an enhancement and breaks backward compatibility as follows:
 
-&lt;&lt;&lt; Enhancements &gt;&gt;&gt;
+## Enhancements ##
 
 - Introduced Piece_Flow_Action as the base class for Piece_Flow actions.
 - Changed the interface of Piece_Flow actions so as to call setFlow(), setPayload(), and setEvent() methods for passing a Piece_Flow object, a payload, and the event name to an action instead of by the arguments of invoke() method.
@@ -263,12 +276,12 @@
    <state>stable</state>
    <notes>This release includes two defect fixes and an enhancement as follows:
 
-&lt;&lt;&lt; Defect fixes &gt;&gt;&gt;
+## Defect fixes ##
 
 - Removed wrong error handling which disables the current callback.
 - Removed &apos;@&apos; operator from include_once.
 
-&lt;&lt;&lt; Enhancements &gt;&gt;&gt;
+## Enhancements ##
 
 - Changed the code so as to use $array[] = $value instead of array_push($array, $value).
    </notes>
@@ -280,7 +293,7 @@
    <state>stable</state>
    <notes>This release includes a few enhancements as follows:
 
-&lt;&lt;&lt; Enhancements &gt;&gt;&gt;
+## Enhancements ##
 
 * Piece_Flow_Action
 - Adjusted to changes in Stagehand_FSM package.
@@ -300,7 +313,7 @@
    <state>stable</state>
    <notes>This release includes a few enhancements as follows:
 
-&lt;&lt;&lt; Enhancements &gt;&gt;&gt;
+## Enhancements ##
 
 * Piece_Flow_Action
 - Added support for raising an exception when an invalid event is returned from actions.

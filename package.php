@@ -42,15 +42,17 @@ require_once 'PEAR/PackageFileManager2.php';
 
 PEAR::staticPushErrorHandling(PEAR_ERROR_CALLBACK, create_function('$error', 'var_dump($error); exit();'));
 
-$version = '1.5.0';
+$version = '1.6.0';
 $apiVersion = '1.5.0';
-$notes = "This release includes an enhancement and breaks backward compatibility as follows:
+$releaseStability = 'stable';
+$notes = 'This is the first release with the new PEAR Channel Server pear.piece-framework.com.
 
-<<< Enhancements >>>
+This release includes a minor enhancement of Piece_Flow_Continuation class. See the following release notes for details.
 
-- Introduced Piece_Flow_Action as the base class for Piece_Flow actions.
-- Changed the interface of Piece_Flow actions so as to call setFlow(), setPayload(), and setEvent() methods for passing a Piece_Flow object, a payload, and the event name to an action instead of by the arguments of invoke() method.
-- The original Piece_Flow_Action class has been renamed as Piece_Flow_Action_Invoker.";
+## Enhancements ##
+
+### Piece_Flow_Continuation ###
+- Moved the location of setting $_currentFlowExecutionTicket and $_activated properties to _start()/_continue() methods for using Piece_Unity_Continuation objects in actions.';
 
 $package = new PEAR_PackageFileManager2();
 $package->setOptions(array('filelistgenerator' => 'svn',
@@ -58,21 +60,24 @@ $package->setOptions(array('filelistgenerator' => 'svn',
                            'simpleoutput'      => true,
                            'baseinstalldir'    => '/',
                            'packagefile'       => 'package2.xml',
-                           'packagedirectory'  => '.')
+                           'packagedirectory'  => '.',
+                           'dir_roles'         => array('data' => 'data',
+                                                        'tests' => 'test',
+                                                        'docs' => 'doc'))
                      );
 
 $package->setPackage('Piece_Flow');
 $package->setPackageType('php');
 $package->setSummary('A web flow engine and a continuation server');
 $package->setDescription('Piece_Flow is a generic web flow engine and a continuation server based on Finite State Machine(FSM). Piece_Flow provides a stateful programming model for developers, and high secrity for applications.');
-$package->setChannel('pear.hatotech.org');
+$package->setChannel('pear.piece-framework.com');
 $package->setLicense('BSD License (revised)',
                      'http://www.opensource.org/licenses/bsd-license.php'
                      );
 $package->setAPIVersion($apiVersion);
 $package->setAPIStability('stable');
 $package->setReleaseVersion($version);
-$package->setReleaseStability('stable');
+$package->setReleaseStability($releaseStability);
 $package->setNotes($notes);
 $package->setPhpDep('4.3.0');
 $package->setPearinstallerDep('1.4.3');
