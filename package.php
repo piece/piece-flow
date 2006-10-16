@@ -52,7 +52,7 @@ This release includes a minor enhancement of Piece_Flow_Continuation class. See 
 ## Enhancements ##
 
 ### Piece_Flow_Continuation ###
-- Moved the location of setting $_currentFlowExecutionTicket and $_activated properties to _start()/_continue() methods for using Piece_Unity_Continuation objects in actions.';
+- Moved the location of setting $_currentFlowExecutionTicket and $_activated properties to _start()/_continue() methods for using Piece_Flow_Continuation objects in actions.';
 
 $package = new PEAR_PackageFileManager2();
 $package->setOptions(array('filelistgenerator' => 'svn',

@@ -26,7 +26,7 @@ This release includes a minor enhancement of Piece_Flow_Continuation class. See 
 ## Enhancements ##
 
 ### Piece_Flow_Continuation ###
-- Moved the location of setting $_currentFlowExecutionTicket and $_activated properties to _start()/_continue() methods for using Piece_Unity_Continuation objects in actions.
+- Moved the location of setting $_currentFlowExecutionTicket and $_activated properties to _start()/_continue() methods for using Piece_Flow_Continuation objects in actions.
   </notes>
   <deps>
    <dep type="php" rel="ge" version="4.3.0" optional="no"/>
@@ -252,7 +252,7 @@ This release includes a minor enhancement of Piece_Flow_Continuation class. See 
 ## Enhancements ##
 
 ### Piece_Flow_Continuation ###
-- Moved the location of setting $_currentFlowExecutionTicket and $_activated properties to _start()/_continue() methods for using Piece_Unity_Continuation objects in actions.
+- Moved the location of setting $_currentFlowExecutionTicket and $_activated properties to _start()/_continue() methods for using Piece_Flow_Continuation objects in actions.
    </notes>
   </release>
   <release>
