@@ -123,7 +123,7 @@ class Piece_Flow_Continuation
      */
      function addFlow($name, $file, $isExclusive = false)
      {
-         if ($this->_enableSingleFlowMode && count(array_keys($this->_flowDefinitions))) {
+         if ($this->_enableSingleFlowMode && count($this->_flowDefinitions)) {
              Piece_Flow_Error::push(PIECE_FLOW_ERROR_ALREADY_EXISTS,
                                     'A flow definition already exists in the continuation object.'
                                     );
