@@ -456,46 +456,42 @@ class Piece_Flow_Continuation
     // {{{ _prepare()
 
     /**
-     * Prepares the flow execution ticket, the flow name, and whether the
+     * Prepares a flow execution ticket, a flow name, and whether the
      * flow invocation is the first time or not.
      *
      * @throws PIECE_FLOW_ERROR_FLOW_NAME_NOT_GIVEN
      */
     function _prepare()
     {
-        if ($this->_enableSingleFlowMode) {
-            $flowExecutionTickets = array_keys($this->_flowExecutions);
-            if (count($flowExecutionTickets)) {
-                $this->_isFirstTime = false;
-                $this->_flowExecutionTicket = $flowExecutionTickets[0];
+        $this->_flowExecutionTicket = call_user_func($this->_flowExecutionTicketCallback);
+        if ($this->_hasFlowExecutionTicket($this->_flowExecutionTicket)) {
+            if (array_key_exists($this->_flowExecutionTicket, $this->_exclusiveFlowNamesByFlowExecutionTicket)) {
+                $this->_flowName = $this->_exclusiveFlowNamesByFlowExecutionTicket[$this->_flowExecutionTicket];
+            }
+
+            $this->_isFirstTime = false;
+        } else {
+            if (!$this->_enableSingleFlowMode) {
+                $this->_flowName = call_user_func($this->_flowNameCallback);
             } else {
-                $this->_isFirstTime = true;
                 $flowNames = array_keys($this->_flowDefinitions);
                 $this->_flowName = $flowNames[0];
             }
-        } else {
-            $this->_flowExecutionTicket = call_user_func($this->_flowExecutionTicketCallback);
-            if ($this->_hasFlowExecutionTicket($this->_flowExecutionTicket)) {
-                if (array_key_exists($this->_flowExecutionTicket, $this->_exclusiveFlowNamesByFlowExecutionTicket)) {
-                    $this->_flowName = $this->_exclusiveFlowNamesByFlowExecutionTicket[$this->_flowExecutionTicket];
-                }
 
-                $this->_isFirstTime = false;
+            if (is_null($this->_flowName) || !strlen($this->_flowName)) {
+                Piece_Flow_Error::push(PIECE_FLOW_ERROR_FLOW_NAME_NOT_GIVEN,
+                                       'A flow name must be given in this case.'
+                                       );
+                return;
+            }
+
+            if (!array_key_exists($this->_flowName, $this->_exclusiveFlowExecutionTicketsByFlowName)) {
+                $this->_isFirstTime = true;
             } else {
-                $this->_flowName = call_user_func($this->_flowNameCallback);
-                if (is_null($this->_flowName) || !strlen($this->_flowName)) {
-                    Piece_Flow_Error::push(PIECE_FLOW_ERROR_FLOW_NAME_NOT_GIVEN,
-                                           'A flow name must be given in this case.'
-                                           );
-                    return;
-                }
-
-                if (array_key_exists($this->_flowName, $this->_exclusiveFlowExecutionTicketsByFlowName)) {
-                    $this->_isFirstTime = false;
-                    $this->_flowExecutionTicket = $this->_exclusiveFlowExecutionTicketsByFlowName[$this->_flowName];
-                } else {
-                    $this->_isFirstTime = true;
-                }
+                Piece_Flow_Error::push(PIECE_FLOW_ERROR_ALREADY_EXISTS,
+                                       "Another flow execution of the current flow [ {$this->_flowName} ] already exists in the flow executions. Please check the value of your execution ticket."
+                                       );
+                return;
             }
         }
     }
@@ -569,8 +565,7 @@ class Piece_Flow_Continuation
             return;
         }
 
-        if (!$this->_enableSingleFlowMode
-            && $this->_flowDefinitions[$this->_flowName]['isExclusive']
+        if ($this->_enableSingleFlowMode || $this->_flowDefinitions[$this->_flowName]['isExclusive']
             ) {
             $this->_exclusiveFlowExecutionTicketsByFlowName[$this->_flowName] = $flowExecutionTicket;
             $this->_exclusiveFlowNamesByFlowExecutionTicket[$flowExecutionTicket] = $this->_flowName;

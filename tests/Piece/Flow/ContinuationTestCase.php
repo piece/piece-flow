@@ -171,6 +171,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $continuation = &new Piece_Flow_Continuation(true);
         $continuation->setCacheDirectory(dirname(__FILE__));
         $continuation->addFlow('Counter', dirname(__FILE__) . '/Counter.yaml');
+        $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
 
         $flowExecutionTicket = $continuation->invoke(new stdClass());
 
@@ -188,8 +189,10 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $continuation->setCacheDirectory(dirname(__FILE__));
         $continuation->addFlow('Counter', dirname(__FILE__) . '/Counter.yaml');
         $continuation->setEventNameCallback(array(__CLASS__, 'getEventName'));
+        $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
 
         $flowExecutionTicket1 = $continuation->invoke(new stdClass());
+        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket1;
         $continuation->shutdown();
         $flowExecutionTicket2 = $continuation->invoke(new stdClass());
 
@@ -211,17 +214,18 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
         $continuation->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
 
-        $GLOBALS['flowExecutionTicket'] = $continuation->invoke(new stdClass());
+        $flowExecutionTicket1 = $continuation->invoke(new stdClass());
+        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket1;
         $continuation->shutdown();
-        $flowExecutionTicket = $continuation->invoke(new stdClass());
+        $flowExecutionTicket2 = $continuation->invoke(new stdClass());
 
-        $this->assertRegexp('/[0-9a-f]{40}/', $GLOBALS['flowExecutionTicket']);
+        $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket1);
         $this->assertEquals('Counter', $continuation->getView());
 
         $counter = &Piece_Flow_Action_Factory::factory('Piece_Flow_CounterAction');
 
         $this->assertEquals(1, $continuation->getAttribute('counter'));
-        $this->assertEquals($GLOBALS['flowExecutionTicket'], $flowExecutionTicket);
+        $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket2);
     }
 
     function testMultipleInvocationInMultipleFlowModeAndFlowInNonExclusiveMode()
@@ -300,7 +304,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
         $continuation->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
 
-        $continuation->invoke(new stdClass());
+        $GLOBALS['flowExecutionTicket'] = $continuation->invoke(new stdClass());
         $GLOBALS['flowName'] = 'InvalidFlowName';
         $continuation->shutdown();
         $continuation->invoke(new stdClass());
@@ -380,7 +384,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->assertEquals(0, $continuation->getAttribute('counter'));
 
         $GLOBALS['flowName'] = 'Counter';
-        $GLOBALS['flowExecutionTicket'] = null;
+        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket1;
         $continuation->shutdown();
         $flowExecutionTicket2 = $continuation->invoke(new stdClass());
 
@@ -403,7 +407,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $continuation->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
 
         $flowExecutionTicket1 = $continuation->invoke(new stdClass());
-        $GLOBALS['flowExecutionTicket'] = null;
+        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket1;
         $continuation->shutdown();
         $flowExecutionTicket2 = $continuation->invoke(new stdClass());
 
@@ -574,6 +578,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
          * Starting a new 'Shutdown'.
          */
         $flowExecutionTicket1 = $continuation->invoke(new stdClass());
+        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket1;
         $GLOBALS['eventName'] = 'go';
         $continuation->shutdown();
         $flowExecutionTicket2 = $continuation->invoke(new stdClass());
@@ -611,6 +616,33 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $flowExecutionTicket = $continuation->invoke(new stdClass());
 
         $this->assertEquals($flowExecutionTicket, $continuation->getCurrentFlowExecutionTicket());
+    }
+
+    function testFoo()
+    {
+        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+
+        $continuation = &new Piece_Flow_Continuation();
+        $continuation->setCacheDirectory(dirname(__FILE__));
+        $continuation->addFlow('Counter', dirname(__FILE__) . '/Counter.yaml', true);
+        $continuation->setEventNameCallback(array(__CLASS__, 'getEventName'));
+        $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
+        $continuation->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
+
+        $continuation->invoke(new stdClass());
+
+        $this->assertEquals(0, $continuation->getAttribute('counter'));
+
+        $continuation->shutdown();
+        $continuation->invoke(new stdClass());
+
+        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
+
+        $error = Piece_Flow_Error::pop();
+
+        $this->assertEquals(PIECE_FLOW_ERROR_ALREADY_EXISTS, $error['code']);
+
+        Piece_Flow_Error::popCallback();
     }
 
     /**#@-*/
