@@ -465,8 +465,20 @@ class Piece_Flow_Continuation
     {
         $this->_flowExecutionTicket = call_user_func($this->_flowExecutionTicketCallback);
         if ($this->_hasFlowExecutionTicket($this->_flowExecutionTicket)) {
-            if (array_key_exists($this->_flowExecutionTicket, $this->_exclusiveFlowNamesByFlowExecutionTicket)) {
-                $this->_flowName = $this->_exclusiveFlowNamesByFlowExecutionTicket[$this->_flowExecutionTicket];
+            if (!$this->_enableSingleFlowMode) {
+                $this->_flowName = call_user_func($this->_flowNameCallback);
+            } else {
+                $flowNames = array_keys($this->_flowDefinitions);
+                $this->_flowName = $flowNames[0];
+            }
+
+            if (!$this->_enableSingleFlowMode) {
+                if (is_null($this->_flowName) || !strlen($this->_flowName)) {
+                    Piece_Flow_Error::push(PIECE_FLOW_ERROR_FLOW_NAME_NOT_GIVEN,
+                                           'A flow name must be given in this case.'
+                                           );
+                    return;
+                }
             }
 
             $this->_isFirstTime = false;
@@ -489,7 +501,7 @@ class Piece_Flow_Continuation
                 $this->_isFirstTime = true;
             } else {
                 Piece_Flow_Error::push(PIECE_FLOW_ERROR_ALREADY_EXISTS,
-                                       "Another flow execution of the current flow [ {$this->_flowName} ] already exists in the flow executions. Please check the value of your execution ticket."
+                                       "Another flow execution of the current flow [ {$this->_flowName} ] already exists in the flow executions. Please check the value of your flow execution ticket."
                                        );
                 return;
             }
@@ -500,7 +512,7 @@ class Piece_Flow_Continuation
     // {{{ _continue()
 
     /**
-     * Continues with the current continuation.
+     * Continues a flow execution.
      *
      * @param mixed &$payload
      * @throws PIECE_FLOW_ERROR_CANNOT_INVOKE
@@ -518,7 +530,7 @@ class Piece_Flow_Continuation
     // {{{ _start()
 
     /**
-     * Starts a new continuation with a flow.
+     * Starts a flow execution.
      *
      * @param mixed &$payload
      * @return string

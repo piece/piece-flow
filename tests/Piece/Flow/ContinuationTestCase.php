@@ -495,7 +495,6 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $GLOBALS['flowName'] = 'Shutdown';
         $flowExecutionTicket1 = $continuation->invoke(new stdClass());
         $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket1;
-        $GLOBALS['flowName'] = null;
         $GLOBALS['eventName'] = 'go';
         $continuation->shutdown();
         $flowExecutionTicket2 = $continuation->invoke(new stdClass());
@@ -539,7 +538,6 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $GLOBALS['flowName'] = 'Shutdown';
         $flowExecutionTicket1 = $continuation->invoke(new stdClass());
         $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket1;
-        $GLOBALS['flowName'] = null;
         $GLOBALS['eventName'] = 'go';
         $continuation->shutdown();
         $flowExecutionTicket2 = $continuation->invoke(new stdClass());
@@ -552,7 +550,6 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
          * Failure to continue the 'Shutdown' from the previous flow
          * execution ticket. And starting a new 'Shutdown'.
          */
-        $GLOBALS['flowName'] = 'Shutdown';
         $continuation->shutdown();
         $flowExecutionTicket3 = $continuation->invoke(new stdClass());
 
@@ -618,7 +615,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->assertEquals($flowExecutionTicket, $continuation->getCurrentFlowExecutionTicket());
     }
 
-    function testFoo()
+    function testShouldBeRequiredFlowExecutionTicketWheneverContinuingFlowExecution()
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
