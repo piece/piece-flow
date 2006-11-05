@@ -645,6 +645,36 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         Piece_Flow_Error::popCallback();
     }
 
+    /**
+     * @since Method available since Release 1.7.0
+     */
+    function testGettingFlowExecutionTicketByFlowName()
+    {
+        $continuation = &new Piece_Flow_Continuation();
+        $continuation->setCacheDirectory(dirname(__FILE__));
+        $continuation->addFlow('Counter', dirname(__FILE__) . '/Counter.yaml', true);
+        $continuation->addFlow('SecondCounter', dirname(__FILE__) . '/SecondCounter.yaml');
+        $continuation->setEventNameCallback(array(__CLASS__, 'getEventName'));
+        $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
+        $continuation->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
+
+        $flowExecutionTicket1 = $continuation->invoke(new stdClass());
+        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket1;
+        $continuation->invoke(new stdClass());
+
+        $this->assertEquals(1, $continuation->getAttribute('counter'));
+
+        $GLOBALS['flowExecutionTicket'] = null;
+        $GLOBALS['flowName'] = 'SecondCounter';
+
+        $flowExecutionTicket2 = $continuation->invoke(new stdClass());
+
+        $this->assertEquals(0, $continuation->getAttribute('counter'));
+        $this->assertFalse($flowExecutionTicket1 == $flowExecutionTicket2);
+        $this->assertEquals($flowExecutionTicket1, $continuation->getFlowExecutionTicketByFlowName('Counter'));
+        $this->assertNull($continuation->getFlowExecutionTicketByFlowName('SecondCounter'));
+    }
+
     /**#@-*/
 
     /**#@+

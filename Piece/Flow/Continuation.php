@@ -435,6 +435,24 @@ class Piece_Flow_Continuation
         $this->_flowExecutions[$this->_currentFlowExecutionTicket]->setAttributeByRef($name, $value);
     }
 
+    // }}}
+    // {{{ getFlowExecutionTicketByFlowName()
+
+    /**
+     * Gets a flow execution ticket by the given flow name.
+     * This method will be used for getting flow execution ticket else than
+     * the current flow execution.
+     * This method is only available if the flow execution is exclusive.
+     *
+     * @param string $flowName
+     * @return string
+     * @since Method available since Release 1.7.0
+     */
+    function getFlowExecutionTicketByFlowName($flowName)
+    {
+        return @$this->_exclusiveFlowExecutionTicketsByFlowName[$flowName];
+    }
+
     /**#@-*/
 
     /**#@+
