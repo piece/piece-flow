@@ -465,15 +465,9 @@ class Piece_Flow_Continuation
     {
         $this->_flowExecutionTicket = call_user_func($this->_flowExecutionTicketCallback);
         if ($this->_hasFlowExecutionTicket($this->_flowExecutionTicket)) {
+            $flowName = $this->_getFlowName();
             if (!$this->_enableSingleFlowMode) {
-                $this->_flowName = call_user_func($this->_flowNameCallback);
-            } else {
-                $flowNames = array_keys($this->_flowDefinitions);
-                $this->_flowName = $flowNames[0];
-            }
-
-            if (!$this->_enableSingleFlowMode) {
-                if (is_null($this->_flowName) || !strlen($this->_flowName)) {
+                if (is_null($flowName) || !strlen($flowName)) {
                     Piece_Flow_Error::push(PIECE_FLOW_ERROR_FLOW_NAME_NOT_GIVEN,
                                            'A flow name must be given in this case.'
                                            );
@@ -481,23 +475,19 @@ class Piece_Flow_Continuation
                 }
             }
 
+            $this->_flowName = $flowName;
             $this->_isFirstTime = false;
         } else {
-            if (!$this->_enableSingleFlowMode) {
-                $this->_flowName = call_user_func($this->_flowNameCallback);
-            } else {
-                $flowNames = array_keys($this->_flowDefinitions);
-                $this->_flowName = $flowNames[0];
-            }
-
-            if (is_null($this->_flowName) || !strlen($this->_flowName)) {
+            $flowName = $this->_getFlowName();
+            if (is_null($flowName) || !strlen($flowName)) {
                 Piece_Flow_Error::push(PIECE_FLOW_ERROR_FLOW_NAME_NOT_GIVEN,
                                        'A flow name must be given in this case.'
                                        );
                 return;
             }
 
-            if (!array_key_exists($this->_flowName, $this->_exclusiveFlowExecutionTicketsByFlowName)) {
+            if (!array_key_exists($flowName, $this->_exclusiveFlowExecutionTicketsByFlowName)) {
+                $this->_flowName = $flowName;
                 $this->_isFirstTime = true;
             } else {
                 Piece_Flow_Error::push(PIECE_FLOW_ERROR_ALREADY_EXISTS,
@@ -611,6 +601,24 @@ class Piece_Flow_Continuation
     function _hasFlowExecutionTicket($flowExecutionTicket)
     {
         return array_key_exists($flowExecutionTicket, $this->_flowExecutions);
+    }
+
+    // }}}
+    // {{{ _getFlowName()
+
+    /**
+     * Gets a flow name which will be started or continued.
+     *
+     * @return string
+     */
+    function _getFlowName()
+    {
+        if (!$this->_enableSingleFlowMode) {
+            return call_user_func($this->_flowNameCallback);
+        } else {
+            $flowNames = array_keys($this->_flowDefinitions);
+            return $flowNames[0];
+        }
     }
 
     /**#@-*/
