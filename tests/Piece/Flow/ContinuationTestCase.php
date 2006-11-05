@@ -615,6 +615,9 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->assertEquals($flowExecutionTicket, $continuation->getCurrentFlowExecutionTicket());
     }
 
+    /**
+     * @since Method available since Release 1.7.0
+     */
     function testShouldBeRequiredFlowExecutionTicketWheneverContinuingFlowExecution()
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
