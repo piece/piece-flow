@@ -134,6 +134,11 @@ class Piece_FlowTestCaseAction extends Piece_Flow_Action
 
     function finalize() {}
 
+    function prepare()
+    {
+        $GLOBALS['prepareCalled'] = true;
+    }
+
     /**#@-*/
 
     /**#@+

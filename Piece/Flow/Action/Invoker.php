@@ -121,6 +121,7 @@ class Piece_Flow_Action_Invoker
         $action->setFlow($this->_flow);
         $action->setPayload($payload);
         $action->setEvent($event->getName());
+        $action->prepare();
 
         return call_user_func(array(&$action, $this->_method));
     }
@@ -151,6 +152,7 @@ class Piece_Flow_Action_Invoker
         $action->setFlow($this->_flow);
         $action->setPayload($payload);
         $action->setEvent($event->getName());
+        $action->prepare();
 
         $result = call_user_func(array(&$action, $this->_method));
         if (!is_null($result)) {

@@ -114,6 +114,15 @@ class Piece_Flow_Action
         $this->_event = $event;
     }
 
+    // }}}
+    // {{{ prepare()
+
+    /**
+     * Prepares something for a callback which will be invoked just after
+     * this method call.
+     */
+    function prepare() {}
+
     /**#@-*/
 
     /**#@+

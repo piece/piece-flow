@@ -134,6 +134,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
     function testInvokingCallback()
     {
         $GLOBALS['validateInputCalled'] = false;
+        $GLOBALS['prepareCalled'] = false;
         $viewStates = $this->_config->getViewStates();
         $flow = &new Piece_Flow();
         $flow->configure($this->_source, null, dirname(__FILE__));
@@ -144,8 +145,10 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $this->assertEquals($viewStates['ConfirmForm']['view'],
                             $flow->getView()
                             );
+        $this->assertTrue($GLOBALS['prepareCalled']);
 
         unset($GLOBALS['validateInputCalled']);
+        unset($GLOBALS['prepareCalled']);
     }
 
     function testGettingPreviousStateName()
