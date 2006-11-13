@@ -118,9 +118,11 @@
     </element>
   </define>
   <define name="service">
-    <attribute name="class">
-      <data type="string"/>
-    </attribute>
+    <optional>
+      <attribute name="class">
+        <data type="string"/>
+      </attribute>
+    </optional>
     <attribute name="method">
       <data type="string"/>
     </attribute>

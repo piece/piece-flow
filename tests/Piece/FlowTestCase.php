@@ -587,6 +587,16 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $this->assertEquals(1, $flow->getAttribute('setupConfirmationProblemThatActivityIsInvokedTwiceCalled'));
     }
 
+    /**
+     * @since Method available since Release 1.7.0
+     */
+    function testOmitClassName()
+    {
+        Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/actions');
+        $this->_assertOmitClassName('.yaml');
+        $this->_assertOmitClassName('.xml');
+    }
+
     /**#@-*/
 
     /**#@+
@@ -624,6 +634,25 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         unset($GLOBALS['initializeCalled']);
         unset($GLOBALS['finalizeCalled']);
         Piece_Flow_Error::popCallback();
+    }
+
+    /**
+     * @since Method available since Release 1.7.0
+     */
+    function _assertOmitClassName($extension)
+    {
+        $GLOBALS['initializeCalled'] = false;
+        $flow = &new Piece_Flow();
+        $flow->configure(dirname(__FILE__) . "/flows/OmitClassName$extension",
+                         null,
+                         dirname(__FILE__)
+                         );
+        $flow->setPayload(new stdClass());
+        $flow->start();
+
+        $this->assertTrue($GLOBALS['initializeCalled']);
+
+        unset($GLOBALS['initializeCalled']);
     }
 
     /**#@-*/

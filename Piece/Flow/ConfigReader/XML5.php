@@ -189,9 +189,11 @@ class Piece_Flow_ConfigReader_XML5 extends Piece_Flow_ConfigReader_Common
     </element>
   </define>
   <define name="service">
-    <attribute name="class">
-      <data type="string"/>
-    </attribute>
+    <optional>
+      <attribute name="class">
+        <data type="string"/>
+      </attribute>
+    </optional>
     <attribute name="method">
       <data type="string"/>
     </attribute>

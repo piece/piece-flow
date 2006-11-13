@@ -25,7 +25,7 @@ mapping:
                   "action": &service
                     type: map
                     mapping:
-                      "class": { type: str, required: yes }
+                      "class": { type: str, required: no }
                       "method": { type: str, required: yes }
                   "guard": *service
           "entry": *service

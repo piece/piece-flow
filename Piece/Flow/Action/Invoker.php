@@ -94,7 +94,13 @@ class Piece_Flow_Action_Invoker
     function Piece_Flow_Action_Invoker(&$flow, $class, $method)
     {
         $this->_flow = &$flow;
-        $this->_class = $class;
+
+        if (is_null($class) || !strlen($class)) {
+            $this->_class = $this->_flow->getName() . 'Action';
+        } else {
+            $this->_class = $class;
+        }
+
         $this->_method = $method;
     }
 
