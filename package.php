@@ -42,17 +42,31 @@ require_once 'PEAR/PackageFileManager2.php';
 
 PEAR::staticPushErrorHandling(PEAR_ERROR_CALLBACK, create_function('$error', 'var_dump($error); exit();'));
 
-$version = '1.6.0';
-$apiVersion = '1.5.0';
+$version = '1.7.0';
+$apiVersion = '1.7.0';
 $releaseStability = 'stable';
-$notes = 'This is the first release with the new PEAR Channel Server pear.piece-framework.com.
-
-This release includes a minor enhancement of Piece_Flow_Continuation class. See the following release notes for details.
+$notes = 'This release includes a security fix for a Cross Site Request Forgery (CSRF) vulnerability and a minor fix in the continuation server, and a few enhancements. See the following release notes for details.
 
 ## Enhancements ##
 
 ### Piece_Flow_Continuation ###
-- Moved the location of setting $_currentFlowExecutionTicket and $_activated properties to _start()/_continue() methods for using Piece_Flow_Continuation objects in actions.';
+
+- Added getFlowExecutionTicketByFlowName() method for getting a flow execution ticket by the given flow name. (Ticket #5)
+
+### Piece_Flow_Action_Invoker, Piece_Flow_Action ###
+
+- Added the code so as to be able to prepare something for a callback before invoking the callback. (Ticket #6)
+
+### Other Changes ###
+
+- Changed so as to be able to omit the class attribute for a callback. If the class attribute is omitted, ClassNameAction class is used. (Ticket #8)
+
+## Defect Fixes ##
+
+### Piece_Flow_Continuation ###
+
+- Changed the behaviour of preparing flow execution so as to require a flow execution ticket whenever continuing a flow execution even though what the flow execution mode is. (Ticket #2)
+- Changed the behaviour of preparing flow execution so as to require a flow name whenever in multiple flow mode. (Ticket #3)';
 
 $package = new PEAR_PackageFileManager2();
 $package->setOptions(array('filelistgenerator' => 'svn',
@@ -69,7 +83,7 @@ $package->setOptions(array('filelistgenerator' => 'svn',
 $package->setPackage('Piece_Flow');
 $package->setPackageType('php');
 $package->setSummary('A web flow engine and a continuation server');
-$package->setDescription('Piece_Flow is a generic web flow engine and a continuation server based on Finite State Machine(FSM). Piece_Flow provides a stateful programming model for developers, and high secrity for applications.');
+$package->setDescription('Piece_Flow is a generic web flow engine and a continuation server based on Finite State Machine(FSM). Piece_Flow provides a stateful programming model for developers, and high security for applications.');
 $package->setChannel('pear.piece-framework.com');
 $package->setLicense('BSD License (revised)',
                      'http://www.opensource.org/licenses/bsd-license.php'

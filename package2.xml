@@ -7,32 +7,46 @@
  <name>Piece_Flow</name>
  <channel>pear.piece-framework.com</channel>
  <summary>A web flow engine and a continuation server</summary>
- <description>Piece_Flow is a generic web flow engine and a continuation server based on Finite State Machine(FSM). Piece_Flow provides a stateful programming model for developers, and high secrity for applications.</description>
+ <description>Piece_Flow is a generic web flow engine and a continuation server based on Finite State Machine(FSM). Piece_Flow provides a stateful programming model for developers, and high security for applications.</description>
  <lead>
   <name>KUBO Atsuhiro</name>
   <user>iteman</user>
   <email>iteman@users.sourceforge.net</email>
   <active>yes</active>
  </lead>
- <date>2006-10-16</date>
- <time>04:10:04</time>
+ <date>2006-11-17</date>
+ <time>15:46:52</time>
  <version>
-  <release>1.6.0</release>
-  <api>1.5.0</api>
+  <release>1.7.0</release>
+  <api>1.7.0</api>
  </version>
  <stability>
   <release>stable</release>
   <api>stable</api>
  </stability>
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License (revised)</license>
- <notes>This is the first release with the new PEAR Channel Server pear.piece-framework.com.
-
-This release includes a minor enhancement of Piece_Flow_Continuation class. See the following release notes for details.
+ <notes>This release includes a security fix for a Cross Site Request Forgery (CSRF) vulnerability and a minor fix in the continuation server, and a few enhancements. See the following release notes for details.
 
 ## Enhancements ##
 
 ### Piece_Flow_Continuation ###
-- Moved the location of setting $_currentFlowExecutionTicket and $_activated properties to _start()/_continue() methods for using Piece_Flow_Continuation objects in actions.</notes>
+
+- Added getFlowExecutionTicketByFlowName() method for getting a flow execution ticket by the given flow name. (Ticket #5)
+
+### Piece_Flow_Action_Invoker, Piece_Flow_Action ###
+
+- Added the code so as to be able to prepare something for a callback before invoking the callback. (Ticket #6)
+
+### Other Changes ###
+
+- Changed so as to be able to omit the class attribute for a callback. If the class attribute is omitted, ClassNameAction class is used. (Ticket #8)
+
+## Defect Fixes ##
+
+### Piece_Flow_Continuation ###
+
+- Changed the behaviour of preparing flow execution so as to require a flow execution ticket whenever continuing a flow execution even though what the flow execution mode is. (Ticket #2)
+- Changed the behaviour of preparing flow execution so as to require a flow name whenever in multiple flow mode. (Ticket #3)</notes>
  <contents>
   <dir baseinstalldir="/" name="/">
    <dir name="data">
@@ -100,6 +114,11 @@ This release includes a minor enhancement of Piece_Flow_Continuation class. See 
    </dir> <!-- /Piece -->
    <dir name="tests">
     <dir name="Piece">
+     <dir name="actions">
+      <file name="OmitClassNameAction.php" role="test">
+       <tasks:replace from="@package_version@" to="version" type="package-info" />
+      </file>
+     </dir> <!-- /tests/Piece/actions -->
      <dir name="Flow">
       <dir name="Action">
        <file name="BarAction.php" role="test">
@@ -178,6 +197,14 @@ This release includes a minor enhancement of Piece_Flow_Continuation class. See 
        <tasks:replace from="@package_version@" to="version" type="package-info" />
       </file>
      </dir> <!-- /tests/Piece/Flow -->
+     <dir name="flows">
+      <file name="OmitClassName.xml" role="test">
+       <tasks:replace from="@package_version@" to="version" type="package-info" />
+      </file>
+      <file name="OmitClassName.yaml" role="test">
+       <tasks:replace from="@package_version@" to="version" type="package-info" />
+      </file>
+     </dir> <!-- /tests/Piece/flows -->
      <file name="CDPlayer.yaml" role="test">
       <tasks:replace from="@package_version@" to="version" type="package-info" />
      </file>
@@ -276,6 +303,7 @@ This release includes a minor enhancement of Piece_Flow_Continuation class. See 
    <install as="Registration.yaml" name="data/Registration.yaml" />
    <install as="LICENSE" name="docs/LICENSE" />
    <install as="AllTestRunner.php" name="tests/AllTestRunner.php" />
+   <install as="Piece/actions/OmitClassNameAction.php" name="tests/Piece/actions/OmitClassNameAction.php" />
    <install as="Piece/CDPlayer.yaml" name="tests/Piece/CDPlayer.yaml" />
    <install as="Piece/Flow/Action/BarAction.php" name="tests/Piece/Flow/Action/BarAction.php" />
    <install as="Piece/Flow/Action/FactoryTestCase.php" name="tests/Piece/Flow/Action/FactoryTestCase.php" />
@@ -305,6 +333,8 @@ This release includes a minor enhancement of Piece_Flow_Continuation class. See 
    <install as="Piece/FlowInitialAction.php" name="tests/Piece/FlowInitialAction.php" />
    <install as="Piece/FlowInvalidEventFromTransitionActionsOrActivitiesAction.php" name="tests/Piece/FlowInvalidEventFromTransitionActionsOrActivitiesAction.php" />
    <install as="Piece/FlowProblemThatActivityIsInvokedTwiceUnexpectedlyAction.php" name="tests/Piece/FlowProblemThatActivityIsInvokedTwiceUnexpectedlyAction.php" />
+   <install as="Piece/flows/OmitClassName.xml" name="tests/Piece/flows/OmitClassName.xml" />
+   <install as="Piece/flows/OmitClassName.yaml" name="tests/Piece/flows/OmitClassName.yaml" />
    <install as="Piece/FlowTestCase.php" name="tests/Piece/FlowTestCase.php" />
    <install as="Piece/FlowTestCaseAction.php" name="tests/Piece/FlowTestCaseAction.php" />
    <install as="Piece/initial.xml" name="tests/Piece/initial.xml" />
@@ -320,6 +350,40 @@ This release includes a minor enhancement of Piece_Flow_Continuation class. See 
   </filelist>
  </phprelease>
  <changelog>
+  <release>
+   <version>
+    <release>1.7.0</release>
+    <api>1.7.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2006-11-18</date>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License (revised)</license>
+   <notes>This release includes a security fix for a Cross Site Request Forgery (CSRF) vulnerability and a minor fix in the continuation server, and a few enhancements. See the following release notes for details.
+
+## Enhancements ##
+
+### Piece_Flow_Continuation ###
+
+- Added getFlowExecutionTicketByFlowName() method for getting a flow execution ticket by the given flow name. (Ticket #5)
+
+### Piece_Flow_Action_Invoker, Piece_Flow_Action ###
+
+- Added the code so as to be able to prepare something for a callback before invoking the callback. (Ticket #6)
+
+### Other Changes ###
+
+- Changed so as to be able to omit the class attribute for a callback. If the class attribute is omitted, ClassNameAction class is used. (Ticket #8)
+
+## Defect Fixes ##
+
+### Piece_Flow_Continuation ###
+
+- Changed the behaviour of preparing flow execution so as to require a flow execution ticket whenever continuing a flow execution even though what the flow execution mode is. (Ticket #2)
+- Changed the behaviour of preparing flow execution so as to require a flow name whenever in multiple flow mode. (Ticket #3)</notes>
+  </release>
   <release>
    <version>
     <release>1.6.0</release>
