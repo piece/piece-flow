@@ -121,6 +121,17 @@ class Piece_Flow_Action_Factory
         $GLOBALS['PIECE_FLOW_Action_Directory'] = $directory;
     }
 
+    // }}}
+    // {{{ clearInstances()
+
+    /**
+     * Clears the action instances.
+     */
+    function clearInstances()
+    {
+        $GLOBALS['PIECE_FLOW_Action_Instances'] = array();
+    }
+
     /**#@-*/
 
     /**#@+

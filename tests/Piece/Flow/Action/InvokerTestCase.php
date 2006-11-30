@@ -87,7 +87,7 @@ class Piece_Flow_Action_InvokerTestCase extends PHPUnit_TestCase
 
     function tearDown()
     {
-        $GLOBALS['PIECE_FLOW_Action_Instances'] = array();
+        Piece_Flow_Action_Factory::clearInstances();
         Piece_Flow_Action_Factory::setActionDirectory(null);
         Piece_Flow_Error::clearErrors();
         Piece_Flow_Error::popCallback();

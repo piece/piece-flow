@@ -91,7 +91,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 
     function tearDown()
     {
-        $GLOBALS['PIECE_FLOW_Action_Instances'] = array();
+        Piece_Flow_Action_Factory::clearInstances();
         Piece_Flow_Action_Factory::setActionDirectory(null);
         $GLOBALS['eventName'] = null;
         $GLOBALS['flowName'] = null;
