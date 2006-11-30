@@ -98,7 +98,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
     function tearDown()
     {
         $GLOBALS['PIECE_FLOW_Action_Instances'] = array();
-        $GLOBALS['PIECE_FLOW_Action_Directory'] = null;
+        Piece_Flow_Action_Factory::setActionDirectory(null);
         $cache = &new Cache_Lite_File(array('cacheDir' => dirname(__FILE__) . '/',
                                             'masterFile' => '',
                                             'automaticSerialization' => true,
