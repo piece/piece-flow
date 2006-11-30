@@ -112,13 +112,13 @@ class Piece_Flow_Action_Factory
     // {{{ setActionDirectory()
 
     /**
-     * Sets a action directory.
+     * Sets a directory as the action directory.
      *
-     * @param string $actionDirectory
+     * @param string $directory
      */
-    function setActionDirectory($actionDirectory)
+    function setActionDirectory($directory)
     {
-        $GLOBALS['PIECE_FLOW_Action_Directory'] = $actionDirectory;
+        $GLOBALS['PIECE_FLOW_Action_Directory'] = $directory;
     }
 
     /**#@-*/
