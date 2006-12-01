@@ -132,6 +132,32 @@ class Piece_Flow_Action_Factory
         $GLOBALS['PIECE_FLOW_Action_Instances'] = array();
     }
 
+    // }}}
+    // {{{ getInstances()
+
+    /**
+     * Gets the action instances.
+     *
+     * @return array
+     */
+    function getInstances()
+    {
+        return $GLOBALS['PIECE_FLOW_Action_Instances'];
+    }
+
+    // }}}
+    // {{{ setInstances()
+
+    /**
+     * Sets an array as the action instances.
+     *
+     * @param array $instances
+     */
+    function setInstances($instances)
+    {
+        $GLOBALS['PIECE_FLOW_Action_Instances'] = $instances;
+    }
+
     /**#@-*/
 
     /**#@+

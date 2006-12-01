@@ -1,0 +1,13 @@
+# $Id$
+firstState: DisplayCounter
+lastState: { name: DisplayFinish, view: Finish }
+viewState:
+  - name: DisplayCounter
+    view: Counter
+    activity:
+      method: increase
+    transition:
+      - event: goDisplayFinishFromDisplayCounter
+        nextState: DisplayFinish
+        guard:
+          method: reached

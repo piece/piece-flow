@@ -141,7 +141,8 @@ class Piece_Flow_Continuation
     /**
      * Invokes a flow and returns a flow execution ticket.
      *
-     * @param mixed &$payload
+     * @param mixed   &$payload
+     * @param boolean $bindActionsWithFlowExecution
      * @return string
      * @throws PIECE_FLOW_ERROR_NOT_GIVEN
      * @throws PIECE_FLOW_ERROR_NOT_FOUND
@@ -151,7 +152,7 @@ class Piece_Flow_Continuation
      * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
      * @throws PIECE_FLOW_ERROR_FLOW_NAME_NOT_GIVEN
      */
-    function invoke(&$payload)
+    function invoke(&$payload, $bindActionsWithFlowExecution = false)
     {
         $this->_prepare();
         if (Piece_Flow_Error::hasErrors('exception')) {
@@ -159,13 +160,17 @@ class Piece_Flow_Continuation
         }
 
         if (!$this->_isFirstTime) {
-            $this->_continue($payload);
+            $this->_continue($payload, $bindActionsWithFlowExecution);
         } else {
             $this->_start($payload);
         }
 
         if (Piece_Flow_Error::hasErrors('exception')) {
             return;
+        }
+
+        if ($bindActionsWithFlowExecution) {
+            $this->_flowExecutions[$this->_currentFlowExecutionTicket]->setAttribute('_actionInstances', Piece_Flow_Action_Factory::getInstances());
         }
 
         $GLOBALS['PIECE_FLOW_Continuation_Active_Instances'][] = &$this;
@@ -377,14 +382,14 @@ class Piece_Flow_Continuation
     // {{{ setActionDirectory()
 
     /**
-     * Sets a action directory.
+     * Sets a directory as the action directory.
      *
-     * @param string $actionDirectory
+     * @param string $directory
      * @static
      */
-    function setActionDirectory($actionDirectory)
+    function setActionDirectory($directory)
     {
-        Piece_Flow_Action_Factory::setActionDirectory($actionDirectory);
+        Piece_Flow_Action_Factory::setActionDirectory($directory);
     }
 
     // }}}
@@ -522,15 +527,21 @@ class Piece_Flow_Continuation
     /**
      * Continues a flow execution.
      *
-     * @param mixed &$payload
+     * @param mixed   &$payload
+     * @param boolean $bindActionsWithFlowExecution
      * @throws PIECE_FLOW_ERROR_CANNOT_INVOKE
      * @throws PIECE_FLOW_ERROR_ALREADY_SHUTDOWN
      */
-    function _continue(&$payload)
+    function _continue(&$payload, $bindActionsWithFlowExecution)
     {
         $this->_currentFlowExecutionTicket = $this->_flowExecutionTicket;
         $this->_activated = true;
         $this->_flowExecutions[$this->_flowExecutionTicket]->setPayload($payload);
+
+        if ($bindActionsWithFlowExecution) {
+            Piece_Flow_Action_Factory::setInstances($this->_flowExecutions[$this->_flowExecutionTicket]->getAttribute('_actionInstances'));
+        }
+
         $this->_flowExecutions[$this->_flowExecutionTicket]->triggerEvent(call_user_func($this->_eventNameCallback));
     }
 

@@ -675,6 +675,77 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->assertNull($continuation->getFlowExecutionTicketByFlowName('SecondCounter'));
     }
 
+    /**
+     * @since Method available since Release 1.8.0
+     */
+    function testBindActionsWithFlowExecution()
+    {
+        Piece_Flow_Continuation::setActionDirectory(dirname(__FILE__) . '/actions');
+        $flowName = 'BindActionsWithFlowExecution';
+        $GLOBALS['flowName'] = $flowName;
+        $GLOBALS['eventName'] = 'goDisplayFinishFromDisplayCounter';
+        $continuation = &new Piece_Flow_Continuation();
+        $continuation->setCacheDirectory(dirname(__FILE__));
+        $continuation->addFlow($flowName, dirname(__FILE__) . "/flows/$flowName.yaml");
+        $continuation->setEventNameCallback(array(__CLASS__, 'getEventName'));
+        $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
+        $continuation->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
+
+        // The first time invocation for the flow execution one.
+        $flowExecutionTicket1 = $continuation->invoke(new stdClass(), true);
+
+        $this->assertEquals('Counter', $continuation->getView());
+
+        $continuation->shutdown();
+        Piece_Flow_Action_Factory::clearInstances();
+
+        // The first time invocation for the flow execution two.
+        $flowExecutionTicket2 = $continuation->invoke(new stdClass(), true);
+
+        $this->assertEquals('Counter', $continuation->getView());
+
+        $continuation->shutdown();
+        Piece_Flow_Action_Factory::clearInstances();
+
+        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket1;
+
+        $this->assertTrue($flowExecutionTicket1 != $flowExecutionTicket2);
+
+        // The second time invocation for the flow execution one.
+        $continuation->invoke(new stdClass(), true);
+
+        $this->assertEquals('Counter', $continuation->getView());
+
+        $continuation->shutdown();
+        Piece_Flow_Action_Factory::clearInstances();
+
+        // The last invocation for the flow execution one.
+        $continuation->invoke(new stdClass(), true);
+
+        $this->assertEquals('Finish', $continuation->getView());
+
+        $continuation->shutdown();
+        Piece_Flow_Action_Factory::clearInstances();
+
+        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket2;
+
+        // The second time invocation for the flow execution two.
+        $continuation->invoke(new stdClass(), true);
+
+        $this->assertEquals('Counter', $continuation->getView());
+
+        $continuation->shutdown();
+        Piece_Flow_Action_Factory::clearInstances();
+
+        // The last invocation for the flow execution two.
+        $continuation->invoke(new stdClass(), true);
+
+        $this->assertEquals('Finish', $continuation->getView());
+
+        $continuation->shutdown();
+        Piece_Flow_Action_Factory::clearInstances();
+    }
+
     /**#@-*/
 
     /**#@+
