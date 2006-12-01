@@ -754,7 +754,7 @@ class Piece_Flow
             return $action;
         }
 
-        $invoker = &new Piece_Flow_Action_Invoker($this, $action['class'], $action['method']);
+        $invoker = &new Piece_Flow_Action_Invoker($this, @$action['class'], $action['method']);
         return array(&$invoker, 'invokeAndTriggerEvent');
     }
 
