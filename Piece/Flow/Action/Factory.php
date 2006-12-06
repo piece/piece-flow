@@ -95,7 +95,7 @@ class Piece_Flow_Action_Factory
     function &factory($class)
     {
         if (!array_key_exists($class, $GLOBALS['PIECE_FLOW_Action_Instances'])) {
-            Piece_Flow_Action_Factory::_load($class);
+            Piece_Flow_Action_Factory::load($class);
             if (Piece_Flow_Error::hasErrors('exception')) {
                 $return = null;
                 return $return;
@@ -158,17 +158,11 @@ class Piece_Flow_Action_Factory
         $GLOBALS['PIECE_FLOW_Action_Instances'] = $instances;
     }
 
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
     // }}}
-    // {{{ _load()
+    // {{{ load()
 
     /**
-     * Loads a action class corresponding to the given class name.
+     * Loads an action class corresponding to the given class name.
      *
      * @param string $class
      * @throws PIECE_FLOW_ERROR_NOT_GIVEN
@@ -176,8 +170,12 @@ class Piece_Flow_Action_Factory
      * @throws PIECE_FLOW_ERROR_NOT_READABLE
      * @static
      */
-    function _load($class)
+    function load($class)
     {
+        if (Piece_Flow_Action_Factory::_loaded($class)) {
+            return;
+        }
+
         if (is_null($GLOBALS['PIECE_FLOW_Action_Directory'])) {
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_GIVEN,
                                    'The action directory was not given.'
@@ -208,16 +206,35 @@ class Piece_Flow_Action_Factory
             return;
         }
 
-        if (version_compare(phpversion(), '5.0.0', '<')) {
-            $result = class_exists($class);
-        } else {
-            $result = class_exists($class, false);
-        }
-
-        if (!$result) {
+        if (!Piece_Flow_Action_Factory::_loaded($class)) {
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
                                    "The action [ $class ] not defined in the file [ $file ]."
                                    );
+        }
+    }
+
+    /**#@-*/
+
+    /**#@+
+     * @access private
+     */
+
+    // }}}
+    // {{{ _loaded()
+
+    /**
+     * Returns whether the given class has already been loaded or not.
+     *
+     * @param string $class
+     * @return boolean
+     * @static
+     */
+    function _loaded($class)
+    {
+        if (version_compare(phpversion(), '5.0.0', '<')) {
+            return class_exists($class);
+        } else {
+            return class_exists($class, false);
         }
     }
 
