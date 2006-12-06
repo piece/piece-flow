@@ -42,6 +42,7 @@ require_once 'PHPUnit.php';
 require_once 'Piece/Flow/Continuation.php';
 require_once 'Piece/Flow/Error.php';
 require_once 'Cache/Lite/File.php';
+require_once 'Piece/Flow/Action/Factory.php';
 
 // {{{ Piece_Flow_ContinuationTestCase
 
@@ -83,7 +84,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
     function setUp()
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'var_dump($error); return ' . PEAR_ERRORSTACK_DIE . ';'));
-        Piece_Flow_Continuation::setActionDirectory(dirname(__FILE__) . '/../..');
+        Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/../..');
         $GLOBALS['flowName'] = 'Counter';
         $GLOBALS['eventName'] = 'increase';
         $GLOBALS['flowExecutionTicket'] = null;
@@ -680,7 +681,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
      */
     function testBindActionsWithFlowExecution()
     {
-        Piece_Flow_Continuation::setActionDirectory(dirname(__FILE__) . '/actions');
+        Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/actions');
         $flowName = 'BindActionsWithFlowExecution';
         $GLOBALS['flowName'] = $flowName;
         $GLOBALS['eventName'] = 'goDisplayFinishFromDisplayCounter';

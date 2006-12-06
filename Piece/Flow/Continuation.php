@@ -379,20 +379,6 @@ class Piece_Flow_Continuation
     }
 
     // }}}
-    // {{{ setActionDirectory()
-
-    /**
-     * Sets a directory as the action directory.
-     *
-     * @param string $directory
-     * @static
-     */
-    function setActionDirectory($directory)
-    {
-        Piece_Flow_Action_Factory::setActionDirectory($directory);
-    }
-
-    // }}}
     // {{{ getCurrentFlowExecutionTicket()
 
     /**
