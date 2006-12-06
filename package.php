@@ -42,31 +42,24 @@ require_once 'PEAR/PackageFileManager2.php';
 
 PEAR::staticPushErrorHandling(PEAR_ERROR_CALLBACK, create_function('$error', 'var_dump($error); exit();'));
 
-$version = '1.7.0';
+$version = '1.8.0';
 $apiVersion = '1.7.0';
 $releaseStability = 'stable';
-$notes = 'This release includes a security fix for a Cross Site Request Forgery (CSRF) vulnerability and a minor fix in the continuation server, and a few enhancements. See the following release notes for details.
+$notes = 'This release includes a feature named "Action Continuation" and an enhancement.
+
+"Action Continuation" is a very important feature for developers. This feature will allow developers to write linear code in an action via the properties without using flow attributes. This means that the programming be nearer natural continuation programming, although it is limited the scope in the action.
+
+See the following release notes for details.
 
 ## Enhancements ##
 
-### Piece_Flow_Continuation ###
+### Piece_Flow_Continuation, Piece_Flow_Action_Factory ###
 
-- Added getFlowExecutionTicketByFlowName() method for getting a flow execution ticket by the given flow name. (Ticket #5)
+- Added a feature to store the action instances as a flow attribute in a flow execution, and restore the action instances when continuing the flow execution. (Ticket #13)
 
-### Piece_Flow_Action_Invoker, Piece_Flow_Action ###
+### Piece_Flow_Action_Factory ###
 
-- Added the code so as to be able to prepare something for a callback before invoking the callback. (Ticket #6)
-
-### Other Changes ###
-
-- Changed so as to be able to omit the class attribute for a callback. If the class attribute is omitted, ClassNameAction class is used. (Ticket #8)
-
-## Defect Fixes ##
-
-### Piece_Flow_Continuation ###
-
-- Changed the behaviour of preparing flow execution so as to require a flow execution ticket whenever continuing a flow execution even though what the flow execution mode is. (Ticket #2)
-- Changed the behaviour of preparing flow execution so as to require a flow name whenever in multiple flow mode. (Ticket #3)';
+- Added clearInstances() to clear all instances of actions. (Ticket #12)';
 
 $package = new PEAR_PackageFileManager2();
 $package->setOptions(array('filelistgenerator' => 'svn',

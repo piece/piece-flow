@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!-- $Id$ -->
 <!DOCTYPE package SYSTEM "http://pear.php.net/dtd/package-1.0">
-<package version="1.0" packagerversion="1.5.0a1">
+<package version="1.0" packagerversion="1.5.0RC1">
  <name>Piece_Flow</name>
  <summary>A web flow engine and a continuation server</summary>
  <description>Piece_Flow is a generic web flow engine and a continuation server based on Finite State Machine(FSM). Piece_Flow provides a stateful programming model for developers, and high security for applications.
@@ -15,32 +15,25 @@
   </maintainer>
   </maintainers>
  <release>
-  <version>1.7.0</version>
-  <date>2006-11-17</date>
+  <version>1.8.0</version>
+  <date>2006-12-06</date>
   <license>BSD License (revised)</license>
   <state>stable</state>
-  <notes>This release includes a security fix for a Cross Site Request Forgery (CSRF) vulnerability and a minor fix in the continuation server, and a few enhancements. See the following release notes for details.
+  <notes>This release includes a feature named &quot;Action Continuation&quot; and an enhancement.
+
+&quot;Action Continuation&quot; is a very important feature for developers. This feature will allow developers to write linear code in an action via the properties without using flow attributes. This means that the programming be nearer natural continuation programming, although it is limited the scope in the action.
+
+See the following release notes for details.
 
 ## Enhancements ##
 
-### Piece_Flow_Continuation ###
+### Piece_Flow_Continuation, Piece_Flow_Action_Factory ###
 
-- Added getFlowExecutionTicketByFlowName() method for getting a flow execution ticket by the given flow name. (Ticket #5)
+- Added a feature to store the action instances as a flow attribute in a flow execution, and restore the action instances when continuing the flow execution. (Ticket #13)
 
-### Piece_Flow_Action_Invoker, Piece_Flow_Action ###
+### Piece_Flow_Action_Factory ###
 
-- Added the code so as to be able to prepare something for a callback before invoking the callback. (Ticket #6)
-
-### Other Changes ###
-
-- Changed so as to be able to omit the class attribute for a callback. If the class attribute is omitted, ClassNameAction class is used. (Ticket #8)
-
-## Defect Fixes ##
-
-### Piece_Flow_Continuation ###
-
-- Changed the behaviour of preparing flow execution so as to require a flow execution ticket whenever continuing a flow execution even though what the flow execution mode is. (Ticket #2)
-- Changed the behaviour of preparing flow execution so as to require a flow name whenever in multiple flow mode. (Ticket #3)
+- Added clearInstances() to clear all instances of actions. (Ticket #12)
   </notes>
   <deps>
    <dep type="php" rel="ge" version="4.3.0" optional="no"/>
@@ -52,21 +45,21 @@
   <filelist>
    <dir name="/" baseinstalldir="/">
     <dir name="data">
-     <file role="data" name="piece-flow.rng" install-as="piece-flow.rng">
+     <file role="data" name="piece-flow.rng">
       <replace from="@package_version@" to="version" type="package-info"/>
      </file>
-     <file role="data" name="piece-flow.yaml" install-as="piece-flow.yaml">
+     <file role="data" name="piece-flow.yaml">
       <replace from="@package_version@" to="version" type="package-info"/>
      </file>
-     <file role="data" name="Registration.xml" install-as="Registration.xml">
+     <file role="data" name="Registration.xml">
       <replace from="@package_version@" to="version" type="package-info"/>
      </file>
-     <file role="data" name="Registration.yaml" install-as="Registration.yaml">
+     <file role="data" name="Registration.yaml">
       <replace from="@package_version@" to="version" type="package-info"/>
      </file>
     </dir> <!-- /data -->
     <dir name="docs">
-     <file role="doc" name="LICENSE" install-as="LICENSE">
+     <file role="doc" name="LICENSE">
       <replace from="@package_version@" to="version" type="package-info"/>
      </file>
     </dir> <!-- /docs -->
@@ -117,149 +110,159 @@
     <dir name="tests">
      <dir name="Piece">
       <dir name="actions">
-       <file role="test" name="OmitClassNameAction.php" install-as="Piece/actions/OmitClassNameAction.php">
+       <file role="test" name="OmitClassNameAction.php">
         <replace from="@package_version@" to="version" type="package-info"/>
        </file>
       </dir> <!-- /tests/Piece/actions -->
       <dir name="Flow">
        <dir name="Action">
-        <file role="test" name="BarAction.php" install-as="Piece/Flow/Action/BarAction.php">
+        <file role="test" name="BarAction.php">
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
-        <file role="test" name="FactoryTestCase.php" install-as="Piece/Flow/Action/FactoryTestCase.php">
+        <file role="test" name="FactoryTestCase.php">
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
-        <file role="test" name="FooAction.php" install-as="Piece/Flow/Action/FooAction.php">
+        <file role="test" name="FooAction.php">
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
-        <file role="test" name="InvalidAction.php" install-as="Piece/Flow/Action/InvalidAction.php">
+        <file role="test" name="InvalidAction.php">
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
-        <file role="test" name="InvokerTestCase.php" install-as="Piece/Flow/Action/InvokerTestCase.php">
+        <file role="test" name="InvokerTestCase.php">
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
-        <file role="test" name="TestRunner.php" install-as="Piece/Flow/Action/TestRunner.php">
+        <file role="test" name="TestRunner.php">
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
        </dir> <!-- /tests/Piece/Flow/Action -->
+       <dir name="actions">
+        <file role="test" name="BindActionsWithFlowExecutionAction.php">
+         <replace from="@package_version@" to="version" type="package-info"/>
+        </file>
+       </dir> <!-- /tests/Piece/Flow/actions -->
        <dir name="ConfigReader">
-        <file role="test" name="Baz.php" install-as="Piece/Flow/ConfigReader/Baz.php">
+        <file role="test" name="Baz.php">
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
-        <file role="test" name="broken.xml" install-as="Piece/Flow/ConfigReader/broken.xml">
+        <file role="test" name="broken.xml">
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
-        <file role="test" name="CompatibilityTest.php" install-as="Piece/Flow/ConfigReader/CompatibilityTest.php">
+        <file role="test" name="CompatibilityTest.php">
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
-        <file role="test" name="FactoryTestCase.php" install-as="Piece/Flow/ConfigReader/FactoryTestCase.php">
+        <file role="test" name="FactoryTestCase.php">
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
-        <file role="test" name="invalid.xml" install-as="Piece/Flow/ConfigReader/invalid.xml">
+        <file role="test" name="invalid.xml">
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
-        <file role="test" name="TestRunner.php" install-as="Piece/Flow/ConfigReader/TestRunner.php">
+        <file role="test" name="TestRunner.php">
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
-        <file role="test" name="XML4TestCase.php" install-as="Piece/Flow/ConfigReader/XML4TestCase.php">
+        <file role="test" name="XML4TestCase.php">
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
-        <file role="test" name="XML5TestCase.php" install-as="Piece/Flow/ConfigReader/XML5TestCase.php">
+        <file role="test" name="XML5TestCase.php">
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
-        <file role="test" name="YAMLTestCase.php" install-as="Piece/Flow/ConfigReader/YAMLTestCase.php">
+        <file role="test" name="YAMLTestCase.php">
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
        </dir> <!-- /tests/Piece/Flow/ConfigReader -->
-       <file role="test" name="ContinuationTestCase.php" install-as="Piece/Flow/ContinuationTestCase.php">
+       <dir name="flows">
+        <file role="test" name="BindActionsWithFlowExecution.yaml">
+         <replace from="@package_version@" to="version" type="package-info"/>
+        </file>
+       </dir> <!-- /tests/Piece/Flow/flows -->
+       <file role="test" name="ContinuationTestCase.php">
         <replace from="@package_version@" to="version" type="package-info"/>
        </file>
-       <file role="test" name="Counter.yaml" install-as="Piece/Flow/Counter.yaml">
+       <file role="test" name="Counter.yaml">
         <replace from="@package_version@" to="version" type="package-info"/>
        </file>
-       <file role="test" name="CounterAction.php" install-as="Piece/Flow/CounterAction.php">
+       <file role="test" name="CounterAction.php">
         <replace from="@package_version@" to="version" type="package-info"/>
        </file>
-       <file role="test" name="FooAction.php" install-as="Piece/Flow/FooAction.php">
+       <file role="test" name="FooAction.php">
         <replace from="@package_version@" to="version" type="package-info"/>
        </file>
-       <file role="test" name="SecondCounter.yaml" install-as="Piece/Flow/SecondCounter.yaml">
+       <file role="test" name="SecondCounter.yaml">
         <replace from="@package_version@" to="version" type="package-info"/>
        </file>
-       <file role="test" name="SecondCounterAction.php" install-as="Piece/Flow/SecondCounterAction.php">
+       <file role="test" name="SecondCounterAction.php">
         <replace from="@package_version@" to="version" type="package-info"/>
        </file>
-       <file role="test" name="Shutdown.yaml" install-as="Piece/Flow/Shutdown.yaml">
+       <file role="test" name="Shutdown.yaml">
         <replace from="@package_version@" to="version" type="package-info"/>
        </file>
-       <file role="test" name="ShutdownAction.php" install-as="Piece/Flow/ShutdownAction.php">
+       <file role="test" name="ShutdownAction.php">
         <replace from="@package_version@" to="version" type="package-info"/>
        </file>
-       <file role="test" name="TestRunner.php" install-as="Piece/Flow/TestRunner.php">
+       <file role="test" name="TestRunner.php">
         <replace from="@package_version@" to="version" type="package-info"/>
        </file>
       </dir> <!-- /tests/Piece/Flow -->
       <dir name="flows">
-       <file role="test" name="OmitClassName.xml" install-as="Piece/flows/OmitClassName.xml">
+       <file role="test" name="OmitClassName.xml">
         <replace from="@package_version@" to="version" type="package-info"/>
        </file>
-       <file role="test" name="OmitClassName.yaml" install-as="Piece/flows/OmitClassName.yaml">
+       <file role="test" name="OmitClassName.yaml">
         <replace from="@package_version@" to="version" type="package-info"/>
        </file>
       </dir> <!-- /tests/Piece/flows -->
-      <file role="test" name="CDPlayer.yaml" install-as="Piece/CDPlayer.yaml">
+      <file role="test" name="CDPlayer.yaml">
        <replace from="@package_version@" to="version" type="package-info"/>
       </file>
-      <file role="test" name="FlowCDPlayerAction.php" install-as="Piece/FlowCDPlayerAction.php">
+      <file role="test" name="FlowCDPlayerAction.php">
        <replace from="@package_version@" to="version" type="package-info"/>
       </file>
-      <file role="test" name="FlowInitialAction.php" install-as="Piece/FlowInitialAction.php">
+      <file role="test" name="FlowInitialAction.php">
        <replace from="@package_version@" to="version" type="package-info"/>
       </file>
-      <file role="test" name="FlowInvalidEventFromTransitionActionsOrActivitiesAction.php" install-as="Piece/FlowInvalidEventFromTransitionActionsOrActivitiesAction.php">
+      <file role="test" name="FlowInvalidEventFromTransitionActionsOrActivitiesAction.php">
        <replace from="@package_version@" to="version" type="package-info"/>
       </file>
-      <file role="test" name="FlowProblemThatActivityIsInvokedTwiceUnexpectedlyAction.php" install-as="Piece/FlowProblemThatActivityIsInvokedTwiceUnexpectedlyAction.php">
+      <file role="test" name="FlowProblemThatActivityIsInvokedTwiceUnexpectedlyAction.php">
        <replace from="@package_version@" to="version" type="package-info"/>
       </file>
-      <file role="test" name="FlowTestCase.php" install-as="Piece/FlowTestCase.php">
+      <file role="test" name="FlowTestCase.php">
        <replace from="@package_version@" to="version" type="package-info"/>
       </file>
-      <file role="test" name="FlowTestCaseAction.php" install-as="Piece/FlowTestCaseAction.php">
+      <file role="test" name="FlowTestCaseAction.php">
        <replace from="@package_version@" to="version" type="package-info"/>
       </file>
-      <file role="test" name="initial.xml" install-as="Piece/initial.xml">
+      <file role="test" name="initial.xml">
        <replace from="@package_version@" to="version" type="package-info"/>
       </file>
-      <file role="test" name="initial.yaml" install-as="Piece/initial.yaml">
+      <file role="test" name="initial.yaml">
        <replace from="@package_version@" to="version" type="package-info"/>
       </file>
-      <file role="test" name="invalid.yaml" install-as="Piece/invalid.yaml">
+      <file role="test" name="invalid.yaml">
        <replace from="@package_version@" to="version" type="package-info"/>
       </file>
-      <file role="test" name="InvalidEventFromTransitionActionsOrActivities.yaml" install-as="Piece/InvalidEventFromTransitionActionsOrActivities.yaml">
+      <file role="test" name="InvalidEventFromTransitionActionsOrActivities.yaml">
        <replace from="@package_version@" to="version" type="package-info"/>
       </file>
-      <file role="test" name="optional.xml" install-as="Piece/optional.xml">
+      <file role="test" name="optional.xml">
        <replace from="@package_version@" to="version" type="package-info"/>
       </file>
-      <file role="test" name="optional.yaml" install-as="Piece/optional.yaml">
+      <file role="test" name="optional.yaml">
        <replace from="@package_version@" to="version" type="package-info"/>
       </file>
-      <file role="test" name="ProblemThatActivityIsInvokedTwiceUnexpectedly.yaml" install-as="Piece/ProblemThatActivityIsInvokedTwiceUnexpectedly.yaml">
+      <file role="test" name="ProblemThatActivityIsInvokedTwiceUnexpectedly.yaml">
        <replace from="@package_version@" to="version" type="package-info"/>
       </file>
-      <file role="test" name="ProtectedEvents.yaml" install-as="Piece/ProtectedEvents.yaml">
+      <file role="test" name="ProtectedEvents.yaml">
        <replace from="@package_version@" to="version" type="package-info"/>
       </file>
-      <file role="test" name="ProtectedStates.yaml" install-as="Piece/ProtectedStates.yaml">
+      <file role="test" name="ProtectedStates.yaml">
        <replace from="@package_version@" to="version" type="package-info"/>
       </file>
-      <file role="test" name="TestRunner.php" install-as="Piece/TestRunner.php">
+      <file role="test" name="TestRunner.php">
        <replace from="@package_version@" to="version" type="package-info"/>
       </file>
      </dir> <!-- /tests/Piece -->
-     <file role="test" name="AllTestRunner.php" install-as="AllTestRunner.php">
+     <file role="test" name="AllTestRunner.php">
       <replace from="@package_version@" to="version" type="package-info"/>
      </file>
     </dir> <!-- /tests -->
@@ -267,6 +270,28 @@
   </filelist>
  </release>
  <changelog>
+  <release>
+   <version>1.8.0</version>
+   <date>2006-12-06</date>
+   <license>BSD License (revised)</license>
+   <state>stable</state>
+   <notes>This release includes a feature named &quot;Action Continuation&quot; and an enhancement.
+
+&quot;Action Continuation&quot; is a very important feature for developers. This feature will allow developers to write linear code in an action via the properties without using flow attributes. This means that the programming be nearer natural continuation programming, although it is limited the scope in the action.
+
+See the following release notes for details.
+
+## Enhancements ##
+
+### Piece_Flow_Continuation, Piece_Flow_Action_Factory ###
+
+- Added a feature to store the action instances as a flow attribute in a flow execution, and restore the action instances when continuing the flow execution. (Ticket #13)
+
+### Piece_Flow_Action_Factory ###
+
+- Added clearInstances() to clear all instances of actions. (Ticket #12)
+   </notes>
+  </release>
   <release>
    <version>1.7.0</version>
    <date>2006-11-18</date>
