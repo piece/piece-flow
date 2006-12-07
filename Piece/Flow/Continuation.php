@@ -43,8 +43,8 @@ require_once 'Piece/Flow/Action/Factory.php';
 
 // {{{ GLOBALS
 
-$GLOBALS['PIECE_FLOW_Continuation_Active_Instances'] = array();
-$GLOBALS['PIECE_FLOW_Continuation_Shutdown_Registered'] = false;
+$GLOBALS['PIECE_FLOW_Continuation_ActiveInstances'] = array();
+$GLOBALS['PIECE_FLOW_Continuation_ShutdownRegistered'] = false;
 
 // }}}
 // {{{ Piece_Flow_Continuation
@@ -173,9 +173,9 @@ class Piece_Flow_Continuation
             $this->_flowExecutions[$this->_currentFlowExecutionTicket]->setAttribute('_actionInstances', Piece_Flow_Action_Factory::getInstances());
         }
 
-        $GLOBALS['PIECE_FLOW_Continuation_Active_Instances'][] = &$this;
-        if (!$GLOBALS['PIECE_FLOW_Continuation_Shutdown_Registered']) {
-            $GLOBALS['PIECE_FLOW_Continuation_Shutdown_Registered'] = true;
+        $GLOBALS['PIECE_FLOW_Continuation_ActiveInstances'][] = &$this;
+        if (!$GLOBALS['PIECE_FLOW_Continuation_ShutdownRegistered']) {
+            $GLOBALS['PIECE_FLOW_Continuation_ShutdownRegistered'] = true;
             register_shutdown_function(array(__CLASS__, 'shutdown'));
         }
 
@@ -341,11 +341,11 @@ class Piece_Flow_Continuation
      */
     function shutdown()
     {
-        $count = count($GLOBALS['PIECE_FLOW_Continuation_Active_Instances']);
+        $count = count($GLOBALS['PIECE_FLOW_Continuation_ActiveInstances']);
         for ($i = 0; $i < $count; ++$i) {
-            $instance = &$GLOBALS['PIECE_FLOW_Continuation_Active_Instances'][$i];
+            $instance = &$GLOBALS['PIECE_FLOW_Continuation_ActiveInstances'][$i];
             if (!is_a($instance, __CLASS__)) {
-                unset($GLOBALS['PIECE_FLOW_Continuation_Active_Instances'][$i]);
+                unset($GLOBALS['PIECE_FLOW_Continuation_ActiveInstances'][$i]);
                 continue;
             }
             $instance->clear();
