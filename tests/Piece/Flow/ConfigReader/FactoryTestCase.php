@@ -131,15 +131,7 @@ class Piece_Flow_ConfigReader_FactoryTestCase extends PHPUnit_TestCase
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
-        $includePath = ini_get('include_path');
-        ini_set('include_path',
-                dirname(__FILE__) .
-                DIRECTORY_SEPARATOR . '..' .
-                DIRECTORY_SEPARATOR . '..' .
-                DIRECTORY_SEPARATOR . '..' .
-                PATH_SEPARATOR . $includePath
-                );
-
+        $oldIncludePath = set_include_path(dirname(__FILE__) . '/../../..' . PATH_SEPARATOR . get_include_path());
 
         Piece_Flow_ConfigReader_Factory::factory('foo.bar', 'Baz');
 
@@ -149,7 +141,7 @@ class Piece_Flow_ConfigReader_FactoryTestCase extends PHPUnit_TestCase
 
         $this->assertEquals(PIECE_FLOW_ERROR_INVALID_DRIVER, $error['code']);
 
-        ini_set('include_path', $includePath);
+        set_include_path($oldIncludePath);
         Piece_Flow_Error::popCallback();
     }
 
