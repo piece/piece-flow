@@ -634,14 +634,17 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 
         $this->assertEquals(0, $continuation->getAttribute('counter'));
 
+        $flowExecutionTicket1 = $continuation->getCurrentFlowExecutionTicket();
         $continuation->shutdown();
         $continuation->invoke(new stdClass());
+        $flowExecutionTicket2 = $continuation->getCurrentFlowExecutionTicket();
 
-        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
-
+        $this->assertTrue(Piece_Flow_Error::hasErrors('warning'));
         $error = Piece_Flow_Error::pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_ALREADY_EXISTS, $error['code']);
+        $this->assertEquals(0, $continuation->getAttribute('counter'));
+        $this->assertTrue($flowExecutionTicket1 != $flowExecutionTicket2);
 
         Piece_Flow_Error::popCallback();
     }

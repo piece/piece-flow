@@ -83,7 +83,6 @@ class Piece_Flow_Continuation
     var $_flowNameCallback;
     var $_eventNameCallback;
     var $_exclusiveFlowExecutionTicketsByFlowName = array();
-    var $_flowExecutionTicket;
     var $_isFirstTime;
     var $_flowName;
     var $_currentFlowExecutionTicket;
@@ -367,11 +366,10 @@ class Piece_Flow_Continuation
             unset($this->_flowExecutions[$this->_currentFlowExecutionTicket]);
             if (array_key_exists($this->_flowName, $this->_exclusiveFlowExecutionTicketsByFlowName)) {
                 unset($this->_exclusiveFlowExecutionTicketsByFlowName[$this->_flowName]);
-                unset($this->_exclusiveFlowNamesByFlowExecutionTicket[$this->_flowExecutionTicket]);
+                unset($this->_exclusiveFlowNamesByFlowExecutionTicket[$this->_currentFlowExecutionTicket]);
             }
         }
 
-        $this->_flowExecutionTicket = null;
         $this->_isFirstTime = null;
         $this->_flowName = null;
         $this->_currentFlowExecutionTicket = null;
@@ -472,8 +470,8 @@ class Piece_Flow_Continuation
      */
     function _prepare()
     {
-        $this->_flowExecutionTicket = call_user_func($this->_flowExecutionTicketCallback);
-        if ($this->_hasFlowExecutionTicket($this->_flowExecutionTicket)) {
+        $flowExecutionTicket = call_user_func($this->_flowExecutionTicketCallback);
+        if ($this->_hasFlowExecutionTicket($flowExecutionTicket)) {
             $flowName = $this->_getFlowName();
             if (!$this->_enableSingleFlowMode) {
                 if (is_null($flowName) || !strlen($flowName)) {
@@ -495,15 +493,21 @@ class Piece_Flow_Continuation
                 return;
             }
 
-            if (!array_key_exists($flowName, $this->_exclusiveFlowExecutionTicketsByFlowName)) {
-                $this->_flowName = $flowName;
-                $this->_isFirstTime = true;
-            } else {
+            if (array_key_exists($flowName, $this->_exclusiveFlowExecutionTicketsByFlowName)) {
+                Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
                 Piece_Flow_Error::push(PIECE_FLOW_ERROR_ALREADY_EXISTS,
-                                       "Another flow execution of the current flow [ {$this->_flowName} ] already exists in the flow executions. Please check the value of your flow execution ticket."
+                                       "Another flow execution of the current flow [ {$this->_flowName} ] already exists in the flow executions. Starting a new flow execution.",
+                                       'warning'
                                        );
-                return;
+                Piece_Flow_Error::popCallback();
+                $flowExecutionTicket = $this->getFlowExecutionTicketByFlowName($flowName);
+                unset($this->_flowExecutions[$flowExecutionTicket]);
+                unset($this->_exclusiveFlowExecutionTicketsByFlowName[$flowName]);
+                unset($this->_exclusiveFlowNamesByFlowExecutionTicket[$flowExecutionTicket]);
             }
+
+            $this->_flowName = $flowName;
+            $this->_isFirstTime = true;
         }
     }
 
@@ -520,15 +524,15 @@ class Piece_Flow_Continuation
      */
     function _continue(&$payload, $bindActionsWithFlowExecution)
     {
-        $this->_currentFlowExecutionTicket = $this->_flowExecutionTicket;
+        $this->_currentFlowExecutionTicket = call_user_func($this->_flowExecutionTicketCallback);
         $this->_activated = true;
-        $this->_flowExecutions[$this->_flowExecutionTicket]->setPayload($payload);
+        $this->_flowExecutions[$this->_currentFlowExecutionTicket]->setPayload($payload);
 
         if ($bindActionsWithFlowExecution) {
-            Piece_Flow_Action_Factory::setInstances($this->_flowExecutions[$this->_flowExecutionTicket]->getAttribute('_actionInstances'));
+            Piece_Flow_Action_Factory::setInstances($this->_flowExecutions[$this->_currentFlowExecutionTicket]->getAttribute('_actionInstances'));
         }
 
-        $this->_flowExecutions[$this->_flowExecutionTicket]->triggerEvent(call_user_func($this->_eventNameCallback));
+        $this->_flowExecutions[$this->_currentFlowExecutionTicket]->triggerEvent(call_user_func($this->_eventNameCallback));
     }
 
     // }}}
