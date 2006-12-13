@@ -438,6 +438,34 @@ class Piece_Flow_Continuation
         return @$this->_exclusiveFlowExecutionTicketsByFlowName[$flowName];
     }
 
+    // }}}
+    // {{{ isExclusive()
+
+    /**
+     * Checks whether the curent flow execution is exclusive or not.
+     *
+     * @return boolean
+     * @since Method available since Release 1.8.0
+     */
+    function isExclusive()
+    {
+        if (!$this->_activated()) {
+            Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                   __FUNCTION__ . ' method must be called after starting/continuing flows.',
+                                   'warning'
+                                   );
+            Piece_Flow_Error::popCallback();
+            return;
+        }
+
+        if (!$this->_enableSingleFlowMode) {
+            return $this->_flowDefinitions[$this->_flowName]['isExclusive'];
+        } else {
+            return true;
+        }
+    }
+
     /**#@-*/
 
     /**#@+
