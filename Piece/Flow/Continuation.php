@@ -363,11 +363,7 @@ class Piece_Flow_Continuation
             && !$this->_enableSingleFlowMode
             && $this->_flowExecutions[$this->_currentFlowExecutionTicket]->isFinalState()
             ) {
-            unset($this->_flowExecutions[$this->_currentFlowExecutionTicket]);
-            if (array_key_exists($this->_flowName, $this->_exclusiveFlowExecutionTicketsByFlowName)) {
-                unset($this->_exclusiveFlowExecutionTicketsByFlowName[$this->_flowName]);
-                unset($this->_exclusiveFlowNamesByFlowExecutionTicket[$this->_currentFlowExecutionTicket]);
-            }
+            $this->_removeFlowExecution($this->_currentFlowExecutionTicket, $this->_flowName);
         }
 
         $this->_isFirstTime = null;
@@ -501,9 +497,7 @@ class Piece_Flow_Continuation
                                        );
                 Piece_Flow_Error::popCallback();
                 $flowExecutionTicket = $this->getFlowExecutionTicketByFlowName($flowName);
-                unset($this->_flowExecutions[$flowExecutionTicket]);
-                unset($this->_exclusiveFlowExecutionTicketsByFlowName[$flowName]);
-                unset($this->_exclusiveFlowNamesByFlowExecutionTicket[$flowExecutionTicket]);
+                $this->_removeFlowExecution($flowExecutionTicket, $flowName);
             }
 
             $this->_flowName = $flowName;
@@ -637,6 +631,24 @@ class Piece_Flow_Continuation
         } else {
             $flowNames = array_keys($this->_flowDefinitions);
             return $flowNames[0];
+        }
+    }
+
+    // }}}
+    // {{{ _removeFlowExecution()
+
+    /**
+     * Removes a flow execution.
+     *
+     * @param string $flowExecutionTicket
+     * @param string $flowName
+     */
+    function _removeFlowExecution($flowExecutionTicket, $flowName)
+    {
+        unset($this->_flowExecutions[$flowExecutionTicket]);
+        if (array_key_exists($flowName, $this->_exclusiveFlowExecutionTicketsByFlowName)) {
+            unset($this->_exclusiveFlowExecutionTicketsByFlowName[$flowName]);
+            unset($this->_exclusiveFlowNamesByFlowExecutionTicket[$flowExecutionTicket]);
         }
     }
 
