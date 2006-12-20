@@ -84,7 +84,7 @@ class Piece_Flow_Continuation
     var $_eventNameCallback;
     var $_exclusiveFlowExecutionTicketsByFlowName = array();
     var $_isFirstTime;
-    var $_flowName;
+    var $_currentFlowName;
     var $_currentFlowExecutionTicket;
     var $_activated = false;
     var $_exclusiveFlowNamesByFlowExecutionTicket = array();
@@ -363,11 +363,11 @@ class Piece_Flow_Continuation
             && !$this->_enableSingleFlowMode
             && $this->_flowExecutions[$this->_currentFlowExecutionTicket]->isFinalState()
             ) {
-            $this->_removeFlowExecution($this->_currentFlowExecutionTicket, $this->_flowName);
+            $this->_removeFlowExecution($this->_currentFlowExecutionTicket, $this->_currentFlowName);
         }
 
         $this->_isFirstTime = null;
-        $this->_flowName = null;
+        $this->_currentFlowName = null;
         $this->_currentFlowExecutionTicket = null;
         $this->_activated = false;
     }
@@ -460,10 +460,33 @@ class Piece_Flow_Continuation
         }
 
         if (!$this->_enableSingleFlowMode) {
-            return $this->_flowDefinitions[$this->_flowName]['isExclusive'];
+            return $this->_flowDefinitions[$this->_currentFlowName]['isExclusive'];
         } else {
             return true;
         }
+    }
+
+    // }}}
+    // {{{ getCurrentFlowName()
+
+    /**
+     * Gets the current flow name.
+     *
+     * @return string
+     */
+    function getCurrentFlowName()
+    {
+        if (!$this->_activated()) {
+            Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                   __FUNCTION__ . ' method must be called after starting/continuing flows.',
+                                   'warning'
+                                   );
+            Piece_Flow_Error::popCallback();
+            return;
+        }
+
+        return $this->_currentFlowName;
     }
 
     /**#@-*/
@@ -506,7 +529,7 @@ class Piece_Flow_Continuation
                 }
             }
 
-            $this->_flowName = $flowName;
+            $this->_currentFlowName = $flowName;
             $this->_isFirstTime = false;
         } else {
             $flowName = $this->_getFlowName();
@@ -520,7 +543,7 @@ class Piece_Flow_Continuation
             if (array_key_exists($flowName, $this->_exclusiveFlowExecutionTicketsByFlowName)) {
                 Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
                 Piece_Flow_Error::push(PIECE_FLOW_ERROR_ALREADY_EXISTS,
-                                       "Another flow execution of the current flow [ {$this->_flowName} ] already exists in the flow executions. Starting a new flow execution.",
+                                       "Another flow execution of the current flow [ {$this->_currentFlowName} ] already exists in the flow executions. Starting a new flow execution.",
                                        'warning'
                                        );
                 Piece_Flow_Error::popCallback();
@@ -528,7 +551,7 @@ class Piece_Flow_Continuation
                 $this->_removeFlowExecution($flowExecutionTicket, $flowName);
             }
 
-            $this->_flowName = $flowName;
+            $this->_currentFlowName = $flowName;
             $this->_isFirstTime = true;
         }
     }
@@ -576,15 +599,15 @@ class Piece_Flow_Continuation
      */
     function _start(&$payload)
     {
-        if (!array_key_exists($this->_flowName, $this->_flowDefinitions)) {
+        if (!array_key_exists($this->_currentFlowName, $this->_flowDefinitions)) {
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
-                                   "The flow name [ {$this->_flowName} ] not found in the flow definitions."
+                                   "The flow name [ {$this->_currentFlowName} ] not found in the flow definitions."
                                    );
             return;
         }
 
         $flow = &new Piece_Flow();
-        $flow->configure($this->_flowDefinitions[$this->_flowName]['file'],
+        $flow->configure($this->_flowDefinitions[$this->_currentFlowName]['file'],
                          null,
                          $this->_cacheDirectory
                          );
@@ -608,10 +631,10 @@ class Piece_Flow_Continuation
             return;
         }
 
-        if ($this->_enableSingleFlowMode || $this->_flowDefinitions[$this->_flowName]['isExclusive']
+        if ($this->_enableSingleFlowMode || $this->_flowDefinitions[$this->_currentFlowName]['isExclusive']
             ) {
-            $this->_exclusiveFlowExecutionTicketsByFlowName[$this->_flowName] = $flowExecutionTicket;
-            $this->_exclusiveFlowNamesByFlowExecutionTicket[$flowExecutionTicket] = $this->_flowName;
+            $this->_exclusiveFlowExecutionTicketsByFlowName[$this->_currentFlowName] = $flowExecutionTicket;
+            $this->_exclusiveFlowNamesByFlowExecutionTicket[$flowExecutionTicket] = $this->_currentFlowName;
         }
 
         return $flowExecutionTicket;
