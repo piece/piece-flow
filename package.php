@@ -45,9 +45,9 @@ PEAR::staticPushErrorHandling(PEAR_ERROR_CALLBACK, create_function('$error', 'va
 $version = '1.8.0';
 $apiVersion = '1.7.0';
 $releaseStability = 'stable';
-$notes = 'This release includes a feature named "Action Continuation" and an enhancement.
+$notes = 'This release includes a feature named "Action Continuation" and several enhancements.
 
-"Action Continuation" is a very important feature for developers. This feature will allow developers to write linear code in an action via the properties without using flow attributes. This means that the programming be nearer natural continuation programming, although it is limited the scope in the action.
+"Action Continuation" is a very important feature for developers. This feature will allow developers to write stateful action code via the properties without using flow attributes. This means that the programming be nearer natural continuation programming, although it is limited the scope in the action.
 
 See the following release notes for details.
 
@@ -57,9 +57,17 @@ See the following release notes for details.
 
 - Added a feature to store the action instances as a flow attribute in a flow execution, and restore the action instances when continuing the flow execution. (Ticket #13)
 
+### Piece_Flow_Continuation ###
+
+- Removed setActionDirectory().
+- Changed to start a new flow execution if another flow execution of the current flow already exists in the flow executions. (Ticket #14)
+- Added isExclusive() to check whether the curent flow execution is exclusive or not.
+- Added getCurrentFlowName() to get the current flow name.
+
 ### Piece_Flow_Action_Factory ###
 
-- Added clearInstances() to clear all instances of actions. (Ticket #12)';
+- Added clearInstances() to clear all instances of actions. (Ticket #12)
+- Moved _load() to load() as a public method.';
 
 $package = new PEAR_PackageFileManager2();
 $package->setOptions(array('filelistgenerator' => 'svn',

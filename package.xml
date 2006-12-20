@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!-- $Id$ -->
 <!DOCTYPE package SYSTEM "http://pear.php.net/dtd/package-1.0">
-<package version="1.0" packagerversion="1.5.0RC1">
+<package version="1.0" packagerversion="1.5.0RC2">
  <name>Piece_Flow</name>
  <summary>A web flow engine and a continuation server</summary>
  <description>Piece_Flow is a generic web flow engine and a continuation server based on Finite State Machine(FSM). Piece_Flow provides a stateful programming model for developers, and high security for applications.
@@ -16,12 +16,12 @@
   </maintainers>
  <release>
   <version>1.8.0</version>
-  <date>2006-12-06</date>
+  <date>2006-12-20</date>
   <license>BSD License (revised)</license>
   <state>stable</state>
-  <notes>This release includes a feature named &quot;Action Continuation&quot; and an enhancement.
+  <notes>This release includes a feature named &quot;Action Continuation&quot; and several enhancements.
 
-&quot;Action Continuation&quot; is a very important feature for developers. This feature will allow developers to write linear code in an action via the properties without using flow attributes. This means that the programming be nearer natural continuation programming, although it is limited the scope in the action.
+&quot;Action Continuation&quot; is a very important feature for developers. This feature will allow developers to write stateful action code via the properties without using flow attributes. This means that the programming be nearer natural continuation programming, although it is limited the scope in the action.
 
 See the following release notes for details.
 
@@ -31,9 +31,17 @@ See the following release notes for details.
 
 - Added a feature to store the action instances as a flow attribute in a flow execution, and restore the action instances when continuing the flow execution. (Ticket #13)
 
+### Piece_Flow_Continuation ###
+
+- Removed setActionDirectory().
+- Changed to start a new flow execution if another flow execution of the current flow already exists in the flow executions. (Ticket #14)
+- Added isExclusive() to check whether the curent flow execution is exclusive or not.
+- Added getCurrentFlowName() to get the current flow name.
+
 ### Piece_Flow_Action_Factory ###
 
 - Added clearInstances() to clear all instances of actions. (Ticket #12)
+- Moved _load() to load() as a public method.
   </notes>
   <deps>
    <dep type="php" rel="ge" version="4.3.0" optional="no"/>
@@ -272,12 +280,12 @@ See the following release notes for details.
  <changelog>
   <release>
    <version>1.8.0</version>
-   <date>2006-12-06</date>
+   <date>2006-12-20</date>
    <license>BSD License (revised)</license>
    <state>stable</state>
-   <notes>This release includes a feature named &quot;Action Continuation&quot; and an enhancement.
+   <notes>This release includes a feature named &quot;Action Continuation&quot; and several enhancements.
 
-&quot;Action Continuation&quot; is a very important feature for developers. This feature will allow developers to write linear code in an action via the properties without using flow attributes. This means that the programming be nearer natural continuation programming, although it is limited the scope in the action.
+&quot;Action Continuation&quot; is a very important feature for developers. This feature will allow developers to write stateful action code via the properties without using flow attributes. This means that the programming be nearer natural continuation programming, although it is limited the scope in the action.
 
 See the following release notes for details.
 
@@ -287,9 +295,17 @@ See the following release notes for details.
 
 - Added a feature to store the action instances as a flow attribute in a flow execution, and restore the action instances when continuing the flow execution. (Ticket #13)
 
+### Piece_Flow_Continuation ###
+
+- Removed setActionDirectory().
+- Changed to start a new flow execution if another flow execution of the current flow already exists in the flow executions. (Ticket #14)
+- Added isExclusive() to check whether the curent flow execution is exclusive or not.
+- Added getCurrentFlowName() to get the current flow name.
+
 ### Piece_Flow_Action_Factory ###
 
 - Added clearInstances() to clear all instances of actions. (Ticket #12)
+- Moved _load() to load() as a public method.
    </notes>
   </release>
   <release>
