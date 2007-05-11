@@ -190,16 +190,14 @@ class Piece_Flow_Continuation
      *
      * @return string
      * @throws PIECE_FLOW_ERROR_INVALID_TRANSITION
+     * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
      */
     function getView()
     {
         if (!$this->_activated()) {
-            Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
-                                   __FUNCTION__ . ' method must be called after starting/continuing flows.',
-                                   'warning'
+                                   __FUNCTION__ . ' method must be called after starting/continuing flows.'
                                    );
-            Piece_Flow_Error::popCallback();
             return;
         }
 
@@ -266,16 +264,14 @@ class Piece_Flow_Continuation
      *
      * @param string $name
      * @param mixed  $value
+     * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
      */
     function setAttribute($name, $value)
     {
         if (!$this->_activated()) {
-            Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
-                                   __FUNCTION__ . ' method must be called after starting/continuing flows.',
-                                   'warning'
+                                   __FUNCTION__ . ' method must be called after starting/continuing flows.'
                                    );
-            Piece_Flow_Error::popCallback();
             return;
         }
 
@@ -290,16 +286,14 @@ class Piece_Flow_Continuation
      *
      * @param string $name
      * @return boolean
+     * @throws PIECE_FLOW_ERROR_INVALID_TRANSITION
      */
     function hasAttribute($name)
     {
         if (!$this->_activated()) {
-            Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
-                                   __FUNCTION__ . ' method must be called after starting/continuing flows.',
-                                   'warning'
+                                   __FUNCTION__ . ' method must be called after starting/continuing flows.'
                                    );
-            Piece_Flow_Error::popCallback();
             return;
         }
 
@@ -314,17 +308,16 @@ class Piece_Flow_Continuation
      *
      * @param string $name
      * @return mixed
+     * @throws PIECE_FLOW_ERROR_INVALID_TRANSITION
      */
-    function getAttribute($name)
+    function &getAttribute($name)
     {
         if (!$this->_activated()) {
-            Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
-                                   __FUNCTION__ . ' method must be called after starting/continuing flows.',
-                                   'warning'
+                                   __FUNCTION__ . ' method must be called after starting/continuing flows.'
                                    );
-            Piece_Flow_Error::popCallback();
-            return;
+            $return = null;
+            return $return;
         }
 
         return $this->_flowExecutions[$this->_currentFlowExecutionTicket]->getAttribute($name);
@@ -379,16 +372,14 @@ class Piece_Flow_Continuation
      * Gets the current flow execution ticket for the current flow.
      *
      * @return string
+     * @throws PIECE_FLOW_ERROR_INVALID_TRANSITION
      */
     function getCurrentFlowExecutionTicket()
     {
         if (!$this->_activated()) {
-            Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
-                                   __FUNCTION__ . ' method must be called after starting/continuing flows.',
-                                   'warning'
+                                   __FUNCTION__ . ' method must be called after starting/continuing flows.'
                                    );
-            Piece_Flow_Error::popCallback();
             return;
         }
 
@@ -403,17 +394,15 @@ class Piece_Flow_Continuation
      *
      * @param string $name
      * @param mixed  &$value
+     * @throws PIECE_FLOW_ERROR_INVALID_TRANSITION
      * @since Method available since Release 1.6.0
      */
     function setAttributeByRef($name, &$value)
     {
         if (!$this->_activated()) {
-            Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
-                                   __FUNCTION__ . ' method must be called after starting/continuing flows.',
-                                   'warning'
+                                   __FUNCTION__ . ' method must be called after starting/continuing flows.'
                                    );
-            Piece_Flow_Error::popCallback();
             return;
         }
 
@@ -445,17 +434,15 @@ class Piece_Flow_Continuation
      * Checks whether the curent flow execution is exclusive or not.
      *
      * @return boolean
+     * @throws PIECE_FLOW_ERROR_INVALID_TRANSITION
      * @since Method available since Release 1.8.0
      */
     function isExclusive()
     {
         if (!$this->_activated()) {
-            Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
-                                   __FUNCTION__ . ' method must be called after starting/continuing flows.',
-                                   'warning'
+                                   __FUNCTION__ . ' method must be called after starting/continuing flows.'
                                    );
-            Piece_Flow_Error::popCallback();
             return;
         }
 
@@ -473,16 +460,14 @@ class Piece_Flow_Continuation
      * Gets the current flow name.
      *
      * @return string
+     * @throws PIECE_FLOW_ERROR_INVALID_TRANSITION
      */
     function getCurrentFlowName()
     {
         if (!$this->_activated()) {
-            Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
-                                   __FUNCTION__ . ' method must be called after starting/continuing flows.',
-                                   'warning'
+                                   __FUNCTION__ . ' method must be called after starting/continuing flows.'
                                    );
-            Piece_Flow_Error::popCallback();
             return;
         }
 

@@ -260,15 +260,19 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
 
     function testFailureToSetAttributeBeforeStartingFlow()
     {
+        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+
         $flow = &new Piece_Flow();
         $flow->configure($this->_source, null, dirname(__FILE__));
         $flow->setAttribute('foo', 'bar');
 
-        $this->assertTrue(Piece_Flow_Error::hasErrors('warning'));
+        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
 
         $error = Piece_Flow_Error::pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_INVALID_OPERATION, $error['code']);
+
+        Piece_Flow_Error::popCallback();
     }
 
     function testSettingPayload()
@@ -288,14 +292,17 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
 
     function testFailureToSetPayloadBeforeConfiguringFlow()
     {
+        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
         $flow = &new Piece_Flow();
         $flow->setPayload(new stdClass());
 
-        $this->assertTrue(Piece_Flow_Error::hasErrors('warning'));
+        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
 
         $error = Piece_Flow_Error::pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_INVALID_OPERATION, $error['code']);
+
+        Piece_Flow_Error::popCallback();
     }
 
     function testOptionalElements()
@@ -327,15 +334,18 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
 
     function testFailureToGetViewBeforeStartingFlow()
     {
+        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
         $flow = &new Piece_Flow();
         $flow->configure($this->_source, null, dirname(__FILE__));
         $flow->getView();
 
-        $this->assertTrue(Piece_Flow_Error::hasErrors('warning'));
+        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
 
         $error = Piece_Flow_Error::pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_INVALID_OPERATION, $error['code']);
+
+        Piece_Flow_Error::popCallback();
     }
 
     function testInvalidTransition()
