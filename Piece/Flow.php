@@ -218,7 +218,7 @@ class Piece_Flow
 
         if (!array_key_exists($viewIndex, $this->_views)) {
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_TRANSITION,
-                                   "A invalid transition detected. The state [ $viewIndex ] has not a view. Maybe The state [ $viewIndex ] is an action state. Check the definition of the flow [ {$this->_name} ]."
+                                   "A invalid transition detected. The state [ $viewIndex ] does not have a view. Maybe The state [ $viewIndex ] is an action state. Check the definition of the flow [ {$this->_name} ]."
                                    );
             return;
         }
