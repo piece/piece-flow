@@ -34,20 +34,18 @@
  * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
- * @link       http://piece-framework.com/piece-flow/
- * @see        Piece_Flow_Action_Invoker
  * @since      File available since Release 0.1.0
  */
 
 require_once 'PHPUnit.php';
-require_once 'Piece/Flow/Action/Invoker.php';
+require_once 'Piece/Flow/EventHandler.php';
 require_once 'Piece/Flow/Error.php';
 require_once 'Piece/Flow/Action/Factory.php';
 
-// {{{ Piece_Flow_Action_InvokerTestCase
+// {{{ Piece_Flow_EventHandlerTestCase
 
 /**
- * TestCase for Piece_Flow_Action_Invoker
+ * TestCase for Piece_Flow_EventHandler
  *
  * @package    Piece_Flow
  * @author     KUBO Atsuhiro <iteman@users.sourceforge.net>
@@ -55,11 +53,9 @@ require_once 'Piece/Flow/Action/Factory.php';
  * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
- * @link       http://piece-framework.com/piece-flow/
- * @see        Piece_Flow_Action_Invoker
  * @since      Class available since Release 0.1.0
  */
-class Piece_Flow_Action_InvokerTestCase extends PHPUnit_TestCase
+class Piece_Flow_EventHandlerTestCase extends PHPUnit_TestCase
 {
 
     // {{{ properties
@@ -101,8 +97,8 @@ class Piece_Flow_Action_InvokerTestCase extends PHPUnit_TestCase
         Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/' . basename(__FILE__, '.php'));
         $flow = &new stdClass();
         $payload = &new stdClass();
-        $invoker = &new Piece_Flow_Action_Invoker($flow, 'PieceFlowActionInvokerTestCasePieceFlowAction', 'foo');
-        $invoker->invoke(new stdClass(), new Piece_Flow_Action_InvokerTestCaseMockEvent(), $payload);
+        $invoker = &new Piece_Flow_EventHandler($flow, 'PieceFlowActionInvokerTestCasePieceFlowAction', 'foo');
+        $invoker->invoke(new stdClass(), new Piece_Flow_EventHandlerTestCaseMockEvent(), $payload);
         $action = &Piece_Flow_Action_Factory::factory('PieceFlowActionInvokerTestCasePieceFlowAction');
 
         $this->assertEquals(strtolower('PieceFlowActionInvokerTestCasePieceFlowAction'), strtolower(get_class($action)));
@@ -132,8 +128,8 @@ class Piece_Flow_Action_InvokerTestCase extends PHPUnit_TestCase
         Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/' . basename(__FILE__, '.php'));
         $flow = &new stdClass();
         $payload = &new stdClass();
-        $invoker = &new Piece_Flow_Action_Invoker($flow, 'PieceFlowActionInvokerTestCasePlainPHPAction', 'foo');
-        $invoker->invoke(new stdClass(), new Piece_Flow_Action_InvokerTestCaseMockEvent(), $payload);
+        $invoker = &new Piece_Flow_EventHandler($flow, 'PieceFlowActionInvokerTestCasePlainPHPAction', 'foo');
+        $invoker->invoke(new stdClass(), new Piece_Flow_EventHandlerTestCaseMockEvent(), $payload);
         $action = &Piece_Flow_Action_Factory::factory('PieceFlowActionInvokerTestCasePlainPHPAction');
 
         $this->assertEquals(strtolower('PieceFlowActionInvokerTestCasePlainPHPAction'), strtolower(get_class($action)));
@@ -161,8 +157,8 @@ class Piece_Flow_Action_InvokerTestCase extends PHPUnit_TestCase
     function testActionHasNoMethods()
     {
         Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/' . basename(__FILE__, '.php'));
-        $invoker = &new Piece_Flow_Action_Invoker(new stdClass(), 'PieceFlowActionInvokerTestCaseNoMethodsAction', 'foo');
-        $invoker->invoke(new stdClass(), new Piece_Flow_Action_InvokerTestCaseMockEvent(), new stdClass());
+        $invoker = &new Piece_Flow_EventHandler(new stdClass(), 'PieceFlowActionInvokerTestCaseNoMethodsAction', 'foo');
+        $invoker->invoke(new stdClass(), new Piece_Flow_EventHandlerTestCaseMockEvent(), new stdClass());
         $action = &Piece_Flow_Action_Factory::factory('PieceFlowActionInvokerTestCaseNoMethodsAction');
 
         $this->assertEquals(strtolower('PieceFlowActionInvokerTestCaseNoMethodsAction'), strtolower(get_class($action)));
@@ -182,8 +178,8 @@ class Piece_Flow_Action_InvokerTestCase extends PHPUnit_TestCase
         Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/' . basename(__FILE__, '.php'));
         $flow = &new stdClass();
         $payload = &new stdClass();
-        $invoker = &new Piece_Flow_Action_Invoker($flow, 'PieceFlowActionInvokerTestCasePlainPHPAction', 'bar');
-        $invoker->invoke(new stdClass(), new Piece_Flow_Action_InvokerTestCaseMockEvent(), $payload);
+        $invoker = &new Piece_Flow_EventHandler($flow, 'PieceFlowActionInvokerTestCasePlainPHPAction', 'bar');
+        $invoker->invoke(new stdClass(), new Piece_Flow_EventHandlerTestCaseMockEvent(), $payload);
 
         $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
 
@@ -207,7 +203,7 @@ class Piece_Flow_Action_InvokerTestCase extends PHPUnit_TestCase
 
 // }}}
 
-class Piece_Flow_Action_InvokerTestCaseMockEvent
+class Piece_Flow_EventHandlerTestCaseMockEvent
 {
     function getName()
     {

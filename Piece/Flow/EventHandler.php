@@ -40,7 +40,7 @@
 require_once 'Piece/Flow/Action/Factory.php';
 require_once 'Piece/Flow/Error.php';
 
-// {{{ Piece_Flow_Action_Invoker
+// {{{ Piece_Flow_EventHandler
 
 /**
  * The invoker for an event handler.
@@ -53,7 +53,7 @@ require_once 'Piece/Flow/Error.php';
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
  */
-class Piece_Flow_Action_Invoker
+class Piece_Flow_EventHandler
 {
 
     // {{{ properties
@@ -82,13 +82,13 @@ class Piece_Flow_Action_Invoker
     // {{{ constructor
 
     /**
-     * Wraps a action up with a Piece_Flow_Action_Invoker object.
+     * Wraps a action up with a Piece_Flow_EventHandler object.
      *
      * @param Piece_Flow &$flow
      * @param string     $class
      * @param string     $method
      */
-    function Piece_Flow_Action_Invoker(&$flow, $class, $method)
+    function Piece_Flow_EventHandler(&$flow, $class, $method)
     {
         $this->_flow = &$flow;
 

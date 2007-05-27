@@ -34,17 +34,16 @@
  * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
- * @link       http://piece-framework.com/piece-flow/
  * @link       http://www.martinfowler.com/eaaCatalog/applicationController.html
  * @link       http://opensource2.atlassian.com/confluence/spring/display/WEBFLOW/Home
  * @link       http://www-128.ibm.com/developerworks/java/library/j-cb03216/
  * @link       http://www-06.ibm.com/jp/developerworks/java/060412/j_j-cb03216.shtml
- * @see        Stagehand_FSM, Piece_Flow_Action_Invoker
+ * @see        Stagehand_FSM
  * @since      File available since Release 0.1.0
  */
 
 require_once 'Stagehand/FSM.php';
-require_once 'Piece/Flow/Action/Invoker.php';
+require_once 'Piece/Flow/EventHandler.php';
 require_once 'Piece/Flow/ConfigReader/Factory.php';
 require_once 'Piece/Flow/Error.php';
 
@@ -71,12 +70,11 @@ define('PIECE_FLOW_PROTECTED_EVENT', '_Piece_Flow_Protected_Event');
  * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
- * @link       http://piece-framework.com/piece-flow/
  * @link       http://www.martinfowler.com/eaaCatalog/applicationController.html
  * @link       http://opensource2.atlassian.com/confluence/spring/display/WEBFLOW/Home
  * @link       http://www-128.ibm.com/developerworks/java/library/j-cb03216/
  * @link       http://www-06.ibm.com/jp/developerworks/java/060412/j_j-cb03216.shtml
- * @see        Stagehand_FSM, Piece_Flow_Action_Invoker
+ * @see        Stagehand_FSM
  * @since      Class available since Release 0.1.0
  */
 class Piece_Flow
@@ -683,8 +681,8 @@ class Piece_Flow
             return $action;
         }
 
-        $invoker = &new Piece_Flow_Action_Invoker($this, @$action['class'], $action['method']);
-        return array(&$invoker, 'invoke');
+        $eventHandler = &new Piece_Flow_EventHandler($this, @$action['class'], $action['method']);
+        return array(&$eventHandler, 'invoke');
     }
 
     // }}}
@@ -719,8 +717,8 @@ class Piece_Flow
             return $action;
         }
 
-        $invoker = &new Piece_Flow_Action_Invoker($this, @$action['class'], $action['method']);
-        return array(&$invoker, 'invokeAndTriggerEvent');
+        $eventHandler = &new Piece_Flow_EventHandler($this, @$action['class'], $action['method']);
+        return array(&$eventHandler, 'invokeAndTriggerEvent');
     }
 
     // }}}
