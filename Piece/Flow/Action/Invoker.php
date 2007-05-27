@@ -43,7 +43,7 @@ require_once 'Piece/Flow/Error.php';
 // {{{ Piece_Flow_Action_Invoker
 
 /**
- * The action wrapper and invoker for the Piece_Flow package.
+ * The invoker for an event handler.
  *
  * @package    Piece_Flow
  * @author     KUBO Atsuhiro <iteman@users.sourceforge.net>
@@ -105,7 +105,7 @@ class Piece_Flow_Action_Invoker
     // {{{ invoke()
 
     /**
-     * Invokes the action.
+     * Invokes an event handler in an action.
      *
      * @param Stagehand_FSM       &$fsm
      * @param Stagehand_FSM_Event &$event
@@ -116,42 +116,15 @@ class Piece_Flow_Action_Invoker
      */
     function invoke(&$fsm, &$event, &$payload)
     {
-        $action = &Piece_Flow_Action_Factory::factory($this->_class);
-        if (Piece_Flow_Error::hasErrors('exception')) {
-            return;
-        }
-
-        if (is_callable(array(&$action, 'setFlow'))) {
-            $action->setFlow($this->_flow);
-        }
-
-        if (is_callable(array(&$action, 'setPayload'))) {
-            $action->setPayload($payload);
-        }
-
-        if (is_callable(array(&$action, 'setEvent'))) {
-            $action->setEvent($event->getName());
-        }
-
-        if (is_callable(array(&$action, 'prepare'))) {
-            $action->prepare();
-        }
-
-        if (!is_callable(array(&$action, $this->_method))) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
-                                   "The method [ {$this->_method} ] does not exist in the action class [ {$this->_class} ]."
-                                   );
-            return;
-        }
-
-        return call_user_func(array(&$action, $this->_method));
+        return $this->_invokeEventHandler($event->getName(), $payload);
     }
 
     // }}}
     // {{{ invokeAndTriggerEvent()
 
     /**
-     * Invokes the action and triggers an event returned from the action.
+     * Invokes an event handler in an action and triggers an event returned
+     * from the action.
      *
      * @param Stagehand_FSM       &$fsm
      * @param Stagehand_FSM_Event &$event
@@ -159,41 +132,11 @@ class Piece_Flow_Action_Invoker
      * @throws PIECE_FLOW_ERROR_NOT_GIVEN
      * @throws PIECE_FLOW_ERROR_NOT_FOUND
      * @throws PIECE_FLOW_ERROR_NOT_READABLE
-     * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
-     * @throws PIECE_FLOW_ERROR_ALREADY_SHUTDOWN
      * @throws PIECE_FLOW_ERROR_INVALID_EVENT
      */
     function invokeAndTriggerEvent(&$fsm, &$event, &$payload)
     {
-        $action = &Piece_Flow_Action_Factory::factory($this->_class);
-        if (Piece_Flow_Error::hasErrors('exception')) {
-            return;
-        }
-
-        if (is_callable(array(&$action, 'setFlow'))) {
-            $action->setFlow($this->_flow);
-        }
-
-        if (is_callable(array(&$action, 'setPayload'))) {
-            $action->setPayload($payload);
-        }
-
-        if (is_callable(array(&$action, 'setEvent'))) {
-            $action->setEvent($event->getName());
-        }
-
-        if (is_callable(array(&$action, 'prepare'))) {
-            $action->prepare();
-        }
-
-        if (!is_callable(array(&$action, $this->_method))) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
-                                   "The method [ {$this->_method} ] does not exist in the action class [ {$this->_class} ]."
-                                   );
-            return;
-        }
-
-        $result = call_user_func(array(&$action, $this->_method));
+        $result = $this->_invokeEventHandler($event->getName(), $payload);
         if (!is_null($result)) {
             if ($fsm->hasEvent($result)) {
                 $fsm->queueEvent($result);
@@ -214,6 +157,51 @@ class Piece_Flow_Action_Invoker
     /**#@+
      * @access private
      */
+
+    // }}}
+    // {{{ _invokeEventHandler()
+
+    /**
+     * Invokes an event handler in an action.
+     *
+     * @param string $eventName
+     * @param mixed  &$payload
+     * @throws PIECE_FLOW_ERROR_NOT_GIVEN
+     * @throws PIECE_FLOW_ERROR_NOT_FOUND
+     * @throws PIECE_FLOW_ERROR_NOT_READABLE
+     */
+    function _invokeEventHandler($eventName, &$payload)
+    {
+        $action = &Piece_Flow_Action_Factory::factory($this->_class);
+        if (Piece_Flow_Error::hasErrors('exception')) {
+            return;
+        }
+
+        if (is_callable(array(&$action, 'setFlow'))) {
+            $action->setFlow($this->_flow);
+        }
+
+        if (is_callable(array(&$action, 'setPayload'))) {
+            $action->setPayload($payload);
+        }
+
+        if (is_callable(array(&$action, 'setEvent'))) {
+            $action->setEvent($eventName);
+        }
+
+        if (is_callable(array(&$action, 'prepare'))) {
+            $action->prepare();
+        }
+
+        if (!is_callable(array(&$action, $this->_method))) {
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
+                                   "The method [ {$this->_method} ] does not exist in the action class [ {$this->_class} ]."
+                                   );
+            return;
+        }
+
+        return call_user_func(array(&$action, $this->_method));
+    }
 
     /**#@-*/
 
