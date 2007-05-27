@@ -4,7 +4,7 @@
 /**
  * PHP versions 4 and 5
  *
- * Copyright (c) 2006 KUBO Atsuhiro <iteman@users.sourceforge.net>,
+ * Copyright (c) 2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,7 @@
  *
  * @package    Piece_Flow
  * @author     KUBO Atsuhiro <iteman@users.sourceforge.net>
- * @copyright  2006 KUBO Atsuhiro <iteman@users.sourceforge.net>
+ * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
  * @link       http://piece-framework.com/piece-flow/
@@ -48,7 +48,7 @@ require_once 'Piece/Flow/ConfigReader/YAML.php';
  *
  * @package    Piece_Flow
  * @author     KUBO Atsuhiro <iteman@users.sourceforge.net>
- * @copyright  2006 KUBO Atsuhiro <iteman@users.sourceforge.net>
+ * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
  * @link       http://piece-framework.com/piece-flow/
