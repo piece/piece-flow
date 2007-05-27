@@ -34,12 +34,11 @@
  * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
- * @link       http://piece-framework.com/piece-flow/
- * @see        Piece_Flow
  * @since      File available since Release 0.1.0
  */
 
 require_once 'Piece/Flow/Action/Factory.php';
+require_once 'Piece/Flow/Error.php';
 
 // {{{ Piece_Flow_Action_Invoker
 
@@ -52,8 +51,6 @@ require_once 'Piece/Flow/Action/Factory.php';
  * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
- * @link       http://piece-framework.com/piece-flow/
- * @see        Piece_Flow
  * @since      Class available since Release 0.1.0
  */
 class Piece_Flow_Action_Invoker
@@ -124,10 +121,28 @@ class Piece_Flow_Action_Invoker
             return;
         }
 
-        $action->setFlow($this->_flow);
-        $action->setPayload($payload);
-        $action->setEvent($event->getName());
-        $action->prepare();
+        if (is_callable(array(&$action, 'setFlow'))) {
+            $action->setFlow($this->_flow);
+        }
+
+        if (is_callable(array(&$action, 'setPayload'))) {
+            $action->setPayload($payload);
+        }
+
+        if (is_callable(array(&$action, 'setEvent'))) {
+            $action->setEvent($event->getName());
+        }
+
+        if (is_callable(array(&$action, 'prepare'))) {
+            $action->prepare();
+        }
+
+        if (!is_callable(array(&$action, $this->_method))) {
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
+                                   "The method [ {$this->_method} ] does not exist in the action class [ {$this->_class} ]."
+                                   );
+            return;
+        }
 
         return call_user_func(array(&$action, $this->_method));
     }
@@ -155,10 +170,28 @@ class Piece_Flow_Action_Invoker
             return;
         }
 
-        $action->setFlow($this->_flow);
-        $action->setPayload($payload);
-        $action->setEvent($event->getName());
-        $action->prepare();
+        if (is_callable(array(&$action, 'setFlow'))) {
+            $action->setFlow($this->_flow);
+        }
+
+        if (is_callable(array(&$action, 'setPayload'))) {
+            $action->setPayload($payload);
+        }
+
+        if (is_callable(array(&$action, 'setEvent'))) {
+            $action->setEvent($event->getName());
+        }
+
+        if (is_callable(array(&$action, 'prepare'))) {
+            $action->prepare();
+        }
+
+        if (!is_callable(array(&$action, $this->_method))) {
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
+                                   "The method [ {$this->_method} ] does not exist in the action class [ {$this->_class} ]."
+                                   );
+            return;
+        }
 
         $result = call_user_func(array(&$action, $this->_method));
         if (!is_null($result)) {

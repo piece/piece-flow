@@ -93,21 +93,105 @@ class Piece_Flow_Action_InvokerTestCase extends PHPUnit_TestCase
         Piece_Flow_Error::popCallback();
     }
 
-    function testInvokingAction()
+    /**
+     * @since Method available since Release 1.9.0
+     */
+    function testPieceFlowAction()
     {
-        Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/../../..');
-        $invoker = &new Piece_Flow_Action_Invoker(new stdClass(),
-                                                 'Piece_Flow_Action_FooAction',
-                                                 'foo'
-                                                 );
-        $invoker->invoke(new stdClass(),
-                         new Piece_Flow_Action_InvokerTestCaseMockEvent(),
-                         new stdClass()
-                         );
+        Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/' . basename(__FILE__, '.php'));
+        $flow = &new stdClass();
+        $payload = &new stdClass();
+        $invoker = &new Piece_Flow_Action_Invoker($flow, 'PieceFlowActionInvokerTestCasePieceFlowAction', 'foo');
+        $invoker->invoke(new stdClass(), new Piece_Flow_Action_InvokerTestCaseMockEvent(), $payload);
+        $action = &Piece_Flow_Action_Factory::factory('PieceFlowActionInvokerTestCasePieceFlowAction');
 
-        $fooAction = &Piece_Flow_Action_Factory::factory('Piece_Flow_Action_FooAction');
+        $this->assertEquals(strtolower('PieceFlowActionInvokerTestCasePieceFlowAction'), strtolower(get_class($action)));
+        $this->assertTrue(array_key_exists('_flow', $action));
+        $this->assertEquals(strtolower('stdClass'), strtolower(get_class($action->_flow)));
+        $this->assertTrue(array_key_exists('_payload', $action));
+        $this->assertEquals(strtolower('stdClass'), strtolower(get_class($action->_payload)));
+        $this->assertTrue(array_key_exists('_event', $action));
+        $this->assertEquals('bar', $action->_event);
+        $this->assertTrue($action->prepareCalled);
+        $this->assertTrue($action->eventHandlerCalled);
 
-        $this->assertTrue($fooAction->fooCalled);
+        $flow->foo = 'bar';
+        $payload->bar = 'baz';
+
+        $this->assertTrue(array_key_exists('foo', $action->_flow));
+        $this->assertEquals('bar', $action->_flow->foo);
+        $this->assertTrue(array_key_exists('bar', $action->_payload));
+        $this->assertEquals('baz', $action->_payload->bar);
+    }
+
+    /**
+     * @since Method available since Release 1.9.0
+     */
+    function testPlainPHPAction()
+    {
+        Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/' . basename(__FILE__, '.php'));
+        $flow = &new stdClass();
+        $payload = &new stdClass();
+        $invoker = &new Piece_Flow_Action_Invoker($flow, 'PieceFlowActionInvokerTestCasePlainPHPAction', 'foo');
+        $invoker->invoke(new stdClass(), new Piece_Flow_Action_InvokerTestCaseMockEvent(), $payload);
+        $action = &Piece_Flow_Action_Factory::factory('PieceFlowActionInvokerTestCasePlainPHPAction');
+
+        $this->assertEquals(strtolower('PieceFlowActionInvokerTestCasePlainPHPAction'), strtolower(get_class($action)));
+        $this->assertTrue(array_key_exists('_flow', $action));
+        $this->assertEquals(strtolower('stdClass'), strtolower(get_class($action->_flow)));
+        $this->assertTrue(array_key_exists('_payload', $action));
+        $this->assertEquals(strtolower('stdClass'), strtolower(get_class($action->_payload)));
+        $this->assertTrue(array_key_exists('_event', $action));
+        $this->assertEquals('bar', $action->_event);
+        $this->assertTrue($action->prepareCalled);
+        $this->assertTrue($action->eventHandlerCalled);
+
+        $flow->foo = 'bar';
+        $payload->bar = 'baz';
+
+        $this->assertTrue(array_key_exists('foo', $action->_flow));
+        $this->assertEquals('bar', $action->_flow->foo);
+        $this->assertTrue(array_key_exists('bar', $action->_payload));
+        $this->assertEquals('baz', $action->_payload->bar);
+    }
+
+    /**
+     * @since Method available since Release 1.9.0
+     */
+    function testActionHasNoMethods()
+    {
+        Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/' . basename(__FILE__, '.php'));
+        $invoker = &new Piece_Flow_Action_Invoker(new stdClass(), 'PieceFlowActionInvokerTestCaseNoMethodsAction', 'foo');
+        $invoker->invoke(new stdClass(), new Piece_Flow_Action_InvokerTestCaseMockEvent(), new stdClass());
+        $action = &Piece_Flow_Action_Factory::factory('PieceFlowActionInvokerTestCaseNoMethodsAction');
+
+        $this->assertEquals(strtolower('PieceFlowActionInvokerTestCaseNoMethodsAction'), strtolower(get_class($action)));
+        $this->assertFalse(array_key_exists('_flow', $action));
+        $this->assertFalse(array_key_exists('_payload', $action));
+        $this->assertFalse(array_key_exists('_event', $action));
+        $this->assertTrue($action->constructorCalled);
+        $this->assertTrue($action->eventHandlerCalled);
+    }
+
+    /**
+     * @since Method available since Release 1.9.0
+     */
+    function testEventHandlerNotFound()
+    {
+        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+        Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/' . basename(__FILE__, '.php'));
+        $flow = &new stdClass();
+        $payload = &new stdClass();
+        $invoker = &new Piece_Flow_Action_Invoker($flow, 'PieceFlowActionInvokerTestCasePlainPHPAction', 'bar');
+        $invoker->invoke(new stdClass(), new Piece_Flow_Action_InvokerTestCaseMockEvent(), $payload);
+
+        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
+
+        $error = Piece_Flow_Error::pop();
+
+        $this->assertEquals(PIECE_FLOW_ERROR_NOT_FOUND, $error['code']);
+
+        Piece_Flow_Error::popCallback();
     }
 
     /**#@-*/
@@ -125,7 +209,10 @@ class Piece_Flow_Action_InvokerTestCase extends PHPUnit_TestCase
 
 class Piece_Flow_Action_InvokerTestCaseMockEvent
 {
-    function getName() {}
+    function getName()
+    {
+        return 'bar';
+    }
 }
 
 /*
