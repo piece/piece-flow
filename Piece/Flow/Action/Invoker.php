@@ -177,27 +177,27 @@ class Piece_Flow_Action_Invoker
             return;
         }
 
-        if (is_callable(array(&$action, 'setFlow'))) {
-            $action->setFlow($this->_flow);
-        }
-
-        if (is_callable(array(&$action, 'setPayload'))) {
-            $action->setPayload($payload);
-        }
-
-        if (is_callable(array(&$action, 'setEvent'))) {
-            $action->setEvent($eventName);
-        }
-
-        if (is_callable(array(&$action, 'prepare'))) {
-            $action->prepare();
-        }
-
-        if (!is_callable(array(&$action, $this->_method))) {
+        if (!method_exists($action, $this->_method)) {
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
                                    "The method [ {$this->_method} ] does not exist in the action class [ {$this->_class} ]."
                                    );
             return;
+        }
+
+        if (method_exists($action, 'setFlow')) {
+            $action->setFlow($this->_flow);
+        }
+
+        if (method_exists($action, 'setPayload')) {
+            $action->setPayload($payload);
+        }
+
+        if (method_exists($action, 'setEvent')) {
+            $action->setEvent($eventName);
+        }
+
+        if (method_exists($action, 'prepare')) {
+            $action->prepare();
         }
 
         return call_user_func(array(&$action, $this->_method));
