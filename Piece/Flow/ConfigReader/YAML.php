@@ -34,7 +34,6 @@
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
  * @link       http://spyc.sourceforge.net/
- * @link       http://piece-framework.com/piece-flow/
  * @since      File available since Release 0.1.0
  */
 
@@ -57,7 +56,6 @@ if (version_compare(phpversion(), '5.0.0', '<')) {
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
  * @link       http://spyc.sourceforge.net/
- * @link       http://piece-framework.com/piece-flow/
  * @since      Class available since Release 0.1.0
  */
 class Piece_Flow_ConfigReader_YAML extends Piece_Flow_ConfigReader_Common
