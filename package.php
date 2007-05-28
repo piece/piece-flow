@@ -33,7 +33,6 @@
  * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
- * @link       http://piece-framework.com/piece-flow/
  * @see        PEAR_PackageFileManager2
  * @since      File available since Release 0.1.0
  */
@@ -42,32 +41,25 @@ require_once 'PEAR/PackageFileManager2.php';
 
 PEAR::staticPushErrorHandling(PEAR_ERROR_CALLBACK, create_function('$error', 'var_dump($error); exit();'));
 
-$version = '1.8.0';
+$releaseVersion = '1.9.0';
 $apiVersion = '1.7.0';
+$apiStability = 'stable';
 $releaseStability = 'stable';
-$notes = 'This release includes a feature named "Action Continuation" and several enhancements.
+$notes = 'A new release of Piece_Flow is now available.
 
-"Action Continuation" is a very important feature for developers. This feature will allow developers to write stateful action code via the properties without using flow attributes. This means that the programming be nearer natural continuation programming, although it is limited the scope in the action.
+What\'s New in Piece_Flow 1.9.0
+
+ * Plain Old PHP Object Support: A user-defined class can be used as an action without subclassing Piece_Flow_Action.
 
 See the following release notes for details.
 
-## Enhancements ##
+Enhancements
+============ 
 
-### Piece_Flow_Continuation, Piece_Flow_Action_Factory ###
+Web Flow Engine:
 
-- Added a feature to store the action instances as a flow attribute in a flow execution, and restore the action instances when continuing the flow execution. (Ticket #13)
-
-### Piece_Flow_Continuation ###
-
-- Removed setActionDirectory().
-- Changed to start a new flow execution if another flow execution of the current flow already exists in the flow executions. (Ticket #14)
-- Added isExclusive() to check whether the curent flow execution is exclusive or not.
-- Added getCurrentFlowName() to get the current flow name.
-
-### Piece_Flow_Action_Factory ###
-
-- Added clearInstances() to clear all instances of actions. (Ticket #12)
-- Moved _load() to load() as a public method.';
+- Added a feature so that a user-defined class can be used as an action without subclassing Piece_Flow_Action. (Ticket #18)
+- Updated invoke() and invokeAndTriggerEvent() so as to throw an exception if the method that will be called does not exist in an action class. (Ticket #20)';
 
 $package = new PEAR_PackageFileManager2();
 $package->setOptions(array('filelistgenerator' => 'svn',
@@ -90,12 +82,16 @@ $package->setLicense('BSD License (revised)',
                      'http://www.opensource.org/licenses/bsd-license.php'
                      );
 $package->setAPIVersion($apiVersion);
-$package->setAPIStability('stable');
-$package->setReleaseVersion($version);
+$package->setAPIStability($apiStability);
+$package->setReleaseVersion($releaseVersion);
 $package->setReleaseStability($releaseStability);
 $package->setNotes($notes);
 $package->setPhpDep('4.3.0');
 $package->setPearinstallerDep('1.4.3');
+$package->addPackageDepWithChannel('required', 'Stagehand_FSM', 'pear.piece-framework.com', '1.8.0');
+$package->addPackageDepWithChannel('required', 'Cache_Lite', 'pear.php.net', '1.7.0');
+$package->addPackageDepWithChannel('required', 'PEAR', 'pear.php.net', '1.4.3');
+$package->addPackageDepWithChannel('optional', 'Stagehand_TestRunner', 'pear.piece-framework.com', '0.4.0');
 $package->addMaintainer('lead', 'iteman', 'KUBO Atsuhiro', 'iteman@users.sourceforge.net');
 $package->addIgnore(array('package.php', 'package.xml', 'package2.xml'));
 $package->addGlobalReplacement('package-info', '@package_version@', 'version');
