@@ -77,7 +77,8 @@ class Piece_Flow_Action
     // {{{ setFlow()
 
     /**
-     * Sets a Piece_Flow object to the current action.
+     * Sets the Piece_Flow object which is used by the flow execution
+     * in progress.
      *
      * @param Piece_Flow &$flow
      */
@@ -90,7 +91,7 @@ class Piece_Flow_Action
     // {{{ setPayload()
 
     /**
-     * Sets a user defined payload to the current action.
+     * Sets a user defined payload.
      *
      * @param mixed &$payload
      */
@@ -103,7 +104,7 @@ class Piece_Flow_Action
     // {{{ setEvent()
 
     /**
-     * Sets the current event name to the current action.
+     * Sets the current event name.
      *
      * @param string $event
      */

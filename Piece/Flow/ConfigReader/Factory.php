@@ -164,14 +164,14 @@ class Piece_Flow_ConfigReader_Factory
         $file = str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php';
         if (!include_once $file) {
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
-                                   "The driver file [ $file ] not found or was not readable."
+                                   "The driver file [ $file ] not found or is not readable."
                                    );
             return;
         }
 
         if (!class_exists($class)) {
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_DRIVER,
-                                   "The driver [ $class ] not defined in the file [ $file ]."
+                                   "The driver [ $class ] does not defined in the file [ $file ]."
                                    );
         }
     }

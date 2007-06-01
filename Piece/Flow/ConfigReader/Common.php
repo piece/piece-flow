@@ -166,7 +166,7 @@ class Piece_Flow_ConfigReader_Common
 
         if (!is_readable($this->_source)) {
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_READABLE,
-                                   "The configuration file [ {$this->_source} ] was not readable."
+                                   "The configuration file [ {$this->_source} ] is not readable."
                                    );
             return;
         }
@@ -191,7 +191,7 @@ class Piece_Flow_ConfigReader_Common
             ) {
             Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_READABLE,
-                                   "The cache directory [ {$this->_cacheDirectory} ] was not readable or writable.",
+                                   "The cache directory [ {$this->_cacheDirectory} ] is not readable or writable.",
                                    'warning'
                                    );
             Piece_Flow_Error::popCallback();
