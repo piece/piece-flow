@@ -29,11 +29,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @author     KUBO Atsuhiro <iteman@users.sourceforge.net>
- * @author     MIYAI Fumihiko <fumichz@yahoo.co.jp>
  * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
+ * @see        Piece_FlowTestCase
  * @since      File available since Release 1.3.0
  */
 
@@ -45,11 +44,10 @@ require_once 'Piece/Flow/Action.php';
  * An action class for 'InvalidEventFromTransitionActionsOrActivities'.
  *
  * @package    Piece_Flow
- * @author     KUBO Atsuhiro <iteman@users.sourceforge.net>
- * @author     MIYAI Fumihiko <fumichz@yahoo.co.jp>
  * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
+ * @see        Piece_FlowTestCase
  * @since      Class available since Release 1.3.0
  */
 class Piece_FlowInvalidEventFromTransitionActionsOrActivitiesAction extends Piece_Flow_Action

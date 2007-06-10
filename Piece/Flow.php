@@ -29,8 +29,6 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @author     KUBO Atsuhiro <iteman@users.sourceforge.net>
- * @author     MIYAI Fumihiko <fumichz@yahoo.co.jp>
  * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
@@ -65,8 +63,6 @@ define('PIECE_FLOW_PROTECTED_EVENT', '_Piece_Flow_Protected_Event');
  * it.
  *
  * @package    Piece_Flow
- * @author     KUBO Atsuhiro <iteman@users.sourceforge.net>
- * @author     MIYAI Fumihiko <fumichz@yahoo.co.jp>
  * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@

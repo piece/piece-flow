@@ -29,10 +29,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @author     KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
+ * @see        Piece_Flow_Action_FactoryTestCase
  * @since      File available since Release 1.0.0
  */
 
@@ -44,10 +44,10 @@ require_once 'Piece/Flow/Action.php';
  * A class for unit tests.
  *
  * @package    Piece_Flow
- * @author     KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
+ * @see        Piece_Flow_Action_FactoryTestCase
  * @since      Class available since Release 1.0.0
  */
 class Piece_Flow_Action_FooAction extends Piece_Flow_Action
