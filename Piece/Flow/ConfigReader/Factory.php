@@ -38,6 +38,7 @@
  */
 
 require_once 'Piece/Flow/Error.php';
+require_once 'Piece/Flow/ClassLoader.php';
 
 // {{{ Piece_Flow_ConfigReader_Factory
 
@@ -84,23 +85,36 @@ class Piece_Flow_ConfigReader_Factory
      * @param string $cacheDirectory
      * @return mixed
      * @throws PIECE_FLOW_ERROR_NOT_FOUND
-     * @throws PIECE_FLOW_ERROR_INVALID_DRIVER
+     * @throws PIECE_FLOW_ERROR_NOT_READABLE
+     * @throws PIECE_FLOW_ERROR_CANNOT_READ
      * @static
      */
     function &factory($source, $driverName = null)
     {
         if (is_null($driverName)) {
-            $driverName = Piece_Flow_ConfigReader_Factory::_guessDriver($source);
+            $driverName = strtoupper(substr(strrchr($source, '.'), 1));
         }
 
         if ($driverName == 'XML') {
-            $driverName = Piece_Flow_ConfigReader_Factory::_getDriverForXML();
+            if (version_compare(phpversion(), '5.0.0', '>=')) {
+                $driverName = 'XML5';
+            } else {
+                $driverName = 'XML4';
+            }
         }
 
         $class = "Piece_Flow_ConfigReader_$driverName";
-        if (!class_exists($class)) {
-            Piece_Flow_ConfigReader_Factory::_loadDriver($class);
+        if (!Piece_Flow_ClassLoader::loaded($class)) {
+            Piece_Flow_ClassLoader::load($class);
             if (Piece_Flow_Error::hasErrors('exception')) {
+                $return = null;
+                return $return;
+            }
+
+            if (!Piece_Flow_ClassLoader::loaded($class)) {
+                Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
+                                       "The class [ $class ] not found in the loaded file."
+                                       );
                 $return = null;
                 return $return;
             }
@@ -114,67 +128,7 @@ class Piece_Flow_ConfigReader_Factory
 
     /**#@+
      * @access private
-     * @static
      */
-
-    // }}}
-    // {{{ _guessDriver()
-
-    /**
-     * Guesses a driver from the given source.
-     *
-     * @param mixed $source
-     * @return string
-     */
-    function _guessDriver($source)
-    {
-        return strtoupper(substr(strrchr($source, '.'), 1));
-    }
-
-    // }}}
-    // {{{ _getDriverForXML()
-
-    /**
-     * Gets an appropriate XML driver according to the version number of PHP.
-     *
-     * @return string
-     */
-    function _getDriverForXML()
-    {
-        if (version_compare(phpversion(), '5.0.0', '>=')) {
-            return 'XML5';
-        }
-        
-        return 'XML4';
-    }
-
-    // }}}
-    // {{{ _loadDriver()
-
-    /**
-     * Loads the file corresponding to the given class.
-     *
-     * @param string $class
-     * @return string
-     * @throws PIECE_FLOW_ERROR_NOT_FOUND
-     * @throws PIECE_FLOW_ERROR_INVALID_DRIVER
-     */
-    function _loadDriver($class)
-    {
-        $file = str_replace('_', DIRECTORY_SEPARATOR, $class) . '.php';
-        if (!include_once $file) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
-                                   "The driver file [ $file ] not found or is not readable."
-                                   );
-            return;
-        }
-
-        if (!class_exists($class)) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_DRIVER,
-                                   "The driver [ $class ] does not defined in the file [ $file ]."
-                                   );
-        }
-    }
 
     /**#@-*/
 

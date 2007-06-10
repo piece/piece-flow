@@ -114,11 +114,11 @@ class Piece_Flow
      * @param string $type
      * @param string $cacheDirectory
      * @throws PIECE_FLOW_ERROR_NOT_FOUND
-     * @throws PIECE_FLOW_ERROR_INVALID_DRIVER
      * @throws PIECE_FLOW_ERROR_NOT_READABLE
      * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
      * @throws PIECE_FLOW_ERROR_PROTECTED_EVENT
      * @throws PIECE_FLOW_ERROR_PROTECTED_STATE
+     * @throws PIECE_FLOW_ERROR_CANNOT_READ
      */
     function configure($source, $type = null, $cacheDirectory = null)
     {

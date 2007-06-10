@@ -143,11 +143,11 @@ class Piece_Flow_Continuation
      * @return string
      * @throws PIECE_FLOW_ERROR_NOT_GIVEN
      * @throws PIECE_FLOW_ERROR_NOT_FOUND
-     * @throws PIECE_FLOW_ERROR_INVALID_DRIVER
      * @throws PIECE_FLOW_ERROR_NOT_READABLE
      * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
      * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
      * @throws PIECE_FLOW_ERROR_FLOW_NAME_NOT_GIVEN
+     * @throws PIECE_FLOW_ERROR_CANNOT_READ
      */
     function invoke(&$payload, $bindActionsWithFlowExecution = false)
     {
@@ -572,13 +572,13 @@ class Piece_Flow_Continuation
      * @param mixed &$payload
      * @return string
      * @throws PIECE_FLOW_ERROR_NOT_FOUND
-     * @throws PIECE_FLOW_ERROR_INVALID_DRIVER
      * @throws PIECE_FLOW_ERROR_NOT_READABLE
      * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
      * @throws PIECE_FLOW_ERROR_PROTECTED_EVENT
      * @throws PIECE_FLOW_ERROR_PROTECTED_STATE
      * @throws PIECE_FLOW_ERROR_CANNOT_INVOKE
      * @throws PIECE_FLOW_ERROR_ALREADY_SHUTDOWN
+     * @throws PIECE_FLOW_ERROR_CANNOT_READ
      */
     function _start(&$payload)
     {

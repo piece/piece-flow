@@ -108,7 +108,7 @@ class Piece_Flow_ConfigReader_FactoryTestCase extends PHPUnit_TestCase
                           );
     }
 
-    function testNonExistentDriver()
+    function testNonExistingDriver()
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
@@ -118,7 +118,7 @@ class Piece_Flow_ConfigReader_FactoryTestCase extends PHPUnit_TestCase
 
         $error = Piece_Flow_Error::pop();
 
-        $this->assertEquals(PIECE_FLOW_ERROR_NOT_FOUND, $error['code']);
+        $this->assertEquals(PIECE_FLOW_ERROR_CANNOT_READ, $error['code']);
 
         Piece_Flow_Error::popCallback();
     }
@@ -135,7 +135,7 @@ class Piece_Flow_ConfigReader_FactoryTestCase extends PHPUnit_TestCase
 
         $error = Piece_Flow_Error::pop();
 
-        $this->assertEquals(PIECE_FLOW_ERROR_INVALID_DRIVER, $error['code']);
+        $this->assertEquals(PIECE_FLOW_ERROR_NOT_FOUND, $error['code']);
 
         set_include_path($oldIncludePath);
         Piece_Flow_Error::popCallback();
