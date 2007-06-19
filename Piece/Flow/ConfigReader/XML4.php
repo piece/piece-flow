@@ -147,7 +147,7 @@ class Piece_Flow_ConfigReader_XML4 extends Piece_Flow_ConfigReader_Common
     {
         $viewStates = array();
 
-        for ($i = 0; $i < count($states); ++$i) {
+        for ($i = 0, $count = count($states); $i < $count; ++$i) {
             $viewState = array();
             $viewState['name'] = $states[$i]->get_attribute('name');
             $viewState['view'] = $states[$i]->get_attribute('view');
@@ -173,7 +173,7 @@ class Piece_Flow_ConfigReader_XML4 extends Piece_Flow_ConfigReader_Common
     {
         $actionStates = array();
 
-        for ($i = 0; $i < count($states); ++$i) {
+        for ($i = 0, $count = count($states); $i < $count; ++$i) {
             $actionState = array();
             $actionState['name'] = $states[$i]->get_attribute('name');
             $actionState = array_merge($actionState,
@@ -200,7 +200,7 @@ class Piece_Flow_ConfigReader_XML4 extends Piece_Flow_ConfigReader_Common
 
         $parsedTransitions = array();
         $transitions = $state->get_elements_by_tagname('transition');
-        for ($i = 0; $i < count($transitions); ++$i) {
+        for ($i = 0, $count = count($transitions); $i < $count; ++$i) {
             $parsedTransition = array();
             $parsedTransition['event'] =
                 $transitions[$i]->get_attribute('event');

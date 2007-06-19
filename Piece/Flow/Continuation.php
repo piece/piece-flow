@@ -329,8 +329,7 @@ class Piece_Flow_Continuation
      */
     function shutdown()
     {
-        $count = count($GLOBALS['PIECE_FLOW_Continuation_ActiveInstances']);
-        for ($i = 0; $i < $count; ++$i) {
+        for ($i = 0, $count = count($GLOBALS['PIECE_FLOW_Continuation_ActiveInstances']); $i < $count; ++$i) {
             $instance = &$GLOBALS['PIECE_FLOW_Continuation_ActiveInstances'][$i];
             if (!is_a($instance, __CLASS__)) {
                 unset($GLOBALS['PIECE_FLOW_Continuation_ActiveInstances'][$i]);

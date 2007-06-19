@@ -216,7 +216,7 @@ class Piece_Flow_ConfigReader_Common
      */
     function _configureViewStates($states)
     {
-        for ($i = 0; $i < count($states); ++$i) {
+        for ($i = 0, $count = count($states); $i < $count; ++$i) {
             $this->_config->addViewState($states[$i]['name'],
                                          $states[$i]['view']
                                          );
@@ -234,7 +234,7 @@ class Piece_Flow_ConfigReader_Common
      */
     function _configureActionStates($states)
     {
-        for ($i = 0; $i < count($states); ++$i) {
+        for ($i = 0, $count = count($states); $i < $count; ++$i) {
             $this->_config->addActionState($states[$i]['name']);
             $this->_configureState($states[$i]);
         }
@@ -251,7 +251,7 @@ class Piece_Flow_ConfigReader_Common
     function _configureState($state)
     {
         if (array_key_exists('transition', $state)) {
-            for ($i = 0; $i < count($state['transition']); ++$i) {
+            for ($i = 0, $count = count($state['transition']); $i < $count; ++$i) {
                 if (!array_key_exists('action', $state['transition'][$i])) {
                     $state['transition'][$i]['action'] = null;
                 }

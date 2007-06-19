@@ -623,7 +623,7 @@ class Piece_Flow
      */
     function _configureState($state)
     {
-        for ($i = 0; $i < count(@$state['transitions']); ++$i) {
+        for ($i = 0, $count = count(@$state['transitions']); $i < $count; ++$i) {
             if ($this->_fsm->isProtectedEvent($state['transitions'][$i]['event'])
                 || $state['transitions'][$i]['event'] == PIECE_FLOW_PROTECTED_EVENT
                 ) {
