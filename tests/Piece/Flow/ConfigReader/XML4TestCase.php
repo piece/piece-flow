@@ -87,7 +87,7 @@ class Piece_Flow_ConfigReader_XML4TestCase extends Piece_Flow_ConfigReader_Compa
 
         $source = dirname(__FILE__) . '/broken.xml';
         $xml = new Piece_Flow_ConfigReader_XML4($source);
-        $xml->configure(dirname(__FILE__));
+        $xml->read(dirname(__FILE__));
 
         $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
 
@@ -110,7 +110,7 @@ class Piece_Flow_ConfigReader_XML4TestCase extends Piece_Flow_ConfigReader_Compa
     function _getConfig()
     {
         $xml = new Piece_Flow_ConfigReader_XML4($this->_source);
-        return $xml->configure(dirname(__FILE__));
+        return $xml->read(dirname(__FILE__));
     }
 
     /**#@-*/

@@ -84,10 +84,10 @@ class Piece_Flow_ConfigReader_FactoryTestCase extends PHPUnit_TestCase
 
     function testGuessingFromFileExtension()
     {
-        $this->assertTrue(is_a(Piece_Flow_ConfigReader_Factory::factory('foo.yaml'),
+        $this->assertTrue(is_a(Piece_Flow_ConfigReader_Factory::factory('foo.yaml', null),
                                'Piece_Flow_ConfigReader_YAML')
                           );
-        $this->assertTrue(is_a(Piece_Flow_ConfigReader_Factory::factory('foo.xml'),
+        $this->assertTrue(is_a(Piece_Flow_ConfigReader_Factory::factory('foo.xml', null),
                                version_compare(phpversion(), '5.0.0', '>=') ?
                                'Piece_Flow_ConfigReader_XML5' :
                                'Piece_Flow_ConfigReader_XML4')

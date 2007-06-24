@@ -87,7 +87,7 @@ class Piece_Flow_ConfigReader_XML5TestCase extends Piece_Flow_ConfigReader_Compa
 
         $source = dirname(__FILE__) . '/invalid.xml';
         $xml = new Piece_Flow_ConfigReader_XML5($source);
-        $xml->configure(dirname(__FILE__));
+        $xml->read(dirname(__FILE__));
 
         $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
 
@@ -110,7 +110,7 @@ class Piece_Flow_ConfigReader_XML5TestCase extends Piece_Flow_ConfigReader_Compa
     function _getConfig()
     {
         $xml = new Piece_Flow_ConfigReader_XML5($this->_source);
-        return $xml->configure(dirname(__FILE__));
+        return $xml->read(dirname(__FILE__));
     }
 
     /**#@-*/

@@ -90,10 +90,11 @@ class Piece_Flow_ConfigReader_Common
     }
 
     // }}}
-    // {{{ configure()
+    // {{{ read()
 
     /**
-     * Configures a Piece_Flow_Config object from the given source.
+     * Reads configuration from the given source and creates
+     * a Piece_Flow_Config object.
      *
      * @param string $cacheDirectory
      * @return Piece_Flow_Config
@@ -101,7 +102,7 @@ class Piece_Flow_ConfigReader_Common
      * @throws PIECE_FLOW_ERROR_NOT_READABLE
      * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
      */
-    function &configure($cacheDirectory = null)
+    function &read($cacheDirectory = null)
     {
         $this->_cacheDirectory = $cacheDirectory;
         $flow = $this->parse();

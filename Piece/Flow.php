@@ -42,8 +42,8 @@
 
 require_once 'Stagehand/FSM.php';
 require_once 'Piece/Flow/EventHandler.php';
-require_once 'Piece/Flow/ConfigReader/Factory.php';
 require_once 'Piece/Flow/Error.php';
+require_once 'Piece/Flow/ConfigReader.php';
 
 // {{{ constants
 
@@ -107,7 +107,7 @@ class Piece_Flow
      * Configures a FSM with the given configuration.
      *
      * @param mixed  $source
-     * @param string $type
+     * @param string $driverName
      * @param string $cacheDirectory
      * @throws PIECE_FLOW_ERROR_NOT_FOUND
      * @throws PIECE_FLOW_ERROR_NOT_READABLE
@@ -116,14 +116,9 @@ class Piece_Flow
      * @throws PIECE_FLOW_ERROR_PROTECTED_STATE
      * @throws PIECE_FLOW_ERROR_CANNOT_READ
      */
-    function configure($source, $type = null, $cacheDirectory = null)
+    function configure($source, $driverName = null, $cacheDirectory = null)
     {
-        $driver = &Piece_Flow_ConfigReader_Factory::factory($source, $type);
-        if (Piece_Flow_Error::hasErrors('exception')) {
-            return;
-        }
-
-        $config = &$driver->configure($cacheDirectory);
+        $config = &Piece_Flow_ConfigReader::read($source, $driverName, $cacheDirectory);
         if (Piece_Flow_Error::hasErrors('exception')) {
             return;
         }

@@ -85,7 +85,7 @@ class Piece_Flow_ConfigReader_YAMLTestCase extends Piece_Flow_ConfigReader_Compa
     function _getConfig()
     {
         $yaml = new Piece_Flow_ConfigReader_YAML($this->_source);
-        return $yaml->configure(dirname(__FILE__));
+        return $yaml->read(dirname(__FILE__));
     }
 
     /**#@-*/

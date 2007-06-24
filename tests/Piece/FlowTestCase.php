@@ -38,9 +38,9 @@
 require_once 'PHPUnit.php';
 require_once 'Piece/Flow.php';
 require_once 'Cache/Lite/File.php';
-require_once 'Piece/Flow/ConfigReader/Factory.php';
 require_once 'Piece/Flow/Action/Factory.php';
 require_once 'Piece/Flow/Error.php';
+require_once 'Piece/Flow/ConfigReader.php';
 
 // {{{ Piece_FlowTestCase
 
@@ -82,8 +82,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         Piece_Flow_Error::pushCallback(create_function('$error', 'var_dump($error); return ' . PEAR_ERRORSTACK_DIE . ';'));
         $this->_source =
             dirname(__FILE__) . '/../../data/Registration.yaml';
-        $driver = &Piece_Flow_ConfigReader_Factory::factory($this->_source);
-        $this->_config = &$driver->configure();
+        $this->_config = &Piece_Flow_ConfigReader::read($this->_source, null, dirname(__FILE__));
         Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/..');
     }
 
@@ -265,21 +264,6 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $this->assertEquals(PIECE_FLOW_ERROR_INVALID_OPERATION, $error['code']);
 
         Piece_Flow_Error::popCallback();
-    }
-
-    function testSettingPayload()
-    {
-        $flow = &new Piece_Flow();
-        $flow->configure($this->_source, null, dirname(__FILE__));
-        $flow->setPayload(new stdClass());
-
-        $this->assertTrue(Piece_Flow_Error::hasErrors('warning'));
-
-        $error = Piece_Flow_Error::pop();
-
-        $this->assertEquals(PIECE_FLOW_ERROR_NOT_FOUND, $error['code']);
-
-        $this->assertFalse(Piece_Flow_Error::hasErrors('warning'));
     }
 
     function testFailureToSetPayloadBeforeConfiguringFlow()
