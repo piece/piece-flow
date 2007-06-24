@@ -74,6 +74,7 @@ class Piece_Flow_Action_Factory
 
     /**#@+
      * @access public
+     * @static
      */
 
     // }}}
@@ -88,33 +89,14 @@ class Piece_Flow_Action_Factory
      * @throws PIECE_FLOW_ERROR_NOT_FOUND
      * @throws PIECE_FLOW_ERROR_NOT_READABLE
      * @throws PIECE_FLOW_ERROR_CANNOT_READ
-     * @static
      */
     function &factory($class)
     {
         if (!array_key_exists($class, $GLOBALS['PIECE_FLOW_Action_Instances'])) {
-            if (!Piece_Flow_ClassLoader::loaded($class)) {
-                if (is_null($GLOBALS['PIECE_FLOW_Action_Directory'])) {
-                    Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_GIVEN,
-                                           'The action directory is not given.'
-                                           );
-                    $return = null;
-                    return $return;
-                }
-
-                Piece_Flow_ClassLoader::load($class, $GLOBALS['PIECE_FLOW_Action_Directory']);
-                if (Piece_Flow_Error::hasErrors('exception')) {
-                    $return = null;
-                    return $return;
-                }
-
-                if (!Piece_Flow_ClassLoader::loaded($class)) {
-                    Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
-                                           "The class [ $class ] not found in the loaded file."
-                                           );
-                    $return = null;
-                    return $return;
-                }
+            Piece_Flow_Action_Factory::load($class);
+            if (Piece_Flow_Error::hasErrors('exception')) {
+                $return = null;
+                return $return;
             }
 
             $GLOBALS['PIECE_FLOW_Action_Instances'][$class] = &new $class();
@@ -171,6 +153,39 @@ class Piece_Flow_Action_Factory
     function setInstances($instances)
     {
         $GLOBALS['PIECE_FLOW_Action_Instances'] = $instances;
+    }
+
+    // }}}
+    // {{{ load()
+
+    /**
+     * Loads an action class corresponding to the given class name.
+     *
+     * @param string $class
+     * @throws PIECE_FLOW_ERROR_NOT_GIVEN
+     * @throws PIECE_FLOW_ERROR_NOT_FOUND
+     * @throws PIECE_FLOW_ERROR_NOT_READABLE
+     * @throws PIECE_FLOW_ERROR_CANNOT_READ
+     */
+    function load($class)
+    {
+        if (is_null($GLOBALS['PIECE_FLOW_Action_Directory'])) {
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_GIVEN,
+                                   'The action directory is not given.'
+                                   );
+            return;
+        }
+
+        Piece_Flow_ClassLoader::load($class, $GLOBALS['PIECE_FLOW_Action_Directory']);
+        if (Piece_Flow_Error::hasErrors('exception')) {
+            return;
+        }
+
+        if (!Piece_Flow_ClassLoader::loaded($class)) {
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
+                                   "The class [ $class ] not found in the loaded file."
+                                   );
+        }
     }
 
     /**#@-*/
