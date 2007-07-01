@@ -121,7 +121,7 @@ class Piece_Flow_ConfigReader_FactoryTestCase extends PHPUnit_TestCase
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
-        $oldIncludePath = set_include_path(dirname(__FILE__) . '/../../..' . PATH_SEPARATOR . get_include_path());
+        $oldIncludePath = set_include_path(dirname(__FILE__) . '/' . basename(__FILE__, '.php'));
 
         Piece_Flow_ConfigReader_Factory::factory('foo.bar', 'Baz', null);
 
