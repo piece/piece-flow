@@ -85,7 +85,7 @@ class Piece_Flow_ConfigReader_Factory
      * @throws PIECE_FLOW_ERROR_CANNOT_READ
      * @static
      */
-    function &factory($source, $driverName)
+    function &factory($source, $driverName, $cacheDirectory)
     {
         if (is_null($driverName)) {
             $driverName = strtoupper(substr(strrchr($source, '.'), 1));
@@ -116,7 +116,7 @@ class Piece_Flow_ConfigReader_Factory
             }
         }
 
-        $driver = &new $class($source);
+        $driver = &new $class($source, $cacheDirectory);
         return $driver;
     }
 

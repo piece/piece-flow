@@ -87,12 +87,12 @@ class Piece_Flow_ConfigReader
      */
     function &read($source, $driverName, $cacheDirectory)
     {
-        $driver = &Piece_Flow_ConfigReader_Factory::factory($source, $driverName);
+        $driver = &Piece_Flow_ConfigReader_Factory::factory($source, $driverName, $cacheDirectory);
         if (Piece_Flow_Error::hasErrors('exception')) {
             return;
         }
 
-        return $driver->read($cacheDirectory);
+        return $driver->read();
     }
 
     /**#@-*/

@@ -78,7 +78,7 @@ class Piece_Flow_ConfigReader_YAMLTestCase extends Piece_Flow_ConfigReader_Compa
 
     function &_getConfigReader($source)
     {
-        $reader = &new Piece_Flow_ConfigReader_YAML($source);
+        $reader = &new Piece_Flow_ConfigReader_YAML($source, $this->_cacheDirectory);
         return $reader;
     }
 

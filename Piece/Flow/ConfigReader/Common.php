@@ -82,11 +82,17 @@ class Piece_Flow_ConfigReader_Common
     /**
      * Constructor
      *
-     * @param mixed $source
+     * @param mixed  $source
+     * @param string $cacheDirectory
      */
-    function Piece_Flow_ConfigReader_Common($source)
+    function Piece_Flow_ConfigReader_Common($source, $cacheDirectory)
     {
         $this->_source = $source;
+        if (!is_null($cacheDirectory)) {
+            $this->_cacheDirectory = $cacheDirectory;
+        } else {
+            $this->_cacheDirectory = './cache';
+        }
     }
 
     // }}}
@@ -96,15 +102,13 @@ class Piece_Flow_ConfigReader_Common
      * Reads configuration from the given source and creates
      * a Piece_Flow_Config object.
      *
-     * @param string $cacheDirectory
      * @return Piece_Flow_Config
      * @throws PIECE_FLOW_ERROR_NOT_FOUND
      * @throws PIECE_FLOW_ERROR_NOT_READABLE
      * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
      */
-    function &read($cacheDirectory = null)
+    function &read()
     {
-        $this->_cacheDirectory = $cacheDirectory;
         $flow = $this->parse();
         if (Piece_Flow_Error::hasErrors('exception')) {
             $return = null;
@@ -168,10 +172,6 @@ class Piece_Flow_ConfigReader_Common
                                    "The configuration file [ {$this->_source} ] is not readable."
                                    );
             return;
-        }
-
-        if (is_null($this->_cacheDirectory)) {
-            $this->_cacheDirectory = './cache';
         }
 
         if (!file_exists($this->_cacheDirectory)) {

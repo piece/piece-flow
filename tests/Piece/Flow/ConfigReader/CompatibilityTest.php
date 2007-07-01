@@ -227,7 +227,7 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
     function testConfiguration()
     {
         $reader = &$this->_getConfigReader($this->_source);
-        $config = &$reader->read($this->_cacheDirectory);
+        $config = &$reader->read();
 
         $this->assertEquals(strtolower('Piece_Flow_Config'), strtolower(get_class($config)));
         $this->assertEquals($this->_config->getName(), $config->getName());
