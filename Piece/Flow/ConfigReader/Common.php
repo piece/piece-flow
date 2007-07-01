@@ -115,6 +115,20 @@ class Piece_Flow_ConfigReader_Common
             return $return;
         }
 
+        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+        $result = $this->_validateFlow($flow);
+        Piece_Flow_Error::popCallback();
+        if (!$result) {
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
+                                   "The file [{$this->_source}] containts invalid format. See below for more details.",
+                                   'exception',
+                                   array(),
+                                   Piece_Flow_Error::pop()
+                                   );
+            $return = null;
+            return $return;
+        }
+
         $this->_config = &new Piece_Flow_Config();
         $this->_config->setName($this->_getFlowNameFromSource());
         $this->_config->setFirstState($flow['firstState']);
@@ -367,6 +381,55 @@ class Piece_Flow_ConfigReader_Common
         }
 
         return $name;
+    }
+
+    function _validateFlow($flow)
+    {
+        if (!array_key_exists('firstState', $flow)) {
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
+                                   'The "firstState" element not found.'
+                                   );
+            return false;
+        }
+
+        if (!$flow['firstState']) {
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
+                                   'The "firstState" element must be a valid string.'
+                                   );
+            return false;
+        }
+
+        if (array_key_exists('lastState', $flow)) {
+            if (!array_key_exists('name', $flow['lastState'])) {
+                Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
+                                       'The "name" element in the "lastState" element not found.'
+                                       );
+                return false;
+            }
+
+            if (!$flow['lastState']['name']) {
+                Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
+                                       'The "name" element in the "lastState" element must be a valid string.'
+                                       );
+                return false;
+            }
+
+            if (!array_key_exists('view', $flow['lastState'])) {
+                Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
+                                       'The "view" element in the "lastState" element not found.'
+                                       );
+                return false;
+            }
+
+            if (!$flow['lastState']['view']) {
+                Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
+                                       'The "view" element in the "lastState" element must be a valid string.'
+                                       );
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**#@-*/

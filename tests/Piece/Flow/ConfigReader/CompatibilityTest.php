@@ -226,7 +226,7 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
 
     function testConfiguration()
     {
-        $reader = &$this->_getConfigReader($this->_getSource());
+        $reader = &$this->_getConfigReader($this->_getSource('Registration'));
         $config = &$reader->read();
 
         $this->assertEquals(strtolower('Piece_Flow_Config'), strtolower(get_class($config)));
@@ -251,6 +251,20 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
                             );
     }
 
+    function testExceptionShouldBeRaisedIfRequiredElementNotFound()
+    {
+        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+
+        $this->_assertExceptionShouldBeRaisedIfRequiredElementNotFound('FirstStateNotFound');
+        $this->_assertExceptionShouldBeRaisedIfRequiredElementNotFound('FirstStateIsInvalid');
+        $this->_assertExceptionShouldBeRaisedIfRequiredElementNotFound('NameInLastStateNotFound');
+        $this->_assertExceptionShouldBeRaisedIfRequiredElementNotFound('NameInLastStateIsInvalid');
+        $this->_assertExceptionShouldBeRaisedIfRequiredElementNotFound('ViewInLastStateNotFound');
+        $this->_assertExceptionShouldBeRaisedIfRequiredElementNotFound('ViewInLastStateIsInvalid');
+
+        Piece_Flow_Error::popCallback();
+    }
+
     /**#@-*/
 
     /**#@+
@@ -259,7 +273,20 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
 
     function &_getConfigReader($source) {}
     function _doSetUp() {}
-    function _getSource() {}
+    function _getSource($name) {}
+
+    function _assertExceptionShouldBeRaisedIfRequiredElementNotFound($name)
+    {
+        $reader = &$this->_getConfigReader($this->_getSource($name));
+        $config = &$reader->read();
+
+        $this->assertNull($config);
+        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
+
+        $error = Piece_Flow_Error::pop();
+
+        $this->assertEquals(PIECE_FLOW_ERROR_INVALID_FORMAT, $error['code']);
+    }
 
     /**#@-*/
 

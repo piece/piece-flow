@@ -78,8 +78,7 @@ class Piece_Flow_ConfigReader_XML4TestCase extends Piece_Flow_ConfigReader_Compa
     function testInvalidFormat()
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
-
-        $reader = &$this->_getConfigReader("{$this->_cacheDirectory}/broken.xml");
+        $reader = &$this->_getConfigReader($this->_getSource('broken'));
         $config = &$reader->read();
 
         $this->assertNull($config);
@@ -109,9 +108,9 @@ class Piece_Flow_ConfigReader_XML4TestCase extends Piece_Flow_ConfigReader_Compa
         $this->_cacheDirectory = dirname(__FILE__) . '/XMLTestCase';
     }
 
-    function _getSource()
+    function _getSource($name)
     {
-        return "{$this->_cacheDirectory}/Registration.xml";
+        return "{$this->_cacheDirectory}/$name.xml";
     }
 
     /**#@-*/
