@@ -107,7 +107,11 @@ class Piece_Flow_ConfigReader_XML4TestCase extends Piece_Flow_ConfigReader_Compa
     function _doSetUp()
     {
         $this->_cacheDirectory = dirname(__FILE__) . '/XMLTestCase';
-        $this->_source = "{$this->_cacheDirectory}/Registration.xml";
+    }
+
+    function _getSource()
+    {
+        return "{$this->_cacheDirectory}/Registration.xml";
     }
 
     /**#@-*/

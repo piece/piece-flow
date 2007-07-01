@@ -84,9 +84,12 @@ class Piece_Flow_ConfigReader_YAMLTestCase extends Piece_Flow_ConfigReader_Compa
 
     function _doSetUp()
     {
-
         $this->_cacheDirectory = dirname(__FILE__) . '/' . basename(__FILE__, '.php');
-        $this->_source = "{$this->_cacheDirectory}/Registration.yaml";
+    }
+
+    function _getSource()
+    {
+        return "{$this->_cacheDirectory}/Registration.yaml";
     }
 
     /**#@-*/

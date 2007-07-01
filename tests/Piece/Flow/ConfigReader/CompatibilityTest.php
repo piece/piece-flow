@@ -214,7 +214,7 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
     function tearDown()
     {
         $cache = &new Cache_Lite_File(array('cacheDir' => "{$this->_cacheDirectory}/",
-                                            'masterFile' => $this->_source,
+                                            'masterFile' => '',
                                             'automaticSerialization' => true,
                                             'errorHandlingAPIBreak' => true)
                                       );
@@ -226,7 +226,7 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
 
     function testConfiguration()
     {
-        $reader = &$this->_getConfigReader($this->_source);
+        $reader = &$this->_getConfigReader($this->_getSource());
         $config = &$reader->read();
 
         $this->assertEquals(strtolower('Piece_Flow_Config'), strtolower(get_class($config)));
