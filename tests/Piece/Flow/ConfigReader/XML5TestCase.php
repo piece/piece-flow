@@ -75,27 +75,18 @@ class Piece_Flow_ConfigReader_XML5TestCase extends Piece_Flow_ConfigReader_Compa
      * @access public
      */
 
-    function setUp()
-    {
-        parent::setUp();
-        $this->_source = dirname(__FILE__) .'/../../../../data/Registration.xml';
-    }
-
     function testInvalidFormat()
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
-        $source = dirname(__FILE__) . '/invalid.xml';
-        $xml = new Piece_Flow_ConfigReader_XML5($source);
-        $xml->read(dirname(__FILE__));
+        $reader = &$this->_getConfigReader("{$this->_cacheDirectory}/invalid.xml");
+        $config = &$reader->read($this->_cacheDirectory);
 
+        $this->assertNull($config);
         $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
 
         $error = Piece_Flow_Error::pop();
 
-        $this->assertEquals(strtolower('Piece_Flow'),
-                            strtolower($error['package'])
-                            );
         $this->assertEquals(PIECE_FLOW_ERROR_INVALID_FORMAT, $error['code']);
 
         Piece_Flow_Error::popCallback();
@@ -107,10 +98,16 @@ class Piece_Flow_ConfigReader_XML5TestCase extends Piece_Flow_ConfigReader_Compa
      * @access private
      */
 
-    function _getConfig()
+    function &_getConfigReader($source)
     {
-        $xml = new Piece_Flow_ConfigReader_XML5($this->_source);
-        return $xml->read(dirname(__FILE__));
+        $reader = &new Piece_Flow_ConfigReader_XML5($source);
+        return $reader;
+    }
+
+    function _doSetUp()
+    {
+        $this->_cacheDirectory = dirname(__FILE__) . '/XMLTestCase';
+        $this->_source = "{$this->_cacheDirectory}/Registration.xml";
     }
 
     /**#@-*/

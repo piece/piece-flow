@@ -67,7 +67,7 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
      */
 
     var $_config;
-    var $_source;
+    var $_cacheDirectory;
 
     /**#@-*/
 
@@ -207,17 +207,18 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
                                       $transition22['event'],
                                       $transition22['nextState']
                                       );
+
+        $this->_doSetUp();
     }
 
     function tearDown()
     {
-        $cache = &new Cache_Lite_File(array('cacheDir' => dirname(__FILE__) . '/',
+        $cache = &new Cache_Lite_File(array('cacheDir' => "{$this->_cacheDirectory}/",
                                             'masterFile' => $this->_source,
                                             'automaticSerialization' => true,
                                             'errorHandlingAPIBreak' => true)
                                       );
         $cache->clean();
-        $this->_source = null;
         $this->_config = null;
         Piece_Flow_Error::clearErrors();
         Piece_Flow_Error::popCallback();
@@ -225,9 +226,10 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
 
     function testConfiguration()
     {
-        $config = $this->_getConfig();
+        $reader = &$this->_getConfigReader($this->_source);
+        $config = &$reader->read($this->_cacheDirectory);
 
-        $this->assertTrue(is_a($config, 'Piece_Flow_Config'));
+        $this->assertEquals(strtolower('Piece_Flow_Config'), strtolower(get_class($config)));
         $this->assertEquals($this->_config->getName(), $config->getName());
         $this->assertEquals($this->_config->getFirstState(),
                             $config->getFirstState()
@@ -255,7 +257,9 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
      * @access private
      */
 
-    function _getConfig() {}
+    function &_getConfigReader($source) {}
+    function _doSetUp() {}
+    function _getSource() {}
 
     /**#@-*/
 
