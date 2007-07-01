@@ -251,20 +251,6 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
                             );
     }
 
-    function testExceptionShouldBeRaisedIfRequiredElementNotFound()
-    {
-        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
-
-        $this->_assertExceptionShouldBeRaisedIfRequiredElementNotFound('FirstStateNotFound');
-        $this->_assertExceptionShouldBeRaisedIfRequiredElementNotFound('FirstStateIsInvalid');
-        $this->_assertExceptionShouldBeRaisedIfRequiredElementNotFound('NameInLastStateNotFound');
-        $this->_assertExceptionShouldBeRaisedIfRequiredElementNotFound('NameInLastStateIsInvalid');
-        $this->_assertExceptionShouldBeRaisedIfRequiredElementNotFound('ViewInLastStateNotFound');
-        $this->_assertExceptionShouldBeRaisedIfRequiredElementNotFound('ViewInLastStateIsInvalid');
-
-        Piece_Flow_Error::popCallback();
-    }
-
     /**#@-*/
 
     /**#@+
@@ -280,12 +266,12 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
         $reader = &$this->_getConfigReader($this->_getSource($name));
         $config = &$reader->read();
 
-        $this->assertNull($config);
-        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
+        $this->assertNull($config, $name);
+        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'), $name);
 
         $error = Piece_Flow_Error::pop();
 
-        $this->assertEquals(PIECE_FLOW_ERROR_INVALID_FORMAT, $error['code']);
+        $this->assertEquals(PIECE_FLOW_ERROR_INVALID_FORMAT, $error['code'], $name);
     }
 
     /**#@-*/
