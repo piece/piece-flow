@@ -66,7 +66,6 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
      * @access private
      */
 
-    var $_config;
     var $_cacheDirectory;
 
     /**#@-*/
@@ -78,6 +77,23 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
     function setUp()
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'var_dump($error); return ' . PEAR_ERRORSTACK_DIE . ';'));
+        $this->_doSetUp();
+    }
+
+    function tearDown()
+    {
+        $cache = &new Cache_Lite_File(array('cacheDir' => "{$this->_cacheDirectory}/",
+                                            'masterFile' => '',
+                                            'automaticSerialization' => true,
+                                            'errorHandlingAPIBreak' => true)
+                                      );
+        $cache->clean();
+        Piece_Flow_Error::clearErrors();
+        Piece_Flow_Error::popCallback();
+    }
+
+    function testConfiguration()
+    {
         $name = 'Registration';
         $firstState = 'DisplayForm';
         $lastState = array('name' => 'Finish', 'view' => 'Finish',
@@ -154,101 +170,113 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
                               'nextState' => 'Finish'
                               );
 
-        $this->_config = new Piece_Flow_Config();
-        $this->_config->setName($name);
-        $this->_config->setFirstState($firstState);
-        $this->_config->setLastState($lastState['name'], $lastState['view']);
-        $this->_config->setEntryAction($lastState['name'], $lastState['entry']);
-        $this->_config->setExitAction($lastState['name'], $lastState['exit']);
-        $this->_config->setActivity($lastState['name'], $lastState['activity']);
-        $this->_config->setInitialAction($initial);
-        $this->_config->setFinalAction($final);
-        $this->_config->addViewState($viewState5['name'], $viewState5['view']);
-        $this->_config->setEntryAction($viewState5['name'], $viewState5['entry']);
-        $this->_config->setExitAction($viewState5['name'], $viewState5['exit']);
-        $this->_config->setActivity($viewState5['name'], $viewState5['activity']);
-        $this->_config->addViewState($viewState6['name'], $viewState6['view']);
-        $this->_config->addTransition($viewState5['name'],
-                                      $transition51['event'],
-                                      $transition51['nextState'],
-                                      $transition51['action'],
-                                      $transition51['guard']
-                                      );
-        $this->_config->addTransition($viewState6['name'],
-                                      $transition61['event'],
-                                      $transition61['nextState'],
-                                      $transition61['action']
-                                      );
-        $this->_config->addActionState($actionState1);
-        $this->_config->addTransition($actionState1,
-                                      $transition11['event'],
-                                      $transition11['nextState']
-                                      );
-        $this->_config->addTransition($actionState1,
-                                      $transition12['event'],
-                                      $transition12['nextState']
-                                      );
-        $this->_config->addActionState($actionState7);
-        $this->_config->addTransition($actionState7,
-                                      $transition71['event'],
-                                      $transition71['nextState']
-                                      );
-        $this->_config->addTransition($actionState7,
-                                      $transition72['event'],
-                                      $transition72['nextState'],
-                                      $transition72['action']
-                                      );
-        $this->_config->addActionState($actionState2);
-        $this->_config->addTransition($actionState2,
-                                      $transition21['event'],
-                                      $transition21['nextState']
-                                      );
-        $this->_config->addTransition($actionState2,
-                                      $transition22['event'],
-                                      $transition22['nextState']
-                                      );
+        $expectedConfig = new Piece_Flow_Config();
+        $expectedConfig->setName($name);
+        $expectedConfig->setFirstState($firstState);
+        $expectedConfig->setLastState($lastState['name'], $lastState['view']);
+        $expectedConfig->setEntryAction($lastState['name'], $lastState['entry']);
+        $expectedConfig->setExitAction($lastState['name'], $lastState['exit']);
+        $expectedConfig->setActivity($lastState['name'], $lastState['activity']);
+        $expectedConfig->setInitialAction($initial);
+        $expectedConfig->setFinalAction($final);
+        $expectedConfig->addViewState($viewState5['name'], $viewState5['view']);
+        $expectedConfig->setEntryAction($viewState5['name'], $viewState5['entry']);
+        $expectedConfig->setExitAction($viewState5['name'], $viewState5['exit']);
+        $expectedConfig->setActivity($viewState5['name'], $viewState5['activity']);
+        $expectedConfig->addViewState($viewState6['name'], $viewState6['view']);
+        $expectedConfig->addTransition($viewState5['name'],
+                                       $transition51['event'],
+                                       $transition51['nextState'],
+                                       $transition51['action'],
+                                       $transition51['guard']
+                                       );
+        $expectedConfig->addTransition($viewState6['name'],
+                                       $transition61['event'],
+                                       $transition61['nextState'],
+                                       $transition61['action']
+                                       );
+        $expectedConfig->addActionState($actionState1);
+        $expectedConfig->addTransition($actionState1,
+                                       $transition11['event'],
+                                       $transition11['nextState']
+                                       );
+        $expectedConfig->addTransition($actionState1,
+                                       $transition12['event'],
+                                       $transition12['nextState']
+                                       );
+        $expectedConfig->addActionState($actionState7);
+        $expectedConfig->addTransition($actionState7,
+                                       $transition71['event'],
+                                       $transition71['nextState']
+                                       );
+        $expectedConfig->addTransition($actionState7,
+                                       $transition72['event'],
+                                       $transition72['nextState'],
+                                       $transition72['action']
+                                       );
+        $expectedConfig->addActionState($actionState2);
+        $expectedConfig->addTransition($actionState2,
+                                       $transition21['event'],
+                                       $transition21['nextState']
+                                       );
+        $expectedConfig->addTransition($actionState2,
+                                       $transition22['event'],
+                                       $transition22['nextState']
+                                       );
 
-        $this->_doSetUp();
-    }
-
-    function tearDown()
-    {
-        $cache = &new Cache_Lite_File(array('cacheDir' => "{$this->_cacheDirectory}/",
-                                            'masterFile' => '',
-                                            'automaticSerialization' => true,
-                                            'errorHandlingAPIBreak' => true)
-                                      );
-        $cache->clean();
-        $this->_config = null;
-        Piece_Flow_Error::clearErrors();
-        Piece_Flow_Error::popCallback();
-    }
-
-    function testConfiguration()
-    {
         $reader = &$this->_getConfigReader($this->_getSource('Registration'));
-        $config = &$reader->read();
+        $actualConfig = &$reader->read();
 
-        $this->assertEquals(strtolower('Piece_Flow_Config'), strtolower(get_class($config)));
-        $this->assertEquals($this->_config->getName(), $config->getName());
-        $this->assertEquals($this->_config->getFirstState(),
-                            $config->getFirstState()
-                            );
-        $this->assertEquals($this->_config->getLastState(),
-                            $config->getLastState()
-                            );
-        $this->assertEquals($this->_config->getViewStates(),
-                            $config->getViewStates()
-                            );
-        $this->assertEquals($this->_config->getActionStates(),
-                            $config->getActionStates()
-                            );
-        $this->assertEquals($this->_config->getInitialAction(),
-                            $config->getInitialAction()
-                            );
-        $this->assertEquals($this->_config->getFinalAction(),
-                            $config->getFinalAction()
-                            );
+        $this->assertEquals(strtolower('Piece_Flow_Config'), strtolower(get_class($actualConfig)));
+        $this->assertEquals($expectedConfig->getName(), $actualConfig->getName());
+        $this->assertEquals($expectedConfig->getFirstState(), $actualConfig->getFirstState());
+        $this->assertEquals($expectedConfig->getLastState(), $actualConfig->getLastState());
+        $this->assertEquals($expectedConfig->getViewStates(), $actualConfig->getViewStates());
+        $this->assertEquals($expectedConfig->getActionStates(), $actualConfig->getActionStates());
+        $this->assertEquals($expectedConfig->getInitialAction(), $actualConfig->getInitialAction());
+        $this->assertEquals($expectedConfig->getFinalAction(), $actualConfig->getFinalAction());
+    }
+
+    function testExceptionShouldBeRaisedIfInvalidFormatIsDetected()
+    {
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('FirstStateNotFound');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('FirstStateIsInvalid');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('NameInLastStateNotFound');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('NameInLastStateIsInvalid');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ViewInLastStateNotFound');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ViewInLastStateIsInvalid');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInFinalActionNotFound');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInFinalActionIsInvalid');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ClassInFinalActionIsInvalid');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInInitialActionNotFound');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInInitialActionIsInvalid');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ClassInInitialActionIsInvalid');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ViewStateHasNoElements');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('NameInViewStateNotFound');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('NameInViewStateIsInvalid');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ViewInViewStateNotFound');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ViewInViewStateIsInvalid');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('NameInActionStateNotFound');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('NameInActionStateIsInvalid');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('EventInTransitionNotFound');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('EventInTransitionIsInvalid');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('nextStateInTransitionNotFound');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('nextStateInTransitionIsInvalid');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInActionNotFound');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInActionIsInvalid');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ClassInActionIsInvalid');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInGuardNotFound');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInGuardIsInvalid');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ClassInGuardIsInvalid');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInEntryNotFound');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInEntryIsInvalid');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ClassInEntryIsInvalid');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInExitNotFound');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInExitIsInvalid');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ClassInExitIsInvalid');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInActivityNotFound');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInActivityIsInvalid');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ClassInActivityIsInvalid');
     }
 
     /**#@-*/
@@ -261,8 +289,10 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
     function _doSetUp() {}
     function _getSource($name) {}
 
-    function _assertExceptionShouldBeRaisedIfRequiredElementNotFound($name)
+    function _assertExceptionShouldBeRaisedIfInvalidFormatIsDetected($name)
     {
+        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+
         $reader = &$this->_getConfigReader($this->_getSource($name));
         $config = &$reader->read();
 
@@ -272,6 +302,8 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
         $error = Piece_Flow_Error::pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_INVALID_FORMAT, $error['code'], $name);
+
+        Piece_Flow_Error::popCallback();
     }
 
     /**#@-*/
