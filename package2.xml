@@ -7,17 +7,19 @@
  <name>Piece_Flow</name>
  <channel>pear.piece-framework.com</channel>
  <summary>A web flow engine and a continuation server</summary>
- <description>Piece_Flow is a generic web flow engine and a continuation server based on Finite State Machine(FSM). Piece_Flow provides a stateful programming model for developers, and high security for applications.</description>
+ <description>Piece_Flow is a generic web flow engine and a continuation server based on Finite State Machine(FSM).
+
+Piece_Flow provides a stateful programming model for developers, and high security for applications.</description>
  <lead>
   <name>KUBO Atsuhiro</name>
   <user>iteman</user>
   <email>iteman@users.sourceforge.net</email>
   <active>yes</active>
  </lead>
- <date>2007-05-28</date>
- <time>11:33:13</time>
+ <date>2007-07-02</date>
+ <time>21:14:27</time>
  <version>
-  <release>1.9.0</release>
+  <release>1.10.0</release>
   <api>1.7.0</api>
  </version>
  <stability>
@@ -27,9 +29,9 @@
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License (revised)</license>
  <notes>A new release of Piece_Flow is now available.
 
-What&apos;s New in Piece_Flow 1.9.0
+What&apos;s New in Piece_Flow 1.10.0
 
- * Plain Old PHP Object Support: A user-defined class can be used as an action without subclassing Piece_Flow_Action.
+ * Runtime Validation of Flow Definition: A flow definition is validated when it is loaded.
 
 See the following release notes for details.
 
@@ -38,8 +40,8 @@ Enhancements
 
 Web Flow Engine:
 
-- Added a feature so that a user-defined class can be used as an action without subclassing Piece_Flow_Action. (Ticket #18)
-- Updated invoke() and invokeAndTriggerEvent() so as to throw an exception if the method that will be called does not exist in an action class. (Ticket #20)</notes>
+- Added validation of flow definition. (Ticket #23)
+- Many minor improvements.</notes>
  <contents>
   <dir baseinstalldir="/" name="/">
    <dir name="data">
@@ -47,12 +49,6 @@ Web Flow Engine:
      <tasks:replace from="@package_version@" to="version" type="package-info" />
     </file>
     <file name="piece-flow.yaml" role="data">
-     <tasks:replace from="@package_version@" to="version" type="package-info" />
-    </file>
-    <file name="Registration.xml" role="data">
-     <tasks:replace from="@package_version@" to="version" type="package-info" />
-    </file>
-    <file name="Registration.yaml" role="data">
      <tasks:replace from="@package_version@" to="version" type="package-info" />
     </file>
    </dir> <!-- /data -->
@@ -88,7 +84,13 @@ Web Flow Engine:
      <file name="Action.php" role="php">
       <tasks:replace from="@package_version@" to="version" type="package-info" />
      </file>
+     <file name="ClassLoader.php" role="php">
+      <tasks:replace from="@package_version@" to="version" type="package-info" />
+     </file>
      <file name="Config.php" role="php">
+      <tasks:replace from="@package_version@" to="version" type="package-info" />
+     </file>
+     <file name="ConfigReader.php" role="php">
       <tasks:replace from="@package_version@" to="version" type="package-info" />
      </file>
      <file name="Continuation.php" role="php">
@@ -136,19 +138,265 @@ Web Flow Engine:
        </file>
       </dir> <!-- /tests/Piece/Flow/actions -->
       <dir name="ConfigReader">
-       <file name="Baz.php" role="test">
-        <tasks:replace from="@package_version@" to="version" type="package-info" />
-       </file>
-       <file name="broken.xml" role="test">
-        <tasks:replace from="@package_version@" to="version" type="package-info" />
-       </file>
+       <dir name="FactoryTestCase">
+        <dir name="Piece">
+         <dir name="Flow">
+          <dir name="ConfigReader">
+           <file name="Baz.php" role="test">
+            <tasks:replace from="@package_version@" to="version" type="package-info" />
+           </file>
+          </dir> <!-- /tests/Piece/Flow/ConfigReader/FactoryTestCase/Piece/Flow/ConfigReader -->
+         </dir> <!-- /tests/Piece/Flow/ConfigReader/FactoryTestCase/Piece/Flow -->
+        </dir> <!-- /tests/Piece/Flow/ConfigReader/FactoryTestCase/Piece -->
+       </dir> <!-- /tests/Piece/Flow/ConfigReader/FactoryTestCase -->
+       <dir name="XMLTestCase">
+        <file name="broken.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="ClassInActionIsInvalid.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="ClassInActivityIsInvalid.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="ClassInEntryIsInvalid.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="ClassInExitIsInvalid.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="ClassInFinalActionIsInvalid.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="ClassInGuardIsInvalid.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="ClassInInitialActionIsInvalid.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="EventInTransitionIsInvalid.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="EventInTransitionNotFound.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="FirstStateIsInvalid.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="FirstStateNotFound.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="invalid.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="MethodInActionIsInvalid.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="MethodInActionNotFound.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="MethodInActivityIsInvalid.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="MethodInActivityNotFound.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="MethodInEntryIsInvalid.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="MethodInEntryNotFound.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="MethodInExitIsInvalid.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="MethodInExitNotFound.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="MethodInFinalActionIsInvalid.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="MethodInFinalActionNotFound.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="MethodInGuardIsInvalid.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="MethodInGuardNotFound.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="MethodInInitialActionIsInvalid.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="MethodInInitialActionNotFound.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="NameInActionStateIsInvalid.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="NameInActionStateNotFound.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="NameInLastStateIsInvalid.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="NameInLastStateNotFound.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="NameInViewStateIsInvalid.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="NameInViewStateNotFound.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="NextStateInTransitionIsInvalid.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="NextStateInTransitionNotFound.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="Registration.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="ViewInLastStateIsInvalid.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="ViewInLastStateNotFound.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="ViewInViewStateIsInvalid.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="ViewInViewStateNotFound.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="ViewStateHasNoElements.xml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+       </dir> <!-- /tests/Piece/Flow/ConfigReader/XMLTestCase -->
+       <dir name="YAMLTestCase">
+        <file name="ClassInActionIsInvalid.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="ClassInActivityIsInvalid.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="ClassInEntryIsInvalid.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="ClassInExitIsInvalid.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="ClassInFinalActionIsInvalid.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="ClassInGuardIsInvalid.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="ClassInInitialActionIsInvalid.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="EventInTransitionIsInvalid.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="EventInTransitionNotFound.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="FirstStateIsInvalid.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="FirstStateNotFound.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="MethodInActionIsInvalid.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="MethodInActionNotFound.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="MethodInActivityIsInvalid.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="MethodInActivityNotFound.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="MethodInEntryIsInvalid.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="MethodInEntryNotFound.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="MethodInExitIsInvalid.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="MethodInExitNotFound.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="MethodInFinalActionIsInvalid.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="MethodInFinalActionNotFound.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="MethodInGuardIsInvalid.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="MethodInGuardNotFound.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="MethodInInitialActionIsInvalid.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="MethodInInitialActionNotFound.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="NameInActionStateIsInvalid.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="NameInActionStateNotFound.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="NameInLastStateIsInvalid.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="NameInLastStateNotFound.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="NameInViewStateIsInvalid.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="NameInViewStateNotFound.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="NextStateInTransitionIsInvalid.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="NextStateInTransitionNotFound.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="Registration.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="ViewInLastStateIsInvalid.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="ViewInLastStateNotFound.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="ViewInViewStateIsInvalid.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="ViewInViewStateNotFound.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="ViewStateHasNoElements.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+       </dir> <!-- /tests/Piece/Flow/ConfigReader/YAMLTestCase -->
        <file name="CompatibilityTest.php" role="test">
         <tasks:replace from="@package_version@" to="version" type="package-info" />
        </file>
        <file name="FactoryTestCase.php" role="test">
-        <tasks:replace from="@package_version@" to="version" type="package-info" />
-       </file>
-       <file name="invalid.xml" role="test">
         <tasks:replace from="@package_version@" to="version" type="package-info" />
        </file>
        <file name="TestRunner.php" role="test">
@@ -192,9 +440,6 @@ Web Flow Engine:
       <file name="EventHandlerTestCase.php" role="test">
        <tasks:replace from="@package_version@" to="version" type="package-info" />
       </file>
-      <file name="FooAction.php" role="test">
-       <tasks:replace from="@package_version@" to="version" type="package-info" />
-      </file>
       <file name="SecondCounter.yaml" role="test">
        <tasks:replace from="@package_version@" to="version" type="package-info" />
       </file>
@@ -219,6 +464,11 @@ Web Flow Engine:
        <tasks:replace from="@package_version@" to="version" type="package-info" />
       </file>
      </dir> <!-- /tests/Piece/flows -->
+     <dir name="FlowTestCase">
+      <file name="Registration.yaml" role="test">
+       <tasks:replace from="@package_version@" to="version" type="package-info" />
+      </file>
+     </dir> <!-- /tests/Piece/FlowTestCase -->
      <file name="CDPlayer.yaml" role="test">
       <tasks:replace from="@package_version@" to="version" type="package-info" />
      </file>
@@ -311,6 +561,33 @@ Web Flow Engine:
  </dependencies>
  <phprelease />
  <changelog>
+  <release>
+   <version>
+    <release>1.10.0</release>
+    <api>1.7.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2007-07-02</date>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License (revised)</license>
+   <notes>A new release of Piece_Flow is now available.
+
+What&apos;s New in Piece_Flow 1.10.0
+
+ * Runtime Validation of Flow Definition: A flow definition is validated when it is loaded.
+
+See the following release notes for details.
+
+Enhancements
+============ 
+
+Web Flow Engine:
+
+- Added validation of flow definition. (Ticket #23)
+- Many minor improvements.</notes>
+  </release>
   <release>
    <version>
     <release>1.9.0</release>

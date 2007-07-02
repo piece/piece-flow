@@ -4,7 +4,9 @@
 <package version="1.0" packagerversion="1.5.4">
  <name>Piece_Flow</name>
  <summary>A web flow engine and a continuation server</summary>
- <description>Piece_Flow is a generic web flow engine and a continuation server based on Finite State Machine(FSM). Piece_Flow provides a stateful programming model for developers, and high security for applications.
+ <description>Piece_Flow is a generic web flow engine and a continuation server based on Finite State Machine(FSM).
+
+Piece_Flow provides a stateful programming model for developers, and high security for applications.
  </description>
  <maintainers>
   <maintainer>
@@ -15,15 +17,15 @@
   </maintainer>
   </maintainers>
  <release>
-  <version>1.9.0</version>
-  <date>2007-05-28</date>
+  <version>1.10.0</version>
+  <date>2007-07-02</date>
   <license>BSD License (revised)</license>
   <state>stable</state>
   <notes>A new release of Piece_Flow is now available.
 
-What&apos;s New in Piece_Flow 1.9.0
+What&apos;s New in Piece_Flow 1.10.0
 
- * Plain Old PHP Object Support: A user-defined class can be used as an action without subclassing Piece_Flow_Action.
+ * Runtime Validation of Flow Definition: A flow definition is validated when it is loaded.
 
 See the following release notes for details.
 
@@ -32,8 +34,8 @@ Enhancements
 
 Web Flow Engine:
 
-- Added a feature so that a user-defined class can be used as an action without subclassing Piece_Flow_Action. (Ticket #18)
-- Updated invoke() and invokeAndTriggerEvent() so as to throw an exception if the method that will be called does not exist in an action class. (Ticket #20)
+- Added validation of flow definition. (Ticket #23)
+- Many minor improvements.
   </notes>
   <deps>
    <dep type="php" rel="ge" version="4.3.0" optional="no"/>
@@ -49,12 +51,6 @@ Web Flow Engine:
       <replace from="@package_version@" to="version" type="package-info"/>
      </file>
      <file role="data" name="piece-flow.yaml">
-      <replace from="@package_version@" to="version" type="package-info"/>
-     </file>
-     <file role="data" name="Registration.xml">
-      <replace from="@package_version@" to="version" type="package-info"/>
-     </file>
-     <file role="data" name="Registration.yaml">
       <replace from="@package_version@" to="version" type="package-info"/>
      </file>
     </dir> <!-- /data -->
@@ -90,7 +86,13 @@ Web Flow Engine:
       <file role="php" name="Action.php">
        <replace from="@package_version@" to="version" type="package-info"/>
       </file>
+      <file role="php" name="ClassLoader.php">
+       <replace from="@package_version@" to="version" type="package-info"/>
+      </file>
       <file role="php" name="Config.php">
+       <replace from="@package_version@" to="version" type="package-info"/>
+      </file>
+      <file role="php" name="ConfigReader.php">
        <replace from="@package_version@" to="version" type="package-info"/>
       </file>
       <file role="php" name="Continuation.php">
@@ -138,19 +140,265 @@ Web Flow Engine:
         </file>
        </dir> <!-- /tests/Piece/Flow/actions -->
        <dir name="ConfigReader">
-        <file role="test" name="Baz.php">
-         <replace from="@package_version@" to="version" type="package-info"/>
-        </file>
-        <file role="test" name="broken.xml">
-         <replace from="@package_version@" to="version" type="package-info"/>
-        </file>
+        <dir name="FactoryTestCase">
+         <dir name="Piece">
+          <dir name="Flow">
+           <dir name="ConfigReader">
+            <file role="test" name="Baz.php">
+             <replace from="@package_version@" to="version" type="package-info"/>
+            </file>
+           </dir> <!-- /tests/Piece/Flow/ConfigReader/FactoryTestCase/Piece/Flow/ConfigReader -->
+          </dir> <!-- /tests/Piece/Flow/ConfigReader/FactoryTestCase/Piece/Flow -->
+         </dir> <!-- /tests/Piece/Flow/ConfigReader/FactoryTestCase/Piece -->
+        </dir> <!-- /tests/Piece/Flow/ConfigReader/FactoryTestCase -->
+        <dir name="XMLTestCase">
+         <file role="test" name="broken.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="ClassInActionIsInvalid.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="ClassInActivityIsInvalid.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="ClassInEntryIsInvalid.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="ClassInExitIsInvalid.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="ClassInFinalActionIsInvalid.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="ClassInGuardIsInvalid.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="ClassInInitialActionIsInvalid.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="EventInTransitionIsInvalid.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="EventInTransitionNotFound.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="FirstStateIsInvalid.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="FirstStateNotFound.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="invalid.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="MethodInActionIsInvalid.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="MethodInActionNotFound.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="MethodInActivityIsInvalid.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="MethodInActivityNotFound.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="MethodInEntryIsInvalid.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="MethodInEntryNotFound.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="MethodInExitIsInvalid.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="MethodInExitNotFound.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="MethodInFinalActionIsInvalid.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="MethodInFinalActionNotFound.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="MethodInGuardIsInvalid.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="MethodInGuardNotFound.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="MethodInInitialActionIsInvalid.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="MethodInInitialActionNotFound.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="NameInActionStateIsInvalid.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="NameInActionStateNotFound.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="NameInLastStateIsInvalid.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="NameInLastStateNotFound.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="NameInViewStateIsInvalid.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="NameInViewStateNotFound.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="NextStateInTransitionIsInvalid.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="NextStateInTransitionNotFound.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="Registration.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="ViewInLastStateIsInvalid.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="ViewInLastStateNotFound.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="ViewInViewStateIsInvalid.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="ViewInViewStateNotFound.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="ViewStateHasNoElements.xml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+        </dir> <!-- /tests/Piece/Flow/ConfigReader/XMLTestCase -->
+        <dir name="YAMLTestCase">
+         <file role="test" name="ClassInActionIsInvalid.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="ClassInActivityIsInvalid.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="ClassInEntryIsInvalid.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="ClassInExitIsInvalid.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="ClassInFinalActionIsInvalid.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="ClassInGuardIsInvalid.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="ClassInInitialActionIsInvalid.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="EventInTransitionIsInvalid.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="EventInTransitionNotFound.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="FirstStateIsInvalid.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="FirstStateNotFound.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="MethodInActionIsInvalid.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="MethodInActionNotFound.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="MethodInActivityIsInvalid.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="MethodInActivityNotFound.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="MethodInEntryIsInvalid.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="MethodInEntryNotFound.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="MethodInExitIsInvalid.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="MethodInExitNotFound.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="MethodInFinalActionIsInvalid.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="MethodInFinalActionNotFound.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="MethodInGuardIsInvalid.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="MethodInGuardNotFound.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="MethodInInitialActionIsInvalid.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="MethodInInitialActionNotFound.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="NameInActionStateIsInvalid.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="NameInActionStateNotFound.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="NameInLastStateIsInvalid.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="NameInLastStateNotFound.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="NameInViewStateIsInvalid.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="NameInViewStateNotFound.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="NextStateInTransitionIsInvalid.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="NextStateInTransitionNotFound.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="Registration.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="ViewInLastStateIsInvalid.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="ViewInLastStateNotFound.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="ViewInViewStateIsInvalid.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="ViewInViewStateNotFound.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+         <file role="test" name="ViewStateHasNoElements.yaml">
+          <replace from="@package_version@" to="version" type="package-info"/>
+         </file>
+        </dir> <!-- /tests/Piece/Flow/ConfigReader/YAMLTestCase -->
         <file role="test" name="CompatibilityTest.php">
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
         <file role="test" name="FactoryTestCase.php">
-         <replace from="@package_version@" to="version" type="package-info"/>
-        </file>
-        <file role="test" name="invalid.xml">
          <replace from="@package_version@" to="version" type="package-info"/>
         </file>
         <file role="test" name="TestRunner.php">
@@ -194,9 +442,6 @@ Web Flow Engine:
        <file role="test" name="EventHandlerTestCase.php">
         <replace from="@package_version@" to="version" type="package-info"/>
        </file>
-       <file role="test" name="FooAction.php">
-        <replace from="@package_version@" to="version" type="package-info"/>
-       </file>
        <file role="test" name="SecondCounter.yaml">
         <replace from="@package_version@" to="version" type="package-info"/>
        </file>
@@ -221,6 +466,11 @@ Web Flow Engine:
         <replace from="@package_version@" to="version" type="package-info"/>
        </file>
       </dir> <!-- /tests/Piece/flows -->
+      <dir name="FlowTestCase">
+       <file role="test" name="Registration.yaml">
+        <replace from="@package_version@" to="version" type="package-info"/>
+       </file>
+      </dir> <!-- /tests/Piece/FlowTestCase -->
       <file role="test" name="CDPlayer.yaml">
        <replace from="@package_version@" to="version" type="package-info"/>
       </file>
@@ -281,6 +531,28 @@ Web Flow Engine:
   </filelist>
  </release>
  <changelog>
+   <release>
+    <version>1.10.0</version>
+    <date>2007-07-02</date>
+    <license>BSD License (revised)</license>
+    <state>stable</state>
+    <notes>A new release of Piece_Flow is now available.
+
+What&apos;s New in Piece_Flow 1.10.0
+
+ * Runtime Validation of Flow Definition: A flow definition is validated when it is loaded.
+
+See the following release notes for details.
+
+Enhancements
+============ 
+
+Web Flow Engine:
+
+- Added validation of flow definition. (Ticket #23)
+- Many minor improvements.
+    </notes>
+   </release>
    <release>
     <version>1.9.0</version>
     <date>2007-05-28</date>

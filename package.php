@@ -40,15 +40,15 @@ require_once 'PEAR/PackageFileManager2.php';
 
 PEAR::staticPushErrorHandling(PEAR_ERROR_CALLBACK, create_function('$error', 'var_dump($error); exit();'));
 
-$releaseVersion = '1.9.0';
+$releaseVersion = '1.10.0';
 $apiVersion = '1.7.0';
 $apiStability = 'stable';
 $releaseStability = 'stable';
 $notes = 'A new release of Piece_Flow is now available.
 
-What\'s New in Piece_Flow 1.9.0
+What\'s New in Piece_Flow 1.10.0
 
- * Plain Old PHP Object Support: A user-defined class can be used as an action without subclassing Piece_Flow_Action.
+ * Runtime Validation of Flow Definition: A flow definition is validated when it is loaded.
 
 See the following release notes for details.
 
@@ -57,8 +57,8 @@ Enhancements
 
 Web Flow Engine:
 
-- Added a feature so that a user-defined class can be used as an action without subclassing Piece_Flow_Action. (Ticket #18)
-- Updated invoke() and invokeAndTriggerEvent() so as to throw an exception if the method that will be called does not exist in an action class. (Ticket #20)';
+- Added validation of flow definition. (Ticket #23)
+- Many minor improvements.';
 
 $package = new PEAR_PackageFileManager2();
 $package->setOptions(array('filelistgenerator' => 'svn',
