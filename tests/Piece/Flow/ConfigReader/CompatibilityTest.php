@@ -237,6 +237,9 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
         $this->assertEquals($expectedConfig->getFinalAction(), $actualConfig->getFinalAction());
     }
 
+    /**
+     * @since Method available since Release 1.10.0
+     */
     function testExceptionShouldBeRaisedIfInvalidFormatIsDetected()
     {
         $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('FirstStateNotFound');
