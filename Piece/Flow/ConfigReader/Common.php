@@ -649,6 +649,7 @@ class Piece_Flow_ConfigReader_Common
      *
      * @param array $firstState
      * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
+     * @since Method available since Release 1.10.0
      */
     function _configureFirstState($firstState)
     {
@@ -677,6 +678,7 @@ class Piece_Flow_ConfigReader_Common
      *
      * @param array $lastState
      * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
+     * @since Method available since Release 1.10.0
      */
     function _configureLastState($lastState)
     {
@@ -724,6 +726,7 @@ class Piece_Flow_ConfigReader_Common
      *
      * @param array $initialAction
      * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
+     * @since Method available since Release 1.10.0
      */
     function _configureInitialAction($initialAction)
     {
@@ -772,6 +775,7 @@ class Piece_Flow_ConfigReader_Common
      *
      * @param array $finalAction
      * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
+     * @since Method available since Release 1.10.0
      */
     function _configureFinalAction($finalAction)
     {
