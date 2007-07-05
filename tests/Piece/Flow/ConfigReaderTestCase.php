@@ -39,10 +39,10 @@ require_once 'PHPUnit.php';
 require_once 'Piece/Flow/ConfigReader.php';
 require_once 'Piece/Flow/Error.php';
 
-// {{{ Piece_Flow_ConfigReader_FactoryTestCase
+// {{{ Piece_Flow_ConfigReaderTestCase
 
 /**
- * TestCase for Piece_Flow_ConfigReader_Factory
+ * TestCase for Piece_Flow_ConfigReader
  *
  * @package    Piece_Flow
  * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
@@ -50,7 +50,7 @@ require_once 'Piece/Flow/Error.php';
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
  */
-class Piece_Flow_ConfigReader_FactoryTestCase extends PHPUnit_TestCase
+class Piece_Flow_ConfigReaderTestCase extends PHPUnit_TestCase
 {
 
     // {{{ properties
