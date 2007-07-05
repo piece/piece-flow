@@ -35,8 +35,8 @@
  * @since      File available since Release 1.10.0
  */
 
-require_once 'Piece/Flow/ConfigReader/Factory.php';
 require_once 'Piece/Flow/Error.php';
+require_once 'Piece/Flow/ClassLoader.php';
 
 // {{{ Piece_Flow_ConfigReader
 
@@ -84,14 +84,41 @@ class Piece_Flow_ConfigReader
      * @throws PIECE_FLOW_ERROR_NOT_FOUND
      * @throws PIECE_FLOW_ERROR_NOT_READABLE
      * @throws PIECE_FLOW_ERROR_CANNOT_READ
+     * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
+     * @static
      */
     function &read($source, $driverName, $cacheDirectory)
     {
-        $driver = &Piece_Flow_ConfigReader_Factory::factory($source, $driverName, $cacheDirectory);
-        if (Piece_Flow_Error::hasErrors('exception')) {
-            return;
+        if (is_null($driverName)) {
+            $driverName = strtoupper(substr(strrchr($source, '.'), 1));
         }
 
+        if ($driverName == 'XML') {
+            if (version_compare(phpversion(), '5.0.0', '>=')) {
+                $driverName = 'XML5';
+            } else {
+                $driverName = 'XML4';
+            }
+        }
+
+        $class = "Piece_Flow_ConfigReader_$driverName";
+        if (!Piece_Flow_ClassLoader::loaded($class)) {
+            Piece_Flow_ClassLoader::load($class);
+            if (Piece_Flow_Error::hasErrors('exception')) {
+                $return = null;
+                return $return;
+            }
+
+            if (!Piece_Flow_ClassLoader::loaded($class)) {
+                Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
+                                       "The class [ $class ] not found in the loaded file."
+                                       );
+                $return = null;
+                return $return;
+            }
+        }
+
+        $driver = &new $class($source, $cacheDirectory);
         return $driver->read();
     }
 

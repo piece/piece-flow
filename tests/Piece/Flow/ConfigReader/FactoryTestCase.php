@@ -36,7 +36,7 @@
  */
 
 require_once 'PHPUnit.php';
-require_once 'Piece/Flow/ConfigReader/Factory.php';
+require_once 'Piece/Flow/ConfigReader.php';
 require_once 'Piece/Flow/Error.php';
 
 // {{{ Piece_Flow_ConfigReader_FactoryTestCase
@@ -65,6 +65,8 @@ class Piece_Flow_ConfigReader_FactoryTestCase extends PHPUnit_TestCase
      * @access private
      */
 
+    var $_cacheDirectory;
+
     /**#@-*/
 
     /**#@+
@@ -74,6 +76,7 @@ class Piece_Flow_ConfigReader_FactoryTestCase extends PHPUnit_TestCase
     function setUp()
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'var_dump($error); return ' . PEAR_ERRORSTACK_DIE . ';'));
+        $this->_cacheDirectory = dirname(__FILE__) . '/' . basename(__FILE__, '.php');
     }
 
     function tearDown()
@@ -84,29 +87,20 @@ class Piece_Flow_ConfigReader_FactoryTestCase extends PHPUnit_TestCase
 
     function testGuessingFromFileExtension()
     {
-        $this->assertEquals(strtolower('Piece_Flow_ConfigReader_YAML'),
-                            strtolower(get_class(Piece_Flow_ConfigReader_Factory::factory('foo.yaml', null, null)))
-                            );
-        $this->assertEquals(strtolower(version_compare(phpversion(), '5.0.0', '>=') ? 'Piece_Flow_ConfigReader_XML5' : 'Piece_Flow_ConfigReader_XML4'),
-                            strtolower(get_class(Piece_Flow_ConfigReader_Factory::factory('foo.xml', null, null)))
-                            );
+        $this->assertEquals(strtolower('Piece_Flow_Config'), strtolower(get_class(Piece_Flow_ConfigReader::read("{$this->_cacheDirectory}/foo.yaml", null, null))));
+        $this->assertEquals(strtolower('Piece_Flow_Config'), strtolower(get_class(Piece_Flow_ConfigReader::read("{$this->_cacheDirectory}/foo.xml", null, null))));
     }
 
     function testSpecifyingDriverType()
     {
-        $this->assertEquals(strtolower('Piece_Flow_ConfigReader_YAML'),
-                            strtolower(get_class(Piece_Flow_ConfigReader_Factory::factory('foo', 'YAML', null)))
-                            );
-        $this->assertEquals(strtolower(version_compare(phpversion(), '5.0.0', '>=') ? 'Piece_Flow_ConfigReader_XML5' : 'Piece_Flow_ConfigReader_XML4'),
-                            strtolower(get_class(Piece_Flow_ConfigReader_Factory::factory('foo', 'XML', null)))
-                            );
+        $this->assertEquals(strtolower('Piece_Flow_Config'), strtolower(get_class(Piece_Flow_ConfigReader::read("{$this->_cacheDirectory}/foo.yaml", 'YAML', null))));
+        $this->assertEquals(strtolower('Piece_Flow_Config'), strtolower(get_class(Piece_Flow_ConfigReader::read("{$this->_cacheDirectory}/foo.xml", 'XML', null))));
     }
 
     function testNonExistingDriver()
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
-
-        @Piece_Flow_ConfigReader_Factory::factory('foo.bar', null, null);
+        @Piece_Flow_ConfigReader::read("{$this->_cacheDirectory}/foo.bar", null, null);
 
         $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
 
@@ -120,10 +114,8 @@ class Piece_Flow_ConfigReader_FactoryTestCase extends PHPUnit_TestCase
     function testInvalidDriver()
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
-
         $oldIncludePath = set_include_path(dirname(__FILE__) . '/' . basename(__FILE__, '.php'));
-
-        Piece_Flow_ConfigReader_Factory::factory('foo.bar', 'Baz', null);
+        Piece_Flow_ConfigReader::read('foo.bar', 'Baz', null);
 
         $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
 
