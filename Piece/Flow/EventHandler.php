@@ -133,12 +133,16 @@ class Piece_Flow_EventHandler
     function invokeAndTriggerEvent(&$fsm, &$event, &$payload)
     {
         $result = $this->_invokeEventHandler($event->getName(), $payload);
+        if (Piece_Flow_Error::hasErrors('exception')) {
+            return;
+        }
+
         if (!is_null($result)) {
             if ($fsm->hasEvent($result)) {
                 $fsm->queueEvent($result);
             } else {
                 Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_EVENT,
-                                       "An invalid event [ $result ] is returned from [ {$this->_class}::{$this->_method}() ] method. Check the flow definition and the action class.",
+                                       "An invalid event [ $result ] is returned from [ {$this->_class}::{$this->_method}() ] method on the state [ " . $this->_flow->getCurrentStateName() . ' ]. Check the flow definition and the action class.',
                                        'exception',
                                        array('event' => $result,
                                              'class' => $this->_class,
