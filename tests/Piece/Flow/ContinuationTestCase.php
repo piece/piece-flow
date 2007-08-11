@@ -771,6 +771,104 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         Piece_Flow_Action_Factory::clearInstances();
     }
 
+    /**
+     * @since Method available since Release 1.11.0
+     */
+    function testFlowExecutionExpiredExceptionShouldBeRaisedWhenFlowExecutionHasExpired()
+    {
+        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+        $cacheDirectory = dirname(__FILE__) . '/' . basename(__FILE__, '.php');
+        $flowName = 'FlowExecutionExpired';
+        $GLOBALS['flowName'] = $flowName;
+        $continuation = &new Piece_Flow_Continuation(false, true, 1);
+        $continuation->setCacheDirectory(dirname(__FILE__));
+        $continuation->addFlow($flowName, "$cacheDirectory/flows/$flowName.yaml");
+        $continuation->setEventNameCallback(array(__CLASS__, 'getEventName'));
+        $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
+        $continuation->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
+        $GLOBALS['flowExecutionTicket'] = $continuation->invoke(new stdClass());
+        $continuation->shutdown();
+        sleep(2);
+        $continuation->invoke(new stdClass());
+
+        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
+
+        $error = Piece_Flow_Error::pop();
+
+        $this->assertEquals(PIECE_FLOW_ERROR_FLOW_EXECUTION_EXPIRED, $error['code']);
+
+        Piece_Flow_Error::popCallback();
+    }
+
+    /**
+     * @since Method available since Release 1.11.0
+     */
+    function testFlowExecutionExpiredExceptionShouldNotBeRaisedWhenFlowExecutionHasNotExpired()
+    {
+        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+        $cacheDirectory = dirname(__FILE__) . '/' . basename(__FILE__, '.php');
+        $flowName = 'FlowExecutionExpired';
+        $GLOBALS['flowName'] = $flowName;
+        $continuation = &new Piece_Flow_Continuation(false, true, 2);
+        $continuation->setCacheDirectory(dirname(__FILE__));
+        $continuation->addFlow($flowName, "$cacheDirectory/flows/$flowName.yaml");
+        $continuation->setEventNameCallback(array(__CLASS__, 'getEventName'));
+        $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
+        $continuation->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
+        $GLOBALS['flowExecutionTicket'] = $continuation->invoke(new stdClass());
+        $continuation->shutdown();
+        sleep(1);
+        $continuation->invoke(new stdClass());
+
+        $this->assertFalse(Piece_Flow_Error::hasErrors('exception'));
+
+        sleep(1);
+        $continuation->invoke(new stdClass());
+
+        $this->assertFalse(Piece_Flow_Error::hasErrors('exception'));
+
+        sleep(1);
+        $continuation->invoke(new stdClass());
+
+        $this->assertFalse(Piece_Flow_Error::hasErrors('exception'));
+
+        Piece_Flow_Error::popCallback();
+    }
+
+    /**
+     * @since Method available since Release 1.11.0
+     */
+    function testNewFlowExecutionShouldBeAbleToStartWithSameRequestAfterFlowExecutionIsExpired()
+    {
+        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+        $cacheDirectory = dirname(__FILE__) . '/' . basename(__FILE__, '.php');
+        $flowName = 'FlowExecutionExpired';
+        $GLOBALS['flowName'] = $flowName;
+        $continuation = &new Piece_Flow_Continuation(false, true, 1);
+        $continuation->setCacheDirectory(dirname(__FILE__));
+        $continuation->addFlow($flowName, "$cacheDirectory/flows/$flowName.yaml");
+        $continuation->setEventNameCallback(array(__CLASS__, 'getEventName'));
+        $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
+        $continuation->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
+        $GLOBALS['flowExecutionTicket'] = $continuation->invoke(new stdClass());
+        $continuation->shutdown();
+        sleep(2);
+        $continuation->invoke(new stdClass());
+
+        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
+
+        $error = Piece_Flow_Error::pop();
+
+        $this->assertEquals(PIECE_FLOW_ERROR_FLOW_EXECUTION_EXPIRED, $error['code']);
+
+        $newFlowExecutionTicket = $continuation->invoke(new stdClass());
+
+        $this->assertFalse(Piece_Flow_Error::hasErrors('exception'));
+        $this->assertTrue($newFlowExecutionTicket != $GLOBALS['flowExecutionTicket']);
+
+        Piece_Flow_Error::popCallback();
+    }
+
     /**#@-*/
 
     /**#@+

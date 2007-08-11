@@ -42,21 +42,22 @@ require_once 'PEAR/ErrorStack.php';
 /*
  * Error codes
  */
-define('PIECE_FLOW_ERROR_NOT_FOUND',            -1);
-define('PIECE_FLOW_ERROR_INVALID_FORMAT',       -2);
-define('PIECE_FLOW_ERROR_NOT_READABLE',         -4);
-define('PIECE_FLOW_ERROR_CANNOT_READ',          -5);
-define('PIECE_FLOW_ERROR_CANNOT_WRITE',         -6);
-define('PIECE_FLOW_ERROR_ALREADY_EXISTS',       -7);
-define('PIECE_FLOW_ERROR_NOT_GIVEN',            -8);
-define('PIECE_FLOW_ERROR_INVALID_OPERATION',    -9);
-define('PIECE_FLOW_ERROR_INVALID_TRANSITION',  -10);
-define('PIECE_FLOW_ERROR_FLOW_NAME_NOT_GIVEN', -11);
-define('PIECE_FLOW_ERROR_CANNOT_INVOKE',       -12);
-define('PIECE_FLOW_ERROR_PROTECTED_EVENT',     -13);
-define('PIECE_FLOW_ERROR_PROTECTED_STATE',     -14);
-define('PIECE_FLOW_ERROR_ALREADY_SHUTDOWN',    -15);
-define('PIECE_FLOW_ERROR_INVALID_EVENT',       -16);
+define('PIECE_FLOW_ERROR_NOT_FOUND',               -1);
+define('PIECE_FLOW_ERROR_INVALID_FORMAT',          -2);
+define('PIECE_FLOW_ERROR_NOT_READABLE',            -4);
+define('PIECE_FLOW_ERROR_CANNOT_READ',             -5);
+define('PIECE_FLOW_ERROR_CANNOT_WRITE',            -6);
+define('PIECE_FLOW_ERROR_ALREADY_EXISTS',          -7);
+define('PIECE_FLOW_ERROR_NOT_GIVEN',               -8);
+define('PIECE_FLOW_ERROR_INVALID_OPERATION',       -9);
+define('PIECE_FLOW_ERROR_INVALID_TRANSITION',     -10);
+define('PIECE_FLOW_ERROR_FLOW_NAME_NOT_GIVEN',    -11);
+define('PIECE_FLOW_ERROR_CANNOT_INVOKE',          -12);
+define('PIECE_FLOW_ERROR_PROTECTED_EVENT',        -13);
+define('PIECE_FLOW_ERROR_PROTECTED_STATE',        -14);
+define('PIECE_FLOW_ERROR_ALREADY_SHUTDOWN',       -15);
+define('PIECE_FLOW_ERROR_INVALID_EVENT',          -16);
+define('PIECE_FLOW_ERROR_FLOW_EXECUTION_EXPIRED', -17);
 
 // }}}
 // {{{ Piece_Flow_Error

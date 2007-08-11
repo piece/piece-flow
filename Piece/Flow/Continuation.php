@@ -38,6 +38,7 @@
 require_once 'Piece/Flow.php';
 require_once 'Piece/Flow/Error.php';
 require_once 'Piece/Flow/Action/Factory.php';
+require_once 'Piece/Flow/Continuation/GC.php';
 
 // {{{ GLOBALS
 
@@ -53,7 +54,7 @@ $GLOBALS['PIECE_FLOW_Continuation_ShutdownRegistered'] = false;
  * @package    Piece_Flow
  * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
- * @version    Release: @package_version@
+ * @version    Release: 1.11.0
  * @since      Class available since Release 1.0.0
  */
 class Piece_Flow_Continuation
@@ -84,6 +85,7 @@ class Piece_Flow_Continuation
     var $_currentFlowExecutionTicket;
     var $_activated = false;
     var $_exclusiveFlowNamesByFlowExecutionTicket = array();
+    var $_gc;
 
     /**#@-*/
 
@@ -99,10 +101,15 @@ class Piece_Flow_Continuation
      * mode.
      *
      * @param boolean $enableSingleFlowMode
+     * @param integer $enableGC
+     * @param integer $gcExpirationTime
      */
-    function Piece_Flow_Continuation($enableSingleFlowMode = false)
+    function Piece_Flow_Continuation($enableSingleFlowMode = false, $enableGC = false, $gcExpirationTime = 1440)
     {
         $this->_enableSingleFlowMode = $enableSingleFlowMode;
+        if ($enableGC) {
+            $this->_gc = &new Piece_Flow_Continuation_GC($gcExpirationTime);
+        }
     }
 
     // }}}
@@ -116,18 +123,18 @@ class Piece_Flow_Continuation
      * @param boolean $isExclusive
      * @throws PIECE_FLOW_ERROR_ALREADY_EXISTS
      */
-     function addFlow($name, $file, $isExclusive = false)
-     {
-         if ($this->_enableSingleFlowMode && count($this->_flowDefinitions)) {
-             Piece_Flow_Error::push(PIECE_FLOW_ERROR_ALREADY_EXISTS,
-                                    'A flow definition already exists in the continuation object.'
-                                    );
-             return;
-         }
+    function addFlow($name, $file, $isExclusive = false)
+    {
+        if ($this->_enableSingleFlowMode && count($this->_flowDefinitions)) {
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_ALREADY_EXISTS,
+                                   'A flow definition already exists in the continuation object.'
+                                   );
+            return;
+        }
 
-         $this->_flowDefinitions[$name] = array('file' => $file,
-                                                'isExclusive' => $isExclusive
-                                                );
+        $this->_flowDefinitions[$name] = array('file' => $file,
+                                               'isExclusive' => $isExclusive
+                                               );
     }
 
     // }}}
@@ -146,9 +153,15 @@ class Piece_Flow_Continuation
      * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
      * @throws PIECE_FLOW_ERROR_FLOW_NAME_NOT_GIVEN
      * @throws PIECE_FLOW_ERROR_CANNOT_READ
+     * @throws PIECE_FLOW_ERROR_FLOW_EXECUTION_EXPIRED
      */
     function invoke(&$payload, $bindActionsWithFlowExecution = false)
     {
+        if (!is_null($this->_gc)) {
+            $this->_gc->setGCCallback(array(&$this, 'disableFlowExecution'));
+            $this->_gc->mark();
+        }
+
         $this->_prepare();
         if (Piece_Flow_Error::hasErrors('exception')) {
             return;
@@ -162,6 +175,10 @@ class Piece_Flow_Continuation
 
         if (Piece_Flow_Error::hasErrors('exception')) {
             return;
+        }
+
+        if (!is_null($this->_gc)) {
+            $this->_gc->update($this->_currentFlowExecutionTicket, $this->_currentFlowName);
         }
 
         if ($bindActionsWithFlowExecution) {
@@ -358,6 +375,9 @@ class Piece_Flow_Continuation
         $this->_currentFlowName = null;
         $this->_currentFlowExecutionTicket = null;
         $this->_activated = false;
+        if (!is_null($this->_gc)) {
+            $this->_gc->sweep();
+        }
     }
 
     // }}}
@@ -469,6 +489,20 @@ class Piece_Flow_Continuation
         return $this->_currentFlowName;
     }
 
+    // }}}
+    // {{{ disableFlowExecution()
+
+    /**
+     * Disables the flow execution for the given flow execution ticket.
+     *
+     * @param string $flowExecutionTicket
+     * @since Method available since Release 1.11.0
+     */
+    function disableFlowExecution($flowExecutionTicket)
+    {
+        $this->_flowExecutions[$flowExecutionTicket] = null;
+    }
+
     /**#@-*/
 
     /**#@+
@@ -497,8 +531,8 @@ class Piece_Flow_Continuation
      */
     function _prepare()
     {
-        $flowExecutionTicket = call_user_func($this->_flowExecutionTicketCallback);
-        if ($this->_hasFlowExecutionTicket($flowExecutionTicket)) {
+        $this->_currentFlowExecutionTicket = call_user_func($this->_flowExecutionTicketCallback);
+        if ($this->_hasFlowExecutionTicket($this->_currentFlowExecutionTicket)) {
             $flowName = $this->_getFlowName();
             if (!$this->_enableSingleFlowMode) {
                 if (is_null($flowName) || !strlen($flowName)) {
@@ -527,8 +561,7 @@ class Piece_Flow_Continuation
                                        'warning'
                                        );
                 Piece_Flow_Error::popCallback();
-                $flowExecutionTicket = $this->getFlowExecutionTicketByFlowName($flowName);
-                $this->_removeFlowExecution($flowExecutionTicket, $flowName);
+                $this->_removeFlowExecution($this->getFlowExecutionTicketByFlowName($flowName), $flowName);
             }
 
             $this->_currentFlowName = $flowName;
@@ -546,10 +579,20 @@ class Piece_Flow_Continuation
      * @param boolean $bindActionsWithFlowExecution
      * @throws PIECE_FLOW_ERROR_CANNOT_INVOKE
      * @throws PIECE_FLOW_ERROR_ALREADY_SHUTDOWN
+     * @throws PIECE_FLOW_ERROR_FLOW_EXECUTION_EXPIRED
      */
     function _continue(&$payload, $bindActionsWithFlowExecution)
     {
-        $this->_currentFlowExecutionTicket = call_user_func($this->_flowExecutionTicketCallback);
+        if (!is_null($this->_gc)) {
+            if ($this->_gc->isMarked($this->_currentFlowExecutionTicket)) {
+                $this->_removeFlowExecution($this->_currentFlowExecutionTicket, $this->_currentFlowName);
+                Piece_Flow_Error::push(PIECE_FLOW_ERROR_FLOW_EXECUTION_EXPIRED,
+                                       'The flow execution for the given flow execution ticket has expired.'
+                                       );
+                return;
+            }
+        }
+
         $this->_activated = true;
         $this->_flowExecutions[$this->_currentFlowExecutionTicket]->setPayload($payload);
 

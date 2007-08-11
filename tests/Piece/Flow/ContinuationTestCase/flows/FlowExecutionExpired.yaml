@@ -1,0 +1,7 @@
+# $Id$
+firstState: DisplayForm
+
+viewState:
+
+  - name: DisplayForm
+    view: Form
