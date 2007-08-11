@@ -178,7 +178,7 @@ class Piece_Flow_Continuation
         }
 
         if (!is_null($this->_gc)) {
-            $this->_gc->update($this->_currentFlowExecutionTicket, $this->_currentFlowName);
+            $this->_gc->update($this->_currentFlowExecutionTicket);
         }
 
         if ($bindActionsWithFlowExecution) {

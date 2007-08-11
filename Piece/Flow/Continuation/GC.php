@@ -92,13 +92,11 @@ class Piece_Flow_Continuation_GC
      * ticket.
      *
      * @param string $flowExecutionTicket
-     * @param string $flowName
      */
-    function update($flowExecutionTicket, $flowName)
+    function update($flowExecutionTicket)
     {
         if (!$this->isMarked($flowExecutionTicket)) {
             $this->_statesByFlowExecutionTicket[$flowExecutionTicket] = array('mtime'   => time(),
-                                                                              'flowName' => $flowName,
                                                                               'sweep'   => false,
                                                                               'isSwept' => false
                                                                               );
@@ -157,7 +155,7 @@ class Piece_Flow_Continuation_GC
             }
 
             if ($state['sweep']) {
-                call_user_func($this->_gcCallback, $flowExecutionTicket, $state['flowName'], false);
+                call_user_func($this->_gcCallback, $flowExecutionTicket);
                 $this->_statesByFlowExecutionTicket[$flowExecutionTicket]['isSwept'] = true;
             }
         }
