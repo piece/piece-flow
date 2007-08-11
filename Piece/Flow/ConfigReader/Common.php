@@ -39,6 +39,7 @@ require_once 'Piece/Flow/Config.php';
 require_once 'Piece/Flow/Error.php';
 require_once 'Cache/Lite/File.php';
 require_once 'PEAR.php';
+require_once 'Piece/Flow/Env.php';
 
 // {{{ Piece_Flow_ConfigReader_Common
 
@@ -511,6 +512,10 @@ class Piece_Flow_ConfigReader_Common
                                             'automaticSerialization' => true,
                                             'errorHandlingAPIBreak' => true)
                                       );
+
+        if (!Piece_Flow_Env::isProduction()) {
+            $cache->remove($this->_source);
+        }
 
         /*
          * The Cache_Lite class always specifies PEAR_ERROR_RETURN when
