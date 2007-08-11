@@ -523,7 +523,7 @@ class Piece_Flow_Continuation
             if (array_key_exists($flowName, $this->_exclusiveFlowExecutionTicketsByFlowName)) {
                 Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
                 Piece_Flow_Error::push(PIECE_FLOW_ERROR_ALREADY_EXISTS,
-                                       "Another flow execution of the current flow [ {$this->_currentFlowName} ] already exists in the flow executions. Starting a new flow execution.",
+                                       "Another flow execution of the current flow [ $flowName ] already exists in the flow executions. Starting a new flow execution.",
                                        'warning'
                                        );
                 Piece_Flow_Error::popCallback();
