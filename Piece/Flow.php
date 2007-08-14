@@ -552,6 +552,8 @@ class Piece_Flow
 
     /**
      * Removes the payload from the FSM.
+     *
+     * @since Method available since Release 1.11.0
      */
     function clearPayload()
     {
