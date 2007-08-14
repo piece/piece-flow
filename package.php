@@ -32,7 +32,6 @@
  * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
- * @see        PEAR_PackageFileManager2
  * @since      File available since Release 0.1.0
  */
 
@@ -40,36 +39,39 @@ require_once 'PEAR/PackageFileManager2.php';
 
 PEAR::staticPushErrorHandling(PEAR_ERROR_CALLBACK, create_function('$error', 'var_dump($error); exit();'));
 
-$releaseVersion = '1.10.0';
+$releaseVersion = '1.11.0';
+$releaseStability = 'stable';
 $apiVersion = '1.7.0';
 $apiStability = 'stable';
-$releaseStability = 'stable';
 $notes = 'A new release of Piece_Flow is now available.
 
-What\'s New in Piece_Flow 1.10.0
+What\'s New in Piece_Flow 1.11.0
 
- * Runtime Validation of Flow Definition: A flow definition is validated when it is loaded.
+ * Garbage Collection: The garbage collection can be used for sweeping expired flow executions.
+ * Environment settings: A flow definition file is always read when the current environment is not production.
 
 See the following release notes for details.
 
 Enhancements
-============ 
+============
 
-Web Flow Engine:
-
-- Added validation of flow definition. (Ticket #23)
-- Many minor improvements.';
+- Changed the cached value format from array to Piece_Flow_Config. (Piece_Flow_ConfigReader_Common)
+- Updated code so that a flow definition file is always read when the current environment is not production. (Ticket #26) (Piece_Flow_ConfigReader_Common)
+- Added support for garbage collection for expired flow executions. (Ticket #16)
+- Added code so as to clear the payload from the current flow execution to reduce the session size. (Piece_Flow_Continuation, Piece_Flow)
+- Added code so as to call clear() if it exists to reduce the session size. (Piece_Flow_EventHandler)';
 
 $package = new PEAR_PackageFileManager2();
 $package->setOptions(array('filelistgenerator' => 'svn',
                            'changelogoldtonew' => false,
                            'simpleoutput'      => true,
                            'baseinstalldir'    => '/',
-                           'packagefile'       => 'package2.xml',
+                           'packagefile'       => 'package.xml',
                            'packagedirectory'  => '.',
                            'dir_roles'         => array('data' => 'data',
                                                         'tests' => 'test',
-                                                        'docs' => 'doc'))
+                                                        'docs' => 'doc'),
+                           'ignore'            => array('package.php', 'package.xml'))
                      );
 
 $package->setPackage('Piece_Flow');
@@ -79,9 +81,7 @@ $package->setDescription('Piece_Flow is a generic web flow engine and a continua
 
 Piece_Flow provides a stateful programming model for developers, and high security for applications.');
 $package->setChannel('pear.piece-framework.com');
-$package->setLicense('BSD License (revised)',
-                     'http://www.opensource.org/licenses/bsd-license.php'
-                     );
+$package->setLicense('BSD License (revised)', 'http://www.opensource.org/licenses/bsd-license.php');
 $package->setAPIVersion($apiVersion);
 $package->setAPIStability($apiStability);
 $package->setReleaseVersion($releaseVersion);
@@ -89,24 +89,19 @@ $package->setReleaseStability($releaseStability);
 $package->setNotes($notes);
 $package->setPhpDep('4.3.0');
 $package->setPearinstallerDep('1.4.3');
-$package->addPackageDepWithChannel('required', 'Stagehand_FSM', 'pear.piece-framework.com', '1.8.0');
+$package->addPackageDepWithChannel('required', 'Stagehand_FSM', 'pear.piece-framework.com', '1.9.0');
 $package->addPackageDepWithChannel('required', 'Cache_Lite', 'pear.php.net', '1.7.0');
 $package->addPackageDepWithChannel('required', 'PEAR', 'pear.php.net', '1.4.3');
-$package->addPackageDepWithChannel('optional', 'Stagehand_TestRunner', 'pear.piece-framework.com', '0.4.0');
+$package->addPackageDepWithChannel('optional', 'Stagehand_TestRunner', 'pear.piece-framework.com', '0.5.0');
+$package->addPackageDepWithChannel('optional', 'PHPUnit', 'pear.phpunit.de', '1.3.2');
 $package->addMaintainer('lead', 'iteman', 'KUBO Atsuhiro', 'iteman@users.sourceforge.net');
-$package->addIgnore(array('package.php', 'package.xml', 'package2.xml'));
 $package->addGlobalReplacement('package-info', '@package_version@', 'version');
 $package->generateContents();
-$package1 = &$package->exportCompatiblePackageFile1();
 
-if (array_key_exists(1, $_SERVER['argv'])
-    && $_SERVER['argv'][1] == 'make'
-    ) {
+if (array_key_exists(1, $_SERVER['argv']) && $_SERVER['argv'][1] == 'make') {
     $package->writePackageFile();
-    $package1->writePackageFile();
 } else {
     $package->debugPackageFile();
-    $package1->debugPackageFile();
 }
 
 exit();

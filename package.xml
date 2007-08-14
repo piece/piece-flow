@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- $Id$ -->
-<package packagerversion="1.5.4" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
+<package packagerversion="1.6.1" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
     http://pear.php.net/dtd/tasks-1.0.xsd
     http://pear.php.net/dtd/package-2.0
     http://pear.php.net/dtd/package-2.0.xsd">
@@ -16,10 +16,10 @@ Piece_Flow provides a stateful programming model for developers, and high securi
   <email>iteman@users.sourceforge.net</email>
   <active>yes</active>
  </lead>
- <date>2007-07-02</date>
- <time>21:14:27</time>
+ <date>2007-08-15</date>
+ <time>00:36:17</time>
  <version>
-  <release>1.10.0</release>
+  <release>1.11.0</release>
   <api>1.7.0</api>
  </version>
  <stability>
@@ -29,19 +29,21 @@ Piece_Flow provides a stateful programming model for developers, and high securi
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License (revised)</license>
  <notes>A new release of Piece_Flow is now available.
 
-What&apos;s New in Piece_Flow 1.10.0
+What&apos;s New in Piece_Flow 1.11.0
 
- * Runtime Validation of Flow Definition: A flow definition is validated when it is loaded.
+ * Garbage Collection: The garbage collection can be used for sweeping expired flow executions.
+ * Environment settings: A flow definition file is always read when the current environment is not production.
 
 See the following release notes for details.
 
 Enhancements
-============ 
+============
 
-Web Flow Engine:
-
-- Added validation of flow definition. (Ticket #23)
-- Many minor improvements.</notes>
+- Changed the cached value format from array to Piece_Flow_Config. (Piece_Flow_ConfigReader_Common)
+- Updated code so that a flow definition file is always read when the current environment is not production. (Ticket #26) (Piece_Flow_ConfigReader_Common)
+- Added support for garbage collection for expired flow executions. (Ticket #16)
+- Added code so as to clear the payload from the current flow execution to reduce the session size. (Piece_Flow_Continuation, Piece_Flow)
+- Added code so as to call clear() if it exists to reduce the session size. (Piece_Flow_EventHandler)</notes>
  <contents>
   <dir baseinstalldir="/" name="/">
    <dir name="data">
@@ -68,9 +70,6 @@ Web Flow Engine:
       <file name="Common.php" role="php">
        <tasks:replace from="@package_version@" to="version" type="package-info" />
       </file>
-      <file name="Factory.php" role="php">
-       <tasks:replace from="@package_version@" to="version" type="package-info" />
-      </file>
       <file name="XML4.php" role="php">
        <tasks:replace from="@package_version@" to="version" type="package-info" />
       </file>
@@ -81,6 +80,11 @@ Web Flow Engine:
        <tasks:replace from="@package_version@" to="version" type="package-info" />
       </file>
      </dir> <!-- /Piece/Flow/ConfigReader -->
+     <dir name="Continuation">
+      <file name="GC.php" role="php">
+       <tasks:replace from="@package_version@" to="version" type="package-info" />
+      </file>
+     </dir> <!-- /Piece/Flow/Continuation -->
      <file name="Action.php" role="php">
       <tasks:replace from="@package_version@" to="version" type="package-info" />
      </file>
@@ -94,6 +98,9 @@ Web Flow Engine:
       <tasks:replace from="@package_version@" to="version" type="package-info" />
      </file>
      <file name="Continuation.php" role="php">
+      <tasks:replace from="@package_version@" to="version" type="package-info" />
+     </file>
+     <file name="Env.php" role="php">
       <tasks:replace from="@package_version@" to="version" type="package-info" />
      </file>
      <file name="Error.php" role="php">
@@ -128,9 +135,6 @@ Web Flow Engine:
        <file name="InvalidAction.php" role="test">
         <tasks:replace from="@package_version@" to="version" type="package-info" />
        </file>
-       <file name="TestRunner.php" role="test">
-        <tasks:replace from="@package_version@" to="version" type="package-info" />
-       </file>
       </dir> <!-- /tests/Piece/Flow/Action -->
       <dir name="actions">
        <file name="BindActionsWithFlowExecutionAction.php" role="test">
@@ -138,17 +142,6 @@ Web Flow Engine:
        </file>
       </dir> <!-- /tests/Piece/Flow/actions -->
       <dir name="ConfigReader">
-       <dir name="FactoryTestCase">
-        <dir name="Piece">
-         <dir name="Flow">
-          <dir name="ConfigReader">
-           <file name="Baz.php" role="test">
-            <tasks:replace from="@package_version@" to="version" type="package-info" />
-           </file>
-          </dir> <!-- /tests/Piece/Flow/ConfigReader/FactoryTestCase/Piece/Flow/ConfigReader -->
-         </dir> <!-- /tests/Piece/Flow/ConfigReader/FactoryTestCase/Piece/Flow -->
-        </dir> <!-- /tests/Piece/Flow/ConfigReader/FactoryTestCase/Piece -->
-       </dir> <!-- /tests/Piece/Flow/ConfigReader/FactoryTestCase -->
        <dir name="XMLTestCase">
         <file name="broken.xml" role="test">
          <tasks:replace from="@package_version@" to="version" type="package-info" />
@@ -396,12 +389,6 @@ Web Flow Engine:
        <file name="CompatibilityTest.php" role="test">
         <tasks:replace from="@package_version@" to="version" type="package-info" />
        </file>
-       <file name="FactoryTestCase.php" role="test">
-        <tasks:replace from="@package_version@" to="version" type="package-info" />
-       </file>
-       <file name="TestRunner.php" role="test">
-        <tasks:replace from="@package_version@" to="version" type="package-info" />
-       </file>
        <file name="XML4TestCase.php" role="test">
         <tasks:replace from="@package_version@" to="version" type="package-info" />
        </file>
@@ -412,6 +399,30 @@ Web Flow Engine:
         <tasks:replace from="@package_version@" to="version" type="package-info" />
        </file>
       </dir> <!-- /tests/Piece/Flow/ConfigReader -->
+      <dir name="ConfigReaderTestCase">
+       <dir name="Piece">
+        <dir name="Flow">
+         <dir name="ConfigReader">
+          <file name="Baz.php" role="test">
+           <tasks:replace from="@package_version@" to="version" type="package-info" />
+          </file>
+         </dir> <!-- /tests/Piece/Flow/ConfigReaderTestCase/Piece/Flow/ConfigReader -->
+        </dir> <!-- /tests/Piece/Flow/ConfigReaderTestCase/Piece/Flow -->
+       </dir> <!-- /tests/Piece/Flow/ConfigReaderTestCase/Piece -->
+       <file name="foo.xml" role="test">
+        <tasks:replace from="@package_version@" to="version" type="package-info" />
+       </file>
+       <file name="foo.yaml" role="test">
+        <tasks:replace from="@package_version@" to="version" type="package-info" />
+       </file>
+      </dir> <!-- /tests/Piece/Flow/ConfigReaderTestCase -->
+      <dir name="ContinuationTestCase">
+       <dir name="flows">
+        <file name="FlowExecutionExpired.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+       </dir> <!-- /tests/Piece/Flow/ContinuationTestCase/flows -->
+      </dir> <!-- /tests/Piece/Flow/ContinuationTestCase -->
       <dir name="EventHandlerTestCase">
        <file name="PieceFlowEventHandlerTestCaseNoMethodsAction.php" role="test">
         <tasks:replace from="@package_version@" to="version" type="package-info" />
@@ -428,6 +439,9 @@ Web Flow Engine:
         <tasks:replace from="@package_version@" to="version" type="package-info" />
        </file>
       </dir> <!-- /tests/Piece/Flow/flows -->
+      <file name="ConfigReaderTestCase.php" role="test">
+       <tasks:replace from="@package_version@" to="version" type="package-info" />
+      </file>
       <file name="ContinuationTestCase.php" role="test">
        <tasks:replace from="@package_version@" to="version" type="package-info" />
       </file>
@@ -450,9 +464,6 @@ Web Flow Engine:
        <tasks:replace from="@package_version@" to="version" type="package-info" />
       </file>
       <file name="ShutdownAction.php" role="test">
-       <tasks:replace from="@package_version@" to="version" type="package-info" />
-      </file>
-      <file name="TestRunner.php" role="test">
        <tasks:replace from="@package_version@" to="version" type="package-info" />
       </file>
      </dir> <!-- /tests/Piece/Flow -->
@@ -517,11 +528,8 @@ Web Flow Engine:
      <file name="ProtectedStates.yaml" role="test">
       <tasks:replace from="@package_version@" to="version" type="package-info" />
      </file>
-     <file name="TestRunner.php" role="test">
-      <tasks:replace from="@package_version@" to="version" type="package-info" />
-     </file>
     </dir> <!-- /tests/Piece -->
-    <file name="AllTestRunner.php" role="test">
+    <file name="prepare.php" role="test">
      <tasks:replace from="@package_version@" to="version" type="package-info" />
     </file>
    </dir> <!-- /tests -->
@@ -538,7 +546,7 @@ Web Flow Engine:
    <package>
     <name>Stagehand_FSM</name>
     <channel>pear.piece-framework.com</channel>
-    <min>1.8.0</min>
+    <min>1.9.0</min>
    </package>
    <package>
     <name>Cache_Lite</name>
@@ -555,12 +563,46 @@ Web Flow Engine:
    <package>
     <name>Stagehand_TestRunner</name>
     <channel>pear.piece-framework.com</channel>
-    <min>0.4.0</min>
+    <min>0.5.0</min>
+   </package>
+   <package>
+    <name>PHPUnit</name>
+    <channel>pear.phpunit.de</channel>
+    <min>1.3.2</min>
    </package>
   </optional>
  </dependencies>
  <phprelease />
  <changelog>
+  <release>
+   <version>
+    <release>1.11.0</release>
+    <api>1.7.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2007-08-15</date>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License (revised)</license>
+   <notes>A new release of Piece_Flow is now available.
+
+What&apos;s New in Piece_Flow 1.11.0
+
+ * Garbage Collection: The garbage collection can be used for sweeping expired flow executions.
+ * Environment settings: A flow definition file is always read when the current environment is not production.
+
+See the following release notes for details.
+
+Enhancements
+============
+
+- Changed the cached value format from array to Piece_Flow_Config. (Piece_Flow_ConfigReader_Common)
+- Updated code so that a flow definition file is always read when the current environment is not production. (Ticket #26) (Piece_Flow_ConfigReader_Common)
+- Added support for garbage collection for expired flow executions. (Ticket #16)
+- Added code so as to clear the payload from the current flow execution to reduce the session size. (Piece_Flow_Continuation, Piece_Flow)
+- Added code so as to call clear() if it exists to reduce the session size. (Piece_Flow_EventHandler)</notes>
+  </release>
   <release>
    <version>
     <release>1.10.0</release>
