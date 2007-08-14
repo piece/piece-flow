@@ -182,6 +182,7 @@ class Piece_Flow_Continuation
         }
 
         if ($bindActionsWithFlowExecution) {
+            $this->_flowExecutions[$this->_currentFlowExecutionTicket]->clearPayload();
             $this->_flowExecutions[$this->_currentFlowExecutionTicket]->setAttribute('_actionInstances', Piece_Flow_Action_Factory::getInstances());
         }
 
@@ -360,7 +361,7 @@ class Piece_Flow_Continuation
     // {{{ clear()
 
     /**
-     * Clears some properties for next events.
+     * Clears some properties for the next use.
      */
     function clear()
     {
@@ -719,6 +720,7 @@ class Piece_Flow_Continuation
      */
     function _removeFlowExecution($flowExecutionTicket, $flowName)
     {
+        $this->_flowExecutions[$flowExecutionTicket] = null;
         unset($this->_flowExecutions[$flowExecutionTicket]);
         if (array_key_exists($flowName, $this->_exclusiveFlowExecutionTicketsByFlowName)) {
             unset($this->_exclusiveFlowExecutionTicketsByFlowName[$flowName]);
