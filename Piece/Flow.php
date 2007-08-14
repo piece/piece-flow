@@ -547,6 +547,24 @@ class Piece_Flow
         $this->_attributes = array();
     }
 
+    // }}}
+    // {{{ clearPayload()
+
+    /**
+     * Removes the payload from the FSM.
+     */
+    function clearPayload()
+    {
+        if (!is_a($this->_fsm, 'Stagehand_FSM')) {
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                   __FUNCTION__ . ' method must be called after configuring flows.'
+                                   );
+            return;
+        }
+
+        $this->_fsm->clearPayload();
+    }
+
     /**#@-*/
 
     /**#@+
