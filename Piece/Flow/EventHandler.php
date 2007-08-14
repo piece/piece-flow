@@ -106,6 +106,7 @@ class Piece_Flow_EventHandler
      * @param Stagehand_FSM       &$fsm
      * @param Stagehand_FSM_Event &$event
      * @param mixed               &$payload
+     * @return mixed
      * @throws PIECE_FLOW_ERROR_NOT_GIVEN
      * @throws PIECE_FLOW_ERROR_NOT_FOUND
      * @throws PIECE_FLOW_ERROR_NOT_READABLE
@@ -166,6 +167,7 @@ class Piece_Flow_EventHandler
      *
      * @param string $eventName
      * @param mixed  &$payload
+     * @return string
      * @throws PIECE_FLOW_ERROR_NOT_GIVEN
      * @throws PIECE_FLOW_ERROR_NOT_FOUND
      * @throws PIECE_FLOW_ERROR_NOT_READABLE
@@ -200,7 +202,13 @@ class Piece_Flow_EventHandler
             $action->prepare();
         }
 
-        return call_user_func(array(&$action, $this->_method));
+        $result = call_user_func(array(&$action, $this->_method));
+
+        if (method_exists($action, 'clear')) {
+            $action->clear();
+        }
+
+        return $result;
     }
 
     /**#@-*/
