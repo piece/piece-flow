@@ -39,27 +39,22 @@ require_once 'PEAR/PackageFileManager2.php';
 
 PEAR::staticPushErrorHandling(PEAR_ERROR_CALLBACK, create_function('$error', 'var_dump($error); exit();'));
 
-$releaseVersion = '1.11.0';
+$releaseVersion = '1.12.0';
 $releaseStability = 'stable';
 $apiVersion = '1.7.0';
 $apiStability = 'stable';
 $notes = 'A new release of Piece_Flow is now available.
 
-What\'s New in Piece_Flow 1.11.0
+What\'s New in Piece_Flow 1.12.0
 
- * Garbage Collection: The garbage collection can be used for sweeping expired flow executions.
- * Environment settings: A flow definition file is always read when the current environment is not production.
+ * The target of the garbage collection changed: The target of the garbage collection has been changed from all flow executions to only non-exclusive flow executions.
 
 See the following release notes for details.
 
 Enhancements
 ============
 
-- Changed the cached value format from array to Piece_Flow_Config. (Piece_Flow_ConfigReader_Common)
-- Updated code so that a flow definition file is always read when the current environment is not production. (Ticket #26) (Piece_Flow_ConfigReader_Common)
-- Added support for garbage collection for expired flow executions. (Ticket #16)
-- Added code so as to clear the payload from the current flow execution to reduce the session size. (Piece_Flow_Continuation, Piece_Flow)
-- Added code so as to call clear() if it exists to reduce the session size. (Piece_Flow_EventHandler)';
+- Changed the target of the garbage collection to only non-exclusive flow executions. (Piece_Flow_Continuation)';
 
 $package = new PEAR_PackageFileManager2();
 $package->setOptions(array('filelistgenerator' => 'svn',

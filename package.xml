@@ -16,10 +16,10 @@ Piece_Flow provides a stateful programming model for developers, and high securi
   <email>iteman@users.sourceforge.net</email>
   <active>yes</active>
  </lead>
- <date>2007-08-15</date>
- <time>00:36:17</time>
+ <date>2007-08-17</date>
+ <time>23:53:13</time>
  <version>
-  <release>1.11.0</release>
+  <release>1.12.0</release>
   <api>1.7.0</api>
  </version>
  <stability>
@@ -29,21 +29,16 @@ Piece_Flow provides a stateful programming model for developers, and high securi
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License (revised)</license>
  <notes>A new release of Piece_Flow is now available.
 
-What&apos;s New in Piece_Flow 1.11.0
+What&apos;s New in Piece_Flow 1.12.0
 
- * Garbage Collection: The garbage collection can be used for sweeping expired flow executions.
- * Environment settings: A flow definition file is always read when the current environment is not production.
+ * The target of the garbage collection changed: The target of the garbage collection has been changed from all flow executions to only non-exclusive flow executions.
 
 See the following release notes for details.
 
 Enhancements
 ============
 
-- Changed the cached value format from array to Piece_Flow_Config. (Piece_Flow_ConfigReader_Common)
-- Updated code so that a flow definition file is always read when the current environment is not production. (Ticket #26) (Piece_Flow_ConfigReader_Common)
-- Added support for garbage collection for expired flow executions. (Ticket #16)
-- Added code so as to clear the payload from the current flow execution to reduce the session size. (Piece_Flow_Continuation, Piece_Flow)
-- Added code so as to call clear() if it exists to reduce the session size. (Piece_Flow_EventHandler)</notes>
+- Changed the target of the garbage collection to only non-exclusive flow executions. (Piece_Flow_Continuation)</notes>
  <contents>
   <dir baseinstalldir="/" name="/">
    <dir name="data">
@@ -574,6 +569,30 @@ Enhancements
  </dependencies>
  <phprelease />
  <changelog>
+  <release>
+   <version>
+    <release>1.12.0</release>
+    <api>1.7.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2007-08-17</date>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License (revised)</license>
+   <notes>A new release of Piece_Flow is now available.
+
+What&apos;s New in Piece_Flow 1.12.0
+
+ * The target of the garbage collection changed: The target of the garbage collection has been changed from all flow executions to only non-exclusive flow executions.
+
+See the following release notes for details.
+
+Enhancements
+============
+
+- Changed the target of the garbage collection to only non-exclusive flow executions. (Piece_Flow_Continuation)</notes>
+  </release>
   <release>
    <version>
     <release>1.11.0</release>
