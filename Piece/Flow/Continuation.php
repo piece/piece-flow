@@ -86,6 +86,7 @@ class Piece_Flow_Continuation
     var $_activated = false;
     var $_exclusiveFlowNamesByFlowExecutionTicket = array();
     var $_gc;
+    var $_enableGC = false;
 
     /**#@-*/
 
@@ -106,10 +107,14 @@ class Piece_Flow_Continuation
      */
     function Piece_Flow_Continuation($enableSingleFlowMode = false, $enableGC = false, $gcExpirationTime = 1440)
     {
-        $this->_enableSingleFlowMode = $enableSingleFlowMode;
-        if ($enableGC) {
-            $this->_gc = &new Piece_Flow_Continuation_GC($gcExpirationTime);
+        if (!$enableSingleFlowMode) {
+            if ($enableGC) {
+                $this->_gc = &new Piece_Flow_Continuation_GC($gcExpirationTime);
+                $this->_enableGC = true;
+            }
         }
+
+        $this->_enableSingleFlowMode = $enableSingleFlowMode;
     }
 
     // }}}
@@ -157,7 +162,7 @@ class Piece_Flow_Continuation
      */
     function invoke(&$payload, $bindActionsWithFlowExecution = false)
     {
-        if (!is_null($this->_gc)) {
+        if ($this->_enableGC) {
             $this->_gc->setGCCallback(array(&$this, 'disableFlowExecution'));
             $this->_gc->mark();
         }
@@ -177,7 +182,7 @@ class Piece_Flow_Continuation
             return;
         }
 
-        if (!is_null($this->_gc)) {
+        if ($this->_enableGC && !$this->isExclusive()) {
             $this->_gc->update($this->_currentFlowExecutionTicket);
         }
 
@@ -376,7 +381,7 @@ class Piece_Flow_Continuation
         $this->_currentFlowName = null;
         $this->_currentFlowExecutionTicket = null;
         $this->_activated = false;
-        if (!is_null($this->_gc)) {
+        if ($this->_enableGC) {
             $this->_gc->sweep();
         }
     }
@@ -584,7 +589,7 @@ class Piece_Flow_Continuation
      */
     function _continue(&$payload, $bindActionsWithFlowExecution)
     {
-        if (!is_null($this->_gc)) {
+        if ($this->_enableGC) {
             if ($this->_gc->isMarked($this->_currentFlowExecutionTicket)) {
                 $this->_removeFlowExecution($this->_currentFlowExecutionTicket, $this->_currentFlowName);
                 Piece_Flow_Error::push(PIECE_FLOW_ERROR_FLOW_EXECUTION_EXPIRED,
