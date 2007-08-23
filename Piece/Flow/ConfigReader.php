@@ -91,6 +91,9 @@ class Piece_Flow_ConfigReader
     {
         if (is_null($driverName)) {
             $driverName = strtoupper(substr(strrchr($source, '.'), 1));
+            if ($driverName != 'YAML' && $driverName != 'XML') {
+                $driverName = 'YAML';
+            }
         }
 
         if ($driverName == 'XML') {

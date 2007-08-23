@@ -82,6 +82,12 @@ class Piece_Flow_ConfigReaderTestCase extends PHPUnit_TestCase
 
     function tearDown()
     {
+        $cache = &new Cache_Lite_File(array('cacheDir' => "{$this->_cacheDirectory}/",
+                                            'masterFile' => '',
+                                            'automaticSerialization' => true,
+                                            'errorHandlingAPIBreak' => true)
+                                      );
+        $cache->clean();
         Piece_Flow_Error::clearErrors();
         Piece_Flow_Error::popCallback();
     }
@@ -98,20 +104,6 @@ class Piece_Flow_ConfigReaderTestCase extends PHPUnit_TestCase
         $this->assertEquals(strtolower('Piece_Flow_Config'), strtolower(get_class(Piece_Flow_ConfigReader::read("{$this->_cacheDirectory}/foo.xml", 'XML', null))));
     }
 
-    function testNonExistingDriver()
-    {
-        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
-        @Piece_Flow_ConfigReader::read("{$this->_cacheDirectory}/foo.bar", null, null);
-
-        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
-
-        $error = Piece_Flow_Error::pop();
-
-        $this->assertEquals(PIECE_FLOW_ERROR_CANNOT_READ, $error['code']);
-
-        Piece_Flow_Error::popCallback();
-    }
-
     function testInvalidDriver()
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
@@ -125,6 +117,33 @@ class Piece_Flow_ConfigReaderTestCase extends PHPUnit_TestCase
         $this->assertEquals(PIECE_FLOW_ERROR_NOT_FOUND, $error['code']);
 
         set_include_path($oldIncludePath);
+        Piece_Flow_Error::popCallback();
+    }
+
+    /**
+     * @since Method available since Release 1.13.0
+     */
+    function testConfigurationFileWithUnknownExtensionShouldBeReadAsYAML()
+    {
+        Piece_Flow_ConfigReader::read("{$this->_cacheDirectory}/foo.flow", null, $this->_cacheDirectory);
+
+        $this->assertFalse(Piece_Flow_Error::hasErrors('exception'));
+    }
+
+    /**
+     * @since Method available since Release 1.13.0
+     */
+    function testNotFoundExceptionShouldBeRaisedWhenNonExistingConfigurationFileIsSpecified()
+    {
+        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+        Piece_Flow_ConfigReader::read("{$this->_cacheDirectory}/foo.bar", null, $this->_cacheDirectory);
+
+        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
+
+        $error = Piece_Flow_Error::pop();
+
+        $this->assertEquals(PIECE_FLOW_ERROR_NOT_FOUND, $error['code']);
+
         Piece_Flow_Error::popCallback();
     }
 
