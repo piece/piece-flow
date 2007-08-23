@@ -123,7 +123,7 @@ class Piece_Flow_ConfigReaderTestCase extends PHPUnit_TestCase
     /**
      * @since Method available since Release 1.13.0
      */
-    function testConfigurationFileWithUnknownExtensionShouldBeReadAsYAML()
+    function testConfigurationFileWithoutExtensionShouldBeReadAsYAML()
     {
         Piece_Flow_ConfigReader::read("{$this->_cacheDirectory}/foo.flow", null, $this->_cacheDirectory);
 
