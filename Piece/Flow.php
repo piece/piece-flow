@@ -284,7 +284,7 @@ class Piece_Flow
             return $return;
         }
 
-        if ($eventName == PIECE_FLOW_PROTECTED_EVENT || $this->_fsm->isProtectedEvent($eventName)) {
+        if ($this->_isProtectedEvent($eventName)) {
             Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_PROTECTED_EVENT,
                                    "The event [ $eventName] cannot be called directly. The current state [ " .
@@ -668,9 +668,7 @@ class Piece_Flow
     function _configureState($state)
     {
         for ($i = 0, $count = count(@$state['transitions']); $i < $count; ++$i) {
-            if ($this->_fsm->isProtectedEvent($state['transitions'][$i]['event'])
-                || $state['transitions'][$i]['event'] == PIECE_FLOW_PROTECTED_EVENT
-                ) {
+            if ($this->_isProtectedEvent($state['transitions'][$i]['event'])) {
                 Piece_Flow_Error::push(PIECE_FLOW_ERROR_PROTECTED_EVENT,
                                        "The event [ {$state['transitions'][$i]['event']} ] cannot be used in flow definitions."
                                        );
@@ -772,6 +770,22 @@ class Piece_Flow
     function _started()
     {
         return is_a($this->_fsm, 'Stagehand_FSM') && !is_null($this->_fsm->getCurrentState());
+    }
+
+    // }}}
+    // {{{ _isProtectedEvent()
+
+    /**
+     * Returns whether an event is a protected event such as
+     * the Stagehand_FSM's special events and so on.
+     *
+     * @param string $eventName
+     * @return boolean
+     * @since Method available since Release 1.13.0
+     */
+    function _isProtectedEvent($eventName)
+    {
+        return $eventName == PIECE_FLOW_PROTECTED_EVENT || $this->_fsm->isProtectedEvent($eventName);
     }
 
     /**#@-*/
