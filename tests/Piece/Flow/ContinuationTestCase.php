@@ -868,6 +868,71 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         Piece_Flow_Error::popCallback();
     }
 
+    /**
+     * @since Method available since Release 1.13.0
+     */
+    function testValidateLastEventShouldReturnTrueWhenStartingFlow()
+    {
+        $flowName = 'ValidateLastEvent';
+        $GLOBALS['flowName'] = $flowName;
+        $GLOBALS['eventName'] = 'foo';
+        $continuation = &new Piece_Flow_Continuation(false);
+        $continuation->setCacheDirectory($this->_cacheDirectory);
+        $continuation->addFlow($flowName, "{$this->_cacheDirectory}/$flowName.yaml");
+        $continuation->setEventNameCallback(array(__CLASS__, 'getEventName'));
+        $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
+        $continuation->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
+        $GLOBALS['flowExecutionTicket'] = $continuation->invoke(new stdClass());
+
+        $this->assertTrue($continuation->validateLastEvent());
+    }
+
+    /**
+     * @since Method available since Release 1.13.0
+     */
+    function testValidateLastEventShouldReturnTrueWhenValidEventIsGivenByUser()
+    {
+        $flowName = 'ValidateLastEvent';
+        $GLOBALS['flowName'] = $flowName;
+        $continuation = &new Piece_Flow_Continuation(false);
+        $continuation->setCacheDirectory($this->_cacheDirectory);
+        $continuation->addFlow($flowName, "{$this->_cacheDirectory}/$flowName.yaml");
+        $continuation->setEventNameCallback(array(__CLASS__, 'getEventName'));
+        $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
+        $continuation->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
+        $GLOBALS['flowExecutionTicket'] = $continuation->invoke(new stdClass());
+        $continuation->shutdown();
+
+        $GLOBALS['eventName'] = 'DisplayFormFromDisplayForm';
+
+        $continuation->invoke(new stdClass());
+
+        $this->assertTrue($continuation->validateLastEvent());
+    }
+
+    /**
+     * @since Method available since Release 1.13.0
+     */
+    function testValidateLastEventShouldReturnFalseWhenInvalidEventIsGivenByUser()
+    {
+        $flowName = 'ValidateLastEvent';
+        $GLOBALS['flowName'] = $flowName;
+        $continuation = &new Piece_Flow_Continuation(false);
+        $continuation->setCacheDirectory($this->_cacheDirectory);
+        $continuation->addFlow($flowName, "{$this->_cacheDirectory}/$flowName.yaml");
+        $continuation->setEventNameCallback(array(__CLASS__, 'getEventName'));
+        $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
+        $continuation->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
+        $GLOBALS['flowExecutionTicket'] = $continuation->invoke(new stdClass());
+        $continuation->shutdown();
+
+        $GLOBALS['eventName'] = 'foo';
+
+        $continuation->invoke(new stdClass());
+
+        $this->assertFalse($continuation->validateLastEvent());
+    }
+
     /**#@-*/
 
     /**#@+

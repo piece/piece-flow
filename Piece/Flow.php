@@ -93,6 +93,7 @@ class Piece_Flow
     var $_views;
     var $_attributes = array();
     var $_lastState;
+    var $_lastEvent;
 
     /**#@-*/
 
@@ -264,7 +265,7 @@ class Piece_Flow
     // {{{ triggerEvent()
 
     /**
-     * Triggers the given state.
+     * Triggers the given event.
      *
      * @param string $eventName
      * @param boolean $transitionToHistoryMarker
@@ -283,7 +284,7 @@ class Piece_Flow
             return $return;
         }
 
-        if ($this->_fsm->isProtectedEvent($eventName)) {
+        if ($eventName == PIECE_FLOW_PROTECTED_EVENT || $this->_fsm->isProtectedEvent($eventName)) {
             Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_PROTECTED_EVENT,
                                    "The event [ $eventName] cannot be called directly. The current state [ " .
@@ -294,6 +295,7 @@ class Piece_Flow
             $eventName = PIECE_FLOW_PROTECTED_EVENT;
         }
 
+        $this->_lastEvent = $eventName;
         $state = &$this->_fsm->triggerEvent($eventName,
                                             $transitionToHistoryMarker
                                             );
@@ -565,6 +567,33 @@ class Piece_Flow
         }
 
         $this->_fsm->clearPayload();
+    }
+
+    // }}}
+    // {{{ validateLastEvent()
+
+    /**
+     * Returns whether the last event which is given by a user is valid or
+     * not.
+     *
+     * @return boolean
+     * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
+     * @since Method available since Release 1.13.0
+     */
+    function validateLastEvent()
+    {
+        if (!$this->_started()) {
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                   __FUNCTION__ . ' method must be called after starting flows.'
+                                   );
+            return;
+        }
+
+        if (is_null($this->_lastEvent)) {
+            return true;
+        }
+
+        return $this->_fsm->hasEvent($this->_lastEvent);
     }
 
     /**#@-*/
