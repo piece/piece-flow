@@ -1,0 +1,19 @@
+# $Id$
+firstState: DisplayEdit
+
+viewState:
+
+  - name: DisplayEdit
+    view: Edit
+    transition:
+      - event: DisplayEditConfirmFromDisplayEdit
+        nextState: DisplayEditConfirm
+
+  - name: DisplayEditConfirm
+    view: EditConfirm
+    transition:
+      - event: DisplayEditFinishFromDisplayEditConfirm
+        nextState: DisplayEditFinish
+
+  - name: DisplayEditFinish
+    view: EditFinish

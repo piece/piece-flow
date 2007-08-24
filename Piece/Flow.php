@@ -65,7 +65,7 @@ define('PIECE_FLOW_PROTECTED_EVENT', '_Piece_Flow_Protected_Event');
  * @package    Piece_Flow
  * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
- * @version    Release: @package_version@
+ * @version    Release: 1.13.0
  * @link       http://www.martinfowler.com/eaaCatalog/applicationController.html
  * @link       http://opensource2.atlassian.com/confluence/spring/display/WEBFLOW/Home
  * @link       http://www-128.ibm.com/developerworks/java/library/j-cb03216/
@@ -93,7 +93,7 @@ class Piece_Flow
     var $_views;
     var $_attributes = array();
     var $_lastState;
-    var $_lastEvent;
+    var $_lastEventIsValid = true;
 
     /**#@-*/
 
@@ -295,7 +295,8 @@ class Piece_Flow
             $eventName = PIECE_FLOW_PROTECTED_EVENT;
         }
 
-        $this->_lastEvent = $eventName;
+        $this->_lastEventIsValid = $this->_fsm->hasEvent($eventName);
+
         $state = &$this->_fsm->triggerEvent($eventName,
                                             $transitionToHistoryMarker
                                             );
@@ -570,30 +571,18 @@ class Piece_Flow
     }
 
     // }}}
-    // {{{ validateLastEvent()
+    // {{{ checkLastEvent()
 
     /**
      * Returns whether the last event which is given by a user is valid or
      * not.
      *
      * @return boolean
-     * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
      * @since Method available since Release 1.13.0
      */
-    function validateLastEvent()
+    function checkLastEvent()
     {
-        if (!$this->_started()) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
-                                   __FUNCTION__ . ' method must be called after starting flows.'
-                                   );
-            return;
-        }
-
-        if (is_null($this->_lastEvent)) {
-            return true;
-        }
-
-        return $this->_fsm->hasEvent($this->_lastEvent);
+        return $this->_lastEventIsValid;
     }
 
     /**#@-*/

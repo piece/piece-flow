@@ -459,7 +459,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->assertEquals('bar', $baz2->foo);
     }
 
-    function testFailureToSetAttributeBeforeStartingFlow()
+    function testFailureToSetAttributeBeforeStartingContinuation()
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
         $continuation = &new Piece_Flow_Continuation(true);
@@ -480,7 +480,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         Piece_Flow_Error::popCallback();
     }
 
-    function testFailureToGetAttributeBeforeStartingFlow()
+    function testFailureToGetAttributeBeforeStartingContinuation()
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
         $continuation = &new Piece_Flow_Continuation(true);
@@ -501,7 +501,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         Piece_Flow_Error::popCallback();
     }
 
-    function testStartingNewFlowAfterShuttingDownFlowInNonExclusiveMode()
+    function testStartingNewFlowExecutionAfterShuttingDownContinuationInNonExclusiveMode()
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
         $GLOBALS['ShutdownCount'] = 0;
@@ -545,7 +545,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         Piece_Flow_Error::popCallback();
     }
 
-    function testStartingNewFlowAfterShuttingDownFlowInExclusiveMode()
+    function testStartingNewFlowExecutionAfterShuttingDownContinuationInExclusiveMode()
     {
         $GLOBALS['ShutdownCount'] = 0;
 
@@ -583,7 +583,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         unset($GLOBALS['ShutdownCount']);
     }
 
-    function testStartingNewFlowAfterShuttingDownFlowInSingleFlowMode()
+    function testStartingNewFlowExecutionAfterShuttingDownContinuationInSingleFlowMode()
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
         $GLOBALS['ShutdownCount'] = 0;
@@ -871,9 +871,9 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
     /**
      * @since Method available since Release 1.13.0
      */
-    function testValidateLastEventShouldReturnTrueWhenStartingFlow()
+    function testCheckLastEventShouldReturnTrueIfContinuationHasJustStarted()
     {
-        $flowName = 'ValidateLastEvent';
+        $flowName = 'CheckLastEvent';
         $GLOBALS['flowName'] = $flowName;
         $GLOBALS['eventName'] = 'foo';
         $continuation = &new Piece_Flow_Continuation(false);
@@ -884,15 +884,15 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $continuation->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
         $GLOBALS['flowExecutionTicket'] = $continuation->invoke(new stdClass());
 
-        $this->assertTrue($continuation->validateLastEvent());
+        $this->assertTrue($continuation->checkLastEvent());
     }
 
     /**
      * @since Method available since Release 1.13.0
      */
-    function testValidateLastEventShouldReturnTrueWhenValidEventIsGivenByUser()
+    function testCheckLastEventShouldReturnTrueWhenValidEventIsGivenByUser()
     {
-        $flowName = 'ValidateLastEvent';
+        $flowName = 'CheckLastEvent';
         $GLOBALS['flowName'] = $flowName;
         $continuation = &new Piece_Flow_Continuation(false);
         $continuation->setCacheDirectory($this->_cacheDirectory);
@@ -903,19 +903,27 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $GLOBALS['flowExecutionTicket'] = $continuation->invoke(new stdClass());
         $continuation->shutdown();
 
-        $GLOBALS['eventName'] = 'DisplayFormFromDisplayForm';
+        $GLOBALS['eventName'] = 'DisplayEditConfirmFromDisplayEdit';
 
         $continuation->invoke(new stdClass());
 
-        $this->assertTrue($continuation->validateLastEvent());
+        $this->assertTrue($continuation->checkLastEvent());
+
+        $continuation->shutdown();
+
+        $GLOBALS['eventName'] = 'DisplayEditFinishFromDisplayEditConfirm';
+
+        $continuation->invoke(new stdClass());
+
+        $this->assertTrue($continuation->checkLastEvent());
     }
 
     /**
      * @since Method available since Release 1.13.0
      */
-    function testValidateLastEventShouldReturnFalseWhenInvalidEventIsGivenByUser()
+    function testCheckLastEventShouldReturnFalseWhenInvalidEventIsGivenByUser()
     {
-        $flowName = 'ValidateLastEvent';
+        $flowName = 'CheckLastEvent';
         $GLOBALS['flowName'] = $flowName;
         $continuation = &new Piece_Flow_Continuation(false);
         $continuation->setCacheDirectory($this->_cacheDirectory);
@@ -930,7 +938,25 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 
         $continuation->invoke(new stdClass());
 
-        $this->assertFalse($continuation->validateLastEvent());
+        $this->assertFalse($continuation->checkLastEvent());
+    }
+
+    /**
+     * @since Method available since Release 1.13.0
+     */
+    function testCheckLastEventShouldReturnTrueIfContinuationHasNotActivatedYet()
+    {
+        $flowName = 'CheckLastEvent';
+        $GLOBALS['flowName'] = $flowName;
+        $GLOBALS['eventName'] = 'foo';
+        $continuation = &new Piece_Flow_Continuation(false);
+        $continuation->setCacheDirectory($this->_cacheDirectory);
+        $continuation->addFlow($flowName, "{$this->_cacheDirectory}/$flowName.yaml");
+        $continuation->setEventNameCallback(array(__CLASS__, 'getEventName'));
+        $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
+        $continuation->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
+
+        $this->assertTrue($continuation->checkLastEvent());
     }
 
     /**#@-*/

@@ -510,26 +510,22 @@ class Piece_Flow_Continuation
     }
 
     // }}}
-    // {{{ validateLastEvent()
+    // {{{ checkLastEvent()
 
     /**
      * Returns whether the last event which is given by a user is valid or
      * not.
      *
      * @return boolean
-     * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
      * @since Method available since Release 1.13.0
      */
-    function validateLastEvent()
+    function checkLastEvent()
     {
         if (!$this->_activated()) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
-                                   __FUNCTION__ . ' method must be called after starting/continuing flows.'
-                                   );
-            return;
+            return true;
         }
 
-        return $this->_flowExecutions[$this->_currentFlowExecutionTicket]->validateLastEvent();
+        return $this->_flowExecutions[$this->_currentFlowExecutionTicket]->checkLastEvent();
     }
 
     /**#@-*/
