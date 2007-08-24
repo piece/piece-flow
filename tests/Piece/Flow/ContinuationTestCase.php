@@ -69,6 +69,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
      */
 
     var $_flowExecutionTicket;
+    var $_cacheDirectory;
 
     /**#@-*/
 
@@ -79,10 +80,11 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
     function setUp()
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'var_dump($error); return ' . PEAR_ERRORSTACK_DIE . ';'));
-        Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/../..');
         $GLOBALS['flowName'] = 'Counter';
         $GLOBALS['eventName'] = 'increase';
         $GLOBALS['flowExecutionTicket'] = null;
+        $this->_cacheDirectory = dirname(__FILE__) . '/' . basename(__FILE__, '.php');
+        Piece_Flow_Action_Factory::setActionDirectory($this->_cacheDirectory);
     }
 
     function tearDown()
@@ -92,7 +94,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $GLOBALS['eventName'] = null;
         $GLOBALS['flowName'] = null;
         $GLOBALS['flowExecutionTicket'] = null;
-        $cache = &new Cache_Lite_File(array('cacheDir' => dirname(__FILE__) . '/',
+        $cache = &new Cache_Lite_File(array('cacheDir' => "{$this->_cacheDirectory}/",
                                             'masterFile' => '',
                                             'automaticSerialization' => true,
                                             'errorHandlingAPIBreak' => true)
@@ -122,7 +124,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
         $continuation = &new Piece_Flow_Continuation(true);
-        $continuation->setCacheDirectory(dirname(__FILE__));
+        $continuation->setCacheDirectory($this->_cacheDirectory);
         $continuation->addFlow('foo', '/path/to/foo.xml');
 
         $this->assertFalse(Piece_Flow_Error::hasErrors('exception'));
@@ -135,7 +137,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
         $continuation = &new Piece_Flow_Continuation(true);
-        $continuation->setCacheDirectory(dirname(__FILE__));
+        $continuation->setCacheDirectory($this->_cacheDirectory);
         $continuation->addFlow('foo', '/path/to/foo.xml');
         $continuation->addFlow('bar', '/path/to/bar.xml');
 
@@ -153,7 +155,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
         $continuation = &new Piece_Flow_Continuation();
-        $continuation->setCacheDirectory(dirname(__FILE__));
+        $continuation->setCacheDirectory($this->_cacheDirectory);
         $continuation->addFlow('foo', '/path/to/foo.xml');
         $continuation->addFlow('bar', '/path/to/bar.xml');
 
@@ -165,8 +167,8 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
     function testFirstTimeInvocationInSingleFlowMode()
     {
         $continuation = &new Piece_Flow_Continuation(true);
-        $continuation->setCacheDirectory(dirname(__FILE__));
-        $continuation->addFlow('Counter', dirname(__FILE__) . '/Counter.yaml');
+        $continuation->setCacheDirectory($this->_cacheDirectory);
+        $continuation->addFlow('Counter', "{$this->_cacheDirectory}/Counter.yaml");
         $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
 
         $flowExecutionTicket = $continuation->invoke(new stdClass());
@@ -174,7 +176,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket);
         $this->assertEquals('Counter', $continuation->getView());
 
-        $counter = &Piece_Flow_Action_Factory::factory('Piece_Flow_CounterAction');
+        $counter = &Piece_Flow_Action_Factory::factory('CounterAction');
 
         $this->assertEquals(0, $continuation->getAttribute('counter'));
     }
@@ -182,8 +184,8 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
     function testSecondTimeInvocationInSingleFlowMode()
     {
         $continuation = &new Piece_Flow_Continuation(true);
-        $continuation->setCacheDirectory(dirname(__FILE__));
-        $continuation->addFlow('Counter', dirname(__FILE__) . '/Counter.yaml');
+        $continuation->setCacheDirectory($this->_cacheDirectory);
+        $continuation->addFlow('Counter', "{$this->_cacheDirectory}/Counter.yaml");
         $continuation->setEventNameCallback(array(__CLASS__, 'getEventName'));
         $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
 
@@ -196,7 +198,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->assertEquals('Counter', $continuation->getView());
         $this->assertTrue($continuation->isExclusive());
 
-        $counter = &Piece_Flow_Action_Factory::factory('Piece_Flow_CounterAction');
+        $counter = &Piece_Flow_Action_Factory::factory('CounterAction');
 
         $this->assertEquals(1, $continuation->getAttribute('counter'));
         $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket2);
@@ -205,8 +207,8 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
     function testInvocationInMultipleFlowModeAndFlowInNonExclusiveMode()
     {
         $continuation = &new Piece_Flow_Continuation();
-        $continuation->setCacheDirectory(dirname(__FILE__));
-        $continuation->addFlow('Counter', dirname(__FILE__) . '/Counter.yaml');
+        $continuation->setCacheDirectory($this->_cacheDirectory);
+        $continuation->addFlow('Counter', "{$this->_cacheDirectory}/Counter.yaml");
         $continuation->setEventNameCallback(array(__CLASS__, 'getEventName'));
         $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
         $continuation->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
@@ -220,7 +222,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->assertEquals('Counter', $continuation->getView());
         $this->assertFalse($continuation->isExclusive());
 
-        $counter = &Piece_Flow_Action_Factory::factory('Piece_Flow_CounterAction');
+        $counter = &Piece_Flow_Action_Factory::factory('CounterAction');
 
         $this->assertEquals(1, $continuation->getAttribute('counter'));
         $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket2);
@@ -229,9 +231,9 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
     function testMultipleInvocationInMultipleFlowModeAndFlowInNonExclusiveMode()
     {
         $continuation = &new Piece_Flow_Continuation();
-        $continuation->setCacheDirectory(dirname(__FILE__));
-        $continuation->addFlow('Counter', dirname(__FILE__) . '/Counter.yaml');
-        $continuation->addFlow('SecondCounter', dirname(__FILE__) . '/SecondCounter.yaml');
+        $continuation->setCacheDirectory($this->_cacheDirectory);
+        $continuation->addFlow('Counter', "{$this->_cacheDirectory}/Counter.yaml");
+        $continuation->addFlow('SecondCounter', "{$this->_cacheDirectory}/SecondCounter.yaml");
         $continuation->setEventNameCallback(array(__CLASS__, 'getEventName'));
         $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
         $continuation->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
@@ -296,8 +298,8 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
     function testSuccessOfContinuationByInvalidFlowNameInSingleFlowMode()
     {
         $continuation = &new Piece_Flow_Continuation(true);
-        $continuation->setCacheDirectory(dirname(__FILE__));
-        $continuation->addFlow('Counter', dirname(__FILE__) . '/Counter.yaml');
+        $continuation->setCacheDirectory($this->_cacheDirectory);
+        $continuation->addFlow('Counter', "{$this->_cacheDirectory}/Counter.yaml");
         $continuation->setEventNameCallback(array(__CLASS__, 'getEventName'));
         $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
         $continuation->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
@@ -309,7 +311,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 
         $this->assertFalse(Piece_Flow_Error::hasErrors('exception'));
 
-        $counter = &Piece_Flow_Action_Factory::factory('Piece_Flow_CounterAction');
+        $counter = &Piece_Flow_Action_Factory::factory('CounterAction');
         $this->assertEquals(1, $continuation->getAttribute('counter'));
     }
 
@@ -318,8 +320,8 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
         $continuation = &new Piece_Flow_Continuation();
-        $continuation->setCacheDirectory(dirname(__FILE__));
-        $continuation->addFlow('Counter', dirname(__FILE__) . '/Counter.yaml');
+        $continuation->setCacheDirectory($this->_cacheDirectory);
+        $continuation->addFlow('Counter', "{$this->_cacheDirectory}/Counter.yaml");
         $continuation->setEventNameCallback(array(__CLASS__, 'getEventName'));
         $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
         $continuation->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
@@ -343,8 +345,8 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
         $continuation = &new Piece_Flow_Continuation();
-        $continuation->setCacheDirectory(dirname(__FILE__));
-        $continuation->addFlow('NonExistingFile', dirname(__FILE__) . '/NonExistingFile.yaml');
+        $continuation->setCacheDirectory($this->_cacheDirectory);
+        $continuation->addFlow('NonExistingFile', "{$this->_cacheDirectory}/NonExistingFile.yaml");
         $continuation->setEventNameCallback(array(__CLASS__, 'getEventName'));
         $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
         $continuation->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
@@ -364,9 +366,9 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
     function testInvocationInMultipleFlowModeAndFlowInExclusiveMode()
     {
         $continuation = &new Piece_Flow_Continuation();
-        $continuation->setCacheDirectory(dirname(__FILE__));
-        $continuation->addFlow('Counter', dirname(__FILE__) . '/Counter.yaml', true);
-        $continuation->addFlow('SecondCounter', dirname(__FILE__) . '/SecondCounter.yaml');
+        $continuation->setCacheDirectory($this->_cacheDirectory);
+        $continuation->addFlow('Counter', "{$this->_cacheDirectory}/Counter.yaml", true);
+        $continuation->addFlow('SecondCounter', "{$this->_cacheDirectory}/SecondCounter.yaml");
         $continuation->setEventNameCallback(array(__CLASS__, 'getEventName'));
         $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
         $continuation->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
@@ -400,8 +402,8 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
     function testInvocationInSingleFlowModeAndFlowInExclusiveMode()
     {
         $continuation = &new Piece_Flow_Continuation(true);
-        $continuation->setCacheDirectory(dirname(__FILE__));
-        $continuation->addFlow('Counter', dirname(__FILE__) . '/Counter.yaml', true);
+        $continuation->setCacheDirectory($this->_cacheDirectory);
+        $continuation->addFlow('Counter', "{$this->_cacheDirectory}/Counter.yaml", true);
         $continuation->setEventNameCallback(array(__CLASS__, 'getEventName'));
         $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
         $continuation->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
@@ -414,7 +416,7 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket1);
         $this->assertEquals('Counter', $continuation->getView());
 
-        $counter = &Piece_Flow_Action_Factory::factory('Piece_Flow_CounterAction');
+        $counter = &Piece_Flow_Action_Factory::factory('CounterAction');
 
         $this->assertEquals(1, $continuation->getAttribute('counter'));
         $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket2);
@@ -423,8 +425,8 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
     function testSettingAttribute()
     {
         $continuation = &new Piece_Flow_Continuation(true);
-        $continuation->setCacheDirectory(dirname(__FILE__));
-        $continuation->addFlow('Counter', dirname(__FILE__) . '/Counter.yaml', true);
+        $continuation->setCacheDirectory($this->_cacheDirectory);
+        $continuation->addFlow('Counter', "{$this->_cacheDirectory}/Counter.yaml", true);
         $continuation->setEventNameCallback(array(__CLASS__, 'getEventName'));
         $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
         $continuation->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
@@ -461,8 +463,8 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
         $continuation = &new Piece_Flow_Continuation(true);
-        $continuation->setCacheDirectory(dirname(__FILE__));
-        $continuation->addFlow('Counter', dirname(__FILE__) . '/Counter.yaml', true);
+        $continuation->setCacheDirectory($this->_cacheDirectory);
+        $continuation->addFlow('Counter', "{$this->_cacheDirectory}/Counter.yaml", true);
         $continuation->setEventNameCallback(array(__CLASS__, 'getEventName'));
         $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
         $continuation->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
@@ -482,8 +484,8 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
         $continuation = &new Piece_Flow_Continuation(true);
-        $continuation->setCacheDirectory(dirname(__FILE__));
-        $continuation->addFlow('Counter', dirname(__FILE__) . '/Counter.yaml', true);
+        $continuation->setCacheDirectory($this->_cacheDirectory);
+        $continuation->addFlow('Counter', "{$this->_cacheDirectory}/Counter.yaml", true);
         $continuation->setEventNameCallback(array(__CLASS__, 'getEventName'));
         $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
         $continuation->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
@@ -505,8 +507,8 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $GLOBALS['ShutdownCount'] = 0;
 
         $continuation = &new Piece_Flow_Continuation();
-        $continuation->setCacheDirectory(dirname(__FILE__));
-        $continuation->addFlow('Shutdown', dirname(__FILE__) . '/Shutdown.yaml');
+        $continuation->setCacheDirectory($this->_cacheDirectory);
+        $continuation->addFlow('Shutdown', "{$this->_cacheDirectory}/Shutdown.yaml");
         $continuation->setEventNameCallback(array(__CLASS__, 'getEventName'));
         $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
         $continuation->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
@@ -548,8 +550,8 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $GLOBALS['ShutdownCount'] = 0;
 
         $continuation = &new Piece_Flow_Continuation();
-        $continuation->setCacheDirectory(dirname(__FILE__));
-        $continuation->addFlow('Shutdown', dirname(__FILE__) . '/Shutdown.yaml', true);
+        $continuation->setCacheDirectory($this->_cacheDirectory);
+        $continuation->addFlow('Shutdown', "{$this->_cacheDirectory}/Shutdown.yaml", true);
         $continuation->setEventNameCallback(array(__CLASS__, 'getEventName'));
         $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
         $continuation->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
@@ -587,8 +589,8 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $GLOBALS['ShutdownCount'] = 0;
 
         $continuation = &new Piece_Flow_Continuation(true);
-        $continuation->setCacheDirectory(dirname(__FILE__));
-        $continuation->addFlow('Shutdown', dirname(__FILE__) . '/Shutdown.yaml');
+        $continuation->setCacheDirectory($this->_cacheDirectory);
+        $continuation->addFlow('Shutdown', "{$this->_cacheDirectory}/Shutdown.yaml");
         $continuation->setEventNameCallback(array(__CLASS__, 'getEventName'));
         $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
         $continuation->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
@@ -626,8 +628,8 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
     function testGettingCurrentFlowExecutionTicket()
     {
         $continuation = &new Piece_Flow_Continuation();
-        $continuation->setCacheDirectory(dirname(__FILE__));
-        $continuation->addFlow('Counter', dirname(__FILE__) . '/Counter.yaml');
+        $continuation->setCacheDirectory($this->_cacheDirectory);
+        $continuation->addFlow('Counter', "{$this->_cacheDirectory}/Counter.yaml");
         $continuation->setEventNameCallback(array(__CLASS__, 'getEventName'));
         $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
         $continuation->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
@@ -645,8 +647,8 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
         $continuation = &new Piece_Flow_Continuation();
-        $continuation->setCacheDirectory(dirname(__FILE__));
-        $continuation->addFlow('Counter', dirname(__FILE__) . '/Counter.yaml', true);
+        $continuation->setCacheDirectory($this->_cacheDirectory);
+        $continuation->addFlow('Counter', "{$this->_cacheDirectory}/Counter.yaml", true);
         $continuation->setEventNameCallback(array(__CLASS__, 'getEventName'));
         $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
         $continuation->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
@@ -676,9 +678,9 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
     function testGettingFlowExecutionTicketByFlowName()
     {
         $continuation = &new Piece_Flow_Continuation();
-        $continuation->setCacheDirectory(dirname(__FILE__));
-        $continuation->addFlow('Counter', dirname(__FILE__) . '/Counter.yaml', true);
-        $continuation->addFlow('SecondCounter', dirname(__FILE__) . '/SecondCounter.yaml');
+        $continuation->setCacheDirectory($this->_cacheDirectory);
+        $continuation->addFlow('Counter', "{$this->_cacheDirectory}/Counter.yaml", true);
+        $continuation->addFlow('SecondCounter', "{$this->_cacheDirectory}/SecondCounter.yaml");
         $continuation->setEventNameCallback(array(__CLASS__, 'getEventName'));
         $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
         $continuation->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
@@ -705,13 +707,13 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
      */
     function testBindActionsWithFlowExecution()
     {
-        Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/actions');
+        Piece_Flow_Action_Factory::setActionDirectory($this->_cacheDirectory);
         $flowName = 'BindActionsWithFlowExecution';
         $GLOBALS['flowName'] = $flowName;
         $GLOBALS['eventName'] = 'goDisplayFinishFromDisplayCounter';
         $continuation = &new Piece_Flow_Continuation();
-        $continuation->setCacheDirectory(dirname(__FILE__));
-        $continuation->addFlow($flowName, dirname(__FILE__) . "/flows/$flowName.yaml");
+        $continuation->setCacheDirectory($this->_cacheDirectory);
+        $continuation->addFlow($flowName, "{$this->_cacheDirectory}/$flowName.yaml");
         $continuation->setEventNameCallback(array(__CLASS__, 'getEventName'));
         $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
         $continuation->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
@@ -777,12 +779,11 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
     function testFlowExecutionExpiredExceptionShouldBeRaisedWhenFlowExecutionHasExpired()
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
-        $cacheDirectory = dirname(__FILE__) . '/' . basename(__FILE__, '.php');
         $flowName = 'FlowExecutionExpired';
         $GLOBALS['flowName'] = $flowName;
         $continuation = &new Piece_Flow_Continuation(false, true, 1);
-        $continuation->setCacheDirectory(dirname(__FILE__));
-        $continuation->addFlow($flowName, "$cacheDirectory/flows/$flowName.yaml");
+        $continuation->setCacheDirectory($this->_cacheDirectory);
+        $continuation->addFlow($flowName, "{$this->_cacheDirectory}/$flowName.yaml");
         $continuation->setEventNameCallback(array(__CLASS__, 'getEventName'));
         $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
         $continuation->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
@@ -806,12 +807,11 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
     function testFlowExecutionExpiredExceptionShouldNotBeRaisedWhenFlowExecutionHasNotExpired()
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
-        $cacheDirectory = dirname(__FILE__) . '/' . basename(__FILE__, '.php');
         $flowName = 'FlowExecutionExpired';
         $GLOBALS['flowName'] = $flowName;
         $continuation = &new Piece_Flow_Continuation(false, true, 2);
-        $continuation->setCacheDirectory(dirname(__FILE__));
-        $continuation->addFlow($flowName, "$cacheDirectory/flows/$flowName.yaml");
+        $continuation->setCacheDirectory($this->_cacheDirectory);
+        $continuation->addFlow($flowName, "{$this->_cacheDirectory}/$flowName.yaml");
         $continuation->setEventNameCallback(array(__CLASS__, 'getEventName'));
         $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
         $continuation->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
@@ -841,12 +841,11 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
     function testNewFlowExecutionShouldBeAbleToStartWithSameRequestAfterFlowExecutionIsExpired()
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
-        $cacheDirectory = dirname(__FILE__) . '/' . basename(__FILE__, '.php');
         $flowName = 'FlowExecutionExpired';
         $GLOBALS['flowName'] = $flowName;
         $continuation = &new Piece_Flow_Continuation(false, true, 1);
-        $continuation->setCacheDirectory(dirname(__FILE__));
-        $continuation->addFlow($flowName, "$cacheDirectory/flows/$flowName.yaml");
+        $continuation->setCacheDirectory($this->_cacheDirectory);
+        $continuation->addFlow($flowName, "{$this->_cacheDirectory}/$flowName.yaml");
         $continuation->setEventNameCallback(array(__CLASS__, 'getEventName'));
         $continuation->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
         $continuation->setFlowNameCallback(array(__CLASS__, 'getFlowName'));

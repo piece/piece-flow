@@ -38,10 +38,10 @@
 
 require_once 'Piece/Flow/Action.php';
 
-// {{{ Piece_Flow_ShutdownAction
+// {{{ SecondCounterAction
 
 /**
- * An action class for 'Shutdown'.
+ * A class for unit tests.
  *
  * @package    Piece_Flow
  * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
@@ -50,7 +50,7 @@ require_once 'Piece/Flow/Action.php';
  * @see        Piece_Flow_ContinuationTestCase
  * @since      Class available since Release 1.0.0
  */
-class Piece_Flow_ShutdownAction extends Piece_Flow_Action
+class SecondCounterAction extends Piece_Flow_Action
 {
 
     // {{{ properties
@@ -71,9 +71,19 @@ class Piece_Flow_ShutdownAction extends Piece_Flow_Action
      * @access public
      */
 
-    function finalize()
+    function setup()
     {
-        ++$GLOBALS['ShutdownCount'];
+        if (!$this->_flow->hasAttribute('counter')) {
+            $this->_flow->setAttribute('counter', 0);
+        }
+    }
+
+    function increase()
+    {
+        $this->_flow->setAttribute('counter',
+                                   $this->_flow->getAttribute('counter') + 1
+                                   );
+        return 'succeed';
     }
 
     /**#@-*/

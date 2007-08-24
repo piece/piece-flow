@@ -38,10 +38,10 @@
 
 require_once 'Piece/Flow/Action.php';
 
-// {{{ Piece_Flow_SecondCounterAction
+// {{{ CounterAction
 
 /**
- * An action class for 'SecondCounter'.
+ * A class for unit tests.
  *
  * @package    Piece_Flow
  * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
@@ -50,7 +50,7 @@ require_once 'Piece/Flow/Action.php';
  * @see        Piece_Flow_ContinuationTestCase
  * @since      Class available since Release 1.0.0
  */
-class Piece_Flow_SecondCounterAction extends Piece_Flow_Action
+class CounterAction extends Piece_Flow_Action
 {
 
     // {{{ properties

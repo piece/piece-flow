@@ -2,7 +2,7 @@
 name: Shutdown
 firstState: starting
 final:
-  class: Piece_Flow_ShutdownAction
+  class: ShutdownAction
   method: finalize
 lastState: { name: ending, view: end }
 viewState:

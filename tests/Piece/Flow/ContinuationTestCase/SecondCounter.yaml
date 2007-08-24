@@ -6,13 +6,13 @@ viewState:
   - name: DisplayForm
     view: SecondCounter
     entry:
-      class: Piece_Flow_SecondCounterAction
+      class: SecondCounterAction
       method: setup
     transition:
       - event: increase
         nextState: increased
         action:
-          class: Piece_Flow_SecondCounterAction
+          class: SecondCounterAction
           method: increase
 actionState:
   - name: increased
