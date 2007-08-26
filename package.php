@@ -39,22 +39,23 @@ require_once 'PEAR/PackageFileManager2.php';
 
 PEAR::staticPushErrorHandling(PEAR_ERROR_CALLBACK, create_function('$error', 'var_dump($error); exit();'));
 
-$releaseVersion = '1.12.0';
+$releaseVersion = '1.13.0';
 $releaseStability = 'stable';
 $apiVersion = '1.7.0';
 $apiStability = 'stable';
 $notes = 'A new release of Piece_Flow is now available.
 
-What\'s New in Piece_Flow 1.12.0
+What\'s New in Piece_Flow 1.13.0
 
- * The target of the garbage collection changed: The target of the garbage collection has been changed from all flow executions to only non-exclusive flow executions.
+ * Piece_Flow_Continuation::checkLastEvent(): This method can be used to check whether the last event which is given by a user is valid or not. And this method always return true if the continuation has not activated yet or just started.
 
 See the following release notes for details.
 
 Enhancements
 ============
 
-- Changed the target of the garbage collection to only non-exclusive flow executions. (Piece_Flow_Continuation)';
+- Changed read() so that a flow definition file with unknown extension is read as YAML. (Piece_Flow_ConfigReader)
+- Added checkLastEvent() which can be used to check whether the last event which is given by a user is valid or not. (Piece_Flow_Continuation, Piece_Flow)';
 
 $package = new PEAR_PackageFileManager2();
 $package->setOptions(array('filelistgenerator' => 'svn',

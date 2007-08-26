@@ -16,10 +16,10 @@ Piece_Flow provides a stateful programming model for developers, and high securi
   <email>iteman@users.sourceforge.net</email>
   <active>yes</active>
  </lead>
- <date>2007-08-17</date>
- <time>23:53:13</time>
+ <date>2007-08-26</date>
+ <time>15:00:59</time>
  <version>
-  <release>1.12.0</release>
+  <release>1.13.0</release>
   <api>1.7.0</api>
  </version>
  <stability>
@@ -29,16 +29,17 @@ Piece_Flow provides a stateful programming model for developers, and high securi
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License (revised)</license>
  <notes>A new release of Piece_Flow is now available.
 
-What&apos;s New in Piece_Flow 1.12.0
+What&apos;s New in Piece_Flow 1.13.0
 
- * The target of the garbage collection changed: The target of the garbage collection has been changed from all flow executions to only non-exclusive flow executions.
+ * Piece_Flow_Continuation::checkLastEvent(): This method can be used to check whether the last event which is given by a user is valid or not. And this method always return true if the continuation has not activated yet or just started.
 
 See the following release notes for details.
 
 Enhancements
 ============
 
-- Changed the target of the garbage collection to only non-exclusive flow executions. (Piece_Flow_Continuation)</notes>
+- Changed read() so that a flow definition file with unknown extension is read as YAML. (Piece_Flow_ConfigReader)
+- Added checkLastEvent() which can be used to check whether the last event which is given by a user is valid or not. (Piece_Flow_Continuation, Piece_Flow)</notes>
  <contents>
   <dir baseinstalldir="/" name="/">
    <dir name="data">
@@ -131,11 +132,6 @@ Enhancements
         <tasks:replace from="@package_version@" to="version" type="package-info" />
        </file>
       </dir> <!-- /tests/Piece/Flow/Action -->
-      <dir name="actions">
-       <file name="BindActionsWithFlowExecutionAction.php" role="test">
-        <tasks:replace from="@package_version@" to="version" type="package-info" />
-       </file>
-      </dir> <!-- /tests/Piece/Flow/actions -->
       <dir name="ConfigReader">
        <dir name="XMLTestCase">
         <file name="broken.xml" role="test">
@@ -404,6 +400,9 @@ Enhancements
          </dir> <!-- /tests/Piece/Flow/ConfigReaderTestCase/Piece/Flow/ConfigReader -->
         </dir> <!-- /tests/Piece/Flow/ConfigReaderTestCase/Piece/Flow -->
        </dir> <!-- /tests/Piece/Flow/ConfigReaderTestCase/Piece -->
+       <file name="foo.flow" role="test">
+        <tasks:replace from="@package_version@" to="version" type="package-info" />
+       </file>
        <file name="foo.xml" role="test">
         <tasks:replace from="@package_version@" to="version" type="package-info" />
        </file>
@@ -412,11 +411,36 @@ Enhancements
        </file>
       </dir> <!-- /tests/Piece/Flow/ConfigReaderTestCase -->
       <dir name="ContinuationTestCase">
-       <dir name="flows">
-        <file name="FlowExecutionExpired.yaml" role="test">
-         <tasks:replace from="@package_version@" to="version" type="package-info" />
-        </file>
-       </dir> <!-- /tests/Piece/Flow/ContinuationTestCase/flows -->
+       <file name="BindActionsWithFlowExecution.yaml" role="test">
+        <tasks:replace from="@package_version@" to="version" type="package-info" />
+       </file>
+       <file name="BindActionsWithFlowExecutionAction.php" role="test">
+        <tasks:replace from="@package_version@" to="version" type="package-info" />
+       </file>
+       <file name="CheckLastEvent.yaml" role="test">
+        <tasks:replace from="@package_version@" to="version" type="package-info" />
+       </file>
+       <file name="Counter.yaml" role="test">
+        <tasks:replace from="@package_version@" to="version" type="package-info" />
+       </file>
+       <file name="CounterAction.php" role="test">
+        <tasks:replace from="@package_version@" to="version" type="package-info" />
+       </file>
+       <file name="FlowExecutionExpired.yaml" role="test">
+        <tasks:replace from="@package_version@" to="version" type="package-info" />
+       </file>
+       <file name="SecondCounter.yaml" role="test">
+        <tasks:replace from="@package_version@" to="version" type="package-info" />
+       </file>
+       <file name="SecondCounterAction.php" role="test">
+        <tasks:replace from="@package_version@" to="version" type="package-info" />
+       </file>
+       <file name="Shutdown.yaml" role="test">
+        <tasks:replace from="@package_version@" to="version" type="package-info" />
+       </file>
+       <file name="ShutdownAction.php" role="test">
+        <tasks:replace from="@package_version@" to="version" type="package-info" />
+       </file>
       </dir> <!-- /tests/Piece/Flow/ContinuationTestCase -->
       <dir name="EventHandlerTestCase">
        <file name="PieceFlowEventHandlerTestCaseNoMethodsAction.php" role="test">
@@ -429,36 +453,13 @@ Enhancements
         <tasks:replace from="@package_version@" to="version" type="package-info" />
        </file>
       </dir> <!-- /tests/Piece/Flow/EventHandlerTestCase -->
-      <dir name="flows">
-       <file name="BindActionsWithFlowExecution.yaml" role="test">
-        <tasks:replace from="@package_version@" to="version" type="package-info" />
-       </file>
-      </dir> <!-- /tests/Piece/Flow/flows -->
       <file name="ConfigReaderTestCase.php" role="test">
        <tasks:replace from="@package_version@" to="version" type="package-info" />
       </file>
       <file name="ContinuationTestCase.php" role="test">
        <tasks:replace from="@package_version@" to="version" type="package-info" />
       </file>
-      <file name="Counter.yaml" role="test">
-       <tasks:replace from="@package_version@" to="version" type="package-info" />
-      </file>
-      <file name="CounterAction.php" role="test">
-       <tasks:replace from="@package_version@" to="version" type="package-info" />
-      </file>
       <file name="EventHandlerTestCase.php" role="test">
-       <tasks:replace from="@package_version@" to="version" type="package-info" />
-      </file>
-      <file name="SecondCounter.yaml" role="test">
-       <tasks:replace from="@package_version@" to="version" type="package-info" />
-      </file>
-      <file name="SecondCounterAction.php" role="test">
-       <tasks:replace from="@package_version@" to="version" type="package-info" />
-      </file>
-      <file name="Shutdown.yaml" role="test">
-       <tasks:replace from="@package_version@" to="version" type="package-info" />
-      </file>
-      <file name="ShutdownAction.php" role="test">
        <tasks:replace from="@package_version@" to="version" type="package-info" />
       </file>
      </dir> <!-- /tests/Piece/Flow -->
@@ -569,6 +570,31 @@ Enhancements
  </dependencies>
  <phprelease />
  <changelog>
+  <release>
+   <version>
+    <release>1.13.0</release>
+    <api>1.7.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2007-08-26</date>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License (revised)</license>
+   <notes>A new release of Piece_Flow is now available.
+
+What&apos;s New in Piece_Flow 1.13.0
+
+ * Piece_Flow_Continuation::checkLastEvent(): This method can be used to check whether the last event which is given by a user is valid or not. And this method always return true if the continuation has not activated yet or just started.
+
+See the following release notes for details.
+
+Enhancements
+============
+
+- Changed read() so that a flow definition file with unknown extension is read as YAML. (Piece_Flow_ConfigReader)
+- Added checkLastEvent() which can be used to check whether the last event which is given by a user is valid or not. (Piece_Flow_Continuation, Piece_Flow)</notes>
+  </release>
   <release>
    <version>
     <release>1.12.0</release>
