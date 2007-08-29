@@ -253,7 +253,7 @@ class Piece_Flow
 
         if (Stagehand_FSM_Error::hasErrors('exception')) {
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_ALREADY_SHUTDOWN,
-                                   "The flow [ {$this->_name} ] was already shutdown.",
+                                   "The flow execution [ {$this->_name} ] was already shutdown.",
                                    'exception',
                                    array(),
                                    Stagehand_FSM_Error::pop()
@@ -320,7 +320,7 @@ class Piece_Flow
 
         if (Stagehand_FSM_Error::hasErrors('exception')) {
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_ALREADY_SHUTDOWN,
-                                   "The flow [ {$this->_name} ] was already shutdown.",
+                                   "The flow execution [ {$this->_name} ] was already shutdown.",
                                    'exception',
                                    array(),
                                    Stagehand_FSM_Error::pop()
@@ -337,7 +337,7 @@ class Piece_Flow
             Piece_Flow_Error::popCallback();
             if (Stagehand_FSM_Error::hasErrors('exception')) {
                 Piece_Flow_Error::push(PIECE_FLOW_ERROR_ALREADY_SHUTDOWN,
-                                       "The flow [ {$this->_name} ] was already shutdown.",
+                                       "The flow execution [ {$this->_name} ] was already shutdown.",
                                        'exception',
                                        array(),
                                        Stagehand_FSM_Error::pop()
@@ -357,9 +357,17 @@ class Piece_Flow
      * Gets the previous state name.
      *
      * @return string
+     * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
      */
     function getPreviousStateName()
     {
+        if (!$this->_started()) {
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                   __FUNCTION__ . ' method must be called after starting flows.'
+                                   );
+            return;
+        }
+
         $state = &$this->_fsm->getPreviousState();
         return $state->getName();
     }
@@ -371,9 +379,17 @@ class Piece_Flow
      * Gets the current state name.
      *
      * @return string
+     * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
      */
     function getCurrentStateName()
     {
+        if (!$this->_started()) {
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                   __FUNCTION__ . ' method must be called after starting flows.'
+                                   );
+            return;
+        }
+
         $state = &$this->_fsm->getCurrentState();
         return $state->getName();
     }
@@ -382,7 +398,7 @@ class Piece_Flow
     // {{{ setAttribute()
 
     /**
-     * Sets an attribute for the flow.
+     * Sets an attribute for the flow execution.
      *
      * @param string $name
      * @param mixed  $value
@@ -404,7 +420,7 @@ class Piece_Flow
     // {{{ setAttributeByRef()
 
     /**
-     * Sets an attribute by reference for the flow.
+     * Sets an attribute by reference for the flow execution.
      *
      * @param string $name
      * @param mixed  &$value
@@ -426,7 +442,7 @@ class Piece_Flow
     // {{{ hasAttribute()
 
     /**
-     * Returns whether the flow has an attribute with a given name.
+     * Returns whether the flow execution has an attribute with a given name.
      *
      * @param string $name
      * @return boolean
@@ -448,7 +464,7 @@ class Piece_Flow
     // {{{ getAttribute()
 
     /**
-     * Gets an attribute for the flow.
+     * Gets an attribute for the flow execution.
      *
      * @param string $name
      * @return mixed
@@ -492,7 +508,8 @@ class Piece_Flow
     // {{{ isFinalState()
 
     /**
-     * Returns whether the current state is the final state of the flow.
+     * Returns whether the current state of the flow execution is the final
+     * state.
      *
      * @return boolean
      * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
@@ -513,7 +530,7 @@ class Piece_Flow
     // {{{ removeAttribute()
 
     /**
-     * Removes an attribute from the flow.
+     * Removes an attribute from the flow execution.
      *
      * @param string $name
      * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
@@ -534,7 +551,7 @@ class Piece_Flow
     // {{{ clearAttributes()
 
     /**
-     * Removes all attributes from the flow.
+     * Removes all attributes from the flow execution.
      *
      * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
      */
@@ -752,7 +769,7 @@ class Piece_Flow
     // {{{ _started()
 
     /**
-     * Returns whether the flow has started or not.
+     * Returns whether the flow execution has started or not.
      *
      * @return boolean
      */
