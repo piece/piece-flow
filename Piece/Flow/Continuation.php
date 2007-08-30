@@ -182,7 +182,7 @@ class Piece_Flow_Continuation
             return;
         }
 
-        if ($this->_enableGC && !$this->isExclusive()) {
+        if ($this->_enableGC && !$this->_isExclusive()) {
             $this->_gc->update($this->_currentFlowExecutionTicket);
         }
 
@@ -455,23 +455,12 @@ class Piece_Flow_Continuation
      * Checks whether the curent flow execution is exclusive or not.
      *
      * @return boolean
-     * @throws PIECE_FLOW_ERROR_INVALID_TRANSITION
      * @since Method available since Release 1.8.0
+     * @deprecated
      */
     function isExclusive()
     {
-        if (!$this->_activated()) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
-                                   __FUNCTION__ . ' method must be called after starting/continuing flows.'
-                                   );
-            return;
-        }
-
-        if (!$this->_enableSingleFlowMode) {
-            return $this->_flowDefinitions[$this->_currentFlowName]['isExclusive'];
-        } else {
-            return true;
-        }
+        return $this->_isExclusive();
     }
 
     // }}}
@@ -679,8 +668,7 @@ class Piece_Flow_Continuation
             return;
         }
 
-        if ($this->_enableSingleFlowMode || $this->_flowDefinitions[$this->_currentFlowName]['isExclusive']
-            ) {
+        if ($this->_isExclusive()) {
             $this->_exclusiveFlowExecutionTicketsByFlowName[$this->_currentFlowName] = $flowExecutionTicket;
             $this->_exclusiveFlowNamesByFlowExecutionTicket[$flowExecutionTicket] = $this->_currentFlowName;
         }
@@ -749,6 +737,24 @@ class Piece_Flow_Continuation
         if (array_key_exists($flowName, $this->_exclusiveFlowExecutionTicketsByFlowName)) {
             unset($this->_exclusiveFlowExecutionTicketsByFlowName[$flowName]);
             unset($this->_exclusiveFlowNamesByFlowExecutionTicket[$flowExecutionTicket]);
+        }
+    }
+
+    // }}}
+    // {{{ _isExclusive()
+
+    /**
+     * Checks whether the curent flow execution is exclusive or not.
+     *
+     * @return boolean
+     * @since Method available since Release 1.14.0
+     */
+    function _isExclusive()
+    {
+        if (!$this->_enableSingleFlowMode) {
+            return $this->_flowDefinitions[$this->_currentFlowName]['isExclusive'];
+        } else {
+            return true;
         }
     }
 
