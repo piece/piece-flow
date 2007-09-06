@@ -175,9 +175,6 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 
         $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket);
         $this->assertEquals('Counter', $continuation->getView());
-
-        $counter = &Piece_Flow_Action_Factory::factory('CounterAction');
-
         $this->assertEquals(0, $continuation->getAttribute('counter'));
     }
 
@@ -196,10 +193,6 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 
         $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket1);
         $this->assertEquals('Counter', $continuation->getView());
-        $this->assertTrue($continuation->isExclusive());
-
-        $counter = &Piece_Flow_Action_Factory::factory('CounterAction');
-
         $this->assertEquals(1, $continuation->getAttribute('counter'));
         $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket2);
     }
@@ -220,10 +213,6 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 
         $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket1);
         $this->assertEquals('Counter', $continuation->getView());
-        $this->assertFalse($continuation->isExclusive());
-
-        $counter = &Piece_Flow_Action_Factory::factory('CounterAction');
-
         $this->assertEquals(1, $continuation->getAttribute('counter'));
         $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket2);
     }
@@ -310,8 +299,6 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $continuation->invoke(new stdClass());
 
         $this->assertFalse(Piece_Flow_Error::hasErrors('exception'));
-
-        $counter = &Piece_Flow_Action_Factory::factory('CounterAction');
         $this->assertEquals(1, $continuation->getAttribute('counter'));
     }
 
@@ -376,14 +363,12 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
         $flowExecutionTicket1 = $continuation->invoke(new stdClass());
 
         $this->assertEquals(0, $continuation->getAttribute('counter'));
-        $this->assertTrue($continuation->isExclusive());
 
         $GLOBALS['flowName'] = 'SecondCounter';
         $continuation->shutdown();
         $flowExecutionTicket3 = $continuation->invoke(new stdClass());
 
         $this->assertEquals(0, $continuation->getAttribute('counter'));
-        $this->assertFalse($continuation->isExclusive());
 
         $GLOBALS['flowName'] = 'Counter';
         $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket1;
@@ -415,9 +400,6 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 
         $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket1);
         $this->assertEquals('Counter', $continuation->getView());
-
-        $counter = &Piece_Flow_Action_Factory::factory('CounterAction');
-
         $this->assertEquals(1, $continuation->getAttribute('counter'));
         $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket2);
     }
