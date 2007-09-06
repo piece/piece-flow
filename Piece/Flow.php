@@ -65,7 +65,7 @@ define('PIECE_FLOW_PROTECTED_EVENT', '_Piece_Flow_Protected_Event');
  * @package    Piece_Flow
  * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
- * @version    Release: 1.13.0
+ * @version    Release: @package_version@
  * @link       http://www.martinfowler.com/eaaCatalog/applicationController.html
  * @link       http://opensource2.atlassian.com/confluence/spring/display/WEBFLOW/Home
  * @link       http://www-128.ibm.com/developerworks/java/library/j-cb03216/
