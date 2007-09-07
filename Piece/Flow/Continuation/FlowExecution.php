@@ -66,6 +66,7 @@ class Piece_Flow_Continuation_FlowExecution
     var $_activated = false;
     var $_exclusiveFlowExecutionTicketsByFlowName = array();
     var $_exclusiveFlowNamesByFlowExecutionTicket = array();
+    var $_activeFlowName;
 
     /**#@-*/
 
@@ -129,10 +130,12 @@ class Piece_Flow_Continuation_FlowExecution
      * execution ticket.
      *
      * @param string $flowExecutionTicket
+     * @param string $flowName
      */
-    function activateFlowExecution($flowExecutionTicket)
+    function activateFlowExecution($flowExecutionTicket, $flowName)
     {
         $this->_activeFlowExecutionTicket = $flowExecutionTicket;
+        $this->_activeFlowName = $flowName;
         $this->_activated = true;
     }
 
@@ -192,6 +195,7 @@ class Piece_Flow_Continuation_FlowExecution
     {
         $this->_activated = false;
         $this->_activeFlowExecutionTicket = null;
+        $this->_activeFlowName = null;
     }
 
     // }}}
@@ -250,6 +254,19 @@ class Piece_Flow_Continuation_FlowExecution
     function &getFlow()
     {
         return $this->_flowExecutions[ $this->_activeFlowExecutionTicket ];
+    }
+
+    // }}}
+    // {{{ getActiveFlowName()
+
+    /**
+     * Gets the flow name for the active flow execution.
+     *
+     * @return string
+     */
+    function getActiveFlowName()
+    {
+        return $this->_activeFlowName;
     }
 
     /**#@-*/
