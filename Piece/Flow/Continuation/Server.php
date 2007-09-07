@@ -426,7 +426,7 @@ class Piece_Flow_Continuation_Server
             }
         }
 
-        $this->_flowExecution->activateFlowExecution($this->_currentFlowExecutionTicket);
+        $this->_flowExecution->activateFlowExecution($this->_currentFlowExecutionTicket, $this->_currentFlowName);
         $flow = &$this->_flowExecution->getFlow();
         $flow->setPayload($payload);
 
@@ -484,7 +484,7 @@ class Piece_Flow_Continuation_Server
             }
         }
 
-        $this->_flowExecution->activateFlowExecution($flowExecutionTicket);
+        $this->_flowExecution->activateFlowExecution($flowExecutionTicket, $this->_currentFlowName);
         $this->_currentFlowExecutionTicket = $flowExecutionTicket;
         $flow->setPayload($payload);
         $flow->start();
