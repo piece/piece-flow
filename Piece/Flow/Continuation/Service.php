@@ -64,7 +64,6 @@ class Piece_Flow_Continuation_Service
      * @access private
      */
 
-    var $_flow;
     var $_flowExecution;
 
     /**#@-*/
@@ -84,10 +83,6 @@ class Piece_Flow_Continuation_Service
      */
     function Piece_Flow_Continuation_Service(&$flowExecution)
     {
-        if ($flowExecution->activated()) {
-            $this->_flow = &$flowExecution->getFlow();
-        }
-
         $this->_flowExecution = &$flowExecution;
     }
 
@@ -103,14 +98,15 @@ class Piece_Flow_Continuation_Service
      */
     function setAttribute($name, $value)
     {
-        if (is_null($this->_flow)) {
+        if (!$this->_flowExecution->activated()) {
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
                                    __FUNCTION__ . ' method must be called after starting/continuing flows.'
                                    );
             return;
         }
 
-        $this->_flow->setAttribute($name, $value);
+        $flow = &$this->_flowExecution->getFlow();
+        $flow->setAttribute($name, $value);
     }
 
     // }}}
@@ -125,14 +121,15 @@ class Piece_Flow_Continuation_Service
      */
     function hasAttribute($name)
     {
-        if (is_null($this->_flow)) {
+        if (!$this->_flowExecution->activated()) {
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
                                    __FUNCTION__ . ' method must be called after starting/continuing flows.'
                                    );
             return;
         }
 
-        return $this->_flow->hasAttribute($name);
+        $flow = &$this->_flowExecution->getFlow();
+        return $flow->hasAttribute($name);
     }
 
     // }}}
@@ -147,7 +144,7 @@ class Piece_Flow_Continuation_Service
      */
     function &getAttribute($name)
     {
-        if (is_null($this->_flow)) {
+        if (!$this->_flowExecution->activated()) {
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
                                    __FUNCTION__ . ' method must be called after starting/continuing flows.'
                                    );
@@ -155,7 +152,8 @@ class Piece_Flow_Continuation_Service
             return $return;
         }
 
-        return $this->_flow->getAttribute($name);
+        $flow = &$this->_flowExecution->getFlow();
+        return $flow->getAttribute($name);
     }
 
     // }}}
@@ -170,14 +168,15 @@ class Piece_Flow_Continuation_Service
      */
     function setAttributeByRef($name, &$value)
     {
-        if (is_null($this->_flow)) {
+        if (!$this->_flowExecution->activated()) {
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
                                    __FUNCTION__ . ' method must be called after starting/continuing flows.'
                                    );
             return;
         }
 
-        $this->_flow->setAttributeByRef($name, $value);
+        $flow = &$this->_flowExecution->getFlow();
+        $flow->setAttributeByRef($name, $value);
     }
 
     // }}}
@@ -209,6 +208,33 @@ class Piece_Flow_Continuation_Service
     function checkLastEvent()
     {
         return $this->_flowExecution->checkLastEvent();
+    }
+
+    // }}}
+    // {{{ getActiveFlowName()
+
+    /**
+     * Gets the flow name for the active flow execution.
+     *
+     * @return string
+     */
+    function getActiveFlowName()
+    {
+        return $this->_flowExecution->getActiveFlowName();
+    }
+
+    // }}}
+    // {{{ getCurrentFlowName()
+
+    /**
+     * Gets the flow name for the active flow execution.
+     *
+     * @return string
+     * @deprecated
+     */
+    function getCurrentFlowName()
+    {
+        return $this->getActiveFlowName();
     }
 
     /**#@-*/
