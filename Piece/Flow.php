@@ -36,26 +36,21 @@
  * @link       http://opensource2.atlassian.com/confluence/spring/display/WEBFLOW/Home
  * @link       http://www-128.ibm.com/developerworks/java/library/j-cb03216/
  * @link       http://www-06.ibm.com/jp/developerworks/java/060412/j_j-cb03216.shtml
- * @see        Stagehand_FSM
  * @since      File available since Release 0.1.0
  */
 
-require_once 'Stagehand/FSM.php';
-require_once 'Piece/Flow/EventHandler.php';
 require_once 'Piece/Flow/Error.php';
 require_once 'Piece/Flow/ConfigReader.php';
+require_once 'Piece/Flow/FSMBuilder.php';
+require_once 'Stagehand/FSM/Error.php';
+require_once 'Piece/Flow/ProtedtedEvent.php';
 
-// {{{ constants
-
-define('PIECE_FLOW_PROTECTED_EVENT', '_Piece_Flow_Protected_Event');
-
-// }}}
 // {{{ Piece_Flow
 
 /**
- * A web flow engine which to handle page flows of web applications.
+ * A web flow engine for handling page flows of web applications.
  *
- * Piece_Flow provides a web flow engine based on Finite State Machine(FSM).
+ * Piece_Flow provides a web flow engine based on Finite State Machine (FSM).
  * Piece_Flow can handle two different states. The view state is a state
  * which is associated with a view string. The action state is a simple
  * state, which has no association with all views.
@@ -70,7 +65,6 @@ define('PIECE_FLOW_PROTECTED_EVENT', '_Piece_Flow_Protected_Event');
  * @link       http://opensource2.atlassian.com/confluence/spring/display/WEBFLOW/Home
  * @link       http://www-128.ibm.com/developerworks/java/library/j-cb03216/
  * @link       http://www-06.ibm.com/jp/developerworks/java/060412/j_j-cb03216.shtml
- * @see        Stagehand_FSM
  * @since      Class available since Release 0.1.0
  */
 class Piece_Flow
@@ -105,7 +99,7 @@ class Piece_Flow
     // {{{ configure()
 
     /**
-     * Configures a FSM with the given configuration.
+     * Builds a FSM with the given configuration.
      *
      * @param mixed  $source
      * @param string $driverName
@@ -124,59 +118,22 @@ class Piece_Flow
             return;
         }
 
-        $this->_fsm = &new Stagehand_FSM();
-
-        $firstState = $config->getFirstState();
-        if ($this->_fsm->isProtectedState($firstState)) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_PROTECTED_STATE,
-                                   "The state [ $firstState ] cannot be used in flow definitions."
-                                   );
+        $this->_name = $config->getName();
+        $fsmBuilder = &new Piece_Flow_FSMBuilder($this);
+        $fsm = &$fsmBuilder->build($config);
+        if (Piece_Flow_Error::hasErrors('exception')) {
             return;
         }
 
-        $this->_fsm->setFirstState($firstState);
-
-        $this->_name = $config->getName();
-        $this->_fsm->setName($this->_name);
+        $this->_fsm = &$fsm;
 
         $lastState = $config->getLastState();
         if (!is_null($lastState)) {
-            if ($this->_fsm->isProtectedState($lastState)) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_PROTECTED_STATE,
-                                       "The state [ $lastState ] cannot be used in flow definitions."
-                                       );
-                return;
-            }
-
-            $this->_fsm->addTransition($lastState,
-                                       STAGEHAND_FSM_EVENT_END,
-                                       STAGEHAND_FSM_STATE_FINAL
-                                       );
             $this->_lastState = $lastState;
         }
 
-        $this->_configureViewStates($config->getViewStates());
-        if (Piece_Flow_Error::hasErrors('exception')) {
-            return;
-        }
-
-        $this->_configureActionStates($config->getActionStates());
-        if (Piece_Flow_Error::hasErrors('exception')) {
-            return;
-        }
-
-        $initial = $config->getInitialAction();
-        if (!is_null($initial)) {
-            $this->_fsm->setExitAction(STAGEHAND_FSM_STATE_INITIAL,
-                                       $this->_wrapAction($initial)
-                                       );
-        }
-
-        $final = $config->getFinalAction();
-        if (!is_null($final)) {
-            $this->_fsm->setEntryAction(STAGEHAND_FSM_STATE_FINAL,
-                                        $this->_wrapAction($final)
-                                        );
+        foreach ($config->getViewStates() as $key => $state) {
+            $this->_views[ $state['name'] ] = $state['view'];
         }
     }
 
@@ -253,7 +210,7 @@ class Piece_Flow
 
         if (Stagehand_FSM_Error::hasErrors('exception')) {
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_ALREADY_SHUTDOWN,
-                                   "The flow execution [ {$this->_name} ] was already shutdown.",
+                                   "The flow [ {$this->_name} ] was already shutdown.",
                                    'exception',
                                    array(),
                                    Stagehand_FSM_Error::pop()
@@ -284,7 +241,7 @@ class Piece_Flow
             return $return;
         }
 
-        if ($this->_isProtectedEvent($eventName)) {
+        if ($eventName == PIECE_FLOW_PROTECTED_EVENT || $this->_fsm->isProtectedEvent($eventName)) {
             Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_PROTECTED_EVENT,
                                    "The event [ $eventName] cannot be called directly. The current state [ " .
@@ -320,7 +277,7 @@ class Piece_Flow
 
         if (Stagehand_FSM_Error::hasErrors('exception')) {
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_ALREADY_SHUTDOWN,
-                                   "The flow execution [ {$this->_name} ] was already shutdown.",
+                                   "The flow [ {$this->_name} ] was already shutdown.",
                                    'exception',
                                    array(),
                                    Stagehand_FSM_Error::pop()
@@ -337,7 +294,7 @@ class Piece_Flow
             Piece_Flow_Error::popCallback();
             if (Stagehand_FSM_Error::hasErrors('exception')) {
                 Piece_Flow_Error::push(PIECE_FLOW_ERROR_ALREADY_SHUTDOWN,
-                                       "The flow execution [ {$this->_name} ] was already shutdown.",
+                                       "The flow [ {$this->_name} ] was already shutdown.",
                                        'exception',
                                        array(),
                                        Stagehand_FSM_Error::pop()
@@ -609,163 +566,6 @@ class Piece_Flow
      */
 
     // }}}
-    // {{{ _configureViewStates()
-
-    /**
-     * Configures view states.
-     *
-     * @param array $states
-     * @throws PIECE_FLOW_ERROR_PROTECTED_EVENT
-     * @throws PIECE_FLOW_ERROR_PROTECTED_STATE
-     */
-    function _configureViewStates($states)
-    {
-        foreach ($states as $key => $state) {
-            if ($this->_fsm->isProtectedState($state['name'])) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_PROTECTED_STATE,
-                                       "The state [ {$state['name']} ] cannot be used in flow definitions."
-                                       );
-                return;
-            }
-
-            $this->_configureViewState($state);
-            if (Piece_Flow_Error::hasErrors('exception')) {
-                return;
-            }
-        }
-    }
-
-    // }}}
-    // {{{ _configureActionStates()
-
-    /**
-     * Configures action states.
-     *
-     * @param array $states
-     * @throws PIECE_FLOW_ERROR_PROTECTED_EVENT
-     * @throws PIECE_FLOW_ERROR_PROTECTED_STATE
-     */
-    function _configureActionStates($states)
-    {
-        foreach ($states as $key => $state) {
-            if ($this->_fsm->isProtectedState($state['name'])) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_PROTECTED_STATE,
-                                       "The state [ {$state['name']} ] cannot be used in flow definitions."
-                                       );
-                return;
-            }
-
-            $this->_configureState($state);
-            if (Piece_Flow_Error::hasErrors('exception')) {
-                return;
-            }
-        }
-    }
-
-    // }}}
-    // {{{ _configureState()
-
-    /**
-     * Configures a state.
-     *
-     * @param array $state
-     * @throws PIECE_FLOW_ERROR_PROTECTED_EVENT
-     */
-    function _configureState($state)
-    {
-        for ($i = 0, $count = count(@$state['transitions']); $i < $count; ++$i) {
-            if ($this->_isProtectedEvent($state['transitions'][$i]['event'])) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_PROTECTED_EVENT,
-                                       "The event [ {$state['transitions'][$i]['event']} ] cannot be used in flow definitions."
-                                       );
-                return;
-            }
-
-            $this->_fsm->addTransition($state['name'],
-                                       $state['transitions'][$i]['event'],
-                                       $state['transitions'][$i]['nextState'],
-                                       $this->_wrapEventTriggerAction(@$state['transitions'][$i]['action']),
-                                       $this->_wrapAction(@$state['transitions'][$i]['guard'])
-                                       );
-        }
-
-        if (array_key_exists('entry', $state)) {
-            $this->_fsm->setEntryAction($state['name'],
-                                        $this->_wrapAction(@$state['entry'])
-                                        );
-        }
-
-        if (array_key_exists('exit', $state)) {
-            $this->_fsm->setExitAction($state['name'],
-                                       $this->_wrapAction(@$state['exit'])
-                                       );
-        }
-
-        if (array_key_exists('activity', $state)) {
-            $this->_fsm->setActivity($state['name'],
-                                     $this->_wrapEventTriggerAction(@$state['activity'])
-                                     );
-        }
-    }
-
-    // }}}
-    // {{{ _wrapAction()
-
-    /**
-     * Wraps a simple action up with a Piece_Flow_Action object and returns
-     * a callback. The simple action means that the action is entry action or
-     * exit action or guard.
-     *
-     * @param array $action
-     * @return array
-     */
-    function _wrapAction($action)
-    {
-        if (is_null($action)) {
-            return $action;
-        }
-
-        $eventHandler = &new Piece_Flow_EventHandler($this, @$action['class'], $action['method']);
-        return array(&$eventHandler, 'invoke');
-    }
-
-    // }}}
-    // {{{ _configureViewState()
-
-    /**
-     * Configures a view state.
-     *
-     * @param array $state
-     * @throws PIECE_FLOW_ERROR_PROTECTED_EVENT
-     */
-    function _configureViewState($state)
-    {
-        $this->_views[$state['name']] = $state['view'];
-        $this->_configureState($state);
-    }
-
-    // }}}
-    // {{{ _wrapEventTriggerAction()
-
-    /**
-     * Wraps an event trigger action up with a Piece_Flow_Action object and
-     * returns a callback. The event trigger action means that the action is
-     * transition action or activity.
-     *
-     * @param array $action
-     * @return array
-     */
-    function _wrapEventTriggerAction($action)
-    {
-        if (is_null($action)) {
-            return $action;
-        }
-
-        $eventHandler = &new Piece_Flow_EventHandler($this, @$action['class'], $action['method']);
-        return array(&$eventHandler, 'invokeAndTriggerEvent');
-    }
-
-    // }}}
     // {{{ _started()
 
     /**
@@ -776,22 +576,6 @@ class Piece_Flow
     function _started()
     {
         return is_a($this->_fsm, 'Stagehand_FSM') && !is_null($this->_fsm->getCurrentState());
-    }
-
-    // }}}
-    // {{{ _isProtectedEvent()
-
-    /**
-     * Returns whether an event is a protected event such as
-     * the Stagehand_FSM's special events and so on.
-     *
-     * @param string $eventName
-     * @return boolean
-     * @since Method available since Release 1.13.0
-     */
-    function _isProtectedEvent($eventName)
-    {
-        return $eventName == PIECE_FLOW_PROTECTED_EVENT || $this->_fsm->isProtectedEvent($eventName);
     }
 
     /**#@-*/
