@@ -948,6 +948,69 @@ class Piece_Flow_Continuation_ServerTestCase extends PHPUnit_TestCase
         $this->assertTrue($service->checkLastEvent());
     }
 
+    /**
+     * @since Method available since Release 1.14.0
+     */
+    function testCurrentStateNameShouldBeAbleToGetIfContinuationHasActivated()
+    {
+        $flowName = 'CheckLastEvent';
+        $GLOBALS['flowName'] = $flowName;
+        $server = &new Piece_Flow_Continuation_Server(false);
+        $server->setCacheDirectory($this->_cacheDirectory);
+        $server->addFlow($flowName, "{$this->_cacheDirectory}/$flowName.yaml");
+        $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
+        $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
+        $server->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
+        $GLOBALS['flowExecutionTicket'] = $server->invoke(new stdClass());
+        $service = &$server->createService();
+
+        $this->assertEquals('DisplayEdit', $service->getCurrentStateName());
+
+        $server->shutdown();
+
+        $GLOBALS['eventName'] = 'DisplayEditConfirmFromDisplayEdit';
+
+        $server->invoke(new stdClass());
+        $service = &$server->createService();
+
+        $this->assertEquals('DisplayEditConfirm', $service->getCurrentStateName());
+
+        $server->shutdown();
+
+        $GLOBALS['eventName'] = 'DisplayEditFinishFromDisplayEditConfirm';
+
+        $server->invoke(new stdClass());
+        $service = &$server->createService();
+
+        $this->assertEquals('DisplayEditFinish', $service->getCurrentStateName());
+    }
+
+    /**
+     * @since Method available since Release 1.14.0
+     */
+    function testGetCurrentStateNameShouldRaiseExceptionIfContinuationHasNotActivated()
+    {
+        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+        $flowName = 'CheckLastEvent';
+        $GLOBALS['flowName'] = $flowName;
+        $server = &new Piece_Flow_Continuation_Server(false);
+        $server->setCacheDirectory($this->_cacheDirectory);
+        $server->addFlow($flowName, "{$this->_cacheDirectory}/$flowName.yaml");
+        $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
+        $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
+        $server->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
+        $service = &$server->createService();
+        $service->getCurrentStateName();
+
+        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
+
+        $error = Piece_Flow_Error::pop();
+
+        $this->assertEquals(PIECE_FLOW_ERROR_INVALID_OPERATION, $error['code']);
+
+        Piece_Flow_Error::popCallback();
+    }
+
     /**#@-*/
 
     /**#@+

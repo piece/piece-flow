@@ -90,7 +90,7 @@ class Piece_Flow_Continuation_Service
     // {{{ setAttribute()
 
     /**
-     * Sets an attribute for the current flow object.
+     * Sets an attribute for the active flow object.
      *
      * @param string $name
      * @param mixed  $value
@@ -113,7 +113,7 @@ class Piece_Flow_Continuation_Service
     // {{{ hasAttribute()
 
     /**
-     * Returns whether the current flow object has an attribute with a given name.
+     * Returns whether the active flow object has an attribute with a given name.
      *
      * @param string $name
      * @return boolean
@@ -136,7 +136,7 @@ class Piece_Flow_Continuation_Service
     // {{{ getAttribute()
 
     /**
-     * Gets an attribute for the current flow object.
+     * Gets an attribute for the active flow object.
      *
      * @param string $name
      * @return mixed
@@ -160,7 +160,7 @@ class Piece_Flow_Continuation_Service
     // {{{ setAttributeByRef()
 
     /**
-     * Sets an attribute by reference for the current flow object.
+     * Sets an attribute by reference for the active flow object.
      *
      * @param string $name
      * @param mixed  &$value
@@ -185,7 +185,7 @@ class Piece_Flow_Continuation_Service
     /**
      * Gets a flow execution ticket by the given flow name.
      * This method will be used for getting flow execution ticket else than
-     * the current flow execution.
+     * the active flow execution.
      * This method is only available if the flow execution is exclusive.
      *
      * @param string $flowName
@@ -235,6 +235,29 @@ class Piece_Flow_Continuation_Service
     function getCurrentFlowName()
     {
         return $this->getActiveFlowName();
+    }
+
+
+    // }}}
+    // {{{ getCurrentStateName()
+
+    /**
+     * Gets the current state name for the active flow object.
+     *
+     * @return string
+     * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
+     */
+    function getCurrentStateName()
+    {
+        if (!$this->_flowExecution->activated()) {
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
+                                   __FUNCTION__ . ' method must be called after starting/continuing flows.'
+                                   );
+            return;
+        }
+
+        $flow = &$this->_flowExecution->getFlow();
+        return $flow->getCurrentStateName();
     }
 
     /**#@-*/
