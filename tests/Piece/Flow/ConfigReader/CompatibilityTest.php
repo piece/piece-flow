@@ -225,7 +225,7 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
                                        $transition22['nextState']
                                        );
 
-        $reader = &$this->_getConfigReader($this->_getSource('Registration'));
+        $reader = &$this->_createConfigReader("{$this->_cacheDirectory}/Registration" . $this->_getExtension());
         $actualConfig = &$reader->read();
 
         $this->assertEquals(strtolower('Piece_Flow_Config'), strtolower(get_class($actualConfig)));
@@ -290,13 +290,13 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
     {
         $oldDirectory = getcwd();
         chdir("{$this->_cacheDirectory}/CacheIDsShouldBeUniqueInOneCacheDirectory1");
-        $reader = &$this->_getConfigReader('New' . $this->_getExtension());
+        $reader = &$this->_createConfigReader('New' . $this->_getExtension());
         $reader->read();
 
         $this->assertEquals(1, $this->_getCacheFileCount($this->_cacheDirectory));
 
         chdir("{$this->_cacheDirectory}/CacheIDsShouldBeUniqueInOneCacheDirectory2");
-        $reader = &$this->_getConfigReader('New' . $this->_getExtension());
+        $reader = &$this->_createConfigReader('New' . $this->_getExtension());
         $reader->read();
 
         $this->assertEquals(2, $this->_getCacheFileCount($this->_cacheDirectory));
@@ -310,7 +310,7 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
      * @access private
      */
 
-    function &_getConfigReader($source) {}
+    function &_createConfigReader($source) {}
     function _doSetUp() {}
     function _getSource($name) {}
 
@@ -318,7 +318,7 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
-        $reader = &$this->_getConfigReader($this->_getSource($name));
+        $reader = &$this->_createConfigReader("{$this->_cacheDirectory}/$name" . $this->_getExtension());
         $config = &$reader->read();
 
         $this->assertNull($config, $name);
@@ -356,6 +356,11 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
 
         return $cacheFileCount;
     }
+
+    /**
+     * @since Method available since Release 1.14.0
+     */
+    function _getExtension() {}
 
     /**#@-*/
 

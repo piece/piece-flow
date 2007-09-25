@@ -79,7 +79,7 @@ class Piece_Flow_ConfigReader_XML5TestCase extends Piece_Flow_ConfigReader_Compa
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
-        $reader = &$this->_getConfigReader($this->_getSource('invalid'));
+        $reader = &$this->_createConfigReader("{$this->_cacheDirectory}/invalid" . $this->_getExtension());
         $config = &$reader->read();
 
         $this->assertNull($config);
@@ -98,7 +98,7 @@ class Piece_Flow_ConfigReader_XML5TestCase extends Piece_Flow_ConfigReader_Compa
      * @access private
      */
 
-    function &_getConfigReader($source)
+    function &_createConfigReader($source)
     {
         $reader = &new Piece_Flow_ConfigReader_XML5($source, $this->_cacheDirectory);
         return $reader;
@@ -107,11 +107,6 @@ class Piece_Flow_ConfigReader_XML5TestCase extends Piece_Flow_ConfigReader_Compa
     function _doSetUp()
     {
         $this->_cacheDirectory = dirname(__FILE__) . '/XMLTestCase';
-    }
-
-    function _getSource($name)
-    {
-        return "{$this->_cacheDirectory}/$name.xml";
     }
 
     /**

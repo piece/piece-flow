@@ -76,7 +76,7 @@ class Piece_Flow_ConfigReader_YAMLTestCase extends Piece_Flow_ConfigReader_Compa
      * @access private
      */
 
-    function &_getConfigReader($source)
+    function &_createConfigReader($source)
     {
         $reader = &new Piece_Flow_ConfigReader_YAML($source, $this->_cacheDirectory);
         return $reader;
@@ -85,11 +85,6 @@ class Piece_Flow_ConfigReader_YAMLTestCase extends Piece_Flow_ConfigReader_Compa
     function _doSetUp()
     {
         $this->_cacheDirectory = dirname(__FILE__) . '/' . basename(__FILE__, '.php');
-    }
-
-    function _getSource($name)
-    {
-        return "{$this->_cacheDirectory}/$name.yaml";
     }
 
     /**
