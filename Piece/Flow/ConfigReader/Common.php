@@ -507,21 +507,22 @@ class Piece_Flow_ConfigReader_Common
      */
     function &_getConfiguration()
     {
+        $masterFile = realpath($this->_source);
         $cache = &new Cache_Lite_File(array('cacheDir' => "{$this->_cacheDirectory}/",
-                                            'masterFile' => $this->_source,
+                                            'masterFile' => $masterFile,
                                             'automaticSerialization' => true,
                                             'errorHandlingAPIBreak' => true)
                                       );
 
         if (!Piece_Flow_Env::isProduction()) {
-            $cache->remove($this->_source);
+            $cache->remove($masterFile);
         }
 
         /*
          * The Cache_Lite class always specifies PEAR_ERROR_RETURN when
          * calling PEAR::raiseError in default.
          */
-        $config = $cache->get($this->_source);
+        $config = $cache->get($masterFile);
         if (PEAR::isError($config)) {
             Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_CANNOT_READ,
