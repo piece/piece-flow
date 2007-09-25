@@ -92,6 +92,14 @@ class Piece_Flow_ConfigReader_YAMLTestCase extends Piece_Flow_ConfigReader_Compa
         return "{$this->_cacheDirectory}/$name.yaml";
     }
 
+    /**
+     * @since Method available since Release 1.14.0
+     */
+    function _getExtension()
+    {
+        return '.yaml';
+    }
+
     /**#@-*/
 
     // }}}

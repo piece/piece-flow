@@ -114,6 +114,14 @@ class Piece_Flow_ConfigReader_XML5TestCase extends Piece_Flow_ConfigReader_Compa
         return "{$this->_cacheDirectory}/$name.xml";
     }
 
+    /**
+     * @since Method available since Release 1.14.0
+     */
+    function _getExtension()
+    {
+        return '.xml';
+    }
+
     /**#@-*/
 
     // }}}
