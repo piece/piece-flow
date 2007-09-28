@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- $Id$ -->
-<package packagerversion="1.6.1" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
+<package packagerversion="1.6.2" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
     http://pear.php.net/dtd/tasks-1.0.xsd
     http://pear.php.net/dtd/package-2.0
     http://pear.php.net/dtd/package-2.0.xsd">
  <name>Piece_Flow</name>
  <channel>pear.piece-framework.com</channel>
  <summary>A web flow engine and a continuation server</summary>
- <description>Piece_Flow is a generic web flow engine and a continuation server based on Finite State Machine(FSM).
+ <description>Piece_Flow is a web flow engine and a continuation server.
 
 Piece_Flow provides a stateful programming model for developers, and high security for applications.</description>
  <lead>
@@ -16,10 +16,10 @@ Piece_Flow provides a stateful programming model for developers, and high securi
   <email>iteman@users.sourceforge.net</email>
   <active>yes</active>
  </lead>
- <date>2007-08-26</date>
- <time>15:00:59</time>
+ <date>2007-09-28</date>
+ <time>12:30:11</time>
  <version>
-  <release>1.13.0</release>
+  <release>1.14.0</release>
   <api>1.7.0</api>
  </version>
  <stability>
@@ -29,17 +29,26 @@ Piece_Flow provides a stateful programming model for developers, and high securi
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License (revised)</license>
  <notes>A new release of Piece_Flow is now available.
 
-What&apos;s New in Piece_Flow 1.13.0
+What&apos;s New in Piece_Flow 1.14.0
 
- * Piece_Flow_Continuation::checkLastEvent(): This method can be used to check whether the last event which is given by a user is valid or not. And this method always return true if the continuation has not activated yet or just started.
+ * Two new interfaces for the continuation server: Two new interfaces for the continuation server have been available. One is Piece_Flow_Continuation_Service. The other is Piece_Flow_Continuation_Server. Piece_Flow_Continuation_Service is a service class which provides simple interfaces to access attributes of the active flow object and to get some information from flow executions. Users should use this class instead of Piece_Flow_Continuation from this release forward. Piece_Flow_Continuation_Server is a class which just provides the features for the continuation server only. Framework developers should use this class instead of Piece_Flow_Continuation from this release forward. Besides, Piece_Flow_Continuation has been deprecated.
+ * A Defect Fix: A defect that caused the same cache to be used if the relative paths of the flow definition files are same even though the absolute paths of the files are different has been fixed.
 
 See the following release notes for details.
 
 Enhancements
 ============
 
-- Changed read() so that a flow definition file with unknown extension is read as YAML. (Piece_Flow_ConfigReader)
-- Added checkLastEvent() which can be used to check whether the last event which is given by a user is valid or not. (Piece_Flow_Continuation, Piece_Flow)</notes>
+- Added missing code for checking whether the flow execution has started or not to getCurrentStateName() and getPreviousStateName(). (Piece_Flow)
+- Improved some error messages and comments. (Piece_Flow)
+- Changed the visibility of isExclusive() to private. isExclusive() has been marked as deprecated. (Piece_Flow_Continuation)
+- Refactored Piece_Flow_Continuation. It has been divided into some classes, and deprecated. (Ticket #30)
+- Refactored Piece_Flow. (Ticket #32)
+
+Defect Fixes
+============
+
+- Fixed the defect that caused the same cache to be used if the relative paths of the flow definition files are same even though the absolute paths of the files are different. (Ticket #34) (Piece_Flow_ConfigReader_Common)</notes>
  <contents>
   <dir baseinstalldir="/" name="/">
    <dir name="data">
@@ -77,7 +86,16 @@ Enhancements
       </file>
      </dir> <!-- /Piece/Flow/ConfigReader -->
      <dir name="Continuation">
+      <file name="FlowExecution.php" role="php">
+       <tasks:replace from="@package_version@" to="version" type="package-info" />
+      </file>
       <file name="GC.php" role="php">
+       <tasks:replace from="@package_version@" to="version" type="package-info" />
+      </file>
+      <file name="Server.php" role="php">
+       <tasks:replace from="@package_version@" to="version" type="package-info" />
+      </file>
+      <file name="Service.php" role="php">
        <tasks:replace from="@package_version@" to="version" type="package-info" />
       </file>
      </dir> <!-- /Piece/Flow/Continuation -->
@@ -103,6 +121,12 @@ Enhancements
       <tasks:replace from="@package_version@" to="version" type="package-info" />
      </file>
      <file name="EventHandler.php" role="php">
+      <tasks:replace from="@package_version@" to="version" type="package-info" />
+     </file>
+     <file name="FSMBuilder.php" role="php">
+      <tasks:replace from="@package_version@" to="version" type="package-info" />
+     </file>
+     <file name="ProtedtedEvent.php" role="php">
       <tasks:replace from="@package_version@" to="version" type="package-info" />
      </file>
     </dir> <!-- /Piece/Flow -->
@@ -134,6 +158,16 @@ Enhancements
       </dir> <!-- /tests/Piece/Flow/Action -->
       <dir name="ConfigReader">
        <dir name="XMLTestCase">
+        <dir name="CacheIDsShouldBeUniqueInOneCacheDirectory1">
+         <file name="New.xml" role="test">
+          <tasks:replace from="@package_version@" to="version" type="package-info" />
+         </file>
+        </dir> <!-- /tests/Piece/Flow/ConfigReader/XMLTestCase/CacheIDsShouldBeUniqueInOneCacheDirectory1 -->
+        <dir name="CacheIDsShouldBeUniqueInOneCacheDirectory2">
+         <file name="New.xml" role="test">
+          <tasks:replace from="@package_version@" to="version" type="package-info" />
+         </file>
+        </dir> <!-- /tests/Piece/Flow/ConfigReader/XMLTestCase/CacheIDsShouldBeUniqueInOneCacheDirectory2 -->
         <file name="broken.xml" role="test">
          <tasks:replace from="@package_version@" to="version" type="package-info" />
         </file>
@@ -259,6 +293,16 @@ Enhancements
         </file>
        </dir> <!-- /tests/Piece/Flow/ConfigReader/XMLTestCase -->
        <dir name="YAMLTestCase">
+        <dir name="CacheIDsShouldBeUniqueInOneCacheDirectory1">
+         <file name="New.yaml" role="test">
+          <tasks:replace from="@package_version@" to="version" type="package-info" />
+         </file>
+        </dir> <!-- /tests/Piece/Flow/ConfigReader/YAMLTestCase/CacheIDsShouldBeUniqueInOneCacheDirectory1 -->
+        <dir name="CacheIDsShouldBeUniqueInOneCacheDirectory2">
+         <file name="New.yaml" role="test">
+          <tasks:replace from="@package_version@" to="version" type="package-info" />
+         </file>
+        </dir> <!-- /tests/Piece/Flow/ConfigReader/YAMLTestCase/CacheIDsShouldBeUniqueInOneCacheDirectory2 -->
         <file name="ClassInActionIsInvalid.yaml" role="test">
          <tasks:replace from="@package_version@" to="version" type="package-info" />
         </file>
@@ -410,6 +454,43 @@ Enhancements
         <tasks:replace from="@package_version@" to="version" type="package-info" />
        </file>
       </dir> <!-- /tests/Piece/Flow/ConfigReaderTestCase -->
+      <dir name="Continuation">
+       <dir name="ServerTestCase">
+        <file name="BindActionsWithFlowExecution.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="BindActionsWithFlowExecutionAction.php" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="CheckLastEvent.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="Counter.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="CounterAction.php" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="FlowExecutionExpired.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="SecondCounter.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="SecondCounterAction.php" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="Shutdown.yaml" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+        <file name="ShutdownAction.php" role="test">
+         <tasks:replace from="@package_version@" to="version" type="package-info" />
+        </file>
+       </dir> <!-- /tests/Piece/Flow/Continuation/ServerTestCase -->
+       <file name="ServerTestCase.php" role="test">
+        <tasks:replace from="@package_version@" to="version" type="package-info" />
+       </file>
+      </dir> <!-- /tests/Piece/Flow/Continuation -->
       <dir name="ContinuationTestCase">
        <file name="BindActionsWithFlowExecution.yaml" role="test">
         <tasks:replace from="@package_version@" to="version" type="package-info" />
@@ -555,21 +636,43 @@ Enhancements
     <min>1.4.3</min>
    </package>
   </required>
-  <optional>
-   <package>
-    <name>Stagehand_TestRunner</name>
-    <channel>pear.piece-framework.com</channel>
-    <min>0.5.0</min>
-   </package>
-   <package>
-    <name>PHPUnit</name>
-    <channel>pear.phpunit.de</channel>
-    <min>1.3.2</min>
-   </package>
-  </optional>
  </dependencies>
  <phprelease />
  <changelog>
+  <release>
+   <version>
+    <release>1.14.0</release>
+    <api>1.7.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2007-09-28</date>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License (revised)</license>
+   <notes>A new release of Piece_Flow is now available.
+
+What&apos;s New in Piece_Flow 1.14.0
+
+ * Two new interfaces for the continuation server: Two new interfaces for the continuation server have been available. One is Piece_Flow_Continuation_Service. The other is Piece_Flow_Continuation_Server. Piece_Flow_Continuation_Service is a service class which provides simple interfaces to access attributes of the active flow object and to get some information from flow executions. Users should use this class instead of Piece_Flow_Continuation from this release forward. Piece_Flow_Continuation_Server is a class which just provides the features for the continuation server only. Framework developers should use this class instead of Piece_Flow_Continuation from this release forward. Besides, Piece_Flow_Continuation has been deprecated.
+ * A Defect Fix: A defect that caused the same cache to be used if the relative paths of the flow definition files are same even though the absolute paths of the files are different has been fixed.
+
+See the following release notes for details.
+
+Enhancements
+============
+
+- Added missing code for checking whether the flow execution has started or not to getCurrentStateName() and getPreviousStateName(). (Piece_Flow)
+- Improved some error messages and comments. (Piece_Flow)
+- Changed the visibility of isExclusive() to private. isExclusive() has been marked as deprecated. (Piece_Flow_Continuation)
+- Refactored Piece_Flow_Continuation. It has been divided into some classes, and deprecated. (Ticket #30)
+- Refactored Piece_Flow. (Ticket #32)
+
+Defect Fixes
+============
+
+- Fixed the defect that caused the same cache to be used if the relative paths of the flow definition files are same even though the absolute paths of the files are different. (Ticket #34) (Piece_Flow_ConfigReader_Common)</notes>
+  </release>
   <release>
    <version>
     <release>1.13.0</release>

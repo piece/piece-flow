@@ -39,23 +39,32 @@ require_once 'PEAR/PackageFileManager2.php';
 
 PEAR::staticPushErrorHandling(PEAR_ERROR_CALLBACK, create_function('$error', 'var_dump($error); exit();'));
 
-$releaseVersion = '1.13.0';
+$releaseVersion = '1.14.0';
 $releaseStability = 'stable';
 $apiVersion = '1.7.0';
 $apiStability = 'stable';
 $notes = 'A new release of Piece_Flow is now available.
 
-What\'s New in Piece_Flow 1.13.0
+What\'s New in Piece_Flow 1.14.0
 
- * Piece_Flow_Continuation::checkLastEvent(): This method can be used to check whether the last event which is given by a user is valid or not. And this method always return true if the continuation has not activated yet or just started.
+ * Two new interfaces for the continuation server: Two new interfaces for the continuation server have been available. One is Piece_Flow_Continuation_Service. The other is Piece_Flow_Continuation_Server. Piece_Flow_Continuation_Service is a service class which provides simple interfaces to access attributes of the active flow object and to get some information from flow executions. Users should use this class instead of Piece_Flow_Continuation from this release forward. Piece_Flow_Continuation_Server is a class which just provides the features for the continuation server only. Framework developers should use this class instead of Piece_Flow_Continuation from this release forward. Besides, Piece_Flow_Continuation has been deprecated.
+ * A Defect Fix: A defect that caused the same cache to be used if the relative paths of the flow definition files are same even though the absolute paths of the files are different has been fixed.
 
 See the following release notes for details.
 
 Enhancements
 ============
 
-- Changed read() so that a flow definition file with unknown extension is read as YAML. (Piece_Flow_ConfigReader)
-- Added checkLastEvent() which can be used to check whether the last event which is given by a user is valid or not. (Piece_Flow_Continuation, Piece_Flow)';
+- Added missing code for checking whether the flow execution has started or not to getCurrentStateName() and getPreviousStateName(). (Piece_Flow)
+- Improved some error messages and comments. (Piece_Flow)
+- Changed the visibility of isExclusive() to private. isExclusive() has been marked as deprecated. (Piece_Flow_Continuation)
+- Refactored Piece_Flow_Continuation. It has been divided into some classes, and deprecated. (Ticket #30)
+- Refactored Piece_Flow. (Ticket #32)
+
+Defect Fixes
+============
+
+- Fixed the defect that caused the same cache to be used if the relative paths of the flow definition files are same even though the absolute paths of the files are different. (Ticket #34) (Piece_Flow_ConfigReader_Common)';
 
 $package = new PEAR_PackageFileManager2();
 $package->setOptions(array('filelistgenerator' => 'svn',
@@ -73,7 +82,7 @@ $package->setOptions(array('filelistgenerator' => 'svn',
 $package->setPackage('Piece_Flow');
 $package->setPackageType('php');
 $package->setSummary('A web flow engine and a continuation server');
-$package->setDescription('Piece_Flow is a generic web flow engine and a continuation server based on Finite State Machine(FSM).
+$package->setDescription('Piece_Flow is a web flow engine and a continuation server.
 
 Piece_Flow provides a stateful programming model for developers, and high security for applications.');
 $package->setChannel('pear.piece-framework.com');
@@ -88,8 +97,6 @@ $package->setPearinstallerDep('1.4.3');
 $package->addPackageDepWithChannel('required', 'Stagehand_FSM', 'pear.piece-framework.com', '1.9.0');
 $package->addPackageDepWithChannel('required', 'Cache_Lite', 'pear.php.net', '1.7.0');
 $package->addPackageDepWithChannel('required', 'PEAR', 'pear.php.net', '1.4.3');
-$package->addPackageDepWithChannel('optional', 'Stagehand_TestRunner', 'pear.piece-framework.com', '0.5.0');
-$package->addPackageDepWithChannel('optional', 'PHPUnit', 'pear.phpunit.de', '1.3.2');
 $package->addMaintainer('lead', 'iteman', 'KUBO Atsuhiro', 'iteman@users.sourceforge.net');
 $package->addGlobalReplacement('package-info', '@package_version@', 'version');
 $package->generateContents();
