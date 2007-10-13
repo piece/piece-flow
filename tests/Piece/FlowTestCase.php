@@ -85,7 +85,6 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $this->_cacheDirectory = dirname(__FILE__) . '/' . basename(__FILE__, '.php');
         $this->_source = "{$this->_cacheDirectory}/Registration.yaml";
         $this->_config = &Piece_Flow_ConfigReader::read($this->_source, null, $this->_cacheDirectory);
-        Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/..');
     }
 
     function tearDown()
@@ -107,7 +106,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
     function testConfiguration()
     {
         $flow = &new Piece_Flow();
-        $flow->configure($this->_source, null, $this->_cacheDirectory);
+        $flow->configure($this->_source, null, $this->_cacheDirectory, $this->_cacheDirectory);
 
         $this->assertEquals($this->_config->getName(), $flow->getName());
     }
@@ -116,7 +115,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
     {
         $viewStates = $this->_config->getViewStates();
         $flow = &new Piece_Flow();
-        $flow->configure($this->_source, null, $this->_cacheDirectory);
+        $flow->configure($this->_source, null, $this->_cacheDirectory, $this->_cacheDirectory);
         $flow->start();
 
         $this->assertEquals($viewStates['DisplayForm']['view'],
@@ -130,7 +129,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $GLOBALS['prepareCalled'] = false;
         $viewStates = $this->_config->getViewStates();
         $flow = &new Piece_Flow();
-        $flow->configure($this->_source, null, $this->_cacheDirectory);
+        $flow->configure($this->_source, null, $this->_cacheDirectory, $this->_cacheDirectory);
         $flow->start();
         $flow->triggerEvent('submit');
 
@@ -147,7 +146,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
     function testGettingPreviousStateName()
     {
         $flow = &new Piece_Flow();
-        $flow->configure($this->_source, null, $this->_cacheDirectory);
+        $flow->configure($this->_source, null, $this->_cacheDirectory, $this->_cacheDirectory);
         $flow->start();
         $flow->triggerEvent('submit');
 
@@ -157,7 +156,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
     function testGettingCurrentStateName()
     {
         $flow = &new Piece_Flow();
-        $flow->configure($this->_source, null, $this->_cacheDirectory);
+        $flow->configure($this->_source, null, $this->_cacheDirectory, $this->_cacheDirectory);
         $flow->start();
         $flow->triggerEvent('submit');
 
@@ -170,7 +169,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $GLOBALS['validateConfirmationCalled'] = false;
         $viewStates = $this->_config->getViewStates();
         $flow = &new Piece_Flow();
-        $flow->configure($this->_source, null, $this->_cacheDirectory);
+        $flow->configure($this->_source, null, $this->_cacheDirectory, $this->_cacheDirectory);
         $flow->start();
         $flow->triggerEvent('submit');
 
@@ -196,7 +195,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $GLOBALS['hasErrors'] = true;
         $viewStates = $this->_config->getViewStates();
         $flow = &new Piece_Flow();
-        $flow->configure($this->_source, null, $this->_cacheDirectory);
+        $flow->configure($this->_source, null, $this->_cacheDirectory, $this->_cacheDirectory);
         $flow->start();
         $flow->triggerEvent('submit');
 
@@ -211,7 +210,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
     {
         $GLOBALS['displayCounter'] = 0;
         $flow = &new Piece_Flow();
-        $flow->configure($this->_source, null, $this->_cacheDirectory);
+        $flow->configure($this->_source, null, $this->_cacheDirectory, $this->_cacheDirectory);
         $flow->start();
 
         $this->assertEquals(1, $GLOBALS['displayCounter']);
@@ -229,7 +228,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $GLOBALS['setupFormCalled'] = false;
         $GLOBALS['teardownFormCalled'] = false;
         $flow = &new Piece_Flow();
-        $flow->configure($this->_source, null, $this->_cacheDirectory);
+        $flow->configure($this->_source, null, $this->_cacheDirectory, $this->_cacheDirectory);
         $flow->start();
 
         $this->assertTrue($GLOBALS['setupFormCalled']);
@@ -243,7 +242,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
     function testSettingAttribute()
     {
         $flow = &new Piece_Flow();
-        $flow->configure($this->_source, null, $this->_cacheDirectory);
+        $flow->configure($this->_source, null, $this->_cacheDirectory, $this->_cacheDirectory);
         $flow->start();
         $flow->setAttribute('foo', 'bar');
 
@@ -256,7 +255,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
         $flow = &new Piece_Flow();
-        $flow->configure($this->_source, null, $this->_cacheDirectory);
+        $flow->configure($this->_source, null, $this->_cacheDirectory, $this->_cacheDirectory);
         $flow->setAttribute('foo', 'bar');
 
         $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
@@ -286,14 +285,14 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
     function testOptionalElements()
     {
         $flow = &new Piece_Flow();
-        $flow->configure(dirname(__FILE__) . '/optional.xml', null, $this->_cacheDirectory);
+        $flow->configure("{$this->_cacheDirectory}/optional.xml", null, $this->_cacheDirectory, $this->_cacheDirectory);
         $flow->setPayload(new stdClass());
         $flow->start();
 
         $this->assertEquals('foo', $flow->getView());
 
         $flow = &new Piece_Flow();
-        $flow->configure(dirname(__FILE__) . '/optional.yaml', null, $this->_cacheDirectory);
+        $flow->configure("{$this->_cacheDirectory}/optional.yaml", null, $this->_cacheDirectory, $this->_cacheDirectory);
         $flow->setPayload(new stdClass());
         $flow->start();
 
@@ -314,7 +313,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
         $flow = &new Piece_Flow();
-        $flow->configure($this->_source, null, $this->_cacheDirectory);
+        $flow->configure($this->_source, null, $this->_cacheDirectory, $this->_cacheDirectory);
         $flow->getView();
 
         $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
@@ -331,7 +330,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
         $flow = &new Piece_Flow();
-        $flow->configure(dirname(__FILE__) . '/invalid.yaml', null, $this->_cacheDirectory);
+        $flow->configure("{$this->_cacheDirectory}/invalid.yaml", null, $this->_cacheDirectory, $this->_cacheDirectory);
         $flow->setPayload(new stdClass());
         $flow->start();
         $flow->triggerEvent('go');
@@ -349,7 +348,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
     function testCheckingWhetherCurrentStateIsFinalState()
     {
         $flow = &new Piece_Flow();
-        $flow->configure(dirname(__FILE__) . '/initial.yaml', null, $this->_cacheDirectory);
+        $flow->configure("{$this->_cacheDirectory}/initial.yaml", null, $this->_cacheDirectory, $this->_cacheDirectory);
         $flow->setPayload(new stdClass());
         $flow->start();
 
@@ -363,7 +362,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
     function testSettingAttributeByReference()
     {
         $flow = &new Piece_Flow();
-        $flow->configure($this->_source, null, $this->_cacheDirectory);
+        $flow->configure($this->_source, null, $this->_cacheDirectory, $this->_cacheDirectory);
         $flow->start();
 
         $foo1 = &new stdClass();
@@ -381,7 +380,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
     function testRemovingAttribute()
     {
         $flow = &new Piece_Flow();
-        $flow->configure($this->_source, null, $this->_cacheDirectory);
+        $flow->configure($this->_source, null, $this->_cacheDirectory, $this->_cacheDirectory);
         $flow->start();
         $flow->setAttribute('foo', 'bar');
 
@@ -395,7 +394,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
     function testClearingAttributes()
     {
         $flow = &new Piece_Flow();
-        $flow->configure($this->_source, null, $this->_cacheDirectory);
+        $flow->configure($this->_source, null, $this->_cacheDirectory, $this->_cacheDirectory);
         $flow->start();
         $flow->setAttribute('foo', 'bar');
         $flow->setAttribute('bar', 'baz');
@@ -415,7 +414,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
     function testToPreventTriggeringProtectedEvents()
     {
         $flow = &new Piece_Flow();
-        $flow->configure(dirname(__FILE__) . '/CDPlayer.yaml', null, $this->_cacheDirectory);
+        $flow->configure("{$this->_cacheDirectory}/CDPlayer.yaml", null, $this->_cacheDirectory, $this->_cacheDirectory);
         $flow->setPayload(new stdClass());
         $flow->start();
 
@@ -466,7 +465,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
         $flow = &new Piece_Flow();
-        $flow->configure(dirname(__FILE__) . '/ProtectedEvents.yaml', null, $this->_cacheDirectory);
+        $flow->configure("{$this->_cacheDirectory}/ProtectedEvents.yaml", null, $this->_cacheDirectory, $this->_cacheDirectory);
 
         $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
 
@@ -485,7 +484,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
 
         $flow = &new Piece_Flow();
-        $flow->configure(dirname(__FILE__) . '/ProtectedStates.yaml', null, $this->_cacheDirectory);
+        $flow->configure("{$this->_cacheDirectory}/ProtectedStates.yaml", null, $this->_cacheDirectory, $this->_cacheDirectory);
 
         $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
 
@@ -505,7 +504,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $GLOBALS['invalidEventFrom'] = 'register';
 
         $flow1 = &new Piece_Flow();
-        $flow1->configure(dirname(__FILE__) . '/InvalidEventFromTransitionActionsOrActivities.yaml', null, $this->_cacheDirectory);
+        $flow1->configure("{$this->_cacheDirectory}/InvalidEventFromTransitionActionsOrActivities.yaml", null, $this->_cacheDirectory, $this->_cacheDirectory);
         $flow1->setPayload(new stdClass());
         $flow1->start();
 
@@ -530,7 +529,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $GLOBALS['invalidEventFrom'] = 'setupFinish';
 
         $flow2 = &new Piece_Flow();
-        $flow2->configure(dirname(__FILE__) . '/InvalidEventFromTransitionActionsOrActivities.yaml', null, $this->_cacheDirectory);
+        $flow2->configure("{$this->_cacheDirectory}/InvalidEventFromTransitionActionsOrActivities.yaml", null, $this->_cacheDirectory, $this->_cacheDirectory);
         $flow2->setPayload(new stdClass());
         $flow2->start();
 
@@ -562,7 +561,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
     function testProblemThatActivityIsInvokedTwiceUnexpectedly()
     {
         $flow = &new Piece_Flow();
-        $flow->configure(dirname(__FILE__) . '/ProblemThatActivityIsInvokedTwiceUnexpectedly.yaml', null, $this->_cacheDirectory);
+        $flow->configure("{$this->_cacheDirectory}/ProblemThatActivityIsInvokedTwiceUnexpectedly.yaml", null, $this->_cacheDirectory, $this->_cacheDirectory);
         $flow->setPayload(new stdClass());
         $flow->start();
 
@@ -580,7 +579,6 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
      */
     function testOmitClassName()
     {
-        Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/actions');
         $this->_assertOmitClassName('.yaml');
         $this->_assertOmitClassName('.xml');
     }
@@ -598,7 +596,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $GLOBALS['finalizeCalled'] = false;
 
         $flow = &new Piece_Flow();
-        $flow->configure(dirname(__FILE__) . $source, null, $this->_cacheDirectory);
+        $flow->configure("{$this->_cacheDirectory}/$source", null, $this->_cacheDirectory, $this->_cacheDirectory);
         $flow->setPayload(new stdClass());
         $flow->start();
 
@@ -631,8 +629,9 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
     {
         $GLOBALS['initializeCalled'] = false;
         $flow = &new Piece_Flow();
-        $flow->configure(dirname(__FILE__) . "/flows/OmitClassName$extension",
+        $flow->configure("{$this->_cacheDirectory}/OmitClassName$extension",
                          null,
+                         $this->_cacheDirectory,
                          $this->_cacheDirectory
                          );
         $flow->setPayload(new stdClass());

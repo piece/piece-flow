@@ -86,6 +86,7 @@ class Piece_Flow_Continuation_Server
     var $_gc;
     var $_enableGC = false;
     var $_flowExecution;
+    var $_actionDirectory;
 
     /**#@-*/
 
@@ -124,11 +125,11 @@ class Piece_Flow_Continuation_Server
      * Adds a flow definition to the Piece_Flow_Continuation object.
      *
      * @param string  $name
-     * @param string  $file
+     * @param mixed   $source
      * @param boolean $isExclusive
      * @throws PIECE_FLOW_ERROR_ALREADY_EXISTS
      */
-    function addFlow($name, $file, $isExclusive = false)
+    function addFlow($name, $source, $isExclusive = false)
     {
         if ($this->_enableSingleFlowMode && count($this->_flowDefinitions)) {
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_ALREADY_EXISTS,
@@ -137,7 +138,7 @@ class Piece_Flow_Continuation_Server
             return;
         }
 
-        $this->_flowDefinitions[$name] = array('file' => $file,
+        $this->_flowDefinitions[$name] = array('source' => $source,
                                                'isExclusive' => $isExclusive
                                                );
     }
@@ -335,6 +336,19 @@ class Piece_Flow_Continuation_Server
         return $service;
     }
 
+    // }}}
+    // {{{ setActionDirectory()
+
+    /**
+     * Sets a directory as the action directory.
+     *
+     * @param string $actionDirectory
+     */
+    function setActionDirectory($actionDirectory)
+    {
+        $this->_actionDirectory = $actionDirectory;
+    }
+
     /**#@-*/
 
     /**#@+
@@ -464,9 +478,10 @@ class Piece_Flow_Continuation_Server
         }
 
         $flow = &new Piece_Flow();
-        $flow->configure($this->_flowDefinitions[$this->_currentFlowName]['file'],
+        $flow->configure($this->_flowDefinitions[$this->_currentFlowName]['source'],
                          null,
-                         $this->_cacheDirectory
+                         $this->_cacheDirectory,
+                         $this->_actionDirectory
                          );
         if (Piece_Flow_Error::hasErrors('exception')) {
             return;

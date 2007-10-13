@@ -67,6 +67,8 @@ class Piece_Flow_EventHandlerTestCase extends PHPUnit_TestCase
      * @access private
      */
 
+    var $_actionDirectory;
+
     /**#@-*/
 
     /**#@+
@@ -76,6 +78,7 @@ class Piece_Flow_EventHandlerTestCase extends PHPUnit_TestCase
     function setUp()
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'var_dump($error); return ' . PEAR_ERRORSTACK_DIE . ';'));
+        $this->_actionDirectory = dirname(__FILE__) . '/' . basename(__FILE__, '.php');
     }
 
     function tearDown()
@@ -91,10 +94,9 @@ class Piece_Flow_EventHandlerTestCase extends PHPUnit_TestCase
      */
     function testPieceFlowAction()
     {
-        Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/' . basename(__FILE__, '.php'));
         $flow = &new stdClass();
         $payload = &new stdClass();
-        $invoker = &new Piece_Flow_EventHandler($flow, 'PieceFlowEventHandlerTestCasePieceFlowAction', 'foo');
+        $invoker = &new Piece_Flow_EventHandler($flow, 'PieceFlowEventHandlerTestCasePieceFlowAction', 'foo', $this->_actionDirectory);
         $invoker->invoke(new stdClass(), new Piece_Flow_EventHandlerTestCaseMockEvent(), $payload);
         $action = &Piece_Flow_Action_Factory::factory('PieceFlowEventHandlerTestCasePieceFlowAction');
 
@@ -122,10 +124,9 @@ class Piece_Flow_EventHandlerTestCase extends PHPUnit_TestCase
      */
     function testPlainPHPAction()
     {
-        Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/' . basename(__FILE__, '.php'));
         $flow = &new stdClass();
         $payload = &new stdClass();
-        $invoker = &new Piece_Flow_EventHandler($flow, 'PieceFlowEventHandlerTestCasePlainPHPAction', 'foo');
+        $invoker = &new Piece_Flow_EventHandler($flow, 'PieceFlowEventHandlerTestCasePlainPHPAction', 'foo', $this->_actionDirectory);
         $invoker->invoke(new stdClass(), new Piece_Flow_EventHandlerTestCaseMockEvent(), $payload);
         $action = &Piece_Flow_Action_Factory::factory('PieceFlowEventHandlerTestCasePlainPHPAction');
 
@@ -153,8 +154,7 @@ class Piece_Flow_EventHandlerTestCase extends PHPUnit_TestCase
      */
     function testActionHasNoMethods()
     {
-        Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/' . basename(__FILE__, '.php'));
-        $invoker = &new Piece_Flow_EventHandler(new stdClass(), 'PieceFlowEventHandlerTestCaseNoMethodsAction', 'foo');
+        $invoker = &new Piece_Flow_EventHandler(new stdClass(), 'PieceFlowEventHandlerTestCaseNoMethodsAction', 'foo', $this->_actionDirectory);
         $invoker->invoke(new stdClass(), new Piece_Flow_EventHandlerTestCaseMockEvent(), new stdClass());
         $action = &Piece_Flow_Action_Factory::factory('PieceFlowEventHandlerTestCaseNoMethodsAction');
 
@@ -172,10 +172,9 @@ class Piece_Flow_EventHandlerTestCase extends PHPUnit_TestCase
     function testEventHandlerNotFound()
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
-        Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/' . basename(__FILE__, '.php'));
         $flow = &new stdClass();
         $payload = &new stdClass();
-        $invoker = &new Piece_Flow_EventHandler($flow, 'PieceFlowEventHandlerTestCasePlainPHPAction', 'bar');
+        $invoker = &new Piece_Flow_EventHandler($flow, 'PieceFlowEventHandlerTestCasePlainPHPAction', 'bar', $this->_actionDirectory);
         $invoker->invoke(new stdClass(), new Piece_Flow_EventHandlerTestCaseMockEvent(), $payload);
 
         $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));

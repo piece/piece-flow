@@ -69,6 +69,7 @@ class Piece_Flow_FSMBuilder
 
     var $_fsm;
     var $_flow;
+    var $_actionDirectory;
 
     /**#@-*/
 
@@ -83,10 +84,12 @@ class Piece_Flow_FSMBuilder
      * Sets a Piece_Flow object to the property.
      *
      * @param Piece_Flow &$flow
+     * @param string     $actionDirectory
      */
-    function Piece_Flow_FSMBuilder(&$flow)
+    function Piece_Flow_FSMBuilder(&$flow, $actionDirectory)
     {
         $this->_flow = &$flow;
+        $this->_actionDirectory = $actionDirectory;
     }
 
     // }}}
@@ -286,7 +289,7 @@ class Piece_Flow_FSMBuilder
             return $action;
         }
 
-        $eventHandler = &new Piece_Flow_EventHandler($this->_flow, @$action['class'], $action['method']);
+        $eventHandler = &new Piece_Flow_EventHandler($this->_flow, @$action['class'], $action['method'], $this->_actionDirectory);
         return array(&$eventHandler, 'invoke');
     }
 
@@ -321,7 +324,7 @@ class Piece_Flow_FSMBuilder
             return $action;
         }
 
-        $eventHandler = &new Piece_Flow_EventHandler($this->_flow, @$action['class'], $action['method']);
+        $eventHandler = &new Piece_Flow_EventHandler($this->_flow, @$action['class'], $action['method'], $this->_actionDirectory);
         return array(&$eventHandler, 'invokeAndTriggerEvent');
     }
 

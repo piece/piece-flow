@@ -41,7 +41,7 @@ require_once 'Piece/Flow/Action.php';
 // {{{ Piece_FlowInitialAction
 
 /**
- * An action class for 'initial'.
+ * A class for unit tests.
  *
  * @package    Piece_Flow
  * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>

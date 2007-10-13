@@ -41,7 +41,7 @@ require_once 'Piece/Flow/Action.php';
 // {{{ Piece_FlowTestCaseAction
 
 /**
- * An action class for 'Registration'.
+ * A class for unit tests.
  *
  * @package    Piece_Flow
  * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>

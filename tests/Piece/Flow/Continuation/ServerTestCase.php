@@ -84,7 +84,6 @@ class Piece_Flow_Continuation_ServerTestCase extends PHPUnit_TestCase
         $GLOBALS['eventName'] = 'increase';
         $GLOBALS['flowExecutionTicket'] = null;
         $this->_cacheDirectory = dirname(__FILE__) . '/' . basename(__FILE__, '.php');
-        Piece_Flow_Action_Factory::setActionDirectory($this->_cacheDirectory);
     }
 
     function tearDown()
@@ -170,6 +169,7 @@ class Piece_Flow_Continuation_ServerTestCase extends PHPUnit_TestCase
         $server->setCacheDirectory($this->_cacheDirectory);
         $server->addFlow('Counter', "{$this->_cacheDirectory}/Counter.yaml");
         $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
+        $server->setActionDirectory($this->_cacheDirectory);
 
         $flowExecutionTicket = $server->invoke(new stdClass());
         $service = &$server->createService();
@@ -229,6 +229,7 @@ class Piece_Flow_Continuation_ServerTestCase extends PHPUnit_TestCase
         $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
         $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
         $server->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
+        $server->setActionDirectory($this->_cacheDirectory);
 
         /*
          * Starting a new 'Counter'.
@@ -510,6 +511,7 @@ class Piece_Flow_Continuation_ServerTestCase extends PHPUnit_TestCase
         $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
         $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
         $server->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
+        $server->setActionDirectory($this->_cacheDirectory);
 
         /*
          * Starting a new 'Shutdown'.
@@ -691,7 +693,6 @@ class Piece_Flow_Continuation_ServerTestCase extends PHPUnit_TestCase
      */
     function testBindActionsWithFlowExecution()
     {
-        Piece_Flow_Action_Factory::setActionDirectory($this->_cacheDirectory);
         $flowName = 'BindActionsWithFlowExecution';
         $GLOBALS['flowName'] = $flowName;
         $GLOBALS['eventName'] = 'goDisplayFinishFromDisplayCounter';
@@ -701,6 +702,7 @@ class Piece_Flow_Continuation_ServerTestCase extends PHPUnit_TestCase
         $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
         $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
         $server->setFlowNameCallback(array(__CLASS__, 'getFlowName'));
+        $server->setActionDirectory($this->_cacheDirectory);
 
         // The first time invocation for the flow execution one.
         $flowExecutionTicket1 = $server->invoke(new stdClass(), true);

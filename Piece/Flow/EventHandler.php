@@ -67,6 +67,7 @@ class Piece_Flow_EventHandler
     var $_flow;
     var $_class;
     var $_method;
+    var $_actionDirectory;
 
     /**#@-*/
 
@@ -83,8 +84,9 @@ class Piece_Flow_EventHandler
      * @param Piece_Flow &$flow
      * @param string     $class
      * @param string     $method
+     * @param string     $actionDirectory
      */
-    function Piece_Flow_EventHandler(&$flow, $class, $method)
+    function Piece_Flow_EventHandler(&$flow, $class, $method, $actionDirectory)
     {
         $this->_flow = &$flow;
 
@@ -95,6 +97,7 @@ class Piece_Flow_EventHandler
         }
 
         $this->_method = $method;
+        $this->_actionDirectory = $actionDirectory;
     }
 
     // }}}
@@ -174,6 +177,10 @@ class Piece_Flow_EventHandler
      */
     function _invokeEventHandler($eventName, &$payload)
     {
+        if (!is_null($this->_actionDirectory)) {
+            Piece_Flow_Action_Factory::setActionDirectory($this->_actionDirectory);
+        }
+
         $action = &Piece_Flow_Action_Factory::factory($this->_class);
         if (Piece_Flow_Error::hasErrors('exception')) {
             return;

@@ -88,6 +88,7 @@ class Piece_Flow
     var $_attributes = array();
     var $_lastState;
     var $_lastEventIsValid = true;
+    var $_actionDirectory;
 
     /**#@-*/
 
@@ -104,6 +105,7 @@ class Piece_Flow
      * @param mixed  $source
      * @param string $driverName
      * @param string $cacheDirectory
+     * @param string $actionDirectory
      * @throws PIECE_FLOW_ERROR_NOT_FOUND
      * @throws PIECE_FLOW_ERROR_NOT_READABLE
      * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
@@ -111,7 +113,7 @@ class Piece_Flow
      * @throws PIECE_FLOW_ERROR_PROTECTED_STATE
      * @throws PIECE_FLOW_ERROR_CANNOT_READ
      */
-    function configure($source, $driverName = null, $cacheDirectory = null)
+    function configure($source, $driverName = null, $cacheDirectory = null, $actionDirectory = null)
     {
         $config = &Piece_Flow_ConfigReader::read($source, $driverName, $cacheDirectory);
         if (Piece_Flow_Error::hasErrors('exception')) {
@@ -119,7 +121,7 @@ class Piece_Flow
         }
 
         $this->_name = $config->getName();
-        $fsmBuilder = &new Piece_Flow_FSMBuilder($this);
+        $fsmBuilder = &new Piece_Flow_FSMBuilder($this, $actionDirectory);
         $fsm = &$fsmBuilder->build($config);
         if (Piece_Flow_Error::hasErrors('exception')) {
             return;
@@ -135,6 +137,8 @@ class Piece_Flow
         foreach ($config->getViewStates() as $key => $state) {
             $this->_views[ $state['name'] ] = $state['view'];
         }
+
+        $this->_actionDirectory = $actionDirectory;
     }
 
     // }}}
@@ -244,7 +248,7 @@ class Piece_Flow
         if ($eventName == PIECE_FLOW_PROTECTED_EVENT || $this->_fsm->isProtectedEvent($eventName)) {
             Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_PROTECTED_EVENT,
-                                   "The event [ $eventName] cannot be called directly. The current state [ " .
+                                   "The event [ $eventName ] cannot be called directly. The current state [ " .
                                    $this->getCurrentStateName() . ' ] will only be updated.',
                                    'warning'
                                    );

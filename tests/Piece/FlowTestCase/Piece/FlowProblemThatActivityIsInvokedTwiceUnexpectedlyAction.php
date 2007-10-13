@@ -33,24 +33,24 @@
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
  * @see        Piece_FlowTestCase
- * @since      File available since Release 1.2.0
+ * @since      File available since Release 1.4.0
  */
 
 require_once 'Piece/Flow/Action.php';
 
-// {{{ Piece_FlowCDPlayerAction
+// {{{ Piece_FlowProblemThatActivityIsInvokedTwiceUnexpectedlyAction
 
 /**
- * An action class for 'CDPlayer'.
+ * A class for unit tests.
  *
  * @package    Piece_Flow
  * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
  * @see        Piece_FlowTestCase
- * @since      Class available since Release 1.2.0
+ * @since      Class available since Release 1.4.0
  */
-class Piece_FlowCDPlayerAction extends Piece_Flow_Action
+class Piece_FlowProblemThatActivityIsInvokedTwiceUnexpectedlyAction extends Piece_Flow_Action
 {
 
     // {{{ properties
@@ -71,16 +71,33 @@ class Piece_FlowCDPlayerAction extends Piece_Flow_Action
      * @access public
      */
 
-    function increase()
+    function setupForm()
     {
-        if ($this->_flow->hasAttribute('numberOfUpdate')) {
-            $numberOfUpdate = $this->_flow->getAttribute('numberOfUpdate');
+        if (!$this->_flow->hasAttribute('setupFormProblemThatActivityIsInvokedTwiceCalled')) {
+            $this->_flow->setAttribute('setupFormProblemThatActivityIsInvokedTwiceCalled', 1);
         } else {
-            $numberOfUpdate = 0;
+            $this->_flow->setAttribute('setupFormProblemThatActivityIsInvokedTwiceCalled', $this->_flow->getAttribute('setupFormProblemThatActivityIsInvokedTwiceCalled' + 1));
+        }
+    }
+
+    function validate()
+    {
+        if (!$this->_flow->hasAttribute('validateProblemThatActivityIsInvokedTwiceCalled')) {
+            $this->_flow->setAttribute('validateProblemThatActivityIsInvokedTwiceCalled', 1);
+        } else {
+            $this->_flow->setAttribute('validateProblemThatActivityIsInvokedTwiceCalled', $this->_flow->getAttribute('validateProblemThatActivityIsInvokedTwiceCalled' + 1));
         }
 
-        ++$numberOfUpdate;
-        $this->_flow->setAttribute('numberOfUpdate', $numberOfUpdate);
+        return 'goDisplayConfirmation';
+    }
+
+    function setupConfirmation()
+    {
+        if (!$this->_flow->hasAttribute('setupConfirmationProblemThatActivityIsInvokedTwiceCalled')) {
+            $this->_flow->setAttribute('setupConfirmationProblemThatActivityIsInvokedTwiceCalled', 1);
+        } else {
+            $this->_flow->setAttribute('setupConfirmationProblemThatActivityIsInvokedTwiceCalled', $this->_flow->getAttribute('setupConfirmationProblemThatActivityIsInvokedTwiceCalled' + 1));
+        }
     }
 
     /**#@-*/
