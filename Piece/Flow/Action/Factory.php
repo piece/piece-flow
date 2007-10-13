@@ -42,6 +42,8 @@ require_once 'Piece/Flow/ClassLoader.php';
 
 $GLOBALS['PIECE_FLOW_Action_Instances'] = array();
 $GLOBALS['PIECE_FLOW_Action_Directory'] = null;
+$GLOBALS['PIECE_FLOW_Action_DefaultContextID'] = '_default';
+$GLOBALS['PIECE_FLOW_Action_ContextID']        = $GLOBALS['PIECE_FLOW_Action_DefaultContextID'];
 
 // }}}
 // {{{ Piece_Flow_Action_Factory
@@ -92,17 +94,19 @@ class Piece_Flow_Action_Factory
      */
     function &factory($class)
     {
-        if (!array_key_exists($class, $GLOBALS['PIECE_FLOW_Action_Instances'])) {
+        if (!array_key_exists($GLOBALS['PIECE_FLOW_Action_ContextID'], $GLOBALS['PIECE_FLOW_Action_Instances'])
+            || !array_key_exists($class, $GLOBALS['PIECE_FLOW_Action_Instances'][ $GLOBALS['PIECE_FLOW_Action_ContextID'] ])
+            ) {
             Piece_Flow_Action_Factory::load($class);
             if (Piece_Flow_Error::hasErrors('exception')) {
                 $return = null;
                 return $return;
             }
 
-            $GLOBALS['PIECE_FLOW_Action_Instances'][$class] = &new $class();
+            $GLOBALS['PIECE_FLOW_Action_Instances'][ $GLOBALS['PIECE_FLOW_Action_ContextID'] ][$class] = &new $class();
         }
 
-        return $GLOBALS['PIECE_FLOW_Action_Instances'][$class];
+        return $GLOBALS['PIECE_FLOW_Action_Instances'][ $GLOBALS['PIECE_FLOW_Action_ContextID'] ][$class];
     }
 
     // }}}
@@ -139,7 +143,7 @@ class Piece_Flow_Action_Factory
      */
     function getInstances()
     {
-        return $GLOBALS['PIECE_FLOW_Action_Instances'];
+        return $GLOBALS['PIECE_FLOW_Action_Instances'][ $GLOBALS['PIECE_FLOW_Action_ContextID'] ];
     }
 
     // }}}
@@ -152,7 +156,7 @@ class Piece_Flow_Action_Factory
      */
     function setInstances($instances)
     {
-        $GLOBALS['PIECE_FLOW_Action_Instances'] = $instances;
+        $GLOBALS['PIECE_FLOW_Action_Instances'][ $GLOBALS['PIECE_FLOW_Action_ContextID'] ]= $instances;
     }
 
     // }}}
@@ -188,6 +192,32 @@ class Piece_Flow_Action_Factory
                                        );
             }
         }
+    }
+
+    // }}}
+    // {{{ setContextID()
+
+    /**
+     * Sets the context ID.
+     *
+     * @param string $contextID
+     */
+    function setContextID($contextID)
+    {
+        $GLOBALS['PIECE_FLOW_Action_ContextID'] = $contextID;
+    }
+
+    // }}}
+    // {{{ clearContextID()
+
+    /**
+     * Clears the context ID.
+     *
+     * @param string $contextID
+     */
+    function clearContextID()
+    {
+        $GLOBALS['PIECE_FLOW_Action_ContextID'] = $GLOBALS['PIECE_FLOW_Action_DefaultContextID'];
     }
 
     /**#@-*/

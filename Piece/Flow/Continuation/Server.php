@@ -87,6 +87,7 @@ class Piece_Flow_Continuation_Server
     var $_enableGC = false;
     var $_flowExecution;
     var $_actionDirectory;
+    var $_useContext = false;
 
     /**#@-*/
 
@@ -190,6 +191,7 @@ class Piece_Flow_Continuation_Server
         if ($bindActionsWithFlowExecution) {
             $flow = &$this->_flowExecution->getFlow();
             $flow->clearPayload();
+            $this->_prepareContext();
             $flow->setAttribute('_actionInstances', Piece_Flow_Action_Factory::getInstances());
         }
 
@@ -349,6 +351,20 @@ class Piece_Flow_Continuation_Server
         $this->_actionDirectory = $actionDirectory;
     }
 
+    // }}}
+    // {{{ setUseContext()
+
+    /**
+     * Sets whether or not the continuation server use the context by flow
+     * execution ticket.
+     *
+     * @param boolean $useContext
+     */
+    function setUseContext($useContext)
+    {
+        $this->_useContext = $useContext;
+    }
+
     /**#@-*/
 
     /**#@+
@@ -443,6 +459,7 @@ class Piece_Flow_Continuation_Server
         $this->_flowExecution->activateFlowExecution($this->_currentFlowExecutionTicket, $this->_currentFlowName);
         $flow = &$this->_flowExecution->getFlow();
         $flow->setPayload($payload);
+        $this->_prepareContext();
 
         if ($bindActionsWithFlowExecution) {
             Piece_Flow_Action_Factory::setInstances($flow->getAttribute('_actionInstances'));
@@ -502,6 +519,7 @@ class Piece_Flow_Continuation_Server
         $this->_flowExecution->activateFlowExecution($flowExecutionTicket, $this->_currentFlowName);
         $this->_currentFlowExecutionTicket = $flowExecutionTicket;
         $flow->setPayload($payload);
+        $this->_prepareContext();
         $flow->start();
         if (Piece_Flow_Error::hasErrors('exception')) {
             return;
@@ -542,6 +560,21 @@ class Piece_Flow_Continuation_Server
             return $this->_flowDefinitions[$this->_currentFlowName]['isExclusive'];
         } else {
             return true;
+        }
+    }
+
+    // }}}
+    // {{{ _prepareContext()
+
+    /**
+     * Prepares the context by flow execution ticket.
+     */
+    function _prepareContext()
+    {
+        if ($this->_useContext) {
+            Piece_Flow_Action_Factory::setContextID($this->_currentFlowExecutionTicket);
+        } else {
+            Piece_Flow_Action_Factory::clearContextID();
         }
     }
 
