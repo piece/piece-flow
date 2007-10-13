@@ -1,6 +1,6 @@
 # $Id$
-name: flow
-desc: the definition of Piece_Flow flow configuration file.
+name: piece-flow
+desc: Piece_Flow 1.7.0 YAML Schema Definition
 type: map
 mapping:
   "firstState": { type: str, required: yes }
