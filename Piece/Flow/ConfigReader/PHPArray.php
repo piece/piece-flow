@@ -32,24 +32,25 @@
  * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
- * @since      File available since Release 1.10.0
+ * @link       http://spyc.sourceforge.net/
+ * @since      File available since Release 1.15.0
  */
 
-require_once 'Piece/Flow/Error.php';
-require_once 'Piece/Flow/ClassLoader.php';
+require_once 'Piece/Flow/ConfigReader/Common.php';
 
-// {{{ Piece_Flow_ConfigReader
+// {{{ Piece_Flow_ConfigReader_PHPArray
 
 /**
- * The configuration reader.
+ * A configuration reader for PHP array.
  *
  * @package    Piece_Flow
  * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
- * @since      Class available since Release 1.10.0
+ * @link       http://spyc.sourceforge.net/
+ * @since      Class available since Release 1.15.0
  */
-class Piece_Flow_ConfigReader
+class Piece_Flow_ConfigReader_PHPArray extends Piece_Flow_ConfigReader_Common
 {
 
     // {{{ properties
@@ -70,70 +71,25 @@ class Piece_Flow_ConfigReader
      * @access public
      */
 
-    // }}}
-    // {{{ read()
-
-    /**
-     * Reads configuration from the given source and creates
-     * a Piece_Flow_Config object.
-     *
-     * @param mixed  $source
-     * @param string $driverName
-     * @param string $cacheDirectory
-     * @return Piece_Flow_Config
-     * @throws PIECE_FLOW_ERROR_NOT_FOUND
-     * @throws PIECE_FLOW_ERROR_NOT_READABLE
-     * @throws PIECE_FLOW_ERROR_CANNOT_READ
-     * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
-     * @static
-     */
-    function &read($source, $driverName, $cacheDirectory)
-    {
-        if (!is_callable($source)) {
-            if (is_null($driverName)) {
-                $driverName = strtoupper(substr(strrchr($source, '.'), 1));
-                if ($driverName != 'YAML' && $driverName != 'XML') {
-                    $driverName = 'YAML';
-                }
-            }
-
-            if ($driverName == 'XML') {
-                if (version_compare(phpversion(), '5.0.0', '>=')) {
-                    $driverName = 'XML5';
-                } else {
-                    $driverName = 'XML4';
-                }
-            }
-        } else {
-            $driverName = 'PHPArray';
-        }
-
-        $class = "Piece_Flow_ConfigReader_$driverName";
-        if (!Piece_Flow_ClassLoader::loaded($class)) {
-            Piece_Flow_ClassLoader::load($class);
-            if (Piece_Flow_Error::hasErrors('exception')) {
-                $return = null;
-                return $return;
-            }
-
-            if (!Piece_Flow_ClassLoader::loaded($class)) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
-                                       "The class [ $class ] not found in the loaded file."
-                                       );
-                $return = null;
-                return $return;
-            }
-        }
-
-        $driver = &new $class($source, $cacheDirectory);
-        return $driver->read();
-    }
-
     /**#@-*/
 
     /**#@+
      * @access private
      */
+
+    // }}}
+    // {{{ _parseSource()
+
+    /**
+     * Parses the given source and returns an array which represent a flow
+     * structure.
+     *
+     * @return array
+     */
+    function _parseSource()
+    {
+        return call_user_func($this->_source);
+    }
 
     /**#@-*/
 
