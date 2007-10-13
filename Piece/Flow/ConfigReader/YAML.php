@@ -84,10 +84,10 @@ class Piece_Flow_ConfigReader_YAML extends Piece_Flow_ConfigReader_Common
      */
 
     // }}}
-    // {{{ _parseFile()
+    // {{{ _parseSource()
 
     /**
-     * Parses the given file and returns an array which represent a flow
+     * Parses the given source and returns an array which represent a flow
      * structure.
      *
      * This method is to be overriden by the appropriate driver for the given
@@ -95,7 +95,7 @@ class Piece_Flow_ConfigReader_YAML extends Piece_Flow_ConfigReader_Common
      *
      * @return array
      */
-    function _parseFile()
+    function _parseSource()
     {
         return Spyc::YAMLLoad($this->_source);
     }

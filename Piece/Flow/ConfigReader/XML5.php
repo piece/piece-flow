@@ -235,10 +235,10 @@ class Piece_Flow_ConfigReader_XML5 extends Piece_Flow_ConfigReader_Common
      */
 
     // }}}
-    // {{{ _parseFile()
+    // {{{ _parseSource()
 
     /**
-     * Parses the given file and returns an array which represent a flow
+     * Parses the given source and returns an array which represent a flow
      * structure.
      *
      * This method is to be overriden by the appropriate driver for the given
@@ -247,7 +247,7 @@ class Piece_Flow_ConfigReader_XML5 extends Piece_Flow_ConfigReader_Common
      * @return array
      * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
      */
-    function _parseFile()
+    function _parseSource()
     {
         $dom = DOMDocument::loadXML(file_get_contents($this->_source));
         ob_start();

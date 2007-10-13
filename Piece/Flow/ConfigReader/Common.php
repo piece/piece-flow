@@ -89,11 +89,7 @@ class Piece_Flow_ConfigReader_Common
     function Piece_Flow_ConfigReader_Common($source, $cacheDirectory)
     {
         $this->_source = $source;
-        if (!is_null($cacheDirectory)) {
-            $this->_cacheDirectory = $cacheDirectory;
-        } else {
-            $this->_cacheDirectory = './cache';
-        }
+        $this->_cacheDirectory = $cacheDirectory;
     }
 
     // }}}
@@ -126,6 +122,10 @@ class Piece_Flow_ConfigReader_Common
             return $return;
         }
 
+        if (is_null($this->_cacheDirectory)) {
+            return $this->_createConfigurationFromSource();
+        }
+
         if (!file_exists($this->_cacheDirectory)) {
             Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
@@ -134,7 +134,7 @@ class Piece_Flow_ConfigReader_Common
                                    );
             Piece_Flow_Error::popCallback();
 
-            return $this->_createConfigurationFromFile();
+            return $this->_createConfigurationFromSource();
         }
 
         if (!is_readable($this->_cacheDirectory) || !is_writable($this->_cacheDirectory)) {
@@ -145,7 +145,7 @@ class Piece_Flow_ConfigReader_Common
                                    );
             Piece_Flow_Error::popCallback();
 
-            return $this->_createConfigurationFromFile();
+            return $this->_createConfigurationFromSource();
         }
 
         return $this->_getConfiguration();
@@ -531,11 +531,11 @@ class Piece_Flow_ConfigReader_Common
                                    );
             Piece_Flow_Error::popCallback();
 
-            return $this->_createConfigurationFromFile();
+            return $this->_createConfigurationFromSource();
         }
 
         if (!$config) {
-            $config = &$this->_createConfigurationFromFile();
+            $config = &$this->_createConfigurationFromSource();
             if (Piece_Flow_Error::hasErrors('exception')) {
                 $return = null;
                 return $return;
@@ -556,10 +556,10 @@ class Piece_Flow_ConfigReader_Common
     }
 
     // }}}
-    // {{{ _parseFile()
+    // {{{ _parseSource()
 
     /**
-     * Parses the given file and returns an array which represent a flow
+     * Parses the given source and returns an array which represent a flow
      * structure.
      *
      * This method is to be overriden by the appropriate driver for the given
@@ -568,7 +568,7 @@ class Piece_Flow_ConfigReader_Common
      * @return array
      * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
      */
-    function _parseFile() {}
+    function _parseSource() {}
 
     // }}}
     // {{{ _getFlowNameFromSource()
@@ -765,7 +765,7 @@ class Piece_Flow_ConfigReader_Common
     }
 
     // }}}
-    // {{{ _createConfigurationFromFile()
+    // {{{ _createConfigurationFromSource()
 
     /**
      * Parses the given source and returns a Piece_Flow_Config object.
@@ -774,9 +774,9 @@ class Piece_Flow_ConfigReader_Common
      * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
      * @since Method available since Release 1.11.0
      */
-    function &_createConfigurationFromFile()
+    function &_createConfigurationFromSource()
     {
-        $flow = $this->_parseFile();
+        $flow = $this->_parseSource();
         if (Piece_Flow_Error::hasErrors('exception')) {
             $return = null;
             return $return;
