@@ -88,16 +88,16 @@ class Piece_Flow_Closure
      */
     function create($args, $code, $contextVariables = array())
     {
-        $payload = array($args, $code, $contextVariables);
         $GLOBALS['PIECE_FLOW_Closure_FlowExecutionTicket'] = null;
+        $payload = array($args, $code, $contextVariables);
         $flowExecutionTicket = $GLOBALS['PIECE_FLOW_Closure_ContinuationServer']->invoke($payload);
-        $codeForLambda = "
+
+        return create_function($args, "
 \$GLOBALS['PIECE_FLOW_Closure_FlowExecutionTicket'] = '$flowExecutionTicket';
 \$GLOBALS['PIECE_FLOW_Closure_ContinuationServer']->invoke(func_get_args());
 return \$GLOBALS['PIECE_FLOW_Closure_Result'];
-";
-
-        return create_function($args, $codeForLambda);
+"
+                               );
     }
 
     /**#@-*/
