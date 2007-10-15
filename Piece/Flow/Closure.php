@@ -35,15 +35,11 @@
  * @since      File available since Release 1.15.0
  */
 
-require_once 'Piece/Flow/ProtedtedEvent.php';
-require_once 'Piece/Flow/Continuation/Server.php';
-require_once 'Piece/Flow/Config.php';
+require_once 'Piece/Flow/Closure/Context.php';
 
 // {{{ GLOBALS
 
-$GLOBALS['PIECE_FLOW_Closure_ContinuationServer']  = null;
-$GLOBALS['PIECE_FLOW_Closure_FlowExecutionTicket'] = null;
-$GLOBALS['PIECE_FLOW_Closure_Result']              = null;
+$GLOBALS['PIECE_FLOW_Closure_ContextInstances'] = array();
 
 // {{{ Piece_Flow_Closure
 
@@ -88,16 +84,33 @@ class Piece_Flow_Closure
      */
     function create($args, $code, $contextVariables = array())
     {
-        $GLOBALS['PIECE_FLOW_Closure_FlowExecutionTicket'] = null;
-        $payload = array($args, $code, $contextVariables);
-        $flowExecutionTicket = $GLOBALS['PIECE_FLOW_Closure_ContinuationServer']->invoke($payload);
+        while (true) {
+            $contextID = sha1(uniqid(mt_rand(), true));
+            if (!array_key_exists($contextID, $GLOBALS['PIECE_FLOW_Closure_ContextInstances'])) {
+                break;
+            }
+        }
 
+        $GLOBALS['PIECE_FLOW_Closure_ContextInstances'][$contextID] =
+            &new Piece_Flow_Closure_Context($args, $code, $contextVariables);
         return create_function($args, "
-\$GLOBALS['PIECE_FLOW_Closure_FlowExecutionTicket'] = '$flowExecutionTicket';
-\$GLOBALS['PIECE_FLOW_Closure_ContinuationServer']->invoke(func_get_args());
-return \$GLOBALS['PIECE_FLOW_Closure_Result'];
-"
-                               );
+\$args = func_get_args();
+return Piece_Flow_Closure::invoke('$contextID', \$args);");
+    }
+
+    // }}}
+    // {{{ invoke()
+
+    /**
+     * Invokes the closure.
+     *
+     * @param string $contextID
+     * @param array  $args
+     * @static
+     */
+    function invoke($contextID, $args)
+    {
+        return $GLOBALS['PIECE_FLOW_Closure_ContextInstances'][$contextID]->invoke($args);
     }
 
     /**#@-*/
@@ -112,22 +125,6 @@ return \$GLOBALS['PIECE_FLOW_Closure_Result'];
 }
 
 // }}}
-
-$GLOBALS['PIECE_FLOW_Closure_ContinuationServer']  = &new Piece_Flow_Continuation_Server();
-$GLOBALS['PIECE_FLOW_Closure_ContinuationServer']->setActionDirectory(dirname(__FILE__) . '/../..');
-$GLOBALS['PIECE_FLOW_Closure_ContinuationServer']->addFlow('Closure',
-                                                           create_function('',
-                                                                           "return array('firstState' => 'Closure',
-                                                                                         'viewState'  => array(array('name' => 'Closure',
-                                                                                         'view'       => 'Closure',
-                                                                                         'activity'   => array('class' => 'Piece_Flow_Closure_Action',
-                                                                                                               'method' => 'invoke')))
-                                                                                         );")
-                                                           );
-$GLOBALS['PIECE_FLOW_Closure_ContinuationServer']->setEventNameCallback(create_function('', 'return PIECE_FLOW_PROTECTED_EVENT;'));
-$GLOBALS['PIECE_FLOW_Closure_ContinuationServer']->setFlowExecutionTicketCallback(create_function('', "return \$GLOBALS['PIECE_FLOW_Closure_FlowExecutionTicket'];"));
-$GLOBALS['PIECE_FLOW_Closure_ContinuationServer']->setFlowNameCallback(create_function('', "return 'Closure';"));
-$GLOBALS['PIECE_FLOW_Closure_ContinuationServer']->setUseContext(true);
 
 /*
  * Local Variables:

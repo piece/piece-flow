@@ -35,16 +35,14 @@
  * @since      File available since Release 1.15.0
  */
 
-require_once 'Piece/Flow/Action.php';
-
 // {{{ GLOBALS
 
-$GLOBALS['PIECE_FLOW_Closure_Action_ContextVariables'] = array();
+$GLOBALS['PIECE_FLOW_Closure_Context_Variables'] = null;
 
-// {{{ Piece_Flow_Closure_Action
+// {{{ Piece_Flow_Closure_Context
 
 /**
- * The closure invoker.
+ * The closure context holder and invoker.
  *
  * @package    Piece_Flow
  * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
@@ -52,7 +50,7 @@ $GLOBALS['PIECE_FLOW_Closure_Action_ContextVariables'] = array();
  * @version    Release: @package_version@
  * @since      Class available since Release 1.15.0
  */
-class Piece_Flow_Closure_Action extends Piece_Flow_Action
+class Piece_Flow_Closure_Context
 {
 
     // {{{ properties
@@ -68,7 +66,7 @@ class Piece_Flow_Closure_Action extends Piece_Flow_Action
      */
 
     var $_closure;
-    var $_contextVariables = array();
+    var $_variables = array();
 
     /**#@-*/
 
@@ -80,21 +78,36 @@ class Piece_Flow_Closure_Action extends Piece_Flow_Action
     // {{{ invoke()
 
     /**
-     * Invokes the closure.
+     * Sets the given variables to a property and creates a closure.
+     *
+     * @param string $args
+     * @param string $code
+     * @param string $variables
      */
-    function invoke()
+    function Piece_Flow_Closure_Context($args, $code, $variables)
     {
-        if (!is_null($this->_closure)) {
-            if (count($this->_contextVariables)) {
-                $GLOBALS['PIECE_FLOW_Closure_Action_ContextVariables'] = $this->_contextVariables;
-            } else {
-                $GLOBALS['PIECE_FLOW_Closure_Action_ContextVariables'] = array();
-            }
-
-            $GLOBALS['PIECE_FLOW_Closure_Result'] = call_user_func_array($this->_closure, $this->_payload);
-        } else {
-            $this->_initialize();
+        foreach (array_keys($variables) as $variableName) {
+            $this->_variables[$variableName] = &$variables[$variableName];
         }
+
+        $this->_closure = create_function($args,
+                                          "extract(\$GLOBALS['PIECE_FLOW_Closure_Context_Variables'], EXTR_OVERWRITE | EXTR_REFS);" .
+                                          $code
+                                          );
+    }
+
+    // }}}
+    // {{{ invoke()
+
+    /**
+     * Invokes the closure.
+     *
+     * @param array $args
+     */
+    function invoke($args)
+    {
+        $GLOBALS['PIECE_FLOW_Closure_Context_Variables'] = $this->_variables;
+        return call_user_func_array($this->_closure, $args);
     }
 
     /**#@-*/
@@ -102,26 +115,6 @@ class Piece_Flow_Closure_Action extends Piece_Flow_Action
     /**#@+
      * @access private
      */
-
-    // }}}
-    // {{{ invoke()
-
-    /**
-     * Sets the given variables to a property and creates a closure.
-     */
-    function _initialize()
-    {
-        if (count($this->_payload) == 3) {
-            foreach (array_keys($this->_payload[2]) as $variableName) {
-                $this->_contextVariables[$variableName] = &$this->_payload[2][$variableName];
-            }
-        }
-
-        $this->_closure = create_function($this->_payload[0],
-                                          "extract(\$GLOBALS['PIECE_FLOW_Closure_Action_ContextVariables'], EXTR_OVERWRITE | EXTR_REFS);" .
-                                          $this->_payload[1]
-                                          );
-    }
 
     /**#@-*/
 
