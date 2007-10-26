@@ -33,7 +33,7 @@
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
  * @since      File available since Release 1.0.0
- * @deprecated
+ * @deprecated File deprecated in Release 1.14.0
  */
 
 require_once 'Piece/Flow.php';
@@ -57,7 +57,7 @@ $GLOBALS['PIECE_FLOW_Continuation_ShutdownRegistered'] = false;
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
  * @since      Class available since Release 1.0.0
- * @deprecated
+ * @deprecated Class deprecated in Release 1.14.0
  */
 class Piece_Flow_Continuation
 {
@@ -458,7 +458,7 @@ class Piece_Flow_Continuation
      *
      * @return boolean
      * @since Method available since Release 1.8.0
-     * @deprecated
+     * @deprecated Method deprecated in Release 1.14.0
      */
     function isExclusive()
     {
