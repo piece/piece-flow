@@ -58,6 +58,7 @@ define('PIECE_FLOW_ERROR_PROTECTED_STATE',        -14);
 define('PIECE_FLOW_ERROR_ALREADY_SHUTDOWN',       -15);
 define('PIECE_FLOW_ERROR_INVALID_EVENT',          -16);
 define('PIECE_FLOW_ERROR_FLOW_EXECUTION_EXPIRED', -17);
+define('PIECE_FLOW_ERROR_FLOW_ID_NOT_GIVEN',      -11);
 
 // }}}
 // {{{ Piece_Flow_Error
