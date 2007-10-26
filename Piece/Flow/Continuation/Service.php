@@ -105,7 +105,7 @@ class Piece_Flow_Continuation_Service
             return;
         }
 
-        $flow = &$this->_flowExecution->getFlow();
+        $flow = &$this->_flowExecution->getActiveFlow();
         $flow->setAttribute($name, $value);
     }
 
@@ -128,7 +128,7 @@ class Piece_Flow_Continuation_Service
             return;
         }
 
-        $flow = &$this->_flowExecution->getFlow();
+        $flow = &$this->_flowExecution->getActiveFlow();
         return $flow->hasAttribute($name);
     }
 
@@ -152,7 +152,7 @@ class Piece_Flow_Continuation_Service
             return $return;
         }
 
-        $flow = &$this->_flowExecution->getFlow();
+        $flow = &$this->_flowExecution->getActiveFlow();
         return $flow->getAttribute($name);
     }
 
@@ -175,7 +175,7 @@ class Piece_Flow_Continuation_Service
             return;
         }
 
-        $flow = &$this->_flowExecution->getFlow();
+        $flow = &$this->_flowExecution->getActiveFlow();
         $flow->setAttributeByRef($name, $value);
     }
 
@@ -183,17 +183,18 @@ class Piece_Flow_Continuation_Service
     // {{{ getFlowExecutionTicketByFlowName()
 
     /**
-     * Gets a flow execution ticket by the given flow name.
+     * Gets a flow execution ticket by the given flow ID.
      * This method will be used for getting flow execution ticket else than
      * the active flow execution.
      * This method is only available if the flow execution is exclusive.
      *
-     * @param string $flowName
+     * @param string $flowID
      * @return string
+     * @deprecated Method deprecated in Release 1.15.0
      */
-    function getFlowExecutionTicketByFlowName($flowName)
+    function getFlowExecutionTicketByFlowName($flowID)
     {
-        return $this->_flowExecution->getFlowExecutionTicketByFlowName($flowName);
+        return $this->getFlowExecutionTicketByFlowID($flowID);
     }
 
     // }}}
@@ -214,29 +215,29 @@ class Piece_Flow_Continuation_Service
     // {{{ getActiveFlowName()
 
     /**
-     * Gets the flow name for the active flow execution.
+     * Gets the flow ID for the active flow execution.
      *
      * @return string
+     * @deprecated Method deprecated in Release 1.15.0
      */
     function getActiveFlowName()
     {
-        return $this->_flowExecution->getActiveFlowName();
+        return $this->getActiveFlowID();
     }
 
     // }}}
     // {{{ getCurrentFlowName()
 
     /**
-     * Gets the flow name for the active flow execution.
+     * Gets the flow ID for the active flow execution.
      *
      * @return string
-     * @deprecated
+     * @deprecated Method deprecated in Release 1.14.0
      */
     function getCurrentFlowName()
     {
-        return $this->getActiveFlowName();
+        return $this->getActiveFlowID();
     }
-
 
     // }}}
     // {{{ getCurrentStateName()
@@ -256,8 +257,40 @@ class Piece_Flow_Continuation_Service
             return;
         }
 
-        $flow = &$this->_flowExecution->getFlow();
+        $flow = &$this->_flowExecution->getActiveFlow();
         return $flow->getCurrentStateName();
+    }
+
+    // }}}
+    // {{{ getFlowExecutionTicketByFlowID()
+
+    /**
+     * Gets a flow execution ticket by the given flow ID.
+     * This method will be used for getting flow execution ticket else than
+     * the active flow execution.
+     * This method is only available if the flow execution is exclusive.
+     *
+     * @param string $flowID
+     * @return string
+     * @since Method available since Release 1.15.0
+     */
+    function getFlowExecutionTicketByFlowID($flowID)
+    {
+        return $this->_flowExecution->getFlowExecutionTicketByFlowID($flowID);
+    }
+
+    // }}}
+    // {{{ getActiveFlowID()
+
+    /**
+     * Gets the flow ID for the active flow execution.
+     *
+     * @return string
+     * @since Method available since Release 1.15.0
+     */
+    function getActiveFlowID()
+    {
+        return $this->_flowExecution->getActiveFlowID();
     }
 
     /**#@-*/
