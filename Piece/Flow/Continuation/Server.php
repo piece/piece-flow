@@ -78,11 +78,11 @@ class Piece_Flow_Continuation_Server
     var $_enableSingleFlowMode;
     var $_cacheDirectory;
     var $_flowExecutionTicketCallback;
-    var $_flowNameCallback;
+    var $_flowIDCallback;
     var $_eventNameCallback;
     var $_isFirstTime;
-    var $_currentFlowName;
-    var $_currentFlowExecutionTicket;
+    var $_activeFlowID;
+    var $_activeFlowExecutionTicket;
     var $_gc;
     var $_enableGC = false;
     var $_flowExecution;
@@ -158,7 +158,7 @@ class Piece_Flow_Continuation_Server
      * @throws PIECE_FLOW_ERROR_NOT_READABLE
      * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
      * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
-     * @throws PIECE_FLOW_ERROR_FLOW_NAME_NOT_GIVEN
+     * @throws PIECE_FLOW_ERROR_FLOW_ID_NOT_GIVEN
      * @throws PIECE_FLOW_ERROR_CANNOT_READ
      * @throws PIECE_FLOW_ERROR_FLOW_EXECUTION_EXPIRED
      */
@@ -185,11 +185,11 @@ class Piece_Flow_Continuation_Server
         }
 
         if ($this->_enableGC && !$this->_isExclusive()) {
-            $this->_gc->update($this->_currentFlowExecutionTicket);
+            $this->_gc->update($this->_activeFlowExecutionTicket);
         }
 
         if ($bindActionsWithFlowExecution) {
-            $flow = &$this->_flowExecution->getFlow();
+            $flow = &$this->_flowExecution->getActiveFlow();
             $flow->clearPayload();
             $this->_prepareContext();
             $flow->setAttribute('_actionInstances', Piece_Flow_Action_Factory::getInstances());
@@ -201,7 +201,7 @@ class Piece_Flow_Continuation_Server
             register_shutdown_function(array(__CLASS__, 'shutdown'));
         }
 
-        return $this->_currentFlowExecutionTicket;
+        return $this->_activeFlowExecutionTicket;
     }
 
     // }}}
@@ -224,7 +224,7 @@ class Piece_Flow_Continuation_Server
             return;
         }
 
-        $flow = &$this->_flowExecution->getFlow();
+        $flow = &$this->_flowExecution->getActiveFlow();
         return $flow->getView();
     }
 
@@ -258,13 +258,14 @@ class Piece_Flow_Continuation_Server
     // {{{ setFlowNameCallback()
 
     /**
-     * Sets a callback for getting a flow name.
+     * Sets a callback for getting a flow ID.
      *
      * @param callback $callback
+     * @deprecated Method deprecated in Release 1.15.0
      */
     function setFlowNameCallback($callback)
     {
-        $this->_flowNameCallback = $callback;
+        $this->setFlowIDCallback($callback);
     }
 
     // }}}
@@ -308,18 +309,18 @@ class Piece_Flow_Continuation_Server
      */
     function clear()
     {
-        if ($this->_flowExecution->hasFlowExecution($this->_currentFlowExecutionTicket)
+        if ($this->_flowExecution->hasFlowExecution($this->_activeFlowExecutionTicket)
             && !$this->_enableSingleFlowMode
             ) {
-            $flow = &$this->_flowExecution->getFlow();
+            $flow = &$this->_flowExecution->getActiveFlow();
             if ($flow->isFinalState()) {
-                $this->_flowExecution->removeFlowExecution($this->_currentFlowExecutionTicket, $this->_currentFlowName);
+                $this->_flowExecution->removeFlowExecution($this->_activeFlowExecutionTicket, $this->_activeFlowID);
             }
         }
 
         $this->_isFirstTime = null;
-        $this->_currentFlowName = null;
-        $this->_currentFlowExecutionTicket = null;
+        $this->_activeFlowID = null;
+        $this->_activeFlowExecutionTicket = null;
         $this->_flowExecution->inactivateFlowExecution();
         if ($this->_enableGC) {
             $this->_gc->sweep();
@@ -365,6 +366,20 @@ class Piece_Flow_Continuation_Server
         $this->_useContext = $useContext;
     }
 
+    // }}}
+    // {{{ setFlowIDCallback()
+
+    /**
+     * Sets a callback for getting a flow ID.
+     *
+     * @param callback $callback
+     * @since Method available since Release 1.15.0
+     */
+    function setFlowIDCallback($callback)
+    {
+        $this->_flowIDCallback = $callback;
+    }
+
     /**#@-*/
 
     /**#@+
@@ -386,48 +401,57 @@ class Piece_Flow_Continuation_Server
     // {{{ _prepare()
 
     /**
-     * Prepares a flow execution ticket, a flow name, and whether the
+     * Prepares a flow execution ticket, a flow ID, and whether the
      * flow invocation is the first time or not.
      *
-     * @throws PIECE_FLOW_ERROR_FLOW_NAME_NOT_GIVEN
+     * @throws PIECE_FLOW_ERROR_FLOW_ID_NOT_GIVEN
      */
     function _prepare()
     {
         $currentFlowExecutionTicket = call_user_func($this->_flowExecutionTicketCallback);
         if ($this->_flowExecution->hasFlowExecution($currentFlowExecutionTicket)) {
-            $flowName = $this->_getFlowName();
+            $registeredFlowID = $this->_flowExecution->getFlowID($currentFlowExecutionTicket);
+
             if (!$this->_enableSingleFlowMode) {
-                if (is_null($flowName) || !strlen($flowName)) {
-                    Piece_Flow_Error::push(PIECE_FLOW_ERROR_FLOW_NAME_NOT_GIVEN,
-                                           'A flow name must be given in this case.'
+                $flowID = $this->_getFlowID();
+                if (is_null($flowID) || !strlen($flowID)) {
+                    Piece_Flow_Error::push(PIECE_FLOW_ERROR_FLOW_ID_NOT_GIVEN,
+                                           'A flow ID must be given in this case.'
+                                           );
+                    return;
+                }
+
+                if ($flowID != $registeredFlowID) {
+                    Piece_Flow_Error::push(PIECE_FLOW_ERROR_FLOW_ID_NOT_GIVEN,
+                                           'The given flow ID is diffent from the registerd flow ID.'
                                            );
                     return;
                 }
             }
 
-            $this->_currentFlowName = $flowName;
+            $this->_activeFlowID = $registeredFlowID;
             $this->_isFirstTime = false;
-            $this->_currentFlowExecutionTicket = $currentFlowExecutionTicket;
+            $this->_activeFlowExecutionTicket = $currentFlowExecutionTicket;
         } else {
-            $flowName = $this->_getFlowName();
-            if (is_null($flowName) || !strlen($flowName)) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_FLOW_NAME_NOT_GIVEN,
-                                       'A flow name must be given in this case.'
+            $flowID = $this->_getFlowID();
+            if (is_null($flowID) || !strlen($flowID)) {
+                Piece_Flow_Error::push(PIECE_FLOW_ERROR_FLOW_ID_NOT_GIVEN,
+                                       'A flow ID must be given in this case.'
                                        );
                 return;
             }
 
-            if ($this->_flowExecution->hasExclusiveFlowExecution($flowName)) {
+            if ($this->_flowExecution->hasExclusiveFlowExecution($flowID)) {
                 Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
                 Piece_Flow_Error::push(PIECE_FLOW_ERROR_ALREADY_EXISTS,
-                                       "Another flow execution of the current flow [ $flowName ] already exists in the flow executions. Starting a new flow execution.",
+                                       "Another flow execution of the current flow [ $flowID ] already exists in the flow executions. Starting a new flow execution.",
                                        'warning'
                                        );
                 Piece_Flow_Error::popCallback();
-                $this->_flowExecution->removeFlowExecution($this->_flowExecution->getFlowExecutionTicketByFlowName($flowName), $flowName);
+                $this->_flowExecution->removeFlowExecution($this->_flowExecution->getFlowExecutionTicketByFlowID($flowID), $flowID);
             }
 
-            $this->_currentFlowName = $flowName;
+            $this->_activeFlowID = $flowID;
             $this->_isFirstTime = true;
         }
     }
@@ -447,8 +471,8 @@ class Piece_Flow_Continuation_Server
     function _continue(&$payload, $bindActionsWithFlowExecution)
     {
         if ($this->_enableGC) {
-            if ($this->_gc->isMarked($this->_currentFlowExecutionTicket)) {
-                $this->_flowExecution->removeFlowExecution($this->_currentFlowExecutionTicket, $this->_currentFlowName);
+            if ($this->_gc->isMarked($this->_activeFlowExecutionTicket)) {
+                $this->_flowExecution->removeFlowExecution($this->_activeFlowExecutionTicket, $this->_activeFlowID);
                 Piece_Flow_Error::push(PIECE_FLOW_ERROR_FLOW_EXECUTION_EXPIRED,
                                        'The flow execution for the given flow execution ticket has expired.'
                                        );
@@ -456,8 +480,8 @@ class Piece_Flow_Continuation_Server
             }
         }
 
-        $this->_flowExecution->activateFlowExecution($this->_currentFlowExecutionTicket, $this->_currentFlowName);
-        $flow = &$this->_flowExecution->getFlow();
+        $this->_flowExecution->activateFlowExecution($this->_activeFlowExecutionTicket, $this->_activeFlowID);
+        $flow = &$this->_flowExecution->getActiveFlow();
         $flow->setPayload($payload);
         $this->_prepareContext();
 
@@ -487,15 +511,15 @@ class Piece_Flow_Continuation_Server
      */
     function _start(&$payload)
     {
-        if (!array_key_exists($this->_currentFlowName, $this->_flowDefinitions)) {
+        if (!array_key_exists($this->_activeFlowID, $this->_flowDefinitions)) {
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
-                                   "The flow name [ {$this->_currentFlowName} ] not found in the flow definitions."
+                                   "The flow ID [ {$this->_activeFlowID} ] not found in the flow definitions."
                                    );
             return;
         }
 
         $flow = &new Piece_Flow();
-        $flow->configure($this->_flowDefinitions[$this->_currentFlowName]['source'],
+        $flow->configure($this->_flowDefinitions[$this->_activeFlowID]['source'],
                          null,
                          $this->_cacheDirectory,
                          $this->_actionDirectory
@@ -507,17 +531,17 @@ class Piece_Flow_Continuation_Server
         while (true) {
             $flowExecutionTicket = $this->_generateFlowExecutionTicket();
             if (!$this->_flowExecution->hasFlowExecution($flowExecutionTicket)) {
-                $this->_flowExecution->addFlowExecution($flowExecutionTicket, $flow);
+                $this->_flowExecution->addFlowExecution($flowExecutionTicket, $flow, $this->_activeFlowID);
                 if ($this->_isExclusive()) {
-                    $this->_flowExecution->markFlowExecutionAsExclusive($flowExecutionTicket, $this->_currentFlowName);
+                    $this->_flowExecution->markFlowExecutionAsExclusive($flowExecutionTicket, $this->_activeFlowID);
                 }
 
                 break;
             }
         }
 
-        $this->_flowExecution->activateFlowExecution($flowExecutionTicket, $this->_currentFlowName);
-        $this->_currentFlowExecutionTicket = $flowExecutionTicket;
+        $this->_flowExecution->activateFlowExecution($flowExecutionTicket, $this->_activeFlowID);
+        $this->_activeFlowExecutionTicket = $flowExecutionTicket;
         $flow->setPayload($payload);
         $this->_prepareContext();
         $flow->start();
@@ -529,20 +553,20 @@ class Piece_Flow_Continuation_Server
     }
 
     // }}}
-    // {{{ _getFlowName()
+    // {{{ _getFlowID()
 
     /**
-     * Gets a flow name which will be started or continued.
+     * Gets a flow ID which will be started or continued.
      *
      * @return string
      */
-    function _getFlowName()
+    function _getFlowID()
     {
         if (!$this->_enableSingleFlowMode) {
-            return call_user_func($this->_flowNameCallback);
+            return call_user_func($this->_flowIDCallback);
         } else {
-            $flowNames = array_keys($this->_flowDefinitions);
-            return $flowNames[0];
+            $flowIDs = array_keys($this->_flowDefinitions);
+            return $flowIDs[0];
         }
     }
 
@@ -557,7 +581,7 @@ class Piece_Flow_Continuation_Server
     function _isExclusive()
     {
         if (!$this->_enableSingleFlowMode) {
-            return $this->_flowDefinitions[$this->_currentFlowName]['isExclusive'];
+            return $this->_flowDefinitions[$this->_activeFlowID]['isExclusive'];
         } else {
             return true;
         }
@@ -572,7 +596,7 @@ class Piece_Flow_Continuation_Server
     function _prepareContext()
     {
         if ($this->_useContext) {
-            Piece_Flow_Action_Factory::setContextID($this->_currentFlowExecutionTicket);
+            Piece_Flow_Action_Factory::setContextID($this->_activeFlowExecutionTicket);
         } else {
             Piece_Flow_Action_Factory::clearContextID();
         }
