@@ -571,25 +571,6 @@ class Piece_Flow_ConfigReader_Common
     function _parseSource() {}
 
     // }}}
-    // {{{ _getFlowNameFromSource()
-
-    /**
-     * Gets the flow name from the current source.
-     *
-     * @return string
-     */
-    function _getFlowNameFromSource()
-    {
-        $name = basename($this->_source);
-        $positionOfExtension = strrpos($name, '.');
-        if ($positionOfExtension !== false) {
-            return substr($name, 0, $positionOfExtension);
-        }
-
-        return $name;
-    }
-
-    // }}}
     // {{{ _configureFirstState()
 
     /**
@@ -783,7 +764,6 @@ class Piece_Flow_ConfigReader_Common
         }
 
         $this->_config = &new Piece_Flow_Config();
-        $this->_config->setName($this->_getFlowNameFromSource());
         $this->_configureFirstState(@$flow['firstState']);
         if (Piece_Flow_Error::hasErrors('exception')) {
             $return = null;

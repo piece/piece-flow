@@ -95,7 +95,6 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
 
     function testConfiguration()
     {
-        $name = 'Registration';
         $firstState = 'DisplayForm';
         $lastState = array('name' => 'Finish', 'view' => 'Finish',
                            'entry' => 
@@ -172,7 +171,6 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
                               );
 
         $expectedConfig = new Piece_Flow_Config();
-        $expectedConfig->setName($name);
         $expectedConfig->setFirstState($firstState);
         $expectedConfig->setLastState($lastState['name'], $lastState['view']);
         $expectedConfig->setEntryAction($lastState['name'], $lastState['entry']);
@@ -229,7 +227,6 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
         $actualConfig = &$reader->read();
 
         $this->assertEquals(strtolower('Piece_Flow_Config'), strtolower(get_class($actualConfig)));
-        $this->assertEquals($expectedConfig->getName(), $actualConfig->getName());
         $this->assertEquals($expectedConfig->getFirstState(), $actualConfig->getFirstState());
         $this->assertEquals($expectedConfig->getLastState(), $actualConfig->getLastState());
         $this->assertEquals($expectedConfig->getViewStates(), $actualConfig->getViewStates());

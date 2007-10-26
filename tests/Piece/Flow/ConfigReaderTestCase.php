@@ -94,21 +94,21 @@ class Piece_Flow_ConfigReaderTestCase extends PHPUnit_TestCase
 
     function testGuessingFromFileExtension()
     {
-        $this->assertEquals(strtolower('Piece_Flow_Config'), strtolower(get_class(Piece_Flow_ConfigReader::read("{$this->_cacheDirectory}/foo.yaml", null, null))));
-        $this->assertEquals(strtolower('Piece_Flow_Config'), strtolower(get_class(Piece_Flow_ConfigReader::read("{$this->_cacheDirectory}/foo.xml", null, null))));
+        $this->assertEquals(strtolower('Piece_Flow_Config'), strtolower(get_class(Piece_Flow_ConfigReader::read("{$this->_cacheDirectory}/foo.yaml", null, null, null, null))));
+        $this->assertEquals(strtolower('Piece_Flow_Config'), strtolower(get_class(Piece_Flow_ConfigReader::read("{$this->_cacheDirectory}/foo.xml", null, null, null, null))));
     }
 
     function testSpecifyingDriverType()
     {
-        $this->assertEquals(strtolower('Piece_Flow_Config'), strtolower(get_class(Piece_Flow_ConfigReader::read("{$this->_cacheDirectory}/foo.yaml", 'YAML', null))));
-        $this->assertEquals(strtolower('Piece_Flow_Config'), strtolower(get_class(Piece_Flow_ConfigReader::read("{$this->_cacheDirectory}/foo.xml", 'XML', null))));
+        $this->assertEquals(strtolower('Piece_Flow_Config'), strtolower(get_class(Piece_Flow_ConfigReader::read("{$this->_cacheDirectory}/foo.yaml", 'YAML', null, null, null))));
+        $this->assertEquals(strtolower('Piece_Flow_Config'), strtolower(get_class(Piece_Flow_ConfigReader::read("{$this->_cacheDirectory}/foo.xml", 'XML', null, null, null))));
     }
 
     function testInvalidDriver()
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
         $oldIncludePath = set_include_path(dirname(__FILE__) . '/' . basename(__FILE__, '.php'));
-        Piece_Flow_ConfigReader::read('foo.bar', 'Baz', null);
+        Piece_Flow_ConfigReader::read('foo.bar', 'Baz', null, null, null);
 
         $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
 
@@ -125,7 +125,7 @@ class Piece_Flow_ConfigReaderTestCase extends PHPUnit_TestCase
      */
     function testConfigurationFileWithoutExtensionShouldBeReadAsYAML()
     {
-        Piece_Flow_ConfigReader::read("{$this->_cacheDirectory}/foo.flow", null, $this->_cacheDirectory);
+        Piece_Flow_ConfigReader::read("{$this->_cacheDirectory}/foo.flow", null, $this->_cacheDirectory, null, null);
 
         $this->assertFalse(Piece_Flow_Error::hasErrors('exception'));
     }
@@ -136,7 +136,7 @@ class Piece_Flow_ConfigReaderTestCase extends PHPUnit_TestCase
     function testNotFoundExceptionShouldBeRaisedWhenNonExistingConfigurationFileIsSpecified()
     {
         Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
-        Piece_Flow_ConfigReader::read("{$this->_cacheDirectory}/foo.bar", null, $this->_cacheDirectory);
+        Piece_Flow_ConfigReader::read("{$this->_cacheDirectory}/foo.bar", null, $this->_cacheDirectory, null, null);
 
         $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
 

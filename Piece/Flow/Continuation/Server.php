@@ -88,6 +88,8 @@ class Piece_Flow_Continuation_Server
     var $_flowExecution;
     var $_actionDirectory;
     var $_useContext = false;
+    var $_configDirectory;
+    var $_configExtension;
 
     /**#@-*/
 
@@ -125,12 +127,12 @@ class Piece_Flow_Continuation_Server
     /**
      * Adds a flow definition to the Piece_Flow_Continuation object.
      *
-     * @param string  $name
+     * @param string  $flowID
      * @param mixed   $source
      * @param boolean $isExclusive
      * @throws PIECE_FLOW_ERROR_ALREADY_EXISTS
      */
-    function addFlow($name, $source, $isExclusive = false)
+    function addFlow($flowID, $source, $isExclusive = false)
     {
         if ($this->_enableSingleFlowMode && count($this->_flowDefinitions)) {
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_ALREADY_EXISTS,
@@ -139,9 +141,9 @@ class Piece_Flow_Continuation_Server
             return;
         }
 
-        $this->_flowDefinitions[$name] = array('source' => $source,
-                                               'isExclusive' => $isExclusive
-                                               );
+        $this->_flowDefinitions[$flowID] = array('source' => $source,
+                                                 'isExclusive' => $isExclusive
+                                                 );
     }
 
     // }}}
@@ -272,7 +274,7 @@ class Piece_Flow_Continuation_Server
     // {{{ setCacheDirectory()
 
     /**
-     * Sets a cache directory for the flow definitions.
+     * Sets the cache directory for the flow definitions.
      *
      * @param string $cacheDirectory
      */
@@ -378,6 +380,34 @@ class Piece_Flow_Continuation_Server
     function setFlowIDCallback($callback)
     {
         $this->_flowIDCallback = $callback;
+    }
+
+    // }}}
+    // {{{ setConfigDirectory()
+
+    /**
+     * Sets the config directory for the flow definitions.
+     *
+     * @param string $configDirectory
+     * @since Method available since Release 1.15.0
+     */
+    function setConfigDirectory($configDirectory)
+    {
+        $this->_configDirectory = $configDirectory;
+    }
+
+    // }}}
+    // {{{ setConfigExtension()
+
+    /**
+     * Sets the extension for the flow definitions.
+     *
+     * @param string $configExtension
+     * @since Method available since Release 1.15.0
+     */
+    function setConfigExtension($configExtension)
+    {
+        $this->_configExtension = $configExtension;
     }
 
     /**#@-*/
@@ -522,7 +552,9 @@ class Piece_Flow_Continuation_Server
         $flow->configure($this->_flowDefinitions[$this->_activeFlowID]['source'],
                          null,
                          $this->_cacheDirectory,
-                         $this->_actionDirectory
+                         $this->_actionDirectory,
+                         $this->_configDirectory,
+                         $this->_configExtension
                          );
         if (Piece_Flow_Error::hasErrors('exception')) {
             return;

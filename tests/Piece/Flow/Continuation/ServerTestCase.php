@@ -1192,6 +1192,98 @@ class Piece_Flow_Continuation_ServerTestCase extends PHPUnit_TestCase
         Piece_Flow_Error::popCallback();
     }
 
+    /**
+     * @since Method available since Release 1.15.0
+     */
+    function testFlowExecutionShouldWorkWithConfigDirectory()
+    {
+        $server = &new Piece_Flow_Continuation_Server();
+        $server->setCacheDirectory($this->_cacheDirectory);
+        $server->addFlow('/counter/one.php', 'Counter_One');
+        $server->addFlow('/counter/two.php', 'Counter_Two');
+        $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
+        $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
+        $server->setFlowIDCallback(array(__CLASS__, 'getFlowID'));
+        $server->setActionDirectory($this->_cacheDirectory);
+        $server->setConfigDirectory($this->_cacheDirectory);
+        $server->setConfigExtension('.flow');
+
+        /*
+         * Starting a new '/counter/one.php'.
+         */
+        $GLOBALS['flowID'] = '/counter/one.php';
+        $GLOBALS['eventName'] = null;
+        $GLOBALS['flowExecutionTicket'] = null;
+        $flowExecutionTicket1 = $server->invoke(new stdClass());
+        $service = &$server->createService();
+
+        $this->assertEquals(0, $service->getAttribute('counter'));
+
+        $server->shutdown();
+
+        /*
+         * Starting a new '/counter/two.php'.
+         */
+        $GLOBALS['flowID'] = '/counter/two.php';
+        $GLOBALS['eventName'] = null;
+        $GLOBALS['flowExecutionTicket'] = null;
+        $flowExecutionTicket2 = $server->invoke(new stdClass());
+        $service = &$server->createService();
+
+        $this->assertEquals(0, $service->getAttribute('counter'));
+        $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket1);
+        $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket2);
+        $this->assertEquals('SecondCounter', $server->getView());
+        $this->assertTrue($flowExecutionTicket1 != $flowExecutionTicket2);
+
+        $server->shutdown();
+
+        /*
+         * Continuing the first '/counter/one.php'.
+         */
+        $GLOBALS['flowID'] = '/counter/one.php';
+        $GLOBALS['eventName'] = 'increase';
+        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket1;
+        $flowExecutionTicket3 = $server->invoke(new stdClass());
+        $service = &$server->createService();
+
+        $this->assertEquals(1, $service->getAttribute('counter'));
+
+        $this->assertEquals('Counter', $server->getView());
+        $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket3);
+
+        $server->shutdown();
+
+        /*
+         * Continuing the first '/counter/two.php'.
+         */
+        $GLOBALS['flowID'] = '/counter/two.php';
+        $GLOBALS['eventName'] = 'increase';
+        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket2;
+        $flowExecutionTicket4 = $server->invoke(new stdClass());
+        $service = &$server->createService();
+
+        $this->assertEquals('SecondCounter', $server->getView());
+        $this->assertEquals(1, $service->getAttribute('counter'));
+        $this->assertEquals($flowExecutionTicket2, $flowExecutionTicket4);
+
+        $server->shutdown();
+
+        /*
+         * Starting a new '/counter/two.php'.
+         */
+        $secondCounter->counter = null;
+        $GLOBALS['flowID'] = '/counter/two.php';
+        $GLOBALS['eventName'] = null;
+        $GLOBALS['flowExecutionTicket'] = null;
+        $flowExecutionTicket5 = $server->invoke(new stdClass());
+        $service = &$server->createService();
+
+        $this->assertEquals('SecondCounter', $server->getView());
+        $this->assertEquals(0, $service->getAttribute('counter'));
+        $this->assertTrue($flowExecutionTicket2 != $flowExecutionTicket5);
+    }
+
     /**#@-*/
 
     /**#@+

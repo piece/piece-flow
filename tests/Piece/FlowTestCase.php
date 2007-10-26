@@ -84,7 +84,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         Piece_Flow_Error::pushCallback(create_function('$error', 'var_dump($error); return ' . PEAR_ERRORSTACK_DIE . ';'));
         $this->_cacheDirectory = dirname(__FILE__) . '/' . basename(__FILE__, '.php');
         $this->_source = "{$this->_cacheDirectory}/Registration.yaml";
-        $this->_config = &Piece_Flow_ConfigReader::read($this->_source, null, $this->_cacheDirectory);
+        $this->_config = &Piece_Flow_ConfigReader::read($this->_source, null, $this->_cacheDirectory, null, null);
     }
 
     function tearDown()

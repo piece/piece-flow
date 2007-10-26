@@ -80,6 +80,8 @@ class Piece_Flow_ConfigReader
      * @param mixed  $source
      * @param string $driverName
      * @param string $cacheDirectory
+     * @param string $configDirectory
+     * @param string $configExtension
      * @return Piece_Flow_Config
      * @throws PIECE_FLOW_ERROR_NOT_FOUND
      * @throws PIECE_FLOW_ERROR_NOT_READABLE
@@ -87,9 +89,21 @@ class Piece_Flow_ConfigReader
      * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
      * @static
      */
-    function &read($source, $driverName, $cacheDirectory)
+    function &read($source,
+                   $driverName,
+                   $cacheDirectory,
+                   $configDirectory,
+                   $configExtension
+                   )
     {
         if (!is_callable($source)) {
+            $flowName = $source;
+
+            if (!is_null($configDirectory)) {
+                $source = str_replace('_', '/', $source);
+                $source = "$configDirectory/$source$configExtension";
+            }
+
             if (is_null($driverName)) {
                 $driverName = strtoupper(substr(strrchr($source, '.'), 1));
                 if ($driverName != 'YAML' && $driverName != 'XML') {
@@ -126,7 +140,25 @@ class Piece_Flow_ConfigReader
         }
 
         $driver = &new $class($source, $cacheDirectory);
-        return $driver->read();
+        $config = &$driver->read();
+        if (Piece_Flow_Error::hasErrors('exception')) {
+            $return = null;
+            return $return;
+        }
+
+        if (!is_callable($source)) {
+            if (is_null($configDirectory)) {
+                $flowName = basename($source);
+                $positionOfExtension = strrpos($flowName, '.');
+                if ($positionOfExtension !== false) {
+                    $flowName = substr($flowName, 0, $positionOfExtension);
+                }
+            }
+
+            $config->setName($flowName);
+        }
+
+        return $config;
     }
 
     /**#@-*/

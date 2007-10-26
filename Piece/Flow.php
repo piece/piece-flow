@@ -106,6 +106,8 @@ class Piece_Flow
      * @param string $driverName
      * @param string $cacheDirectory
      * @param string $actionDirectory
+     * @param string $configDirectory
+     * @param string $configExtension
      * @throws PIECE_FLOW_ERROR_NOT_FOUND
      * @throws PIECE_FLOW_ERROR_NOT_READABLE
      * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
@@ -113,9 +115,20 @@ class Piece_Flow
      * @throws PIECE_FLOW_ERROR_PROTECTED_STATE
      * @throws PIECE_FLOW_ERROR_CANNOT_READ
      */
-    function configure($source, $driverName = null, $cacheDirectory = null, $actionDirectory = null)
+    function configure($source,
+                       $driverName = null,
+                       $cacheDirectory = null,
+                       $actionDirectory = null,
+                       $configDirectory = null,
+                       $configExtension = null
+                       )
     {
-        $config = &Piece_Flow_ConfigReader::read($source, $driverName, $cacheDirectory);
+        $config = &Piece_Flow_ConfigReader::read($source,
+                                                 $driverName,
+                                                 $cacheDirectory,
+                                                 $configDirectory,
+                                                 $configExtension
+                                                 );
         if (Piece_Flow_Error::hasErrors('exception')) {
             return;
         }
