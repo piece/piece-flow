@@ -348,6 +348,7 @@ class Piece_Flow_Continuation_Server
      * Sets a directory as the action directory.
      *
      * @param string $actionDirectory
+     * @since Method available since Release 1.15.0
      */
     function setActionDirectory($actionDirectory)
     {
@@ -362,6 +363,7 @@ class Piece_Flow_Continuation_Server
      * execution ticket.
      *
      * @param boolean $useContext
+     * @since Method available since Release 1.15.0
      */
     function setUseContext($useContext)
     {
@@ -624,6 +626,8 @@ class Piece_Flow_Continuation_Server
 
     /**
      * Prepares the context by flow execution ticket.
+     *
+     * @since Method available since Release 1.15.0
      */
     function _prepareContext()
     {
