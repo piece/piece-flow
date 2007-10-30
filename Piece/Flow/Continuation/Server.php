@@ -412,6 +412,34 @@ class Piece_Flow_Continuation_Server
         $this->_configExtension = $configExtension;
     }
 
+    // }}}
+    // {{{ getActiveFlowID()
+
+    /**
+     * Gets the flow ID for the active flow execution.
+     *
+     * @return mixed
+     * @since Method available since Release 1.15.0
+     */
+    function getActiveFlowID()
+    {
+        return $this->_activeFlowID;
+    }
+
+    // }}}
+    // {{{ getActiveFlowSource()
+
+    /**
+     * Gets the flow source for the active flow execution.
+     *
+     * @return mixed
+     * @since Method available since Release 1.15.0
+     */
+    function getActiveFlowSource()
+    {
+        return $this->_flowDefinitions[$this->_activeFlowID]['source'];
+    }
+
     /**#@-*/
 
     /**#@+
