@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- $Id$ -->
 <package packagerversion="1.6.2" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
     http://pear.php.net/dtd/tasks-1.0.xsd
     http://pear.php.net/dtd/package-2.0
@@ -16,10 +15,10 @@ Piece_Flow provides a stateful programming model for developers, and high securi
   <email>iteman@users.sourceforge.net</email>
   <active>yes</active>
  </lead>
- <date>2007-09-28</date>
- <time>12:30:11</time>
+ <date>2007-11-13</date>
+ <time>11:33:49</time>
  <version>
-  <release>1.14.0</release>
+  <release>1.15.0</release>
   <api>1.7.0</api>
  </version>
  <stability>
@@ -29,26 +28,24 @@ Piece_Flow provides a stateful programming model for developers, and high securi
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License (revised)</license>
  <notes>A new release of Piece_Flow is now available.
 
-What&apos;s New in Piece_Flow 1.14.0
+What&apos;s New in Piece_Flow 1.15.0
 
- * Two new interfaces for the continuation server: Two new interfaces for the continuation server have been available. One is Piece_Flow_Continuation_Service. The other is Piece_Flow_Continuation_Server. Piece_Flow_Continuation_Service is a service class which provides simple interfaces to access attributes of the active flow object and to get some information from flow executions. Users should use this class instead of Piece_Flow_Continuation from this release forward. Piece_Flow_Continuation_Server is a class which just provides the features for the continuation server only. Framework developers should use this class instead of Piece_Flow_Continuation from this release forward. Besides, Piece_Flow_Continuation has been deprecated.
- * A Defect Fix: A defect that caused the same cache to be used if the relative paths of the flow definition files are same even though the absolute paths of the files are different has been fixed.
+ * New configuration system: A new configuration system using a directory where flow definition files exist and an extension of flow definition files has been supported. And the configuration system supports layered structure by using underscores in flow names as directory separators.
 
 See the following release notes for details.
 
 Enhancements
 ============
 
-- Added missing code for checking whether the flow execution has started or not to getCurrentStateName() and getPreviousStateName(). (Piece_Flow)
-- Improved some error messages and comments. (Piece_Flow)
-- Changed the visibility of isExclusive() to private. isExclusive() has been marked as deprecated. (Piece_Flow_Continuation)
-- Refactored Piece_Flow_Continuation. It has been divided into some classes, and deprecated. (Ticket #30)
-- Refactored Piece_Flow. (Ticket #32)
-
-Defect Fixes
-============
-
-- Fixed the defect that caused the same cache to be used if the relative paths of the flow definition files are same even though the absolute paths of the files are different. (Ticket #34) (Piece_Flow_ConfigReader_Common)</notes>
+- Added a feature so that a continuation server can use each action directory individually.
+- Changed the constructor so as to use the given cache directory as is. (Piece_Flow_ConfigReader_Common)
+- Added a configuration reader for PHP array. (Piece_Flow_ConfigReader_PHPArray, Piece_Flow_ConfigReader)
+- Added a feature so that instances of actions are kept with each context individually. (Piece_Flow_Action_Factory, Piece_Flow_Continuation_Server)
+- Added PIECE_FLOW_ERROR_FLOW_ID_NOT_GIVEN. (Piece_Flow_Error)
+- Changed the representation of flow identifier from &quot;flow name&quot; to &quot;flow ID&quot;. (Piece_Flow_Continuation_FlowExecution, Piece_Flow_Continuation_Service, Piece_Flow_Continuation_Server)
+- Added setFlowIDCallback() and marked setFlowNameCallback() as deprecated. (Piece_Flow_Continuation_Server)
+- Added support for new configuration system using a directory where flow definition files exist and an extension of flow definition files. (Ticket #35)
+- Added getActiveFlowID()/getActiveFlowSource() which can be used to get the flow ID/source for the active flow execution. (Piece_Flow_Continuation_Server)</notes>
  <contents>
   <dir baseinstalldir="/" name="/">
    <dir name="data">
@@ -73,6 +70,9 @@ Defect Fixes
      </dir> <!-- /Piece/Flow/Action -->
      <dir name="ConfigReader">
       <file name="Common.php" role="php">
+       <tasks:replace from="@package_version@" to="version" type="package-info" />
+      </file>
+      <file name="PHPArray.php" role="php">
        <tasks:replace from="@package_version@" to="version" type="package-info" />
       </file>
       <file name="XML4.php" role="php">
@@ -136,11 +136,6 @@ Defect Fixes
    </dir> <!-- /Piece -->
    <dir name="tests">
     <dir name="Piece">
-     <dir name="actions">
-      <file name="OmitClassNameAction.php" role="test">
-       <tasks:replace from="@package_version@" to="version" type="package-info" />
-      </file>
-     </dir> <!-- /tests/Piece/actions -->
      <dir name="Flow">
       <dir name="Action">
        <file name="BarAction.php" role="test">
@@ -456,6 +451,20 @@ Defect Fixes
       </dir> <!-- /tests/Piece/Flow/ConfigReaderTestCase -->
       <dir name="Continuation">
        <dir name="ServerTestCase">
+        <dir name="Counter">
+         <file name="One.flow" role="test">
+          <tasks:replace from="@package_version@" to="version" type="package-info" />
+         </file>
+         <file name="OneAction.php" role="test">
+          <tasks:replace from="@package_version@" to="version" type="package-info" />
+         </file>
+         <file name="Two.flow" role="test">
+          <tasks:replace from="@package_version@" to="version" type="package-info" />
+         </file>
+         <file name="TwoAction.php" role="test">
+          <tasks:replace from="@package_version@" to="version" type="package-info" />
+         </file>
+        </dir> <!-- /tests/Piece/Flow/Continuation/ServerTestCase/Counter -->
         <file name="BindActionsWithFlowExecution.yaml" role="test">
          <tasks:replace from="@package_version@" to="version" type="package-info" />
         </file>
@@ -544,65 +553,68 @@ Defect Fixes
        <tasks:replace from="@package_version@" to="version" type="package-info" />
       </file>
      </dir> <!-- /tests/Piece/Flow -->
-     <dir name="flows">
+     <dir name="FlowTestCase">
+      <dir name="Piece">
+       <file name="FlowCDPlayerAction.php" role="test">
+        <tasks:replace from="@package_version@" to="version" type="package-info" />
+       </file>
+       <file name="FlowInitialAction.php" role="test">
+        <tasks:replace from="@package_version@" to="version" type="package-info" />
+       </file>
+       <file name="FlowInvalidEventFromTransitionActionsOrActivitiesAction.php" role="test">
+        <tasks:replace from="@package_version@" to="version" type="package-info" />
+       </file>
+       <file name="FlowProblemThatActivityIsInvokedTwiceUnexpectedlyAction.php" role="test">
+        <tasks:replace from="@package_version@" to="version" type="package-info" />
+       </file>
+       <file name="FlowTestCaseAction.php" role="test">
+        <tasks:replace from="@package_version@" to="version" type="package-info" />
+       </file>
+      </dir> <!-- /tests/Piece/FlowTestCase/Piece -->
+      <file name="CDPlayer.yaml" role="test">
+       <tasks:replace from="@package_version@" to="version" type="package-info" />
+      </file>
+      <file name="initial.xml" role="test">
+       <tasks:replace from="@package_version@" to="version" type="package-info" />
+      </file>
+      <file name="initial.yaml" role="test">
+       <tasks:replace from="@package_version@" to="version" type="package-info" />
+      </file>
+      <file name="invalid.yaml" role="test">
+       <tasks:replace from="@package_version@" to="version" type="package-info" />
+      </file>
+      <file name="InvalidEventFromTransitionActionsOrActivities.yaml" role="test">
+       <tasks:replace from="@package_version@" to="version" type="package-info" />
+      </file>
       <file name="OmitClassName.xml" role="test">
        <tasks:replace from="@package_version@" to="version" type="package-info" />
       </file>
       <file name="OmitClassName.yaml" role="test">
        <tasks:replace from="@package_version@" to="version" type="package-info" />
       </file>
-     </dir> <!-- /tests/Piece/flows -->
-     <dir name="FlowTestCase">
+      <file name="OmitClassNameAction.php" role="test">
+       <tasks:replace from="@package_version@" to="version" type="package-info" />
+      </file>
+      <file name="optional.xml" role="test">
+       <tasks:replace from="@package_version@" to="version" type="package-info" />
+      </file>
+      <file name="optional.yaml" role="test">
+       <tasks:replace from="@package_version@" to="version" type="package-info" />
+      </file>
+      <file name="ProblemThatActivityIsInvokedTwiceUnexpectedly.yaml" role="test">
+       <tasks:replace from="@package_version@" to="version" type="package-info" />
+      </file>
+      <file name="ProtectedEvents.yaml" role="test">
+       <tasks:replace from="@package_version@" to="version" type="package-info" />
+      </file>
+      <file name="ProtectedStates.yaml" role="test">
+       <tasks:replace from="@package_version@" to="version" type="package-info" />
+      </file>
       <file name="Registration.yaml" role="test">
        <tasks:replace from="@package_version@" to="version" type="package-info" />
       </file>
      </dir> <!-- /tests/Piece/FlowTestCase -->
-     <file name="CDPlayer.yaml" role="test">
-      <tasks:replace from="@package_version@" to="version" type="package-info" />
-     </file>
-     <file name="FlowCDPlayerAction.php" role="test">
-      <tasks:replace from="@package_version@" to="version" type="package-info" />
-     </file>
-     <file name="FlowInitialAction.php" role="test">
-      <tasks:replace from="@package_version@" to="version" type="package-info" />
-     </file>
-     <file name="FlowInvalidEventFromTransitionActionsOrActivitiesAction.php" role="test">
-      <tasks:replace from="@package_version@" to="version" type="package-info" />
-     </file>
-     <file name="FlowProblemThatActivityIsInvokedTwiceUnexpectedlyAction.php" role="test">
-      <tasks:replace from="@package_version@" to="version" type="package-info" />
-     </file>
      <file name="FlowTestCase.php" role="test">
-      <tasks:replace from="@package_version@" to="version" type="package-info" />
-     </file>
-     <file name="FlowTestCaseAction.php" role="test">
-      <tasks:replace from="@package_version@" to="version" type="package-info" />
-     </file>
-     <file name="initial.xml" role="test">
-      <tasks:replace from="@package_version@" to="version" type="package-info" />
-     </file>
-     <file name="initial.yaml" role="test">
-      <tasks:replace from="@package_version@" to="version" type="package-info" />
-     </file>
-     <file name="invalid.yaml" role="test">
-      <tasks:replace from="@package_version@" to="version" type="package-info" />
-     </file>
-     <file name="InvalidEventFromTransitionActionsOrActivities.yaml" role="test">
-      <tasks:replace from="@package_version@" to="version" type="package-info" />
-     </file>
-     <file name="optional.xml" role="test">
-      <tasks:replace from="@package_version@" to="version" type="package-info" />
-     </file>
-     <file name="optional.yaml" role="test">
-      <tasks:replace from="@package_version@" to="version" type="package-info" />
-     </file>
-     <file name="ProblemThatActivityIsInvokedTwiceUnexpectedly.yaml" role="test">
-      <tasks:replace from="@package_version@" to="version" type="package-info" />
-     </file>
-     <file name="ProtectedEvents.yaml" role="test">
-      <tasks:replace from="@package_version@" to="version" type="package-info" />
-     </file>
-     <file name="ProtectedStates.yaml" role="test">
       <tasks:replace from="@package_version@" to="version" type="package-info" />
      </file>
     </dir> <!-- /tests/Piece -->
@@ -639,6 +651,38 @@ Defect Fixes
  </dependencies>
  <phprelease />
  <changelog>
+  <release>
+   <version>
+    <release>1.15.0</release>
+    <api>1.7.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2007-11-13</date>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License (revised)</license>
+   <notes>A new release of Piece_Flow is now available.
+
+What&apos;s New in Piece_Flow 1.15.0
+
+ * New configuration system: A new configuration system using a directory where flow definition files exist and an extension of flow definition files has been supported. And the configuration system supports layered structure by using underscores in flow names as directory separators.
+
+See the following release notes for details.
+
+Enhancements
+============
+
+- Added a feature so that a continuation server can use each action directory individually.
+- Changed the constructor so as to use the given cache directory as is. (Piece_Flow_ConfigReader_Common)
+- Added a configuration reader for PHP array. (Piece_Flow_ConfigReader_PHPArray, Piece_Flow_ConfigReader)
+- Added a feature so that instances of actions are kept with each context individually. (Piece_Flow_Action_Factory, Piece_Flow_Continuation_Server)
+- Added PIECE_FLOW_ERROR_FLOW_ID_NOT_GIVEN. (Piece_Flow_Error)
+- Changed the representation of flow identifier from &quot;flow name&quot; to &quot;flow ID&quot;. (Piece_Flow_Continuation_FlowExecution, Piece_Flow_Continuation_Service, Piece_Flow_Continuation_Server)
+- Added setFlowIDCallback() and marked setFlowNameCallback() as deprecated. (Piece_Flow_Continuation_Server)
+- Added support for new configuration system using a directory where flow definition files exist and an extension of flow definition files. (Ticket #35)
+- Added getActiveFlowID()/getActiveFlowSource() which can be used to get the flow ID/source for the active flow execution. (Piece_Flow_Continuation_Server)</notes>
+  </release>
   <release>
    <version>
     <release>1.14.0</release>

@@ -39,32 +39,30 @@ require_once 'PEAR/PackageFileManager2.php';
 
 PEAR::staticPushErrorHandling(PEAR_ERROR_CALLBACK, create_function('$error', 'var_dump($error); exit();'));
 
-$releaseVersion = '1.14.0';
+$releaseVersion = '1.15.0';
 $releaseStability = 'stable';
 $apiVersion = '1.7.0';
 $apiStability = 'stable';
 $notes = 'A new release of Piece_Flow is now available.
 
-What\'s New in Piece_Flow 1.14.0
+What\'s New in Piece_Flow 1.15.0
 
- * Two new interfaces for the continuation server: Two new interfaces for the continuation server have been available. One is Piece_Flow_Continuation_Service. The other is Piece_Flow_Continuation_Server. Piece_Flow_Continuation_Service is a service class which provides simple interfaces to access attributes of the active flow object and to get some information from flow executions. Users should use this class instead of Piece_Flow_Continuation from this release forward. Piece_Flow_Continuation_Server is a class which just provides the features for the continuation server only. Framework developers should use this class instead of Piece_Flow_Continuation from this release forward. Besides, Piece_Flow_Continuation has been deprecated.
- * A Defect Fix: A defect that caused the same cache to be used if the relative paths of the flow definition files are same even though the absolute paths of the files are different has been fixed.
+ * New configuration system: A new configuration system using a directory where flow definition files exist and an extension of flow definition files has been supported. And the configuration system supports layered structure by using underscores in flow names as directory separators.
 
 See the following release notes for details.
 
 Enhancements
 ============
 
-- Added missing code for checking whether the flow execution has started or not to getCurrentStateName() and getPreviousStateName(). (Piece_Flow)
-- Improved some error messages and comments. (Piece_Flow)
-- Changed the visibility of isExclusive() to private. isExclusive() has been marked as deprecated. (Piece_Flow_Continuation)
-- Refactored Piece_Flow_Continuation. It has been divided into some classes, and deprecated. (Ticket #30)
-- Refactored Piece_Flow. (Ticket #32)
-
-Defect Fixes
-============
-
-- Fixed the defect that caused the same cache to be used if the relative paths of the flow definition files are same even though the absolute paths of the files are different. (Ticket #34) (Piece_Flow_ConfigReader_Common)';
+- Added a feature so that a continuation server can use each action directory individually.
+- Changed the constructor so as to use the given cache directory as is. (Piece_Flow_ConfigReader_Common)
+- Added a configuration reader for PHP array. (Piece_Flow_ConfigReader_PHPArray, Piece_Flow_ConfigReader)
+- Added a feature so that instances of actions are kept with each context individually. (Piece_Flow_Action_Factory, Piece_Flow_Continuation_Server)
+- Added PIECE_FLOW_ERROR_FLOW_ID_NOT_GIVEN. (Piece_Flow_Error)
+- Changed the representation of flow identifier from "flow name" to "flow ID". (Piece_Flow_Continuation_FlowExecution, Piece_Flow_Continuation_Service, Piece_Flow_Continuation_Server)
+- Added setFlowIDCallback() and marked setFlowNameCallback() as deprecated. (Piece_Flow_Continuation_Server)
+- Added support for new configuration system using a directory where flow definition files exist and an extension of flow definition files. (Ticket #35)
+- Added getActiveFlowID()/getActiveFlowSource() which can be used to get the flow ID/source for the active flow execution. (Piece_Flow_Continuation_Server)';
 
 $package = new PEAR_PackageFileManager2();
 $package->setOptions(array('filelistgenerator' => 'svn',
