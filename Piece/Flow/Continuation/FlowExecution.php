@@ -85,7 +85,6 @@ class Piece_Flow_Continuation_FlowExecution
     function disableFlowExecution($flowExecutionTicket)
     {
         $this->_flowExecutions[$flowExecutionTicket]['flow'] = null;
-        $this->_flowExecutions[$flowExecutionTicket]['id'] = null;
     }
 
     // }}}

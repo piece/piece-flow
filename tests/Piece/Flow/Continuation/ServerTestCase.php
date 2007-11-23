@@ -1284,6 +1284,50 @@ class Piece_Flow_Continuation_ServerTestCase extends PHPUnit_TestCase
         $this->assertTrue($flowExecutionTicket2 != $flowExecutionTicket5);
     }
 
+    /**
+     * @since Method available since Release 1.15.1
+     */
+    function testFlowExecutionExpiredExceptionShouldRaiseAfterSweepingIt()
+    {
+        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
+        $flowName = 'FlowExecutionExpired';
+        $server = &new Piece_Flow_Continuation_Server(false, true, 1);
+        $server->setCacheDirectory($this->_cacheDirectory);
+        $server->addFlow($flowName, "{$this->_cacheDirectory}/$flowName.yaml");
+        $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
+        $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
+        $server->setFlowIDCallback(array(__CLASS__, 'getFlowID'));
+
+        $GLOBALS['flowID'] = $flowName;
+        $GLOBALS['eventName'] = null;
+        $GLOBALS['flowExecutionTicket'] = null;
+        $flowExecutionTicket1 = $server->invoke(new stdClass());
+        $server->shutdown();
+
+        sleep(2);
+
+        $GLOBALS['flowID'] = $flowName;
+        $GLOBALS['eventName'] = null;
+        $GLOBALS['flowExecutionTicket'] = null;
+        $flowExecutionTicket2 = $server->invoke(new stdClass());
+        $server->shutdown();
+
+        $this->assertTrue($flowExecutionTicket1 != $flowExecutionTicket2);
+
+        $GLOBALS['flowID'] = $flowName;
+        $GLOBALS['eventName'] = null;
+        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket1;
+        $server->invoke(new stdClass());
+
+        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
+
+        $error = Piece_Flow_Error::pop();
+
+        $this->assertEquals(PIECE_FLOW_ERROR_FLOW_EXECUTION_EXPIRED, $error['code']);
+
+        Piece_Flow_Error::popCallback();
+    }
+
     /**#@-*/
 
     /**#@+
