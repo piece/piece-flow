@@ -15,10 +15,10 @@ Piece_Flow provides a stateful programming model for developers, and high securi
   <email>iteman@users.sourceforge.net</email>
   <active>yes</active>
  </lead>
- <date>2007-11-13</date>
- <time>11:33:49</time>
+ <date>2007-11-25</date>
+ <time>14:10:58</time>
  <version>
-  <release>1.15.0</release>
+  <release>1.15.1</release>
   <api>1.7.0</api>
  </version>
  <stability>
@@ -28,24 +28,9 @@ Piece_Flow provides a stateful programming model for developers, and high securi
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License (revised)</license>
  <notes>A new release of Piece_Flow is now available.
 
-What&apos;s New in Piece_Flow 1.15.0
+What&apos;s New in Piece_Flow 1.15.1
 
- * New configuration system: A new configuration system using a directory where flow definition files exist and an extension of flow definition files has been supported. And the configuration system supports layered structure by using underscores in flow names as directory separators.
-
-See the following release notes for details.
-
-Enhancements
-============
-
-- Added a feature so that a continuation server can use each action directory individually.
-- Changed the constructor so as to use the given cache directory as is. (Piece_Flow_ConfigReader_Common)
-- Added a configuration reader for PHP array. (Piece_Flow_ConfigReader_PHPArray, Piece_Flow_ConfigReader)
-- Added a feature so that instances of actions are kept with each context individually. (Piece_Flow_Action_Factory, Piece_Flow_Continuation_Server)
-- Added PIECE_FLOW_ERROR_FLOW_ID_NOT_GIVEN. (Piece_Flow_Error)
-- Changed the representation of flow identifier from &quot;flow name&quot; to &quot;flow ID&quot;. (Piece_Flow_Continuation_FlowExecution, Piece_Flow_Continuation_Service, Piece_Flow_Continuation_Server)
-- Added setFlowIDCallback() and marked setFlowNameCallback() as deprecated. (Piece_Flow_Continuation_Server)
-- Added support for new configuration system using a directory where flow definition files exist and an extension of flow definition files. (Ticket #35)
-- Added getActiveFlowID()/getActiveFlowSource() which can be used to get the flow ID/source for the active flow execution. (Piece_Flow_Continuation_Server)</notes>
+ * Two defect fixes: A defect that caused a PIECE_FLOW_ERROR_FLOW_ID_NOT_GIVEN exception to be raised when being accessed an expired flow execution after sweeping it by the garbage collection has been fixed. And a defect that caused an undefined index notice to be raised if the action instances of the current context do not exist has been fixed.</notes>
  <contents>
   <dir baseinstalldir="/" name="/">
    <dir name="data">
@@ -651,6 +636,23 @@ Enhancements
  </dependencies>
  <phprelease />
  <changelog>
+  <release>
+   <version>
+    <release>1.15.1</release>
+    <api>1.7.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2007-11-25</date>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License (revised)</license>
+   <notes>A new release of Piece_Flow is now available.
+
+What&apos;s New in Piece_Flow 1.15.1
+
+ * Two defect fixes: A defect that caused a PIECE_FLOW_ERROR_FLOW_ID_NOT_GIVEN exception to be raised when being accessed an expired flow execution after sweeping it by the garbage collection has been fixed. And a defect that caused an undefined index notice to be raised if the action instances of the current context do not exist has been fixed.</notes>
+  </release>
   <release>
    <version>
     <release>1.15.0</release>
