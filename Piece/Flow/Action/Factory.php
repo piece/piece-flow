@@ -143,7 +143,11 @@ class Piece_Flow_Action_Factory
      */
     function getInstances()
     {
-        return $GLOBALS['PIECE_FLOW_Action_Instances'][ $GLOBALS['PIECE_FLOW_Action_ContextID'] ];
+        if (array_key_exists($GLOBALS['PIECE_FLOW_Action_ContextID'], $GLOBALS['PIECE_FLOW_Action_Instances'])) {
+            return $GLOBALS['PIECE_FLOW_Action_Instances'][ $GLOBALS['PIECE_FLOW_Action_ContextID'] ];
+        } else {
+            return array();
+        }
     }
 
     // }}}
