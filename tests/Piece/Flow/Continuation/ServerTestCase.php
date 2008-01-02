@@ -1001,6 +1001,8 @@ class Piece_Flow_Continuation_ServerTestCase extends PHPUnit_TestCase
 
         $this->assertEquals(PIECE_FLOW_ERROR_FLOW_EXECUTION_EXPIRED, $error['code']);
 
+        $server->shutdown();
+
         $GLOBALS['flowID'] = $flowName;
         $GLOBALS['eventName'] = null;
         $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket;
