@@ -104,7 +104,7 @@ class Piece_Flow_Continuation_FlowExecution
             return true;
         }
 
-        return $this->_flowExecutions[ $this->_activeFlowExecutionTicket ]['flow']->checkLastEvent();
+        return $this->_flowExecutions[ $this->getActiveFlowExecutionTicket() ]['flow']->checkLastEvent();
     }
 
     // }}}
@@ -243,7 +243,7 @@ class Piece_Flow_Continuation_FlowExecution
      */
     function &getActiveFlow()
     {
-        return $this->_flowExecutions[ $this->_activeFlowExecutionTicket ]['flow'];
+        return $this->_flowExecutions[ $this->getActiveFlowExecutionTicket() ]['flow'];
     }
 
     // }}}
@@ -291,6 +291,20 @@ class Piece_Flow_Continuation_FlowExecution
     function getActiveFlowID()
     {
         return $this->_activeFlowID;
+    }
+
+    // }}}
+    // {{{ getActiveFlowExecutionTicket()
+
+    /**
+     * Gets the flow execution ticket for the active flow execution.
+     *
+     * @return string
+     * @since Method available since Release 1.16.0
+     */
+    function getActiveFlowExecutionTicket()
+    {
+        return $this->_activeFlowExecutionTicket;
     }
 
     /**#@-*/

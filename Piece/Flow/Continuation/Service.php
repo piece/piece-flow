@@ -293,6 +293,20 @@ class Piece_Flow_Continuation_Service
         return $this->_flowExecution->getActiveFlowID();
     }
 
+    // }}}
+    // {{{ getActiveFlowExecutionTicket()
+
+    /**
+     * Gets the flow execution ticket for the active flow execution.
+     *
+     * @return string
+     * @since Method available since Release 1.16.0
+     */
+    function getActiveFlowExecutionTicket()
+    {
+        return $this->_flowExecution->getActiveFlowExecutionTicket();
+    }
+
     /**#@-*/
 
     /**#@+
