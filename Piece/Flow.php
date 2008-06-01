@@ -4,7 +4,7 @@
 /**
  * PHP versions 4 and 5
  *
- * Copyright (c) 2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>,
+ * Copyright (c) 2006-2008 KUBO Atsuhiro <iteman@users.sourceforge.net>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
+ * @copyright  2006-2008 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
  * @link       http://www.martinfowler.com/eaaCatalog/applicationController.html
@@ -58,7 +58,7 @@ require_once 'Piece/Flow/ProtedtedEvent.php';
  * it.
  *
  * @package    Piece_Flow
- * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
+ * @copyright  2006-2008 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
  * @link       http://www.martinfowler.com/eaaCatalog/applicationController.html
@@ -576,6 +576,20 @@ class Piece_Flow
         return $this->_lastEventIsValid;
     }
 
+    // }}}
+    // {{{ isViewState()
+
+    /**
+     * Tells whether the current state of a flow execution is a view state or not.
+     *
+     * @return boolean
+     * @since Method available since Release 1.16.0
+     */
+    function isViewState()
+    {
+        return array_key_exists($this->_getViewIndex(), $this->_views);
+    }
+
     /**#@-*/
 
     /**#@+
@@ -593,6 +607,21 @@ class Piece_Flow
     function _started()
     {
         return is_a($this->_fsm, 'Stagehand_FSM') && !is_null($this->_fsm->getCurrentState());
+    }
+
+    // }}}
+    // {{{ _getViewIndex()
+
+    /**
+     * Gets an appropriate view index which corresponding to the current state.
+     *
+     * @return string
+     * @since Method available since Release 1.16.0
+     */
+    function _getViewIndex()
+    {
+        return !$this->isFinalState() ? $this->getCurrentStateName()
+                                      : $this->getPreviousStateName();
     }
 
     /**#@-*/
