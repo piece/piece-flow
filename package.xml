@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<package packagerversion="1.6.2" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
+<package packagerversion="1.7.1" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
     http://pear.php.net/dtd/tasks-1.0.xsd
     http://pear.php.net/dtd/package-2.0
     http://pear.php.net/dtd/package-2.0.xsd">
@@ -15,10 +15,10 @@ Piece_Flow provides a stateful programming model for developers, and high securi
   <email>iteman@users.sourceforge.net</email>
   <active>yes</active>
  </lead>
- <date>2007-11-25</date>
- <time>14:10:58</time>
+ <date>2008-06-01</date>
+ <time>22:07:09</time>
  <version>
-  <release>1.15.1</release>
+  <release>1.16.0</release>
   <api>1.7.0</api>
  </version>
  <stability>
@@ -28,9 +28,7 @@ Piece_Flow provides a stateful programming model for developers, and high securi
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License (revised)</license>
  <notes>A new release of Piece_Flow is now available.
 
-What&apos;s New in Piece_Flow 1.15.1
-
- * Two defect fixes: A defect that caused a PIECE_FLOW_ERROR_FLOW_ID_NOT_GIVEN exception to be raised when being accessed an expired flow execution after sweeping it by the garbage collection has been fixed. And a defect that caused an undefined index notice to be raised if the action instances of the current context do not exist has been fixed.</notes>
+What&apos;s New in Piece_Flow 1.16.0</notes>
  <contents>
   <dir baseinstalldir="/" name="/">
    <dir name="data">
@@ -636,6 +634,21 @@ What&apos;s New in Piece_Flow 1.15.1
  </dependencies>
  <phprelease />
  <changelog>
+  <release>
+   <version>
+    <release>1.16.0</release>
+    <api>1.7.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2008-06-01</date>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License (revised)</license>
+   <notes>A new release of Piece_Flow is now available.
+
+What&apos;s New in Piece_Flow 1.16.0</notes>
+  </release>
   <release>
    <version>
     <release>1.15.1</release>
