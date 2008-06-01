@@ -35,6 +35,8 @@
  * @since      File available since Release 1.11.0
  */
 
+error_reporting(E_ALL);
+
 if (file_exists(dirname(__FILE__) . '/../Piece/Flow.php')) {
     set_include_path(realpath(dirname(__FILE__) . '/..') . PATH_SEPARATOR . get_include_path());
 }
