@@ -756,4 +756,3 @@ class Piece_Flow_Continuation
  * indent-tabs-mode: nil
  * End:
  */
-?>

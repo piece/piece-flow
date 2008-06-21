@@ -227,4 +227,3 @@ class Piece_Flow_EventHandler
  * indent-tabs-mode: nil
  * End:
  */
-?>

@@ -103,4 +103,3 @@ class Piece_Flow_Action_FooAction extends Piece_Flow_Action
  * indent-tabs-mode: nil
  * End:
  */
-?>

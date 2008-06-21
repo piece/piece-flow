@@ -1345,4 +1345,3 @@ if (\$code == E_USER_WARNING) {
  * indent-tabs-mode: nil
  * End:
  */
-?>

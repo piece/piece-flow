@@ -92,4 +92,3 @@ class Piece_Flow_Action_BarAction
  * indent-tabs-mode: nil
  * End:
  */
-?>

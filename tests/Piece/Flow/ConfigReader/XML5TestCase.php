@@ -132,4 +132,3 @@ class Piece_Flow_ConfigReader_XML5TestCase extends Piece_Flow_ConfigReader_Compa
  * indent-tabs-mode: nil
  * End:
  */
-?>

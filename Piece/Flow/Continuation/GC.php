@@ -199,4 +199,3 @@ class Piece_Flow_Continuation_GC
  * indent-tabs-mode: nil
  * End:
  */
-?>

@@ -110,4 +110,3 @@ class Piece_FlowInvalidEventFromTransitionActionsOrActivitiesAction extends Piec
  * indent-tabs-mode: nil
  * End:
  */
-?>

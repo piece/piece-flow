@@ -123,4 +123,3 @@ class Piece_FlowProblemThatActivityIsInvokedTwiceUnexpectedlyAction extends Piec
  * indent-tabs-mode: nil
  * End:
  */
-?>

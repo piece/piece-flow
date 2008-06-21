@@ -330,4 +330,3 @@ class Piece_Flow_Continuation_Service
  * indent-tabs-mode: nil
  * End:
  */
-?>

@@ -109,4 +109,3 @@ class SecondCounterAction extends Piece_Flow_Action
  * indent-tabs-mode: nil
  * End:
  */
-?>

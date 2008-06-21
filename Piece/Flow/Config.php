@@ -379,4 +379,3 @@ class Piece_Flow_Config
  * indent-tabs-mode: nil
  * End:
  */
-?>

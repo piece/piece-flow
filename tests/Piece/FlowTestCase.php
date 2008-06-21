@@ -650,4 +650,3 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
  * indent-tabs-mode: nil
  * End:
  */
-?>

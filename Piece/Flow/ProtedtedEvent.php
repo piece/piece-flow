@@ -51,4 +51,3 @@ define('PIECE_FLOW_PROTECTED_EVENT', '_Piece_Flow_Protected_Event');
  * indent-tabs-mode: nil
  * End:
  */
-?>

@@ -341,4 +341,3 @@ class Piece_Flow_FSMBuilder
  * indent-tabs-mode: nil
  * End:
  */
-?>

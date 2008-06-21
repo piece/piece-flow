@@ -662,4 +662,3 @@ class Piece_Flow_Continuation_Server
  * indent-tabs-mode: nil
  * End:
  */
-?>

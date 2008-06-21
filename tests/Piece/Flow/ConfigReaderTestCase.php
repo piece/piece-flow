@@ -171,4 +171,3 @@ class Piece_Flow_ConfigReaderTestCase extends PHPUnit_TestCase
  * indent-tabs-mode: nil
  * End:
  */
-?>

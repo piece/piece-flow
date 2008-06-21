@@ -241,4 +241,3 @@ class Piece_Flow_Action_Factory
  * indent-tabs-mode: nil
  * End:
  */
-?>

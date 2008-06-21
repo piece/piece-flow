@@ -167,4 +167,3 @@ class Piece_Flow_Action_FactoryTestCase extends PHPUnit_TestCase
  * indent-tabs-mode: nil
  * End:
  */
-?>

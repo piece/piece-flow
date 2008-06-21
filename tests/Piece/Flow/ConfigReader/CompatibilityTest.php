@@ -97,13 +97,13 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
     {
         $firstState = 'DisplayForm';
         $lastState = array('name' => 'Finish', 'view' => 'Finish',
-                           'entry' => 
+                           'entry' =>
                            array('class' => 'Piece_FlowTestCaseAction',
                                  'method' => 'setupForm'),
-                           'exit' => 
+                           'exit' =>
                            array('class' => 'Piece_FlowTestCaseAction',
                                  'method' => 'teardownForm'),
-                           'activity' => 
+                           'activity' =>
                            array('class' => 'Piece_FlowTestCaseAction',
                                  'method' => 'countDisplay')
                            );
@@ -115,13 +115,13 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
                        );
 
         $viewState5 = array('name' => 'DisplayForm', 'view' => 'Form',
-                            'entry' => 
+                            'entry' =>
                             array('class' => 'Piece_FlowTestCaseAction',
                                   'method' => 'setupForm'),
-                            'exit' => 
+                            'exit' =>
                             array('class' => 'Piece_FlowTestCaseAction',
                                   'method' => 'teardownForm'),
-                            'activity' => 
+                            'activity' =>
                             array('class' => 'Piece_FlowTestCaseAction',
                                   'method' => 'countDisplay')
                             );
@@ -374,4 +374,3 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
  * indent-tabs-mode: nil
  * End:
  */
-?>

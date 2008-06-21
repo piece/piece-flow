@@ -108,4 +108,3 @@ class Piece_Flow_ConfigReader_PHPArray extends Piece_Flow_ConfigReader_Common
  * indent-tabs-mode: nil
  * End:
  */
-?>

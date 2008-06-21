@@ -112,4 +112,3 @@ class Piece_Flow_ConfigReader_YAMLTestCase extends Piece_Flow_ConfigReader_Compa
  * indent-tabs-mode: nil
  * End:
  */
-?>

@@ -105,4 +105,3 @@ class PieceFlowEventHandlerTestCaseNoMethodsAction
  * indent-tabs-mode: nil
  * End:
  */
-?>
