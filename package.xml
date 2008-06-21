@@ -16,7 +16,7 @@ Piece_Flow provides a stateful programming model for developers, and high securi
   <active>yes</active>
  </lead>
  <date>2008-06-22</date>
- <time>04:09:50</time>
+ <time>04:10:59</time>
  <version>
   <release>1.16.0</release>
   <api>1.7.0</api>
@@ -618,7 +618,7 @@ What&apos;s New in Piece_Flow 1.16.0</notes>
    <package>
     <name>Stagehand_FSM</name>
     <channel>pear.piece-framework.com</channel>
-    <min>1.9.0</min>
+    <min>1.10.0</min>
    </package>
    <package>
     <name>Cache_Lite</name>
