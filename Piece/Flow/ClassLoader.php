@@ -4,7 +4,7 @@
 /**
  * PHP versions 4 and 5
  *
- * Copyright (c) 2007 KUBO Atsuhiro <iteman@users.sourceforge.net>,
+ * Copyright (c) 2007-2008 KUBO Atsuhiro <iteman@users.sourceforge.net>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
+ * @copyright  2007-2008 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
  * @since      File available since Release 1.10.0
@@ -43,7 +43,7 @@ require_once 'Piece/Flow/Error.php';
  * A class loader.
  *
  * @package    Piece_Flow
- * @copyright  2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
+ * @copyright  2007-2008 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
  * @since      Class available since Release 1.10.0
@@ -91,7 +91,7 @@ class Piece_Flow_ClassLoader
 
             if (!file_exists($file)) {
                 Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
-                                       "The class file [ $file ] for the class [ $class ] not found."
+                                       "The class file [ $file ] for the class [ $class ] is not found."
                                        );
                 return;
             }
@@ -106,7 +106,7 @@ class Piece_Flow_ClassLoader
 
         if (!include_once $file) {
             Piece_Flow_Error::push(PIECE_FLOW_ERROR_CANNOT_READ,
-                                   "The class file [ $file ] not found or is not readable."
+                                   "The class file [ $file ] is not found or is not readable."
                                    );
         }
     }

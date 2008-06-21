@@ -4,7 +4,7 @@
 /**
  * PHP versions 4 and 5
  *
- * Copyright (c) 2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>,
+ * Copyright (c) 2006-2008 KUBO Atsuhiro <iteman@users.sourceforge.net>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
+ * @copyright  2006-2008 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
  * @since      File available since Release 0.1.0
@@ -40,6 +40,7 @@ require_once 'PHPUnit.php';
 require_once 'Piece/Flow/Error.php';
 require_once 'Piece/Flow/Config.php';
 require_once 'Cache/Lite/File.php';
+require_once 'PEAR/ErrorStack.php';
 
 // {{{ Piece_Flow_ConfigReader_CompatibilityTest
 
@@ -47,7 +48,7 @@ require_once 'Cache/Lite/File.php';
  * The base class for compatibility test of Piece_Flow_Config drivers.
  *
  * @package    Piece_Flow
- * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
+ * @copyright  2006-2008 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
@@ -77,7 +78,7 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
 
     function setUp()
     {
-        Piece_Flow_Error::pushCallback(create_function('$error', 'var_dump($error); return ' . PEAR_ERRORSTACK_DIE . ';'));
+        PEAR_ErrorStack::setDefaultCallback(create_function('$error', 'var_dump($error); return ' . PEAR_ERRORSTACK_DIE . ';'));
         $this->_doSetUp();
     }
 
@@ -90,7 +91,6 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
                                       );
         $cache->clean();
         Piece_Flow_Error::clearErrors();
-        Piece_Flow_Error::popCallback();
     }
 
     function testConfiguration()
@@ -313,19 +313,17 @@ class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
 
     function _assertExceptionShouldBeRaisedIfInvalidFormatIsDetected($name)
     {
-        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
-
         $reader = &$this->_createConfigReader("{$this->_cacheDirectory}/$name" . $this->_getExtension());
-        $config = &$reader->read();
+        Piece_Flow_Error::disableCallback();
+        @$config = &$reader->read();
+        Piece_Flow_Error::enableCallback();
 
         $this->assertNull($config, $name);
-        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'), $name);
+        $this->assertTrue(Piece_Flow_Error::hasErrors(), $name);
 
         $error = Piece_Flow_Error::pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_INVALID_FORMAT, $error['code'], $name);
-
-        Piece_Flow_Error::popCallback();
     }
 
     /**

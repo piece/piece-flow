@@ -4,7 +4,7 @@
 /**
  * PHP versions 4 and 5
  *
- * Copyright (c) 2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>,
+ * Copyright (c) 2006-2008 KUBO Atsuhiro <iteman@users.sourceforge.net>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
+ * @copyright  2006-2008 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
  * @since      File available since Release 1.0.0
@@ -52,7 +52,7 @@ $GLOBALS['PIECE_FLOW_Action_ContextID']        = $GLOBALS['PIECE_FLOW_Action_Def
  * A factory class for creating action objects.
  *
  * @package    Piece_Flow
- * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
+ * @copyright  2006-2008 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
  * @since      Class available since Release 1.0.0
@@ -87,10 +87,6 @@ class Piece_Flow_Action_Factory
      *
      * @param string $class
      * @return mixed
-     * @throws PIECE_FLOW_ERROR_NOT_GIVEN
-     * @throws PIECE_FLOW_ERROR_NOT_FOUND
-     * @throws PIECE_FLOW_ERROR_NOT_READABLE
-     * @throws PIECE_FLOW_ERROR_CANNOT_READ
      */
     function &factory($class)
     {
@@ -98,7 +94,7 @@ class Piece_Flow_Action_Factory
             || !array_key_exists($class, $GLOBALS['PIECE_FLOW_Action_Instances'][ $GLOBALS['PIECE_FLOW_Action_ContextID'] ])
             ) {
             Piece_Flow_Action_Factory::load($class);
-            if (Piece_Flow_Error::hasErrors('exception')) {
+            if (Piece_Flow_Error::hasErrors()) {
                 $return = null;
                 return $return;
             }
@@ -172,8 +168,6 @@ class Piece_Flow_Action_Factory
      * @param string $class
      * @throws PIECE_FLOW_ERROR_NOT_GIVEN
      * @throws PIECE_FLOW_ERROR_NOT_FOUND
-     * @throws PIECE_FLOW_ERROR_NOT_READABLE
-     * @throws PIECE_FLOW_ERROR_CANNOT_READ
      */
     function load($class)
     {
@@ -186,7 +180,7 @@ class Piece_Flow_Action_Factory
             }
 
             Piece_Flow_ClassLoader::load($class, $GLOBALS['PIECE_FLOW_Action_Directory']);
-            if (Piece_Flow_Error::hasErrors('exception')) {
+            if (Piece_Flow_Error::hasErrors()) {
                 return;
             }
 

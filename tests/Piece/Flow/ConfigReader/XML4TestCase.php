@@ -4,7 +4,7 @@
 /**
  * PHP versions 4
  *
- * Copyright (c) 2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>,
+ * Copyright (c) 2006-2008 KUBO Atsuhiro <iteman@users.sourceforge.net>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
+ * @copyright  2006-2008 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
  * @since      File available since Release 0.1.0
@@ -46,10 +46,10 @@ require_once 'Piece/Flow/Error.php';
 // {{{ Piece_Flow_ConfigReader_XML4TestCase
 
 /**
- * TestCase for Piece_Flow_ConfigReader_XML4
+ * Some tests for Piece_Flow_ConfigReader_XML4.
  *
  * @package    Piece_Flow
- * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
+ * @copyright  2006-2008 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
@@ -77,18 +77,17 @@ class Piece_Flow_ConfigReader_XML4TestCase extends Piece_Flow_ConfigReader_Compa
 
     function testInvalidFormat()
     {
-        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
         $reader = &$this->_createConfigReader("{$this->_cacheDirectory}/broken" . $this->_getExtension());
+        Piece_Flow_Error::disableCallback();
         $config = &$reader->read();
+        Piece_Flow_Error::enableCallback();
 
         $this->assertNull($config);
-        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
+        $this->assertTrue(Piece_Flow_Error::hasErrors());
 
         $error = Piece_Flow_Error::pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_INVALID_FORMAT, $error['code']);
-
-        Piece_Flow_Error::popCallback();
     }
 
     /**#@-*/

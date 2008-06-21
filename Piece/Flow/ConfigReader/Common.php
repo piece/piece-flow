@@ -4,7 +4,7 @@
 /**
  * PHP versions 4 and 5
  *
- * Copyright (c) 2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>,
+ * Copyright (c) 2006-2008 KUBO Atsuhiro <iteman@users.sourceforge.net>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
+ * @copyright  2006-2008 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
  * @since      File available since Release 0.1.0
@@ -47,7 +47,7 @@ require_once 'Piece/Flow/Env.php';
  * The base class for Piece_Flow_Config drivers.
  *
  * @package    Piece_Flow
- * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
+ * @copyright  2006-2008 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
@@ -102,7 +102,6 @@ class Piece_Flow_ConfigReader_Common
      * @return Piece_Flow_Config
      * @throws PIECE_FLOW_ERROR_NOT_FOUND
      * @throws PIECE_FLOW_ERROR_NOT_READABLE
-     * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
      */
     function &read()
     {
@@ -127,24 +126,16 @@ class Piece_Flow_ConfigReader_Common
         }
 
         if (!file_exists($this->_cacheDirectory)) {
-            Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
-                                   "The cache directory [ {$this->_cacheDirectory} ] not found.",
-                                   'warning'
-                                   );
-            Piece_Flow_Error::popCallback();
-
+            trigger_error("The cache directory [ {$this->_cacheDirectory} ] is not found.",
+                          E_USER_WARNING
+                          );
             return $this->_createConfigurationFromSource();
         }
 
         if (!is_readable($this->_cacheDirectory) || !is_writable($this->_cacheDirectory)) {
-            Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_READABLE,
-                                   "The cache directory [ {$this->_cacheDirectory} ] is not readable or writable.",
-                                   'warning'
-                                   );
-            Piece_Flow_Error::popCallback();
-
+            trigger_error("The cache directory [ {$this->_cacheDirectory} ] is not readable or writable.",
+                          E_USER_WARNING
+                          );
             return $this->_createConfigurationFromSource();
         }
 
@@ -503,7 +494,6 @@ class Piece_Flow_ConfigReader_Common
      * Gets a Piece_Flow_Config object from a configuration file or a cache.
      *
      * @return Piece_Flow_Config
-     * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
      */
     function &_getConfiguration()
     {
@@ -524,31 +514,24 @@ class Piece_Flow_ConfigReader_Common
          */
         $config = $cache->get($masterFile);
         if (PEAR::isError($config)) {
-            Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_CANNOT_READ,
-                                   "Cannot read the cache file in the directory [ {$this->_cacheDirectory} ].",
-                                   'warning'
-                                   );
-            Piece_Flow_Error::popCallback();
-
+            trigger_error("Cannot read the cache file in the directory [ {$this->_cacheDirectory} ].",
+                          E_USER_WARNING
+                          );
             return $this->_createConfigurationFromSource();
         }
 
         if (!$config) {
             $config = &$this->_createConfigurationFromSource();
-            if (Piece_Flow_Error::hasErrors('exception')) {
+            if (Piece_Flow_Error::hasErrors()) {
                 $return = null;
                 return $return;
             }
 
             $result = $cache->save($config);
             if (PEAR::isError($result)) {
-                Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_CANNOT_WRITE,
-                                       "Cannot write the Piece_Flow object to the cache file in the directory [ {$this->_cacheDirectory} ].",
-                                       'warning'
-                                       );
-                Piece_Flow_Error::popCallback();
+                trigger_error("Cannot write the Piece_Flow object to the cache file in the directory [ {$this->_cacheDirectory} ].",
+                              E_USER_WARNING
+                              );
             }
         }
 
@@ -566,7 +549,6 @@ class Piece_Flow_ConfigReader_Common
      * file.
      *
      * @return array
-     * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
      */
     function _parseSource() {}
 
@@ -577,7 +559,6 @@ class Piece_Flow_ConfigReader_Common
      * Configures the first state.
      *
      * @param array $firstState
-     * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
      * @since Method available since Release 1.10.0
      */
     function _configureFirstState($firstState)
@@ -752,50 +733,49 @@ class Piece_Flow_ConfigReader_Common
      * Parses the given source and returns a Piece_Flow_Config object.
      *
      * @return Piece_Flow_Config
-     * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
      * @since Method available since Release 1.11.0
      */
     function &_createConfigurationFromSource()
     {
         $flow = $this->_parseSource();
-        if (Piece_Flow_Error::hasErrors('exception')) {
+        if (Piece_Flow_Error::hasErrors()) {
             $return = null;
             return $return;
         }
 
         $this->_config = &new Piece_Flow_Config();
         $this->_configureFirstState(@$flow['firstState']);
-        if (Piece_Flow_Error::hasErrors('exception')) {
+        if (Piece_Flow_Error::hasErrors()) {
             $return = null;
             return $return;
         }
 
         $this->_configureLastState(@$flow['lastState']);
-        if (Piece_Flow_Error::hasErrors('exception')) {
+        if (Piece_Flow_Error::hasErrors()) {
             $return = null;
             return $return;
         }
 
         $this->_configureViewStates(@$flow['viewState']);
-        if (Piece_Flow_Error::hasErrors('exception')) {
+        if (Piece_Flow_Error::hasErrors()) {
             $return = null;
             return $return;
         }
 
         $this->_configureActionStates(@$flow['actionState']);
-        if (Piece_Flow_Error::hasErrors('exception')) {
+        if (Piece_Flow_Error::hasErrors()) {
             $return = null;
             return $return;
         }
 
         $this->_configureInitialAction(@$flow['initial']);
-        if (Piece_Flow_Error::hasErrors('exception')) {
+        if (Piece_Flow_Error::hasErrors()) {
             $return = null;
             return $return;
         }
 
         $this->_configureFinalAction(@$flow['final']);
-        if (Piece_Flow_Error::hasErrors('exception')) {
+        if (Piece_Flow_Error::hasErrors()) {
             $return = null;
             return $return;
         }

@@ -4,7 +4,7 @@
 /**
  * PHP versions 4 and 5
  *
- * Copyright (c) 2007 KUBO Atsuhiro <iteman@users.sourceforge.net>,
+ * Copyright (c) 2007-2008 KUBO Atsuhiro <iteman@users.sourceforge.net>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
+ * @copyright  2007-2008 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
  * @since      File available since Release 1.14.0
@@ -47,7 +47,7 @@ require_once 'Piece/Flow/ProtedtedEvent.php';
  * The FSM builder.
  *
  * @package    Piece_Flow
- * @copyright  2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
+ * @copyright  2007-2008 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
  * @since      Class available since Release 1.14.0
@@ -100,7 +100,6 @@ class Piece_Flow_FSMBuilder
      *
      * @param Piece_Flow_Config &$config
      * @return Stagehand_FSM
-     * @throws PIECE_FLOW_ERROR_PROTECTED_EVENT
      * @throws PIECE_FLOW_ERROR_PROTECTED_STATE
      */
     function &build(&$config)
@@ -136,13 +135,13 @@ class Piece_Flow_FSMBuilder
         }
 
         $this->_configureViewStates($config->getViewStates());
-        if (Piece_Flow_Error::hasErrors('exception')) {
+        if (Piece_Flow_Error::hasErrors()) {
             $return = null;
             return $return;
         }
 
         $this->_configureActionStates($config->getActionStates());
-        if (Piece_Flow_Error::hasErrors('exception')) {
+        if (Piece_Flow_Error::hasErrors()) {
             $return = null;
             return $return;
         }
@@ -177,7 +176,6 @@ class Piece_Flow_FSMBuilder
      * Configures view states.
      *
      * @param array $states
-     * @throws PIECE_FLOW_ERROR_PROTECTED_EVENT
      * @throws PIECE_FLOW_ERROR_PROTECTED_STATE
      */
     function _configureViewStates($states)
@@ -191,7 +189,7 @@ class Piece_Flow_FSMBuilder
             }
 
             $this->_configureViewState($state);
-            if (Piece_Flow_Error::hasErrors('exception')) {
+            if (Piece_Flow_Error::hasErrors()) {
                 return;
             }
         }
@@ -204,7 +202,6 @@ class Piece_Flow_FSMBuilder
      * Configures action states.
      *
      * @param array $states
-     * @throws PIECE_FLOW_ERROR_PROTECTED_EVENT
      * @throws PIECE_FLOW_ERROR_PROTECTED_STATE
      */
     function _configureActionStates($states)
@@ -218,7 +215,7 @@ class Piece_Flow_FSMBuilder
             }
 
             $this->_configureState($state);
-            if (Piece_Flow_Error::hasErrors('exception')) {
+            if (Piece_Flow_Error::hasErrors()) {
                 return;
             }
         }
@@ -300,7 +297,6 @@ class Piece_Flow_FSMBuilder
      * Configures a view state.
      *
      * @param array $state
-     * @throws PIECE_FLOW_ERROR_PROTECTED_EVENT
      */
     function _configureViewState($state)
     {

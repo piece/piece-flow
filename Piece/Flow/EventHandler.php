@@ -4,7 +4,7 @@
 /**
  * PHP versions 4 and 5
  *
- * Copyright (c) 2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>,
+ * Copyright (c) 2006-2008 KUBO Atsuhiro <iteman@users.sourceforge.net>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
+ * @copyright  2006-2008 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
  * @since      File available since Release 0.1.0
@@ -44,7 +44,7 @@ require_once 'Piece/Flow/Error.php';
  * The invoker for an event handler.
  *
  * @package    Piece_Flow
- * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
+ * @copyright  2006-2008 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
@@ -110,9 +110,6 @@ class Piece_Flow_EventHandler
      * @param Stagehand_FSM_Event &$event
      * @param mixed               &$payload
      * @return mixed
-     * @throws PIECE_FLOW_ERROR_NOT_GIVEN
-     * @throws PIECE_FLOW_ERROR_NOT_FOUND
-     * @throws PIECE_FLOW_ERROR_NOT_READABLE
      */
     function invoke(&$fsm, &$event, &$payload)
     {
@@ -129,15 +126,12 @@ class Piece_Flow_EventHandler
      * @param Stagehand_FSM       &$fsm
      * @param Stagehand_FSM_Event &$event
      * @param mixed               &$payload
-     * @throws PIECE_FLOW_ERROR_NOT_GIVEN
-     * @throws PIECE_FLOW_ERROR_NOT_FOUND
-     * @throws PIECE_FLOW_ERROR_NOT_READABLE
      * @throws PIECE_FLOW_ERROR_INVALID_EVENT
      */
     function invokeAndTriggerEvent(&$fsm, &$event, &$payload)
     {
         $result = $this->_invokeEventHandler($event->getName(), $payload);
-        if (Piece_Flow_Error::hasErrors('exception')) {
+        if (Piece_Flow_Error::hasErrors()) {
             return;
         }
 
@@ -171,9 +165,7 @@ class Piece_Flow_EventHandler
      * @param string $eventName
      * @param mixed  &$payload
      * @return string
-     * @throws PIECE_FLOW_ERROR_NOT_GIVEN
      * @throws PIECE_FLOW_ERROR_NOT_FOUND
-     * @throws PIECE_FLOW_ERROR_NOT_READABLE
      */
     function _invokeEventHandler($eventName, &$payload)
     {
@@ -182,7 +174,7 @@ class Piece_Flow_EventHandler
         }
 
         $action = &Piece_Flow_Action_Factory::factory($this->_class);
-        if (Piece_Flow_Error::hasErrors('exception')) {
+        if (Piece_Flow_Error::hasErrors()) {
             return;
         }
 

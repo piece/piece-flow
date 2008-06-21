@@ -4,7 +4,7 @@
 /**
  * PHP versions 4 and 5
  *
- * Copyright (c) 2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>,
+ * Copyright (c) 2006-2008 KUBO Atsuhiro <iteman@users.sourceforge.net>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
+ * @copyright  2006-2008 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
  * @since      File available since Release 0.1.0
@@ -42,14 +42,17 @@ require_once 'Cache/Lite/File.php';
 require_once 'Piece/Flow/Action/Factory.php';
 require_once 'Piece/Flow/Error.php';
 require_once 'Piece/Flow/ConfigReader.php';
+require_once 'PEAR/ErrorStack.php';
+require_once 'Stagehand/FSM/Error.php';
+require_once 'Stagehand/FSM/State.php';
 
 // {{{ Piece_FlowTestCase
 
 /**
- * TestCase for Piece_Flow
+ * Some tests for Piece_Flow.
  *
  * @package    Piece_Flow
- * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
+ * @copyright  2006-2008 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
@@ -81,7 +84,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
 
     function setUp()
     {
-        Piece_Flow_Error::pushCallback(create_function('$error', 'var_dump($error); return ' . PEAR_ERRORSTACK_DIE . ';'));
+        PEAR_ErrorStack::setDefaultCallback(create_function('$error', 'var_dump($error); return ' . PEAR_ERRORSTACK_DIE . ';'));
         $this->_cacheDirectory = dirname(__FILE__) . '/' . basename(__FILE__, '.php');
         $this->_source = "{$this->_cacheDirectory}/Registration.yaml";
         $this->_config = &Piece_Flow_ConfigReader::read($this->_source, null, $this->_cacheDirectory, null, null);
@@ -100,7 +103,6 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $this->_source = null;
         $this->_config = null;
         Piece_Flow_Error::clearErrors();
-        Piece_Flow_Error::popCallback();
      }
 
     function testConfiguration()
@@ -252,34 +254,31 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
 
     function testFailureToSetAttributeBeforeStartingFlow()
     {
-        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
-
         $flow = &new Piece_Flow();
         $flow->configure($this->_source, null, $this->_cacheDirectory, $this->_cacheDirectory);
+        Piece_Flow_Error::disableCallback();
         $flow->setAttribute('foo', 'bar');
+        Piece_Flow_Error::enableCallback();
 
-        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
+        $this->assertTrue(Piece_Flow_Error::hasErrors());
 
         $error = Piece_Flow_Error::pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_INVALID_OPERATION, $error['code']);
-
-        Piece_Flow_Error::popCallback();
     }
 
     function testFailureToSetPayloadBeforeConfiguringFlow()
     {
-        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
         $flow = &new Piece_Flow();
+        Piece_Flow_Error::disableCallback();
         $flow->setPayload(new stdClass());
+        Piece_Flow_Error::enableCallback();
 
-        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
+        $this->assertTrue(Piece_Flow_Error::hasErrors());
 
         $error = Piece_Flow_Error::pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_INVALID_OPERATION, $error['code']);
-
-        Piece_Flow_Error::popCallback();
     }
 
     function testOptionalElements()
@@ -311,38 +310,35 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
 
     function testFailureToGetViewBeforeStartingFlow()
     {
-        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
         $flow = &new Piece_Flow();
         $flow->configure($this->_source, null, $this->_cacheDirectory, $this->_cacheDirectory);
+        Piece_Flow_Error::disableCallback();
         $flow->getView();
+        Piece_Flow_Error::enableCallback();
 
-        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
+        $this->assertTrue(Piece_Flow_Error::hasErrors());
 
         $error = Piece_Flow_Error::pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_INVALID_OPERATION, $error['code']);
-
-        Piece_Flow_Error::popCallback();
     }
 
     function testInvalidTransition()
     {
-        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
-
         $flow = &new Piece_Flow();
         $flow->configure("{$this->_cacheDirectory}/invalid.yaml", null, $this->_cacheDirectory, $this->_cacheDirectory);
         $flow->setPayload(new stdClass());
         $flow->start();
         $flow->triggerEvent('go');
+        Piece_Flow_Error::disableCallback();
         $flow->getView();
+        Piece_Flow_Error::enableCallback();
 
-        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
+        $this->assertTrue(Piece_Flow_Error::hasErrors());
 
         $error = Piece_Flow_Error::pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_INVALID_TRANSITION, $error['code']);
-
-        Piece_Flow_Error::popCallback();
     }
 
     function testCheckingWhetherCurrentStateIsFinalState()
@@ -426,27 +422,27 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $this->assertEquals('Stop', $flow->getCurrentStateName());
         $this->assertEquals(2, $flow->getAttribute('numberOfUpdate'));
 
-        $flow->triggerEvent(STAGEHAND_FSM_EVENT_ENTRY);
+        @$flow->triggerEvent(STAGEHAND_FSM_EVENT_ENTRY);
 
         $this->assertEquals('Stop', $flow->getCurrentStateName());
         $this->assertEquals(3, $flow->getAttribute('numberOfUpdate'));
 
-        $flow->triggerEvent(STAGEHAND_FSM_EVENT_EXIT);
+        @$flow->triggerEvent(STAGEHAND_FSM_EVENT_EXIT);
 
         $this->assertEquals('Stop', $flow->getCurrentStateName());
         $this->assertEquals(4, $flow->getAttribute('numberOfUpdate'));
 
-        $flow->triggerEvent(STAGEHAND_FSM_EVENT_START);
+        @$flow->triggerEvent(STAGEHAND_FSM_EVENT_START);
 
         $this->assertEquals('Stop', $flow->getCurrentStateName());
         $this->assertEquals(5, $flow->getAttribute('numberOfUpdate'));
 
-        $flow->triggerEvent(STAGEHAND_FSM_EVENT_END);
+        @$flow->triggerEvent(STAGEHAND_FSM_EVENT_END);
 
         $this->assertEquals('Stop', $flow->getCurrentStateName());
         $this->assertEquals(6, $flow->getAttribute('numberOfUpdate'));
 
-        $flow->triggerEvent(STAGEHAND_FSM_EVENT_DO);
+        @$flow->triggerEvent(STAGEHAND_FSM_EVENT_DO);
 
         $this->assertEquals('Stop', $flow->getCurrentStateName());
         $this->assertEquals(7, $flow->getAttribute('numberOfUpdate'));
@@ -462,18 +458,16 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
      */
     function testProtectedEvents()
     {
-        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
-
         $flow = &new Piece_Flow();
+        Piece_Flow_Error::disableCallback();
         $flow->configure("{$this->_cacheDirectory}/ProtectedEvents.yaml", null, $this->_cacheDirectory, $this->_cacheDirectory);
+        Piece_Flow_Error::enableCallback();
 
-        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
+        $this->assertTrue(Piece_Flow_Error::hasErrors());
 
         $error = Piece_Flow_Error::pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_PROTECTED_EVENT, $error['code']);
-
-        Piece_Flow_Error::popCallback();
     }
 
     /**
@@ -481,18 +475,16 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
      */
     function testProtectedStates()
     {
-        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
-
         $flow = &new Piece_Flow();
+        Piece_Flow_Error::disableCallback();
         $flow->configure("{$this->_cacheDirectory}/ProtectedStates.yaml", null, $this->_cacheDirectory, $this->_cacheDirectory);
+        Piece_Flow_Error::enableCallback();
 
-        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
+        $this->assertTrue(Piece_Flow_Error::hasErrors());
 
         $error = Piece_Flow_Error::pop();
 
         $this->assertEquals(PIECE_FLOW_ERROR_PROTECTED_STATE, $error['code']);
-
-        Piece_Flow_Error::popCallback();
     }
 
     /**
@@ -500,9 +492,7 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
      */
     function testInvalidEventFromATransitionActionsOrActivities()
     {
-        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
         $GLOBALS['invalidEventFrom'] = 'register';
-
         $flow1 = &new Piece_Flow();
         $flow1->configure("{$this->_cacheDirectory}/InvalidEventFromTransitionActionsOrActivities.yaml", null, $this->_cacheDirectory, $this->_cacheDirectory);
         $flow1->setPayload(new stdClass());
@@ -514,17 +504,18 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
 
         $this->assertEquals('DisplayForm', $flow1->getCurrentStateName());
 
+        Piece_Flow_Error::disableCallback();
         $flow1->triggerEvent('register');
+        Piece_Flow_Error::enableCallback();
 
-        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
+        $this->assertTrue(Piece_Flow_Error::hasErrors());
 
         $error = Piece_Flow_Error::pop();
 
-        $this->assertEquals(PIECE_FLOW_ERROR_CANNOT_INVOKE, $error['code']);
-        $this->assertEquals(PIECE_FLOW_ERROR_INVALID_EVENT, $error['repackage']['code']);
-        $this->assertEquals('invalidEventFromRegister', $error['repackage']['params']['event']);
-        $this->assertEquals('Piece_FlowInvalidEventFromTransitionActionsOrActivitiesAction', $error['repackage']['params']['class']);
-        $this->assertEquals('register', $error['repackage']['params']['method']);
+        $this->assertEquals(PIECE_FLOW_ERROR_INVALID_EVENT, $error['code']);
+        $this->assertEquals('invalidEventFromRegister', $error['params']['event']);
+        $this->assertEquals('Piece_FlowInvalidEventFromTransitionActionsOrActivitiesAction', $error['params']['class']);
+        $this->assertEquals('register', $error['params']['method']);
 
         $GLOBALS['invalidEventFrom'] = 'setupFinish';
 
@@ -539,20 +530,20 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
 
         $this->assertEquals('DisplayForm', $flow2->getCurrentStateName());
 
+        Piece_Flow_Error::disableCallback();
         $flow2->triggerEvent('register');
+        Piece_Flow_Error::enableCallback();
 
-        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
+        $this->assertTrue(Piece_Flow_Error::hasErrors());
 
         $error = Piece_Flow_Error::pop();
 
-        $this->assertEquals(PIECE_FLOW_ERROR_CANNOT_INVOKE, $error['code']);
-        $this->assertEquals(PIECE_FLOW_ERROR_INVALID_EVENT, $error['repackage']['code']);
-        $this->assertEquals('invalidEventFromSetupFinish', $error['repackage']['params']['event']);
-        $this->assertEquals('Piece_FlowInvalidEventFromTransitionActionsOrActivitiesAction', $error['repackage']['params']['class']);
-        $this->assertEquals('setupFinish', $error['repackage']['params']['method']);
+        $this->assertEquals(PIECE_FLOW_ERROR_INVALID_EVENT, $error['code']);
+        $this->assertEquals('invalidEventFromSetupFinish', $error['params']['event']);
+        $this->assertEquals('Piece_FlowInvalidEventFromTransitionActionsOrActivitiesAction', $error['params']['class']);
+        $this->assertEquals('setupFinish', $error['params']['method']);
 
         unset($GLOBALS['invalidEventFrom']);
-        Piece_Flow_Error::popCallback();
     }
 
     /**
@@ -591,7 +582,6 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
 
     function _assertInitialAndFinalActions($source)
     {
-        Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
         $GLOBALS['initializeCalled'] = false;
         $GLOBALS['finalizeCalled'] = false;
 
@@ -609,17 +599,18 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $this->assertEquals('end', $flow->getView());
         $this->assertTrue($GLOBALS['finalizeCalled']);
 
+        Stagehand_FSM_Error::disableCallback();
         $flow->triggerEvent('go');
+        Stagehand_FSM_Error::enableCallback();
 
-        $this->assertTrue(Piece_Flow_Error::hasErrors('exception'));
+        $this->assertTrue(Stagehand_FSM_Error::hasErrors());
 
-        $error = Piece_Flow_Error::pop();
+        $error = Stagehand_FSM_Error::pop();
 
-        $this->assertEquals(PIECE_FLOW_ERROR_ALREADY_SHUTDOWN, $error['code']);
+        $this->assertEquals(STAGEHAND_FSM_ERROR_ALREADY_SHUTDOWN, $error['code']);
 
         unset($GLOBALS['initializeCalled']);
         unset($GLOBALS['finalizeCalled']);
-        Piece_Flow_Error::popCallback();
     }
 
     /**

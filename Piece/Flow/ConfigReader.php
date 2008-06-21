@@ -4,7 +4,7 @@
 /**
  * PHP versions 4 and 5
  *
- * Copyright (c) 2007 KUBO Atsuhiro <iteman@users.sourceforge.net>,
+ * Copyright (c) 2007-2008 KUBO Atsuhiro <iteman@users.sourceforge.net>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
+ * @copyright  2007-2008 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
  * @since      File available since Release 1.10.0
@@ -44,7 +44,7 @@ require_once 'Piece/Flow/ClassLoader.php';
  * The configuration reader.
  *
  * @package    Piece_Flow
- * @copyright  2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
+ * @copyright  2007-2008 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
  * @since      Class available since Release 1.10.0
@@ -84,9 +84,6 @@ class Piece_Flow_ConfigReader
      * @param string $configExtension
      * @return Piece_Flow_Config
      * @throws PIECE_FLOW_ERROR_NOT_FOUND
-     * @throws PIECE_FLOW_ERROR_NOT_READABLE
-     * @throws PIECE_FLOW_ERROR_CANNOT_READ
-     * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
      * @static
      */
     function &read($source,
@@ -125,7 +122,7 @@ class Piece_Flow_ConfigReader
         $class = "Piece_Flow_ConfigReader_$driverName";
         if (!Piece_Flow_ClassLoader::loaded($class)) {
             Piece_Flow_ClassLoader::load($class);
-            if (Piece_Flow_Error::hasErrors('exception')) {
+            if (Piece_Flow_Error::hasErrors()) {
                 $return = null;
                 return $return;
             }
@@ -141,7 +138,7 @@ class Piece_Flow_ConfigReader
 
         $driver = &new $class($source, $cacheDirectory);
         $config = &$driver->read();
-        if (Piece_Flow_Error::hasErrors('exception')) {
+        if (Piece_Flow_Error::hasErrors()) {
             $return = null;
             return $return;
         }

@@ -4,7 +4,7 @@
 /**
  * PHP versions 4 and 5
  *
- * Copyright (c) 2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>,
+ * Copyright (c) 2006-2008 KUBO Atsuhiro <iteman@users.sourceforge.net>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
+ * @copyright  2006-2008 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    SVN: $Id$
  * @since      File available since Release 1.0.0
@@ -53,7 +53,7 @@ $GLOBALS['PIECE_FLOW_Continuation_ShutdownRegistered'] = false;
  * The continuation server for the Piece_Flow package.
  *
  * @package    Piece_Flow
- * @copyright  2006-2007 KUBO Atsuhiro <iteman@users.sourceforge.net>
+ * @copyright  2006-2008 KUBO Atsuhiro <iteman@users.sourceforge.net>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
  * @version    Release: @package_version@
  * @since      Class available since Release 1.0.0
@@ -153,14 +153,6 @@ class Piece_Flow_Continuation
      * @param mixed   &$payload
      * @param boolean $bindActionsWithFlowExecution
      * @return string
-     * @throws PIECE_FLOW_ERROR_NOT_GIVEN
-     * @throws PIECE_FLOW_ERROR_NOT_FOUND
-     * @throws PIECE_FLOW_ERROR_NOT_READABLE
-     * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
-     * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
-     * @throws PIECE_FLOW_ERROR_FLOW_NAME_NOT_GIVEN
-     * @throws PIECE_FLOW_ERROR_CANNOT_READ
-     * @throws PIECE_FLOW_ERROR_FLOW_EXECUTION_EXPIRED
      */
     function invoke(&$payload, $bindActionsWithFlowExecution = false)
     {
@@ -170,7 +162,7 @@ class Piece_Flow_Continuation
         }
 
         $this->_prepare();
-        if (Piece_Flow_Error::hasErrors('exception')) {
+        if (Piece_Flow_Error::hasErrors()) {
             return;
         }
 
@@ -180,7 +172,7 @@ class Piece_Flow_Continuation
             $this->_start($payload);
         }
 
-        if (Piece_Flow_Error::hasErrors('exception')) {
+        if (Piece_Flow_Error::hasErrors()) {
             return;
         }
 
@@ -210,7 +202,6 @@ class Piece_Flow_Continuation
      * state.
      *
      * @return string
-     * @throws PIECE_FLOW_ERROR_INVALID_TRANSITION
      * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
      */
     function getView()
@@ -571,12 +562,9 @@ class Piece_Flow_Continuation
             }
 
             if (array_key_exists($flowName, $this->_exclusiveFlowExecutionTicketsByFlowName)) {
-                Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_ALREADY_EXISTS,
-                                       "Another flow execution of the current flow [ $flowName ] already exists in the flow executions. Starting a new flow execution.",
-                                       'warning'
-                                       );
-                Piece_Flow_Error::popCallback();
+                trigger_error("Another flow execution of the current flow [ $flowName ] already exists in the flow executions. Starting a new flow execution.",
+                              E_USER_WARNING
+                              );
                 $this->_removeFlowExecution($this->getFlowExecutionTicketByFlowName($flowName), $flowName);
             }
 
@@ -593,8 +581,6 @@ class Piece_Flow_Continuation
      *
      * @param mixed   &$payload
      * @param boolean $bindActionsWithFlowExecution
-     * @throws PIECE_FLOW_ERROR_CANNOT_INVOKE
-     * @throws PIECE_FLOW_ERROR_ALREADY_SHUTDOWN
      * @throws PIECE_FLOW_ERROR_FLOW_EXECUTION_EXPIRED
      */
     function _continue(&$payload, $bindActionsWithFlowExecution)
@@ -628,13 +614,6 @@ class Piece_Flow_Continuation
      * @param mixed &$payload
      * @return string
      * @throws PIECE_FLOW_ERROR_NOT_FOUND
-     * @throws PIECE_FLOW_ERROR_NOT_READABLE
-     * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
-     * @throws PIECE_FLOW_ERROR_PROTECTED_EVENT
-     * @throws PIECE_FLOW_ERROR_PROTECTED_STATE
-     * @throws PIECE_FLOW_ERROR_CANNOT_INVOKE
-     * @throws PIECE_FLOW_ERROR_ALREADY_SHUTDOWN
-     * @throws PIECE_FLOW_ERROR_CANNOT_READ
      */
     function _start(&$payload)
     {
@@ -650,7 +629,7 @@ class Piece_Flow_Continuation
                          null,
                          $this->_cacheDirectory
                          );
-        if (Piece_Flow_Error::hasErrors('exception')) {
+        if (Piece_Flow_Error::hasErrors()) {
             return;
         }
 
@@ -666,7 +645,7 @@ class Piece_Flow_Continuation
         $this->_activated = true;
         $flow->setPayload($payload);
         $flow->start();
-        if (Piece_Flow_Error::hasErrors('exception')) {
+        if (Piece_Flow_Error::hasErrors()) {
             return;
         }
 

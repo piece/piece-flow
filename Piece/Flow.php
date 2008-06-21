@@ -108,12 +108,6 @@ class Piece_Flow
      * @param string $actionDirectory
      * @param string $configDirectory
      * @param string $configExtension
-     * @throws PIECE_FLOW_ERROR_NOT_FOUND
-     * @throws PIECE_FLOW_ERROR_NOT_READABLE
-     * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
-     * @throws PIECE_FLOW_ERROR_PROTECTED_EVENT
-     * @throws PIECE_FLOW_ERROR_PROTECTED_STATE
-     * @throws PIECE_FLOW_ERROR_CANNOT_READ
      */
     function configure($source,
                        $driverName = null,
@@ -129,14 +123,14 @@ class Piece_Flow
                                                  $configDirectory,
                                                  $configExtension
                                                  );
-        if (Piece_Flow_Error::hasErrors('exception')) {
+        if (Piece_Flow_Error::hasErrors()) {
             return;
         }
 
         $this->_name = $config->getName();
         $fsmBuilder = &new Piece_Flow_FSMBuilder($this, $actionDirectory);
         $fsm = &$fsmBuilder->build($config);
-        if (Piece_Flow_Error::hasErrors('exception')) {
+        if (Piece_Flow_Error::hasErrors()) {
             return;
         }
 
@@ -208,31 +202,10 @@ class Piece_Flow
 
     /**
      * Starts the Finite State Machine.
-     *
-     * @throws PIECE_FLOW_ERROR_CANNOT_INVOKE
-     * @throws PIECE_FLOW_ERROR_ALREADY_SHUTDOWN
      */
     function start()
     {
         $this->_fsm->start();
-        if (Piece_Flow_Error::hasErrors('exception')) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_CANNOT_INVOKE,
-                                   "An action could not be invoked for any reasons.",
-                                   'exception',
-                                   array(),
-                                   Piece_Flow_Error::pop()
-                                   );
-            return;
-        }
-
-        if (Stagehand_FSM_Error::hasErrors('exception')) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_ALREADY_SHUTDOWN,
-                                   "The flow [ {$this->_name} ] was already shutdown.",
-                                   'exception',
-                                   array(),
-                                   Stagehand_FSM_Error::pop()
-                                   );
-        }
     }
 
     // }}}
@@ -244,8 +217,6 @@ class Piece_Flow
      * @param string $eventName
      * @param boolean $transitionToHistoryMarker
      * @return Stagehand_FSM_State
-     * @throws PIECE_FLOW_ERROR_CANNOT_INVOKE
-     * @throws PIECE_FLOW_ERROR_ALREADY_SHUTDOWN
      * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
      */
     function &triggerEvent($eventName, $transitionToHistoryMarker = false)
@@ -259,13 +230,10 @@ class Piece_Flow
         }
 
         if ($eventName == PIECE_FLOW_PROTECTED_EVENT || $this->_fsm->isProtectedEvent($eventName)) {
-            Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_PROTECTED_EVENT,
-                                   "The event [ $eventName ] cannot be called directly. The current state [ " .
-                                   $this->getCurrentStateName() . ' ] will only be updated.',
-                                   'warning'
-                                   );
-            Piece_Flow_Error::popCallback();
+            trigger_error("The event [ $eventName ] cannot be called directly. The current state [ " .
+                          $this->getCurrentStateName() . ' ] will only be updated.',
+                          E_USER_WARNING
+                          );
             $eventName = PIECE_FLOW_PROTECTED_EVENT;
         }
 
@@ -274,31 +242,7 @@ class Piece_Flow
         $state = &$this->_fsm->triggerEvent($eventName,
                                             $transitionToHistoryMarker
                                             );
-        if (Piece_Flow_Error::hasErrors('exception')) {
-            $error = Piece_Flow_Error::pop();
-            if ($error['package'] == 'Piece_Flow'
-                && $error['code'] == PIECE_FLOW_ERROR_CANNOT_INVOKE
-                ) {
-                $error = $error['repackage'];
-            }
-
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_CANNOT_INVOKE,
-                                   "An action could not be invoked for any reasons.",
-                                   'exception',
-                                   array(),
-                                   $error
-                                   );
-            $return = null;
-            return $return;
-        }
-
-        if (Stagehand_FSM_Error::hasErrors('exception')) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_ALREADY_SHUTDOWN,
-                                   "The flow [ {$this->_name} ] was already shutdown.",
-                                   'exception',
-                                   array(),
-                                   Stagehand_FSM_Error::pop()
-                                   );
+        if (Stagehand_FSM_Error::hasErrors()) {
             $return = null;
             return $return;
         }
@@ -306,16 +250,8 @@ class Piece_Flow
         if (!is_null($this->_lastState)
             && $state->getName() == $this->_lastState
             ) {
-            Piece_Flow_Error::pushCallback(create_function('$error', 'return ' . PEAR_ERRORSTACK_PUSHANDLOG . ';'));
             $state = &$this->_fsm->triggerEvent(STAGEHAND_FSM_EVENT_END);
-            Piece_Flow_Error::popCallback();
-            if (Stagehand_FSM_Error::hasErrors('exception')) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_ALREADY_SHUTDOWN,
-                                       "The flow [ {$this->_name} ] was already shutdown.",
-                                       'exception',
-                                       array(),
-                                       Stagehand_FSM_Error::pop()
-                                       );
+            if (Stagehand_FSM_Error::hasErrors()) {
                 $return = null;
                 return $return;
             }
