@@ -298,7 +298,7 @@ class Piece_Flow_Continuation
      *
      * @param string $name
      * @return boolean
-     * @throws PIECE_FLOW_ERROR_INVALID_TRANSITION
+     * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
      */
     function hasAttribute($name)
     {
@@ -320,7 +320,7 @@ class Piece_Flow_Continuation
      *
      * @param string $name
      * @return mixed
-     * @throws PIECE_FLOW_ERROR_INVALID_TRANSITION
+     * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
      */
     function &getAttribute($name)
     {
@@ -386,7 +386,7 @@ class Piece_Flow_Continuation
      * Gets the current flow execution ticket for the current flow.
      *
      * @return string
-     * @throws PIECE_FLOW_ERROR_INVALID_TRANSITION
+     * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
      */
     function getCurrentFlowExecutionTicket()
     {
@@ -408,7 +408,7 @@ class Piece_Flow_Continuation
      *
      * @param string $name
      * @param mixed  &$value
-     * @throws PIECE_FLOW_ERROR_INVALID_TRANSITION
+     * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
      * @since Method available since Release 1.6.0
      */
     function setAttributeByRef($name, &$value)
@@ -463,7 +463,7 @@ class Piece_Flow_Continuation
      * Gets the current flow name.
      *
      * @return string
-     * @throws PIECE_FLOW_ERROR_INVALID_TRANSITION
+     * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
      */
     function getCurrentFlowName()
     {
