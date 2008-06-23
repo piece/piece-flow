@@ -182,7 +182,6 @@ class Piece_Flow_Error
      * wrapper for PEAR_ErrorStack::pop() method.
      *
      * @return array
-     * @see PEAR_ErrorStack::pop()
      * @since Method available since Release 1.0.0
      */
     function pop()
