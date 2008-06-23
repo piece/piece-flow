@@ -534,7 +534,7 @@ class Piece_Flow_Continuation
      * Prepares a flow execution ticket, a flow name, and whether the
      * flow invocation is the first time or not.
      *
-     * @throws PIECE_FLOW_ERROR_FLOW_NAME_NOT_GIVEN
+     * @throws PIECE_FLOW_ERROR_FLOW_ID_NOT_GIVEN
      */
     function _prepare()
     {
@@ -543,7 +543,7 @@ class Piece_Flow_Continuation
             $flowName = $this->_getFlowName();
             if (!$this->_enableSingleFlowMode) {
                 if (is_null($flowName) || !strlen($flowName)) {
-                    Piece_Flow_Error::push(PIECE_FLOW_ERROR_FLOW_NAME_NOT_GIVEN,
+                    Piece_Flow_Error::push(PIECE_FLOW_ERROR_FLOW_ID_NOT_GIVEN,
                                            'A flow name must be given in this case.'
                                            );
                     return;
@@ -555,7 +555,7 @@ class Piece_Flow_Continuation
         } else {
             $flowName = $this->_getFlowName();
             if (is_null($flowName) || !strlen($flowName)) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_FLOW_NAME_NOT_GIVEN,
+                Piece_Flow_Error::push(PIECE_FLOW_ERROR_FLOW_ID_NOT_GIVEN,
                                        'A flow name must be given in this case.'
                                        );
                 return;
