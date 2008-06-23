@@ -749,6 +749,8 @@ if (\$code == E_USER_WARNING) {
         $this->assertTrue($GLOBALS['PIECE_FLOW_Continuation_ServerTestCase_hasWarnings']);
         $this->assertEquals(0, $service->getAttribute('counter'));
         $this->assertTrue($flowExecutionTicket1 != $flowExecutionTicket2);
+
+        $GLOBALS['PIECE_FLOW_Continuation_ServerTestCase_hasWarnings'] = false;
     }
 
     /**

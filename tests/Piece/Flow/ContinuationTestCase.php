@@ -643,6 +643,8 @@ if (\$code == E_USER_WARNING) {
         $this->assertTrue($GLOBALS['PIECE_FLOW_ContinuationTestCase_hasWarnings']);
         $this->assertEquals(0, $continuation->getAttribute('counter'));
         $this->assertTrue($flowExecutionTicket1 != $flowExecutionTicket2);
+
+        $GLOBALS['PIECE_FLOW_ContinuationTestCase_hasWarnings'] = false;
     }
 
     /**
