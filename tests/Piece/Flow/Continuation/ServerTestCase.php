@@ -42,7 +42,6 @@ require_once 'Piece/Flow/Error.php';
 require_once 'Cache/Lite/File.php';
 require_once 'Piece/Flow/Action/Factory.php';
 require_once 'PEAR/ErrorStack.php';
-require_once 'Stagehand/FSM/Error.php';
 
 // {{{ GLOBALS
 
@@ -699,15 +698,15 @@ class Piece_Flow_Continuation_ServerTestCase extends PHPUnit_TestCase
         $GLOBALS['flowID'] = 'Shutdown';
         $GLOBALS['eventName'] = 'go';
         $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket1;
-        Stagehand_FSM_Error::disableCallback();
+        Piece_Flow_Error::disableCallback();
         $server->invoke(new stdClass());
-        Stagehand_FSM_Error::enableCallback();
+        Piece_Flow_Error::enableCallback();
 
-        $this->assertTrue(Stagehand_FSM_Error::hasErrors());
+        $this->assertTrue(Piece_Flow_Error::hasErrors());
 
-        $error = Stagehand_FSM_Error::pop();
+        $error = Piece_Flow_Error::pop();
 
-        $this->assertEquals(STAGEHAND_FSM_ERROR_ALREADY_SHUTDOWN, $error['code']);
+        $this->assertEquals(PIECE_FLOW_ERROR_CANNOT_INVOKE, $error['code']);
 
         unset($GLOBALS['ShutdownCount']);
     }

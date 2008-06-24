@@ -599,15 +599,15 @@ class Piece_FlowTestCase extends PHPUnit_TestCase
         $this->assertEquals('end', $flow->getView());
         $this->assertTrue($GLOBALS['finalizeCalled']);
 
-        Stagehand_FSM_Error::disableCallback();
+        Piece_Flow_Error::disableCallback();
         $flow->triggerEvent('go');
-        Stagehand_FSM_Error::enableCallback();
+        Piece_Flow_Error::enableCallback();
 
-        $this->assertTrue(Stagehand_FSM_Error::hasErrors());
+        $this->assertTrue(Piece_Flow_Error::hasErrors());
 
-        $error = Stagehand_FSM_Error::pop();
+        $error = Piece_Flow_Error::pop();
 
-        $this->assertEquals(STAGEHAND_FSM_ERROR_ALREADY_SHUTDOWN, $error['code']);
+        $this->assertEquals(PIECE_FLOW_ERROR_CANNOT_INVOKE, $error['code']);
 
         unset($GLOBALS['initializeCalled']);
         unset($GLOBALS['finalizeCalled']);

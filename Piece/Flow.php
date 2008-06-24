@@ -202,10 +202,23 @@ class Piece_Flow
 
     /**
      * Starts the Finite State Machine.
+     *
+     * @throws PIECE_FLOW_ERROR_CANNOT_INVOKE
      */
     function start()
     {
+        Stagehand_FSM_Error::disableCallback();
         $this->_fsm->start();
+        Stagehand_FSM_Error::enableCallback();
+        if (Stagehand_FSM_Error::hasErrors()) {
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_CANNOT_INVOKE,
+                                   'Failed to invoke Stagehand_FSM::start() for any reasons.',
+                                   'exception',
+                                   array(),
+                                   Stagehand_FSM_Error::pop()
+                                   );
+            return;
+        }
     }
 
     // }}}
@@ -218,6 +231,7 @@ class Piece_Flow
      * @param boolean $transitionToHistoryMarker
      * @return Stagehand_FSM_State
      * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
+     * @throws PIECE_FLOW_ERROR_CANNOT_INVOKE
      */
     function &triggerEvent($eventName, $transitionToHistoryMarker = false)
     {
@@ -239,10 +253,18 @@ class Piece_Flow
 
         $this->_lastEventIsValid = $this->_fsm->hasEvent($eventName);
 
+        Stagehand_FSM_Error::disableCallback();
         $state = &$this->_fsm->triggerEvent($eventName,
                                             $transitionToHistoryMarker
                                             );
+        Stagehand_FSM_Error::enableCallback();
         if (Stagehand_FSM_Error::hasErrors()) {
+            Piece_Flow_Error::push(PIECE_FLOW_ERROR_CANNOT_INVOKE,
+                                   'Failed to invoke Stagehand_FSM::triggerEvent() for any reasons.',
+                                   'exception',
+                                   array(),
+                                   Stagehand_FSM_Error::pop()
+                                   );
             $return = null;
             return $return;
         }
@@ -250,8 +272,16 @@ class Piece_Flow
         if (!is_null($this->_lastState)
             && $state->getName() == $this->_lastState
             ) {
+            Stagehand_FSM_Error::disableCallback();
             $state = &$this->_fsm->triggerEvent(STAGEHAND_FSM_EVENT_END);
+            Stagehand_FSM_Error::enableCallback();
             if (Stagehand_FSM_Error::hasErrors()) {
+                Piece_Flow_Error::push(PIECE_FLOW_ERROR_CANNOT_INVOKE,
+                                       'Failed to invoke Stagehand_FSM::triggerEvent() for any reasons.',
+                                       'exception',
+                                       array(),
+                                       Stagehand_FSM_Error::pop()
+                                       );
                 $return = null;
                 return $return;
             }
