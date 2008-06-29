@@ -36,6 +36,7 @@
  */
 
 require_once 'PEAR/PackageFileManager2.php';
+require_once 'PEAR.php';
 
 PEAR::staticPushErrorHandling(PEAR_ERROR_CALLBACK, create_function('$error', 'var_dump($error); exit();'));
 
