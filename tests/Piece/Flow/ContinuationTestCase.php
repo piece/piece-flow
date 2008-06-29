@@ -42,7 +42,6 @@ require_once 'Piece/Flow/Continuation.php';
 require_once 'Piece/Flow/Error.php';
 require_once 'Cache/Lite/File.php';
 require_once 'Piece/Flow/Action/Factory.php';
-require_once 'PEAR/ErrorStack.php';
 
 // {{{ GLOBALS
 
@@ -87,7 +86,6 @@ class Piece_Flow_ContinuationTestCase extends PHPUnit_TestCase
 
     function setUp()
     {
-        PEAR_ErrorStack::setDefaultCallback(create_function('$error', 'var_dump($error); return ' . PEAR_ERRORSTACK_DIE . ';'));
         $GLOBALS['flowName'] = 'Counter';
         $GLOBALS['eventName'] = 'increase';
         $GLOBALS['flowExecutionTicket'] = null;

@@ -39,7 +39,6 @@ require_once realpath(dirname(__FILE__) . '/../../../prepare.php');
 require_once 'PHPUnit.php';
 require_once 'Piece/Flow/Action/Factory.php';
 require_once 'Piece/Flow/Error.php';
-require_once 'PEAR/ErrorStack.php';
 
 // {{{ Piece_Flow_Action_FactoryTestCase
 
@@ -72,11 +71,6 @@ class Piece_Flow_Action_FactoryTestCase extends PHPUnit_TestCase
     /**#@+
      * @access public
      */
-
-    function setUp()
-    {
-        PEAR_ErrorStack::setDefaultCallback(create_function('$error', 'var_dump($error); return ' . PEAR_ERRORSTACK_DIE . ';'));
-    }
 
     function tearDown()
     {
