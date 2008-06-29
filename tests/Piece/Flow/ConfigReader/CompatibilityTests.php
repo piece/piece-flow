@@ -41,7 +41,7 @@ require_once 'Piece/Flow/Error.php';
 require_once 'Piece/Flow/Config.php';
 require_once 'Cache/Lite/File.php';
 
-// {{{ Piece_Flow_ConfigReader_CompatibilityTest
+// {{{ Piece_Flow_ConfigReader_CompatibilityTests
 
 /**
  * The base class for compatibility test of Piece_Flow_Config drivers.
@@ -52,7 +52,7 @@ require_once 'Cache/Lite/File.php';
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
  */
-class Piece_Flow_ConfigReader_CompatibilityTest extends PHPUnit_TestCase
+class Piece_Flow_ConfigReader_CompatibilityTests extends PHPUnit_TestCase
 {
 
     // {{{ properties

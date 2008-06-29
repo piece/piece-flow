@@ -39,7 +39,7 @@ if (version_compare(phpversion(), '5.0.0', '<')) {
     return;
 }
 
-require_once dirname(__FILE__) . '/CompatibilityTest.php';
+require_once dirname(__FILE__) . '/CompatibilityTests.php';
 require_once 'Piece/Flow/ConfigReader/XML5.php';
 require_once 'Piece/Flow/Error.php';
 
@@ -54,7 +54,7 @@ require_once 'Piece/Flow/Error.php';
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
  */
-class Piece_Flow_ConfigReader_XML5TestCase extends Piece_Flow_ConfigReader_CompatibilityTest
+class Piece_Flow_ConfigReader_XML5TestCase extends Piece_Flow_ConfigReader_CompatibilityTests
 {
 
     // {{{ properties

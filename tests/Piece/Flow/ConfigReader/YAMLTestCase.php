@@ -35,7 +35,7 @@
  * @since      File available since Release 0.1.0
  */
 
-require_once dirname(__FILE__) . '/CompatibilityTest.php';
+require_once dirname(__FILE__) . '/CompatibilityTests.php';
 require_once 'Piece/Flow/ConfigReader/YAML.php';
 
 // {{{ Piece_Flow_ConfigReader_YAMLTestCase
@@ -49,7 +49,7 @@ require_once 'Piece/Flow/ConfigReader/YAML.php';
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
  */
-class Piece_Flow_ConfigReader_YAMLTestCase extends Piece_Flow_ConfigReader_CompatibilityTest
+class Piece_Flow_ConfigReader_YAMLTestCase extends Piece_Flow_ConfigReader_CompatibilityTests
 {
 
     // {{{ properties
