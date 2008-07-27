@@ -259,8 +259,8 @@ class Piece_Flow_ConfigReader_CompatibilityTests extends PHPUnit_TestCase
         $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('NameInActionStateIsInvalid');
         $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('EventInTransitionNotFound');
         $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('EventInTransitionIsInvalid');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('nextStateInTransitionNotFound');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('nextStateInTransitionIsInvalid');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('NextStateInTransitionNotFound');
+        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('NextStateInTransitionIsInvalid');
         $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInActionNotFound');
         $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInActionIsInvalid');
         $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ClassInActionIsInvalid');
@@ -316,8 +316,8 @@ class Piece_Flow_ConfigReader_CompatibilityTests extends PHPUnit_TestCase
         @$config = &$reader->read();
         Piece_Flow_Error::enableCallback();
 
-        $this->assertNull($config, $name);
-        $this->assertTrue(Piece_Flow_Error::hasErrors(), $name);
+        $this->assertNull($config, $name, $name);
+        $this->assertTrue(Piece_Flow_Error::hasErrors(), $name, $name);
 
         $error = Piece_Flow_Error::pop();
 
