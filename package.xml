@@ -5,8 +5,8 @@
     http://pear.php.net/dtd/package-2.0.xsd">
  <name>Piece_Flow</name>
  <channel>pear.piece-framework.com</channel>
- <summary>A web flow engine and a continuation server</summary>
- <description>Piece_Flow is a web flow engine and a continuation server.
+ <summary>A web flow engine and continuation server</summary>
+ <description>Piece_Flow is a web flow engine and continuation server.
 
 Piece_Flow provides a stateful programming model for developers, and high security for applications.</description>
  <lead>
@@ -16,7 +16,7 @@ Piece_Flow provides a stateful programming model for developers, and high securi
   <active>yes</active>
  </lead>
  <date>2008-07-28</date>
- <time>21:30:30</time>
+ <time>21:43:34</time>
  <version>
   <release>1.16.0</release>
   <api>1.7.0</api>

@@ -80,8 +80,8 @@ $package->setOptions(array('filelistgenerator' => 'file',
 
 $package->setPackage('Piece_Flow');
 $package->setPackageType('php');
-$package->setSummary('A web flow engine and a continuation server');
-$package->setDescription('Piece_Flow is a web flow engine and a continuation server.
+$package->setSummary('A web flow engine and continuation server');
+$package->setDescription('Piece_Flow is a web flow engine and continuation server.
 
 Piece_Flow provides a stateful programming model for developers, and high security for applications.');
 $package->setChannel('pear.piece-framework.com');
