@@ -46,7 +46,27 @@ $apiVersion = '1.7.0';
 $apiStability = 'stable';
 $notes = 'A new release of Piece_Flow is now available.
 
-What\'s New in Piece_Flow 1.16.0';
+What\'s New in Piece_Flow 1.16.0
+
+ * Enhanced interfaces: getActiveFlowExecutionTicket() has been added to the Piece_Flow_Continuation_Service class. It can be used to get the flow execution ticket for the active flow execution. And also isViewState() has been added to the Piece_Flow class. It can be used to get whether the current state of a flow execution is a view state or not.
+ * Improved error handling: The behavior of internal error handling has been changed so as to handle only own and "exception" level errors.
+ * A defect fix: A defect that the outer frame of an already removed flow execution to be created by garbage collection has been fixed.
+
+See the following release notes for details.
+
+Enhancements
+============
+
+- Added getActiveFlowExecutionTicket() to get the flow execution ticket for the active flow execution. (Piece_Flow_Continuation_FlowExecution, Piece_Flow_Continuation_Service)
+- Added isViewState() to get whether the current state of a flow execution is a view state or not. (Piece_Flow)
+- Changed the behavior of internal error handling so as to handle only own and "exception" level errors.
+- Replaced all uses of PIECE_FLOW_ERROR_FLOW_NAME_NOT_GIVEN with PIECE_FLOW_ERROR_FLOW_ID_NOT_GIVEN.
+- Changed the behavior of internal error handling that an exception from Stagehand_FSM is always wrapped with Piece_Flow_Error::push().
+
+Defect Fixes
+============
+
+- Fixed a defect that the outer frame of an already removed flow execution to be created by garbage collection. (Piece_Flow_Continuation_FlowExecution)';
 
 $package = new PEAR_PackageFileManager2();
 $package->setOptions(array('filelistgenerator' => 'file',

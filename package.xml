@@ -15,8 +15,8 @@ Piece_Flow provides a stateful programming model for developers, and high securi
   <email>iteman@users.sourceforge.net</email>
   <active>yes</active>
  </lead>
- <date>2008-06-22</date>
- <time>04:10:59</time>
+ <date>2008-07-28</date>
+ <time>21:30:30</time>
  <version>
   <release>1.16.0</release>
   <api>1.7.0</api>
@@ -28,7 +28,27 @@ Piece_Flow provides a stateful programming model for developers, and high securi
  <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License (revised)</license>
  <notes>A new release of Piece_Flow is now available.
 
-What&apos;s New in Piece_Flow 1.16.0</notes>
+What&apos;s New in Piece_Flow 1.16.0
+
+ * Enhanced interfaces: getActiveFlowExecutionTicket() has been added to the Piece_Flow_Continuation_Service class. It can be used to get the flow execution ticket for the active flow execution. And also isViewState() has been added to the Piece_Flow class. It can be used to get whether the current state of a flow execution is a view state or not.
+ * Improved error handling: The behavior of internal error handling has been changed so as to handle only own and &quot;exception&quot; level errors.
+ * A defect fix: A defect that the outer frame of an already removed flow execution to be created by garbage collection has been fixed.
+
+See the following release notes for details.
+
+Enhancements
+============
+
+- Added getActiveFlowExecutionTicket() to get the flow execution ticket for the active flow execution. (Piece_Flow_Continuation_FlowExecution, Piece_Flow_Continuation_Service)
+- Added isViewState() to get whether the current state of a flow execution is a view state or not. (Piece_Flow)
+- Changed the behavior of internal error handling so as to handle only own and &quot;exception&quot; level errors.
+- Replaced all uses of PIECE_FLOW_ERROR_FLOW_NAME_NOT_GIVEN with PIECE_FLOW_ERROR_FLOW_ID_NOT_GIVEN.
+- Changed the behavior of internal error handling that an exception from Stagehand_FSM is always wrapped with Piece_Flow_Error::push().
+
+Defect Fixes
+============
+
+- Fixed a defect that the outer frame of an already removed flow execution to be created by garbage collection. (Piece_Flow_Continuation_FlowExecution)</notes>
  <contents>
   <dir baseinstalldir="/" name="/">
    <dir name="data">
@@ -399,7 +419,7 @@ What&apos;s New in Piece_Flow 1.16.0</notes>
          <tasks:replace from="@package_version@" to="version" type="package-info" />
         </file>
        </dir> <!-- /tests/Piece/Flow/ConfigReader/YAMLTestCase -->
-       <file name="CompatibilityTest.php" role="test">
+       <file name="CompatibilityTests.php" role="test">
         <tasks:replace from="@package_version@" to="version" type="package-info" />
        </file>
        <file name="XML4TestCase.php" role="test">
@@ -643,11 +663,31 @@ What&apos;s New in Piece_Flow 1.16.0</notes>
     <release>stable</release>
     <api>stable</api>
    </stability>
-   <date>2008-06-22</date>
+   <date>2008-07-28</date>
    <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD License (revised)</license>
    <notes>A new release of Piece_Flow is now available.
 
-What&apos;s New in Piece_Flow 1.16.0</notes>
+What&apos;s New in Piece_Flow 1.16.0
+
+ * Enhanced interfaces: getActiveFlowExecutionTicket() has been added to the Piece_Flow_Continuation_Service class. It can be used to get the flow execution ticket for the active flow execution. And also isViewState() has been added to the Piece_Flow class. It can be used to get whether the current state of a flow execution is a view state or not.
+ * Improved error handling: The behavior of internal error handling has been changed so as to handle only own and &quot;exception&quot; level errors.
+ * A defect fix: A defect that the outer frame of an already removed flow execution to be created by garbage collection has been fixed.
+
+See the following release notes for details.
+
+Enhancements
+============
+
+- Added getActiveFlowExecutionTicket() to get the flow execution ticket for the active flow execution. (Piece_Flow_Continuation_FlowExecution, Piece_Flow_Continuation_Service)
+- Added isViewState() to get whether the current state of a flow execution is a view state or not. (Piece_Flow)
+- Changed the behavior of internal error handling so as to handle only own and &quot;exception&quot; level errors.
+- Replaced all uses of PIECE_FLOW_ERROR_FLOW_NAME_NOT_GIVEN with PIECE_FLOW_ERROR_FLOW_ID_NOT_GIVEN.
+- Changed the behavior of internal error handling that an exception from Stagehand_FSM is always wrapped with Piece_Flow_Error::push().
+
+Defect Fixes
+============
+
+- Fixed a defect that the outer frame of an already removed flow execution to be created by garbage collection. (Piece_Flow_Continuation_FlowExecution)</notes>
   </release>
   <release>
    <version>
