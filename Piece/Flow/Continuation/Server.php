@@ -474,7 +474,7 @@ class Piece_Flow_Continuation_Server
 
                 if ($flowID != $registeredFlowID) {
                     Piece_Flow_Error::push(PIECE_FLOW_ERROR_FLOW_ID_NOT_GIVEN,
-                                           'The given flow ID is diffent from the registerd flow ID.'
+                                           'The given flow ID is different from the registerd flow ID.'
                                            );
                     return;
                 }
