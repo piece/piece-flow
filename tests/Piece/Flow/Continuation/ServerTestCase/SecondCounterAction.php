@@ -31,7 +31,7 @@
  * @package    Piece_Flow
  * @copyright  2006-2007 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
- * @version    SVN: $Id$
+ * @version    Release: @package_version@
  * @see        Piece_Flow_ContinuationTestCase
  * @since      File available since Release 1.0.0
  */

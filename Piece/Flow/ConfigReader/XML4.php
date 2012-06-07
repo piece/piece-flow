@@ -31,7 +31,7 @@
  * @package    Piece_Flow
  * @copyright  2006-2007 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
- * @version    SVN: $Id$
+ * @version    Release: @package_version@
  * @link       http://www.php.net/manual/ja/ref.domxml.php
  * @since      File available since Release 0.1.0
  */
