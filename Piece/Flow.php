@@ -30,7 +30,7 @@
  *
  * @package    Piece_Flow
  * @copyright  2006-2008 KUBO Atsuhiro <kubo@iteman.jp>
- * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
+ * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @link       http://www.martinfowler.com/eaaCatalog/applicationController.html
  * @link       http://opensource2.atlassian.com/confluence/spring/display/WEBFLOW/Home
@@ -59,7 +59,7 @@ require_once 'Piece/Flow/ProtedtedEvent.php';
  *
  * @package    Piece_Flow
  * @copyright  2006-2008 KUBO Atsuhiro <kubo@iteman.jp>
- * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
+ * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @link       http://www.martinfowler.com/eaaCatalog/applicationController.html
  * @link       http://opensource2.atlassian.com/confluence/spring/display/WEBFLOW/Home

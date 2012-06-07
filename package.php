@@ -30,7 +30,7 @@
  *
  * @package    Piece_Flow
  * @copyright  2006-2008 KUBO Atsuhiro <kubo@iteman.jp>
- * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
+ * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      File available since Release 0.1.0
  */
@@ -85,7 +85,7 @@ $package->setDescription('Piece_Flow is a web flow engine and continuation serve
 
 Piece_Flow provides a stateful programming model for developers, and high security for applications.');
 $package->setChannel('pear.piece-framework.com');
-$package->setLicense('BSD License (revised)', 'http://www.opensource.org/licenses/bsd-license.php');
+$package->setLicense('New BSD License', 'http://www.opensource.org/licenses/bsd-license.php');
 $package->setAPIVersion($apiVersion);
 $package->setAPIStability($apiStability);
 $package->setReleaseVersion($releaseVersion);

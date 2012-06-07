@@ -30,7 +30,7 @@
  *
  * @package    Piece_Flow
  * @copyright  2006-2007 KUBO Atsuhiro <kubo@iteman.jp>
- * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
+ * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @link       http://spyc.sourceforge.net/
  * @since      File available since Release 0.1.0
@@ -51,7 +51,7 @@ if (version_compare(phpversion(), '5.0.0', '<')) {
  *
  * @package    Piece_Flow
  * @copyright  2006-2007 KUBO Atsuhiro <kubo@iteman.jp>
- * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
+ * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @link       http://spyc.sourceforge.net/
  * @since      Class available since Release 0.1.0

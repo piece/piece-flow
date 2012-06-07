@@ -30,7 +30,7 @@
  *
  * @package    Piece_Flow
  * @copyright  2006-2008 KUBO Atsuhiro <kubo@iteman.jp>
- * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
+ * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      File available since Release 0.1.0
  */
@@ -65,7 +65,7 @@ define('PIECE_FLOW_ERROR_FLOW_EXECUTION_EXPIRED', -17);
  *
  * @package    Piece_Flow
  * @copyright  2006-2008 KUBO Atsuhiro <kubo@iteman.jp>
- * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
+ * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
  */

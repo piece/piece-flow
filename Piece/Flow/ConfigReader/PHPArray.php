@@ -30,7 +30,7 @@
  *
  * @package    Piece_Flow
  * @copyright  2007 KUBO Atsuhiro <kubo@iteman.jp>
- * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
+ * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @link       http://spyc.sourceforge.net/
  * @since      File available since Release 1.15.0
@@ -45,7 +45,7 @@ require_once 'Piece/Flow/ConfigReader/Common.php';
  *
  * @package    Piece_Flow
  * @copyright  2007 KUBO Atsuhiro <kubo@iteman.jp>
- * @license    http://www.opensource.org/licenses/bsd-license.php  BSD License (revised)
+ * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @link       http://spyc.sourceforge.net/
  * @since      Class available since Release 1.15.0
