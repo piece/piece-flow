@@ -256,7 +256,7 @@ class Piece_Flow_Config
     /**
      * Gets the last state of the flow.
      *
-     * @return array
+     * @return string
      */
     function getLastState()
     {
