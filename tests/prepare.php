@@ -40,6 +40,8 @@ error_reporting(error_reporting() | E_STRICT | E_DEPRECATED);
 $classLoader = require __DIR__ . '/../vendor/autoload.php'; /* @var $classLoader \Composer\Autoload\ClassLoader */
 $classLoader->add('Piece\Flow', __DIR__);
 
+\Piece\Flow\Util\ErrorReporting::enableErrorToException();
+
 /*
  * Local Variables:
  * mode: php
