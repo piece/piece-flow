@@ -135,21 +135,6 @@ class Service
     }
 
     /**
-     * Gets a flow execution ticket by the given flow ID.
-     * This method will be used for getting flow execution ticket else than
-     * the active flow execution.
-     * This method is only available if the flow execution is exclusive.
-     *
-     * @param string $flowID
-     * @return string
-     * @deprecated Method deprecated in Release 1.15.0
-     */
-    public function getFlowExecutionTicketByFlowName($flowID)
-    {
-        return $this->getFlowExecutionTicketByFlowID($flowID);
-    }
-
-    /**
      * Returns whether the last event which is given by a user is valid or
      * not.
      *
@@ -158,28 +143,6 @@ class Service
     public function checkLastEvent()
     {
         return $this->flowExecution->checkLastEvent();
-    }
-
-    /**
-     * Gets the flow ID for the active flow execution.
-     *
-     * @return string
-     * @deprecated Method deprecated in Release 1.15.0
-     */
-    public function getActiveFlowName()
-    {
-        return $this->getActiveFlowID();
-    }
-
-    /**
-     * Gets the flow ID for the active flow execution.
-     *
-     * @return string
-     * @deprecated Method deprecated in Release 1.14.0
-     */
-    public function getCurrentFlowName()
-    {
-        return $this->getActiveFlowID();
     }
 
     /**
