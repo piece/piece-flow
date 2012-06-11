@@ -1,0 +1,27 @@
+{
+    "name": "piece/piece-flow",
+    "type": "library",
+    "description": "A page flow engine",
+    "keywords": ["page flow", "stateful"],
+    "homepage": "http://piece-framework.com/projects/piece-flow",
+    "license": "BSD-2",
+    "authors": [
+        {
+            "name": "KUBO Atsuhiro",
+            "email": "kubo@iteman.jp"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.2",
+        "piece/stagehand-fsm": ">=2.0.0",
+        "symfony/yaml": ">=2.0.0"
+    },
+    "autoload": {
+        "psr-0": { "Piece\\Flow": "./" }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.0-dev"
+        }
+    }
+}
