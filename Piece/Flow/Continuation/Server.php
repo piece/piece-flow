@@ -192,17 +192,6 @@ class Server
     }
 
     /**
-     * Sets a callback for getting a flow ID.
-     *
-     * @param callback $callback
-     * @deprecated Method deprecated in Release 1.15.0
-     */
-    public function setFlowNameCallback($callback)
-    {
-        $this->setFlowIDCallback($callback);
-    }
-
-    /**
      * Sets the cache directory for the flow definitions.
      *
      * @param string $cacheDirectory
