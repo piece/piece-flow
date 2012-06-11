@@ -2,9 +2,9 @@
 /* vim: set expandtab tabstop=4 shiftwidth=4: */
 
 /**
- * PHP versions 4 and 5
+ * PHP version 5.3
  *
- * Copyright (c) 2007 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,63 +29,38 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2007 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      File available since Release 1.11.0
  */
 
-// {{{ Piece_Flow_Continuation_GC
+namespace Piece\Flow\Continuation;
 
 /**
  * The garbage collector for expired flow executions.
  *
  * @package    Piece_Flow
- * @copyright  2007 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      Class available since Release 1.11.0
  */
-class Piece_Flow_Continuation_GC
+class GC
 {
-
-    // {{{ properties
-
-    /**#@+
-     * @access public
-     */
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    var $_expirationTime;
-    var $_statesByFlowExecutionTicket = array();
-    var $_gcCallback;
-
-    /**#@-*/
-
-    /**#@+
-     * @access public
-     */
-
-    // }}}
-    // {{{ constructor
+    protected $expirationTime;
+    protected $statesByFlowExecutionTicket = array();
+    protected $gcCallback;
 
     /**
      * Sets the expiration time in seconds.
      *
      * @param integer $expirationTime
      */
-    function Piece_Flow_Continuation_GC($expirationTime)
+    public function __construct($expirationTime)
     {
-        $this->_expirationTime = $expirationTime;
+        $this->expirationTime = $expirationTime;
     }
-
-    // }}}
-    // {{{ update()
 
     /**
      * Updates the state for the flow execution by the given flow execution
@@ -93,18 +68,15 @@ class Piece_Flow_Continuation_GC
      *
      * @param string $flowExecutionTicket
      */
-    function update($flowExecutionTicket)
+    public function update($flowExecutionTicket)
     {
         if (!$this->isMarked($flowExecutionTicket)) {
-            $this->_statesByFlowExecutionTicket[$flowExecutionTicket] = array('mtime'   => time(),
+            $this->statesByFlowExecutionTicket[$flowExecutionTicket] = array('mtime'   => time(),
                                                                               'sweep'   => false,
                                                                               'isSwept' => false
                                                                               );
         }
     }
-
-    // }}}
-    // {{{ isMarked()
 
     /**
      * Returns whether the given flow execution ticket is marked as a target for sweeping or not.
@@ -112,82 +84,61 @@ class Piece_Flow_Continuation_GC
      * @param string $flowExecutionTicket
      * @return boolean
      */
-    function isMarked($flowExecutionTicket)
+    public function isMarked($flowExecutionTicket)
     {
-        if (array_key_exists($flowExecutionTicket, $this->_statesByFlowExecutionTicket)) {
-            return $this->_statesByFlowExecutionTicket[$flowExecutionTicket]['sweep'];
+        if (array_key_exists($flowExecutionTicket, $this->statesByFlowExecutionTicket)) {
+            return $this->statesByFlowExecutionTicket[$flowExecutionTicket]['sweep'];
         } else {
             return false;
         }
     }
 
-    // }}}
-    // {{{ mark()
-
     /**
      * Marks expired flow executions for sweeping.
      */
-    function mark()
+    public function mark()
     {
         $thresholdTime = time();
-        reset($this->_statesByFlowExecutionTicket);
-        while (list($flowExecutionTicket, $state) = each($this->_statesByFlowExecutionTicket)) {
+        reset($this->statesByFlowExecutionTicket);
+        while (list($flowExecutionTicket, $state) = each($this->statesByFlowExecutionTicket)) {
             if ($state['isSwept']) {
                 continue;
             }
 
-            $this->_statesByFlowExecutionTicket[$flowExecutionTicket]['sweep'] = $thresholdTime - $state['mtime'] > $this->_expirationTime;
+            $this->statesByFlowExecutionTicket[$flowExecutionTicket]['sweep'] = $thresholdTime - $state['mtime'] > $this->expirationTime;
         }
     }
-
-    // }}}
-    // {{{ sweep()
 
     /**
      * Sweeps all marked flow execution by the callback for GC.
      */
-    function sweep()
+    public function sweep()
     {
-        reset($this->_statesByFlowExecutionTicket);
-        while (list($flowExecutionTicket, $state) = each($this->_statesByFlowExecutionTicket)) {
+        reset($this->statesByFlowExecutionTicket);
+        while (list($flowExecutionTicket, $state) = each($this->statesByFlowExecutionTicket)) {
             if ($state['isSwept']) {
                 continue;
             }
 
             if ($state['sweep']) {
-                call_user_func($this->_gcCallback, $flowExecutionTicket);
-                $this->_statesByFlowExecutionTicket[$flowExecutionTicket]['isSwept'] = true;
+                call_user_func($this->gcCallback, $flowExecutionTicket);
+                $this->statesByFlowExecutionTicket[$flowExecutionTicket]['isSwept'] = true;
             }
         }
 
-        $this->_gcCallback = null;
+        $this->gcCallback = null;
     }
-
-    // }}}
-    // {{{ setGCCallback()
 
     /**
      * Sets the callback for GC.
      *
      * @param callback $gcCallback
      */
-    function setGCCallback($gcCallback)
+    public function setGCCallback($gcCallback)
     {
-        $this->_gcCallback = &$gcCallback;
+        $this->gcCallback = $gcCallback;
     }
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    /**#@-*/
-
-    // }}}
 }
-
-// }}}
 
 /*
  * Local Variables:

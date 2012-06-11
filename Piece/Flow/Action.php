@@ -2,9 +2,9 @@
 /* vim: set expandtab tabstop=4 shiftwidth=4: */
 
 /**
- * PHP versions 4 and 5
+ * PHP version 5.3
  *
- * Copyright (c) 2006-2007 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,109 +29,68 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2006-2007 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      File available since Release 1.5.0
  */
 
-// {{{ Piece_Flow_Action
+namespace Piece\Flow;
 
 /**
  * The base class for Piece_Flow actions.
  *
  * @package    Piece_Flow
- * @copyright  2006-2007 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      Class available since Release 1.5.0
  */
-class Piece_Flow_Action
+class Action
 {
-
-    // {{{ properties
-
-    /**#@+
-     * @access public
-     */
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    var $_flow;
-    var $_payload;
-    var $_event;
-
-    /**#@-*/
-
-    /**#@+
-     * @access public
-     */
-
-    // }}}
-    // {{{ setFlow()
+    protected $flow;
+    protected $payload;
+    protected $event;
 
     /**
      * Sets the Piece_Flow object which is used by the flow execution
      * in progress.
      *
-     * @param Piece_Flow &$flow
+     * @param \Piece\Flow\Flow $flow
      */
-    function setFlow(&$flow)
+    public function setFlow(Flow $flow)
     {
-        $this->_flow = &$flow;
+        $this->flow = $flow;
     }
-
-    // }}}
-    // {{{ setPayload()
 
     /**
      * Sets a user defined payload.
      *
      * @param mixed &$payload
      */
-    function setPayload(&$payload)
+    public function setPayload(&$payload)
     {
-        $this->_payload = &$payload;
+        $this->payload = &$payload;
     }
-
-    // }}}
-    // {{{ setEvent()
 
     /**
      * Sets the current event name.
      *
      * @param string $event
      */
-    function setEvent($event)
+    public function setEvent($event)
     {
-        $this->_event = $event;
+        $this->event = $event;
     }
-
-    // }}}
-    // {{{ prepare()
 
     /**
      * Prepares something for a callback which will be invoked just after
      * this method call.
      */
-    function prepare() {}
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    /**#@-*/
-
-    // }}}
+    public function prepare()
+    {
+    }
 }
-
-// }}}
 
 /*
  * Local Variables:

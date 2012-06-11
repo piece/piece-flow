@@ -2,9 +2,9 @@
 /* vim: set expandtab tabstop=4 shiftwidth=4: */
 
 /**
- * PHP versions 4 and 5
+ * PHP version 5.3
  *
- * Copyright (c) 2007-2008 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2007-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,307 +29,214 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2007-2008 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2007-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      File available since Release 1.14.0
  */
 
-require_once 'Stagehand/FSM.php';
-require_once 'Piece/Flow/EventHandler.php';
-require_once 'Piece/Flow/Error.php';
-require_once 'Stagehand/FSM/State.php';
-require_once 'Piece/Flow/ProtedtedEvent.php';
+namespace Piece\Flow;
 
-// {{{ Piece_Flow_FSMBuilder
+use Stagehand\FSM\Event;
+use Stagehand\FSM\State;
 
 /**
  * The FSM builder.
  *
  * @package    Piece_Flow
- * @copyright  2007-2008 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2007-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      Class available since Release 1.14.0
  */
-class Piece_Flow_FSMBuilder
+class FSMBuilder
 {
-
-    // {{{ properties
-
-    /**#@+
-     * @access public
-     */
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    var $_fsm;
-    var $_flow;
-    var $_actionDirectory;
-
-    /**#@-*/
-
-    /**#@+
-     * @access public
-     */
-
-    // }}}
-    // {{{ constructor
+    protected $flow;
+    protected $actionDirectory;
 
     /**
-     * Sets a Piece_Flow object to the property.
+     * @var \Stagehand\FSM\FSMBuilder
+     * @since Property available since Release 2.0.0
+     */
+    protected $fsmBuilder;
+
+    /**
+     * Sets a Flow object to the property.
      *
-     * @param Piece_Flow &$flow
+     * @param \Piece\Flow\Flow $flow
      * @param string     $actionDirectory
      */
-    function Piece_Flow_FSMBuilder(&$flow, $actionDirectory)
+    public function __construct(Flow $flow, $actionDirectory)
     {
-        $this->_flow = &$flow;
-        $this->_actionDirectory = $actionDirectory;
+        $this->fsmBuilder = new \Stagehand\FSM\FSMBuilder();
+        $this->flow = $flow;
+        $this->actionDirectory = $actionDirectory;
     }
-
-    // }}}
-    // {{{ build()
 
     /**
      * Builds a FSM with the given configuration.
      *
-     * @param Piece_Flow_Config &$config
-     * @return Stagehand_FSM
-     * @throws PIECE_FLOW_ERROR_PROTECTED_STATE
+     * @param \Piece\Flow\Config $config
+     * @return \Stagehand\FSM\FSM
+     * @throws \Piece\Flow\ProtectedStateException
      */
-    function &build(&$config)
+    public function build(Config $config)
     {
-        $this->_fsm = &new Stagehand_FSM();
-
         $firstState = $config->getFirstState();
-        if ($this->_fsm->isProtectedState($firstState)) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_PROTECTED_STATE,
-                                   "The state [ $firstState ] cannot be used in flow definitions."
-                                   );
-            $return = null;
-            return $return;
+        if ($this->fsmBuilder->getFSM()->isProtectedState($firstState)) {
+            throw new ProtectedStateException("The state [ $firstState ] cannot be used in flow definitions.");
         }
 
-        $this->_fsm->setFirstState($firstState);
-        $this->_fsm->setName($config->getName());
+        $this->fsmBuilder->setFirstState($firstState);
+        $this->fsmBuilder->setName($config->getName());
 
         $lastState = $config->getLastState();
         if (!is_null($lastState)) {
-            if ($this->_fsm->isProtectedState($lastState)) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_PROTECTED_STATE,
-                                       "The state [ $lastState ] cannot be used in flow definitions."
-                                       );
-                $return = null;
-                return $return;
+            if ($this->fsmBuilder->getFSM()->isProtectedState($lastState)) {
+                throw new ProtectedStateException("The state [ $lastState ] cannot be used in flow definitions.");
             }
 
-            $this->_fsm->addTransition($lastState,
-                                       STAGEHAND_FSM_EVENT_END,
-                                       STAGEHAND_FSM_STATE_FINAL
-                                       );
+            $this->fsmBuilder->addTransition($lastState, Event::EVENT_END, State::STATE_FINAL);
         }
 
-        $this->_configureViewStates($config->getViewStates());
-        if (Piece_Flow_Error::hasErrors()) {
-            $return = null;
-            return $return;
-        }
-
-        $this->_configureActionStates($config->getActionStates());
-        if (Piece_Flow_Error::hasErrors()) {
-            $return = null;
-            return $return;
-        }
+        $this->configureViewStates($config->getViewStates());
+        $this->configureActionStates($config->getActionStates());
 
         $initial = $config->getInitialAction();
         if (!is_null($initial)) {
-            $this->_fsm->setExitAction(STAGEHAND_FSM_STATE_INITIAL,
-                                       $this->_wrapAction($initial)
-                                       );
+            $this->fsmBuilder->setExitAction(State::STATE_INITIAL, $this->wrapAction($initial));
         }
 
         $final = $config->getFinalAction();
         if (!is_null($final)) {
-            $this->_fsm->setEntryAction(STAGEHAND_FSM_STATE_FINAL,
-                                        $this->_wrapAction($final)
-                                        );
+            $this->fsmBuilder->setEntryAction(State::STATE_FINAL, $this->wrapAction($final));
         }
 
-        return $this->_fsm;
+        return $this->fsmBuilder->getFSM();
     }
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    // }}}
-    // {{{ _configureViewStates()
 
     /**
      * Configures view states.
      *
      * @param array $states
-     * @throws PIECE_FLOW_ERROR_PROTECTED_STATE
+     * @throws \Piece\Flow\ProtectedStateException
      */
-    function _configureViewStates($states)
+    protected function configureViewStates(array $states)
     {
         foreach ($states as $key => $state) {
-            if ($this->_fsm->isProtectedState($state['name'])) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_PROTECTED_STATE,
-                                       "The state [ {$state['name']} ] cannot be used in flow definitions."
-                                       );
-                return;
+            if ($this->fsmBuilder->getFSM()->isProtectedState($state['name'])) {
+                throw new ProtectedStateException("The state [ {$state['name']} ] cannot be used in flow definitions.");
             }
 
-            $this->_configureViewState($state);
-            if (Piece_Flow_Error::hasErrors()) {
-                return;
-            }
+            $this->configureViewState($state);
         }
     }
-
-    // }}}
-    // {{{ _configureActionStates()
 
     /**
      * Configures action states.
      *
      * @param array $states
-     * @throws PIECE_FLOW_ERROR_PROTECTED_STATE
+     * @throws \Piece\Flow\ProtectedStateException
      */
-    function _configureActionStates($states)
+    protected function configureActionStates(array $states)
     {
         foreach ($states as $key => $state) {
-            if ($this->_fsm->isProtectedState($state['name'])) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_PROTECTED_STATE,
-                                       "The state [ {$state['name']} ] cannot be used in flow definitions."
-                                       );
-                return;
+            if ($this->fsmBuilder->getFSM()->isProtectedState($state['name'])) {
+                throw new ProtectedStateException("The state [ {$state['name']} ] cannot be used in flow definitions.");
             }
 
-            $this->_configureState($state);
-            if (Piece_Flow_Error::hasErrors()) {
-                return;
-            }
+            $this->configureState($state);
         }
     }
-
-    // }}}
-    // {{{ _configureState()
 
     /**
      * Configures a state.
      *
      * @param array $state
-     * @throws PIECE_FLOW_ERROR_PROTECTED_EVENT
+     * @throws \Piece\Flow\ProtectedEventException
      */
-    function _configureState($state)
+    protected function configureState(array $state)
     {
         for ($i = 0, $count = count(@$state['transitions']); $i < $count; ++$i) {
-            if ($state['transitions'][$i]['event'] == PIECE_FLOW_PROTECTED_EVENT
-                || $this->_fsm->isProtectedEvent($state['transitions'][$i]['event'])
+            if ($state['transitions'][$i]['event'] == Flow::EVENT_PROTECTED
+                || $this->fsmBuilder->getFSM()->isProtectedEvent($state['transitions'][$i]['event'])
                 ) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_PROTECTED_EVENT,
-                                       "The event [ {$state['transitions'][$i]['event']} ] cannot be used in flow definitions."
-                                       );
-                return;
+                throw new ProtectedEventException("The event [ {$state['transitions'][$i]['event']} ] cannot be used in flow definitions.");
             }
 
-            $this->_fsm->addTransition($state['name'],
+            $this->fsmBuilder->addTransition($state['name'],
                                        $state['transitions'][$i]['event'],
                                        $state['transitions'][$i]['nextState'],
-                                       $this->_wrapEventTriggerAction(@$state['transitions'][$i]['action']),
-                                       $this->_wrapAction(@$state['transitions'][$i]['guard'])
+                                       $this->wrapEventTriggerAction(@$state['transitions'][$i]['action']),
+                                       $this->wrapAction(@$state['transitions'][$i]['guard'])
                                        );
         }
 
         if (array_key_exists('entry', $state)) {
-            $this->_fsm->setEntryAction($state['name'],
-                                        $this->_wrapAction(@$state['entry'])
+            $this->fsmBuilder->setEntryAction($state['name'],
+                                        $this->wrapAction(@$state['entry'])
                                         );
         }
 
         if (array_key_exists('exit', $state)) {
-            $this->_fsm->setExitAction($state['name'],
-                                       $this->_wrapAction(@$state['exit'])
+            $this->fsmBuilder->setExitAction($state['name'],
+                                       $this->wrapAction(@$state['exit'])
                                        );
         }
 
         if (array_key_exists('activity', $state)) {
-            $this->_fsm->setActivity($state['name'],
-                                     $this->_wrapEventTriggerAction(@$state['activity'])
+            $this->fsmBuilder->setActivity($state['name'],
+                                     $this->wrapEventTriggerAction(@$state['activity'])
                                      );
         }
     }
 
-    // }}}
-    // {{{ _wrapAction()
-
     /**
-     * Wraps a simple action up with a Piece_Flow_Action object and returns
+     * Wraps a simple action up with an Action object and returns
      * a callback. The simple action means that the action is entry action or
      * exit action or guard.
      *
      * @param array $action
      * @return array
      */
-    function _wrapAction($action)
+    protected function wrapAction(array $action = null)
     {
         if (is_null($action)) {
             return $action;
         }
 
-        $eventHandler = &new Piece_Flow_EventHandler($this->_flow, @$action['class'], $action['method'], $this->_actionDirectory);
-        return array(&$eventHandler, 'invoke');
+        $eventHandler = new EventHandler($this->flow, @$action['class'], $action['method'], $this->actionDirectory);
+        return array($eventHandler, 'invoke');
     }
-
-    // }}}
-    // {{{ _configureViewState()
 
     /**
      * Configures a view state.
      *
      * @param array $state
      */
-    function _configureViewState($state)
+    protected function configureViewState(array $state)
     {
-        $this->_configureState($state);
+        $this->configureState($state);
     }
 
-    // }}}
-    // {{{ _wrapEventTriggerAction()
-
     /**
-     * Wraps an event trigger action up with a Piece_Flow_Action object and
+     * Wraps an event trigger action up with an Action object and
      * returns a callback. The event trigger action means that the action is
      * transition action or activity.
      *
      * @param array $action
      * @return array
      */
-    function _wrapEventTriggerAction($action)
+    protected function wrapEventTriggerAction(array $action = null)
     {
         if (is_null($action)) {
             return $action;
         }
 
-        $eventHandler = &new Piece_Flow_EventHandler($this->_flow, @$action['class'], $action['method'], $this->_actionDirectory);
-        return array(&$eventHandler, 'invokeAndTriggerEvent');
+        $eventHandler = new EventHandler($this->flow, @$action['class'], $action['method'], $this->actionDirectory);
+        return array($eventHandler, 'invokeAndTriggerEvent');
     }
-
-    /**#@-*/
-
-    // }}}
 }
-
-// }}}
 
 /*
  * Local Variables:

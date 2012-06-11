@@ -2,9 +2,9 @@
 /* vim: set expandtab tabstop=4 shiftwidth=4: */
 
 /**
- * PHP versions 4 and 5
+ * PHP version 5.3
  *
- * Copyright (c) 2007 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,88 +29,47 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2007 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      File available since Release 1.11.0
  */
 
-// {{{ GLOBALS
-
-$GLOBALS['PIECE_FLOW_Env_IsProduction'] = true;
-
-// }}}
-// {{{ Piece_Flow_Env
+namespace Piece\Flow;
 
 /**
  * The state holder for an application with Piece_Flow.
  *
  * @package    Piece_Flow
- * @copyright  2007 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      Class available since Release 1.11.0
  */
-class Piece_Flow_Env
+class Env
 {
-
-    // {{{ properties
-
-    /**#@+
-     * @access public
-     */
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    /**#@-*/
-
-    /**#@+
-     * @access public
-     * @static
-     */
-
-    // }}}
-    // {{{ setIsProduction()
+    private static $isProduction = true;
 
     /**
      * Sets whether the current environment is production or not.
      *
      * @param boolean $isProduction
      */
-    function setIsProduction($isProduction)
+    public static function setIsProduction($isProduction)
     {
-        $GLOBALS['PIECE_FLOW_Env_IsProduction'] = $isProduction;
+        self::$isProduction = $isProduction;
     }
-
-    // }}}
-    // {{{ isProduction()
 
     /**
      * Returns whether the current environment is production or not.
      *
      * @return boolean
      */
-    function isProduction()
+    public static function isProduction()
     {
-        return $GLOBALS['PIECE_FLOW_Env_IsProduction'];
+        return self::$isProduction;
     }
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    /**#@-*/
-
-    // }}}
 }
-
-// }}}
 
 /*
  * Local Variables:

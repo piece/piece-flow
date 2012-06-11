@@ -2,9 +2,9 @@
 /* vim: set expandtab tabstop=4 shiftwidth=4: */
 
 /**
- * PHP versions 4 and 5
+ * PHP version 5.3
  *
- * Copyright (c) 2006-2008 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,69 +29,52 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2006-2008 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      File available since Release 0.1.0
  */
 
-require_once realpath(dirname(__FILE__) . '/../../../prepare.php');
-require_once 'PHPUnit.php';
-require_once 'Piece/Flow/Error.php';
-require_once 'Piece/Flow/Config.php';
+namespace Piece\Flow\ConfigReader;
+
 require_once 'Cache/Lite/File.php';
 
-// {{{ Piece_Flow_ConfigReader_CompatibilityTests
+use Piece\Flow\Config;
+use Piece\Flow\Util\ErrorReporting;
 
 /**
- * The base class for compatibility test of Piece_Flow_Config drivers.
+ * The base class for compatibility test of Config drivers.
  *
  * @package    Piece_Flow
- * @copyright  2006-2008 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
  */
-class Piece_Flow_ConfigReader_CompatibilityTests extends PHPUnit_TestCase
+abstract class CompatibilityTests extends \PHPUnit_Framework_TestCase
 {
+    protected $cacheDirectory;
 
-    // {{{ properties
-
-    /**#@+
-     * @access public
-     */
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    var $_cacheDirectory;
-
-    /**#@-*/
-
-    /**#@+
-     * @access public
-     */
-
-    function setUp()
+    protected function setUp()
     {
-        $this->_doSetUp();
+        $this->doSetUp();
     }
 
-    function tearDown()
+    protected function tearDown()
     {
-        $cache = &new Cache_Lite_File(array('cacheDir' => "{$this->_cacheDirectory}/",
-                                            'masterFile' => '',
-                                            'automaticSerialization' => true,
-                                            'errorHandlingAPIBreak' => true)
-                                      );
+        $cacheDirectory = $this->cacheDirectory;
+        $cache = ErrorReporting::invokeWith(error_reporting() & ~E_STRICT, function () use ($cacheDirectory) {
+            return new \Cache_Lite_File(array(
+                'cacheDir' => $cacheDirectory . '/',
+                'masterFile' => '',
+                'automaticSerialization' => true,
+                'errorHandlingAPIBreak' => true
+            ));
+        });
         $cache->clean();
-        Piece_Flow_Error::clearErrors();
     }
 
-    function testConfiguration()
+    public function testConfiguration()
     {
         $firstState = 'DisplayForm';
         $lastState = array('name' => 'Finish', 'view' => 'Finish',
@@ -168,7 +151,7 @@ class Piece_Flow_ConfigReader_CompatibilityTests extends PHPUnit_TestCase
                               'nextState' => 'Finish'
                               );
 
-        $expectedConfig = new Piece_Flow_Config();
+        $expectedConfig = new Config();
         $expectedConfig->setFirstState($firstState);
         $expectedConfig->setLastState($lastState['name'], $lastState['view']);
         $expectedConfig->setEntryAction($lastState['name'], $lastState['entry']);
@@ -221,10 +204,10 @@ class Piece_Flow_ConfigReader_CompatibilityTests extends PHPUnit_TestCase
                                        $transition22['nextState']
                                        );
 
-        $reader = &$this->_createConfigReader("{$this->_cacheDirectory}/Registration" . $this->_getExtension());
-        $actualConfig = &$reader->read();
+        $reader = $this->createConfigReader("{$this->cacheDirectory}/Registration" . $this->getExtension());
+        $actualConfig = $reader->read();
 
-        $this->assertEquals(strtolower('Piece_Flow_Config'), strtolower(get_class($actualConfig)));
+        $this->assertTrue($actualConfig instanceof Config);
         $this->assertEquals($expectedConfig->getFirstState(), $actualConfig->getFirstState());
         $this->assertEquals($expectedConfig->getLastState(), $actualConfig->getLastState());
         $this->assertEquals($expectedConfig->getViewStates(), $actualConfig->getViewStates());
@@ -236,46 +219,46 @@ class Piece_Flow_ConfigReader_CompatibilityTests extends PHPUnit_TestCase
     /**
      * @since Method available since Release 1.10.0
      */
-    function testExceptionShouldBeRaisedIfInvalidFormatIsDetected()
+    public function testExceptionShouldBeRaisedIfInvalidFormatIsDetected()
     {
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('FirstStateNotFound');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('FirstStateIsInvalid');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('NameInLastStateNotFound');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('NameInLastStateIsInvalid');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ViewInLastStateNotFound');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ViewInLastStateIsInvalid');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInFinalActionNotFound');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInFinalActionIsInvalid');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ClassInFinalActionIsInvalid');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInInitialActionNotFound');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInInitialActionIsInvalid');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ClassInInitialActionIsInvalid');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ViewStateHasNoElements');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('NameInViewStateNotFound');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('NameInViewStateIsInvalid');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ViewInViewStateNotFound');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ViewInViewStateIsInvalid');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('NameInActionStateNotFound');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('NameInActionStateIsInvalid');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('EventInTransitionNotFound');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('EventInTransitionIsInvalid');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('NextStateInTransitionNotFound');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('NextStateInTransitionIsInvalid');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInActionNotFound');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInActionIsInvalid');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ClassInActionIsInvalid');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInGuardNotFound');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInGuardIsInvalid');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ClassInGuardIsInvalid');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInEntryNotFound');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInEntryIsInvalid');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ClassInEntryIsInvalid');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInExitNotFound');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInExitIsInvalid');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ClassInExitIsInvalid');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInActivityNotFound');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInActivityIsInvalid');
-        $this->_assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ClassInActivityIsInvalid');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('FirstStateNotFound');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('FirstStateIsInvalid');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('NameInLastStateNotFound');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('NameInLastStateIsInvalid');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ViewInLastStateNotFound');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ViewInLastStateIsInvalid');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInFinalActionNotFound');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInFinalActionIsInvalid');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ClassInFinalActionIsInvalid');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInInitialActionNotFound');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInInitialActionIsInvalid');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ClassInInitialActionIsInvalid');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ViewStateHasNoElements');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('NameInViewStateNotFound');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('NameInViewStateIsInvalid');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ViewInViewStateNotFound');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ViewInViewStateIsInvalid');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('NameInActionStateNotFound');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('NameInActionStateIsInvalid');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('EventInTransitionNotFound');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('EventInTransitionIsInvalid');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('NextStateInTransitionNotFound');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('NextStateInTransitionIsInvalid');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInActionNotFound');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInActionIsInvalid');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ClassInActionIsInvalid');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInGuardNotFound');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInGuardIsInvalid');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ClassInGuardIsInvalid');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInEntryNotFound');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInEntryIsInvalid');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ClassInEntryIsInvalid');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInExitNotFound');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInExitIsInvalid');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ClassInExitIsInvalid');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInActivityNotFound');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('MethodInActivityIsInvalid');
+        $this->assertExceptionShouldBeRaisedIfInvalidFormatIsDetected('ClassInActivityIsInvalid');
     }
 
     /**
@@ -284,50 +267,44 @@ class Piece_Flow_ConfigReader_CompatibilityTests extends PHPUnit_TestCase
     function testCacheIDsShouldUniqueInOneCacheDirectory()
     {
         $oldDirectory = getcwd();
-        chdir("{$this->_cacheDirectory}/CacheIDsShouldBeUniqueInOneCacheDirectory1");
-        $reader = &$this->_createConfigReader('New' . $this->_getExtension());
+        chdir("{$this->cacheDirectory}/CacheIDsShouldBeUniqueInOneCacheDirectory1");
+        $reader = $this->createConfigReader('New' . $this->getExtension());
         $reader->read();
 
-        $this->assertEquals(1, $this->_getCacheFileCount($this->_cacheDirectory));
+        $this->assertEquals(1, $this->getCacheFileCount($this->cacheDirectory));
 
-        chdir("{$this->_cacheDirectory}/CacheIDsShouldBeUniqueInOneCacheDirectory2");
-        $reader = &$this->_createConfigReader('New' . $this->_getExtension());
+        chdir("{$this->cacheDirectory}/CacheIDsShouldBeUniqueInOneCacheDirectory2");
+        $reader = $this->createConfigReader('New' . $this->getExtension());
         $reader->read();
 
-        $this->assertEquals(2, $this->_getCacheFileCount($this->_cacheDirectory));
+        $this->assertEquals(2, $this->getCacheFileCount($this->cacheDirectory));
 
         chdir($oldDirectory);
     }
 
-    /**#@-*/
+    abstract protected function createConfigReader($source);
+    abstract protected function doSetUp();
 
-    /**#@+
-     * @access private
-     */
-
-    function &_createConfigReader($source) {}
-    function _doSetUp() {}
-    function _getSource($name) {}
-
-    function _assertExceptionShouldBeRaisedIfInvalidFormatIsDetected($name)
+    protected function getSource($name)
     {
-        $reader = &$this->_createConfigReader("{$this->_cacheDirectory}/$name" . $this->_getExtension());
-        Piece_Flow_Error::disableCallback();
-        @$config = &$reader->read();
-        Piece_Flow_Error::enableCallback();
+    }
 
-        $this->assertNull($config, $name, $name);
-        $this->assertTrue(Piece_Flow_Error::hasErrors(), $name, $name);
-
-        $error = Piece_Flow_Error::pop();
-
-        $this->assertEquals(PIECE_FLOW_ERROR_INVALID_FORMAT, $error['code'], $name);
+    /**
+     * @param string $name
+     */
+    protected function assertExceptionShouldBeRaisedIfInvalidFormatIsDetected($name)
+    {
+        try {
+            $this->createConfigReader("{$this->cacheDirectory}/$name" . $this->getExtension())->read();
+            $this->fail('An expected exception has not been raised.');
+        } catch (InvalidFormatException $e) {
+        }
     }
 
     /**
      * @since Method available since Release 1.14.0
      */
-    function _getCacheFileCount($directory)
+    protected function getCacheFileCount($directory)
     {
         $cacheFileCount = 0;
         if ($dh = opendir($directory)) {
@@ -353,14 +330,8 @@ class Piece_Flow_ConfigReader_CompatibilityTests extends PHPUnit_TestCase
     /**
      * @since Method available since Release 1.14.0
      */
-    function _getExtension() {}
-
-    /**#@-*/
-
-    // }}}
+    abstract protected function getExtension();
 }
-
-// }}}
 
 /*
  * Local Variables:

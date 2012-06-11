@@ -2,9 +2,9 @@
 /* vim: set expandtab tabstop=4 shiftwidth=4: */
 
 /**
- * PHP versions 4 and 5
+ * PHP version 5.3
  *
- * Copyright (c) 2006-2007 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,72 +29,37 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2006-2007 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        Piece_Flow_ContinuationTestCase
+ * @see        \Piece\Flow\Continuation\ServerTestCase
  * @since      File available since Release 1.8.0
  */
 
-require_once 'Piece/Flow/Action.php';
-
-// {{{ BindActionsWithFlowExecutionAction
+use Piece\Flow\Action;
 
 /**
- * A class for unit tests.
- *
  * @package    Piece_Flow
- * @copyright  2006-2007 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        Piece_Flow_ContinuationTestCase
+ * @see        \Piece\Flow\Continuation\ServerTestCase
  * @since      Class available since Release 1.8.0
  */
-class BindActionsWithFlowExecutionAction extends Piece_Flow_Action
+class BindActionsWithFlowExecutionAction extends Action
 {
+    protected $counter = 0;
 
-    // {{{ properties
-
-    /**#@+
-     * @access public
-     */
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    var $_counter = 0;
-
-    /**#@-*/
-
-    /**#@+
-     * @access public
-     */
-
-    function increase()
+    public function increase()
     {
-        ++$this->_counter;
+        ++$this->counter;
     }
 
-    function reached()
+    public function reached()
     {
-        return $this->_counter >= 2;
+        return $this->counter >= 2;
     }
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    /**#@-*/
-
-    // }}}
 }
-
-// }}}
 
 /*
  * Local Variables:

@@ -2,9 +2,9 @@
 /* vim: set expandtab tabstop=4 shiftwidth=4: */
 
 /**
- * PHP versions 4 and 5
+ * PHP version 5.3
  *
- * Copyright (c) 2007-2008 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2007-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,50 +29,25 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2007-2008 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2007-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      File available since Release 1.10.0
  */
 
-require_once 'Piece/Flow/Error.php';
-require_once 'Piece/Flow/ClassLoader.php';
-
-// {{{ Piece_Flow_ConfigReader
+namespace Piece\Flow;
 
 /**
  * The configuration reader.
  *
  * @package    Piece_Flow
- * @copyright  2007-2008 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2007-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      Class available since Release 1.10.0
  */
-class Piece_Flow_ConfigReader
+class ConfigReader
 {
-
-    // {{{ properties
-
-    /**#@+
-     * @access public
-     */
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    /**#@-*/
-
-    /**#@+
-     * @access public
-     */
-
-    // }}}
-    // {{{ read()
-
     /**
      * Reads configuration from the given source and creates
      * a Piece_Flow_Config object.
@@ -82,11 +57,9 @@ class Piece_Flow_ConfigReader
      * @param string $cacheDirectory
      * @param string $configDirectory
      * @param string $configExtension
-     * @return Piece_Flow_Config
-     * @throws PIECE_FLOW_ERROR_NOT_FOUND
-     * @static
+     * @return \Piece\Flow\Config
      */
-    function &read($source,
+    public static function read($source,
                    $driverName,
                    $cacheDirectory,
                    $configDirectory,
@@ -109,39 +82,15 @@ class Piece_Flow_ConfigReader
             }
 
             if ($driverName == 'XML') {
-                if (version_compare(phpversion(), '5.0.0', '>=')) {
-                    $driverName = 'XML5';
-                } else {
-                    $driverName = 'XML4';
-                }
+                $driverName = 'XML5';
             }
         } else {
             $driverName = 'PHPArray';
         }
 
-        $class = "Piece_Flow_ConfigReader_$driverName";
-        if (!Piece_Flow_ClassLoader::loaded($class)) {
-            Piece_Flow_ClassLoader::load($class);
-            if (Piece_Flow_Error::hasErrors()) {
-                $return = null;
-                return $return;
-            }
-
-            if (!Piece_Flow_ClassLoader::loaded($class)) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
-                                       "The class [ $class ] not found in the loaded file."
-                                       );
-                $return = null;
-                return $return;
-            }
-        }
-
-        $driver = &new $class($source, $cacheDirectory);
-        $config = &$driver->read();
-        if (Piece_Flow_Error::hasErrors()) {
-            $return = null;
-            return $return;
-        }
+        $class = 'Piece\Flow\ConfigReader\\' . $driverName;
+        $driver = new $class($source, $cacheDirectory);
+        $config = $driver->read();
 
         if (!is_callable($source)) {
             if (is_null($configDirectory)) {
@@ -157,19 +106,7 @@ class Piece_Flow_ConfigReader
 
         return $config;
     }
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    /**#@-*/
-
-    // }}}
 }
-
-// }}}
 
 /*
  * Local Variables:

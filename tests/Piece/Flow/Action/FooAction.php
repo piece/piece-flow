@@ -2,9 +2,9 @@
 /* vim: set expandtab tabstop=4 shiftwidth=4: */
 
 /**
- * PHP versions 4 and 5
+ * PHP version 5.3
  *
- * Copyright (c) 2006-2007 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,69 +29,32 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2006-2007 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        Piece_Flow_Action_FactoryTestCase
+ * @see        \Piece\Flow\Action\FactoryTestCase
  * @since      File available since Release 1.0.0
  */
 
-require_once 'Piece/Flow/Action.php';
-
-// {{{ Piece_Flow_Action_FooAction
+use Piece\Flow\Action;
 
 /**
- * A class for unit tests.
- *
  * @package    Piece_Flow
- * @copyright  2006-2007 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        Piece_Flow_Action_FactoryTestCase
+ * @see        \Piece\Flow\Action\FactoryTestCase
  * @since      Class available since Release 1.0.0
  */
-class Piece_Flow_Action_FooAction extends Piece_Flow_Action
+class Piece_Flow_Action_FooAction extends Action
 {
+    public $fooCalled = false;
 
-    // {{{ properties
-
-    /**#@+
-     * @access public
-     */
-
-    var $fooCalled = false;
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    /**#@-*/
-
-    /**#@+
-     * @access public
-     */
-
-    function foo()
+    public function foo()
     {
-        if (is_a($this->_flow, 'stdClass')) {
-            $this->fooCalled = true;
-        }
+        $this->fooCalled = true;
     }
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    /**#@-*/
-
-    // }}}
 }
-
-// }}}
 
 /*
  * Local Variables:

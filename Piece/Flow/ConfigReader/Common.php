@@ -2,9 +2,9 @@
 /* vim: set expandtab tabstop=4 shiftwidth=4: */
 
 /**
- * PHP versions 4 and 5
+ * PHP version 5.3
  *
- * Copyright (c) 2006-2008 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,56 +29,37 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2006-2008 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      File available since Release 0.1.0
  */
 
-require_once 'Piece/Flow/Config.php';
-require_once 'Piece/Flow/Error.php';
+namespace Piece\Flow\ConfigReader;
+
 require_once 'Cache/Lite/File.php';
 require_once 'PEAR.php';
-require_once 'Piece/Flow/Env.php';
 
-// {{{ Piece_Flow_ConfigReader_Common
+use Piece\Flow\Config;
+use Piece\Flow\Env;
+use Piece\Flow\FileNotFoundException;
+use Piece\Flow\FileNotReadableException;
+use Piece\Flow\Util\ErrorReporting;
 
 /**
- * The base class for Piece_Flow_Config drivers.
+ * The base class for Config drivers.
  *
  * @package    Piece_Flow
- * @copyright  2006-2008 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
  */
-class Piece_Flow_ConfigReader_Common
+class Common
 {
-
-    // {{{ properties
-
-    /**#@+
-     * @access public
-     */
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    var $_source;
-    var $_config;
-    var $_cacheDirectory;
-
-    /**#@-*/
-
-    /**#@+
-     * @access public
-     */
-
-    // }}}
-    // {{{ constructor
+    protected $source;
+    protected $config;
+    protected $cacheDirectory;
 
     /**
      * Constructor
@@ -86,256 +67,173 @@ class Piece_Flow_ConfigReader_Common
      * @param mixed  $source
      * @param string $cacheDirectory
      */
-    function Piece_Flow_ConfigReader_Common($source, $cacheDirectory)
+    public function __construct($source, $cacheDirectory)
     {
-        $this->_source = $source;
-        $this->_cacheDirectory = $cacheDirectory;
+        $this->source = $source;
+        $this->cacheDirectory = $cacheDirectory;
     }
-
-    // }}}
-    // {{{ read()
 
     /**
      * Reads configuration from the given source and creates
-     * a Piece_Flow_Config object.
+     * a Config object.
      *
-     * @return Piece_Flow_Config
-     * @throws PIECE_FLOW_ERROR_NOT_FOUND
-     * @throws PIECE_FLOW_ERROR_NOT_READABLE
+     * @return \Piece\Flow\Config
+     * @throws \Piece\Flow\FileNotFoundException
+     * @throws \Piece\Flow\FileNotReadableException
      */
-    function &read()
+    public function read()
     {
-        if (!file_exists($this->_source)) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
-                                   "The configuration file [ {$this->_source} ] not found."
-                                   );
-            $return = null;
-            return $return;
+        if (!file_exists($this->source)) {
+            throw new FileNotFoundException("The configuration file [ {$this->source} ] not found.");
         }
 
-        if (!is_readable($this->_source)) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_READABLE,
-                                   "The configuration file [ {$this->_source} ] is not readable."
-                                   );
-            $return = null;
-            return $return;
+        if (!is_readable($this->source)) {
+            throw new FileNotReadableException("The configuration file [ {$this->source} ] is not readable.");
         }
 
-        if (is_null($this->_cacheDirectory)) {
-            return $this->_createConfigurationFromSource();
+        if (is_null($this->cacheDirectory)) {
+            return $this->createConfigurationFromSource();
         }
 
-        if (!file_exists($this->_cacheDirectory)) {
-            trigger_error("The cache directory [ {$this->_cacheDirectory} ] is not found.",
+        if (!file_exists($this->cacheDirectory)) {
+            trigger_error("The cache directory [ {$this->cacheDirectory} ] is not found.",
                           E_USER_WARNING
                           );
-            return $this->_createConfigurationFromSource();
+            return $this->createConfigurationFromSource();
         }
 
-        if (!is_readable($this->_cacheDirectory) || !is_writable($this->_cacheDirectory)) {
-            trigger_error("The cache directory [ {$this->_cacheDirectory} ] is not readable or writable.",
+        if (!is_readable($this->cacheDirectory) || !is_writable($this->cacheDirectory)) {
+            trigger_error("The cache directory [ {$this->cacheDirectory} ] is not readable or writable.",
                           E_USER_WARNING
                           );
-            return $this->_createConfigurationFromSource();
+            return $this->createConfigurationFromSource();
         }
 
-        return $this->_getConfiguration();
+        return $this->getConfiguration();
     }
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    // }}}
-    // {{{ _configureViewStates()
 
     /**
      * Configures view states.
      *
      * @param array $states
-     * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
+     * @throws \Piece\Flow\ConfigReader\InvalidFormatException
      */
-    function _configureViewStates($states)
+    protected function configureViewStates($states)
     {
         if (is_null($states)) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                   "The \"viewState\" element is required in the flow definition file [ {$this->_source} ]."
-                                   );
-            return;
+            throw new InvalidFormatException("The \"viewState\" element is required in the flow definition file [ {$this->source} ].");
         }
 
         if (!is_array($states)) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                   "The \"viewState\" element is invalid in the flow definition file [ {$this->_source} ]."
-                                   );
-            return;
+            throw new InvalidFormatException("The \"viewState\" element is invalid in the flow definition file [ {$this->source} ].");
         }
 
         if (!count($states)) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                   "The \"viewState\" element requires one or more child elements in the flow definition file [ {$this->_source} ]."
-                                   );
-            return;
+            throw new InvalidFormatException("The \"viewState\" element requires one or more child elements in the flow definition file [ {$this->source} ].");
         }
 
         for ($i = 0, $count = count($states); $i < $count; ++$i) {
             if (@!array_key_exists('name', $states[$i])) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                       "The \"name\" element in the \"viewState\" element is required in the flow definition file [ {$this->_source} ]."
-                                       );
-                return;
+                throw new InvalidFormatException("The \"name\" element in the \"viewState\" element is required in the flow definition file [ {$this->source} ].");
             }
 
             if (is_null($states[$i]['name']) || !strlen($states[$i]['name'])) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                       "The \"name\" element in the \"viewState\" element is invalid in the flow definition file [ {$this->_source} ]."
-                                       );
-                return;
+                throw new InvalidFormatException("The \"name\" element in the \"viewState\" element is invalid in the flow definition file [ {$this->source} ].");
             }
 
             if (!array_key_exists('view', $states[$i])) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                       "The \"view\" element in the \"viewState\" element is required in the flow definition file [ {$this->_source} ]."
-                                       );
-                return;
+                throw new InvalidFormatException("The \"view\" element in the \"viewState\" element is required in the flow definition file [ {$this->source} ].");
             }
 
             if (is_null($states[$i]['view']) || !strlen($states[$i]['view'])) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                       "The \"view\" element in the \"viewState\" element is invalid in the flow definition file [ {$this->_source} ]."
-                                       );
-                return;
+                throw new InvalidFormatException("The \"view\" element in the \"viewState\" element is invalid in the flow definition file [ {$this->source} ].");
             }
 
-            $this->_config->addViewState($states[$i]['name'],
+            $this->config->addViewState($states[$i]['name'],
                                          $states[$i]['view']
                                          );
-            $this->_configureState($states[$i]);
+            $this->configureState($states[$i]);
         }
     }
-
-    // }}}
-    // {{{ _configureActionStates()
 
     /**
      * Configures action states.
      *
      * @param array $states
-     * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
+     * @throws \Piece\Flow\ConfigReader\InvalidFormatException
      */
-    function _configureActionStates($states)
+    protected function configureActionStates($states)
     {
         if (is_null($states)) {
             return;
         }
 
         if (!is_array($states)) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                   "The \"actionState\" element is invalid in the flow definition file [ {$this->_source} ]."
-                                   );
-            return;
+            throw new InvalidFormatException("The \"actionState\" element is invalid in the flow definition file [ {$this->source} ].");
         }
 
         for ($i = 0, $count = count($states); $i < $count; ++$i) {
             if (@!array_key_exists('name', $states[$i])) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                       "The \"name\" element in the \"actionState\" element is required in the flow definition file [ {$this->_source} ]."
-                                       );
-                return;
+                throw new InvalidFormatException("The \"name\" element in the \"actionState\" element is required in the flow definition file [ {$this->source} ].");
             }
 
             if (is_null($states[$i]['name']) || !strlen($states[$i]['name'])) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                       "The \"name\" element in the \"actionState\" element is invalid in the flow definition file [ {$this->_source} ]."
-                                       );
-                return;
+                throw new InvalidFormatException("The \"name\" element in the \"actionState\" element is invalid in the flow definition file [ {$this->source} ].");
             }
 
-            $this->_config->addActionState($states[$i]['name']);
-            $this->_configureState($states[$i]);
+            $this->config->addActionState($states[$i]['name']);
+            $this->configureState($states[$i]);
         }
     }
-
-    // }}}
-    // {{{ _configureState()
 
     /**
      * Configures the state.
      *
      * @param array $state
-     * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
+     * @throws \Piece\Flow\ConfigReader\InvalidFormatException
      */
-    function _configureState($state)
+    protected function configureState($state)
     {
         if (array_key_exists('transition', $state)) {
             if (!is_array($state['transition'])) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                       "The \"transition\" element is invalid in the flow definition file [ {$this->_source} ]."
-                                       );
-                return;
+                throw new InvalidFormatException("The \"transition\" element is invalid in the flow definition file [ {$this->source} ].");
             }
 
             for ($i = 0, $count = count($state['transition']); $i < $count; ++$i) {
                 if (@!array_key_exists('event', $state['transition'][$i])) {
-                    Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                           "The \"event\" element in the \"transition\" element is required in the flow definition file [ {$this->_source} ]."
-                                           );
-                    return;
+                    throw new InvalidFormatException("The \"event\" element in the \"transition\" element is required in the flow definition file [ {$this->source} ].");
                 }
 
                 if (is_null($state['transition'][$i]['event']) || !strlen($state['transition'][$i]['event'])) {
-                    Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                           "The \"event\" element in the \"transition\" element is invalid in the flow definition file [ {$this->_source} ]."
-                                           );
-                    return;
+                    throw new InvalidFormatException("The \"event\" element in the \"transition\" element is invalid in the flow definition file [ {$this->source} ].");
                 }
 
                 if (!array_key_exists('nextState', $state['transition'][$i])) {
-                    Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                           "The \"nextState\" element in the \"transition\" element is required in the flow definition file [ {$this->_source} ]."
-                                           );
-                    return;
+                    throw new InvalidFormatException("The \"nextState\" element in the \"transition\" element is required in the flow definition file [ {$this->source} ].");
                 }
 
                 if (is_null($state['transition'][$i]['nextState']) || !strlen($state['transition'][$i]['nextState'])) {
-                    Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                           "The \"nextState\" element in the \"transition\" element is invalid in the flow definition file [ {$this->_source} ]."
-                                           );
-                    return;
+                    throw new InvalidFormatException("The \"nextState\" element in the \"transition\" element is invalid in the flow definition file [ {$this->source} ].");
                 }
 
                 if (!array_key_exists('action', $state['transition'][$i])) {
                     $state['transition'][$i]['action'] = null;
                 } else {
                     if (!is_array($state['transition'][$i]['action'])) {
-                        Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                               "The \"action\" element is invalid in the flow definition file [ {$this->_source} ]."
-                                               );
-                        return;
+                        throw new InvalidFormatException("The \"action\" element is invalid in the flow definition file [ {$this->source} ].");
                     }
 
                     if (!array_key_exists('method', $state['transition'][$i]['action'])) {
-                        Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                               "The \"method\" element in the \"action\" element is required in the flow definition file [ {$this->_source} ]."
-                                               );
-                        return;
+                        throw new InvalidFormatException("The \"method\" element in the \"action\" element is required in the flow definition file [ {$this->source} ].");
                     }
 
                     if (is_null($state['transition'][$i]['action']['method']) || !strlen($state['transition'][$i]['action']['method'])) {
-                        Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                               "The \"method\" element in the \"action\" element is invalid in the flow definition file [ {$this->_source} ]."
-                                               );
-                        return;
+                        throw new InvalidFormatException("The \"method\" element in the \"action\" element is invalid in the flow definition file [ {$this->source} ].");
                     }
 
                     if (array_key_exists('class', $state['transition'][$i]['action'])) {
                         if (!strlen($state['transition'][$i]['action']['class'])) {
-                            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                                   "The \"class\" element in the \"action\" element is invalid in the flow definition file [ {$this->_source} ]."
-                                                   );
-                            return;
+                            throw new InvalidFormatException("The \"class\" element in the \"action\" element is invalid in the flow definition file [ {$this->source} ].");
                         }
                     }
                 }
@@ -344,37 +242,25 @@ class Piece_Flow_ConfigReader_Common
                     $state['transition'][$i]['guard'] = null;
                 } else {
                     if (!is_array($state['transition'][$i]['guard'])) {
-                        Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                               "The \"guard\" element is invalid in the flow definition file [ {$this->_source} ]."
-                                               );
-                        return;
+                        throw new InvalidFormatException("The \"guard\" element is invalid in the flow definition file [ {$this->source} ].");
                     }
 
                     if (!array_key_exists('method', $state['transition'][$i]['guard'])) {
-                        Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                               "The \"method\" element in the \"guard\" element is required in the flow definition file [ {$this->_source} ]."
-                                               );
-                        return;
+                        throw new InvalidFormatException("The \"method\" element in the \"guard\" element is required in the flow definition file [ {$this->source} ].");
                     }
 
                     if (is_null($state['transition'][$i]['guard']['method']) || !strlen($state['transition'][$i]['guard']['method'])) {
-                        Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                               "The \"method\" element in the \"guard\" element is invalid in the flow definition file [ {$this->_source} ]."
-                                               );
-                        return;
+                        throw new InvalidFormatException("The \"method\" element in the \"guard\" element is invalid in the flow definition file [ {$this->source} ].");
                     }
 
                     if (array_key_exists('class', $state['transition'][$i]['guard'])) {
                         if (!strlen($state['transition'][$i]['guard']['class'])) {
-                            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                                   "The \"class\" element in the \"guard\" element is invalid in the flow definition file [ {$this->_source} ]."
-                                                   );
-                            return;
+                            throw new InvalidFormatException("The \"class\" element in the \"guard\" element is invalid in the flow definition file [ {$this->source} ].");
                         }
                     }
                 }
 
-                $this->_config->addTransition($state['name'],
+                $this->config->addTransition($state['name'],
                                               $state['transition'][$i]['event'],
                                               $state['transition'][$i]['nextState'],
                                               $state['transition'][$i]['action'],
@@ -386,125 +272,86 @@ class Piece_Flow_ConfigReader_Common
 
         if (array_key_exists('entry', $state)) {
             if (!is_array($state['entry'])) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                       "The \"entry\" element is invalid in the flow definition file [ {$this->_source} ]."
-                                       );
-                return;
+                throw new InvalidFormatException("The \"entry\" element is invalid in the flow definition file [ {$this->source} ].");
             }
 
             if (!array_key_exists('method', $state['entry'])) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                       "The \"method\" element in the \"entry\" element is required in the flow definition file [ {$this->_source} ]."
-                                       );
-                return;
+                throw new InvalidFormatException("The \"method\" element in the \"entry\" element is required in the flow definition file [ {$this->source} ].");
             }
 
             if (is_null($state['entry']['method']) || !strlen($state['entry']['method'])) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                       "The \"method\" element in the \"entry\" element is invalid in the flow definition file [ {$this->_source} ]."
-                                       );
-                return;
+                throw new InvalidFormatException("The \"method\" element in the \"entry\" element is invalid in the flow definition file [ {$this->source} ].");
             }
 
             if (array_key_exists('class', $state['entry'])) {
                 if (!strlen($state['entry']['class'])) {
-                    Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                           "The \"class\" element in the \"entry\" element is invalid in the flow definition file [ {$this->_source} ]."
-                                           );
-                    return;
+                    throw new InvalidFormatException("The \"class\" element in the \"entry\" element is invalid in the flow definition file [ {$this->source} ].");
                 }
             }
 
-            $this->_config->setEntryAction($state['name'], $state['entry']);
+            $this->config->setEntryAction($state['name'], $state['entry']);
         }
 
         if (array_key_exists('exit', $state)) {
             if (!is_array($state['exit'])) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                       "The \"exit\" element is invalid in the flow definition file [ {$this->_source} ]."
-                                       );
-                return;
+                throw new InvalidFormatException("The \"exit\" element is invalid in the flow definition file [ {$this->source} ].");
             }
 
             if (!array_key_exists('method', $state['exit'])) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                       "The \"method\" element in the \"exit\" element is required in the flow definition file [ {$this->_source} ]."
-                                       );
-                return;
+                throw new InvalidFormatException("The \"method\" element in the \"exit\" element is required in the flow definition file [ {$this->source} ].");
             }
 
             if (is_null($state['exit']['method']) || !strlen($state['exit']['method'])) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                       "The \"method\" element in the \"exit\" element is invalid in the flow definition file [ {$this->_source} ]."
-                                       );
-                return;
+                throw new InvalidFormatException("The \"method\" element in the \"exit\" element is invalid in the flow definition file [ {$this->source} ].");
             }
 
             if (array_key_exists('class', $state['exit'])) {
                 if (!strlen($state['exit']['class'])) {
-                    Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                           "The \"class\" element in the \"exit\" element is invalid in the flow definition file [ {$this->_source} ]."
-                                           );
-                    return;
+                    throw new InvalidFormatException("The \"class\" element in the \"exit\" element is invalid in the flow definition file [ {$this->source} ].");
                 }
             }
 
-            $this->_config->setExitAction($state['name'], $state['exit']);
+            $this->config->setExitAction($state['name'], $state['exit']);
         }
 
         if (array_key_exists('activity', $state)) {
             if (!is_array($state['activity'])) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                       "The \"activity\" element is invalid in the flow definition file [ {$this->_source} ]."
-                                       );
-                return;
+                throw new InvalidFormatException("The \"activity\" element is invalid in the flow definition file [ {$this->source} ].");
             }
 
             if (!array_key_exists('method', $state['activity'])) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                       "The \"method\" element in the \"activity\" element is required in the flow definition file [ {$this->_source} ]."
-                                       );
-                return;
+                throw new InvalidFormatException("The \"method\" element in the \"activity\" element is required in the flow definition file [ {$this->source} ].");
             }
 
             if (is_null($state['activity']['method']) || !strlen($state['activity']['method'])) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                       "The \"method\" element in the \"activity\" element is invalid in the flow definition file [ {$this->_source} ]."
-                                       );
-                return;
+                throw new InvalidFormatException("The \"method\" element in the \"activity\" element is invalid in the flow definition file [ {$this->source} ].");
             }
 
             if (array_key_exists('class', $state['activity'])) {
                 if (!strlen($state['activity']['class'])) {
-                    Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                           "The \"class\" element in the \"activity\" element is invalid in the flow definition file [ {$this->_source} ]."
-                                           );
-                    return;
+                    throw new InvalidFormatException("The \"class\" element in the \"activity\" element is invalid in the flow definition file [ {$this->source} ].");
                 }
             }
 
-            $this->_config->setActivity($state['name'], $state['activity']);
+            $this->config->setActivity($state['name'], $state['activity']);
         }
     }
 
-    // }}}
-    // {{{ _getConfiguration()
-
     /**
-     * Gets a Piece_Flow_Config object from a configuration file or a cache.
+     * Gets a Config object from a configuration file or a cache.
      *
-     * @return Piece_Flow_Config
+     * @return \Piece\Flow\Config
      */
-    function &_getConfiguration()
+    protected function getConfiguration()
     {
-        $masterFile = realpath($this->_source);
-        $cache = &new Cache_Lite_File(array('cacheDir' => "{$this->_cacheDirectory}/",
+        $masterFile = realpath($this->source);
+        $cache = new \Cache_Lite_File(array('cacheDir' => "{$this->cacheDirectory}/",
                                             'masterFile' => $masterFile,
                                             'automaticSerialization' => true,
                                             'errorHandlingAPIBreak' => true)
                                       );
 
-        if (!Piece_Flow_Env::isProduction()) {
+        if (!Env::isProduction()) {
             $cache->remove($masterFile);
         }
 
@@ -513,23 +360,25 @@ class Piece_Flow_ConfigReader_Common
          * calling PEAR::raiseError in default.
          */
         $config = $cache->get($masterFile);
-        if (PEAR::isError($config)) {
-            trigger_error("Cannot read the cache file in the directory [ {$this->_cacheDirectory} ].",
+        $self = $this;
+        $isError = ErrorReporting::invokeWith(error_reporting() & ~E_STRICT, function () use ($config) {
+            return \PEAR::isError($config);
+        });
+        if ($isError) {
+            trigger_error("Cannot read the cache file in the directory [ {$this->cacheDirectory} ].",
                           E_USER_WARNING
                           );
-            return $this->_createConfigurationFromSource();
+            return $this->createConfigurationFromSource();
         }
 
         if (!$config) {
-            $config = &$this->_createConfigurationFromSource();
-            if (Piece_Flow_Error::hasErrors()) {
-                $return = null;
-                return $return;
-            }
-
+            $config = $this->createConfigurationFromSource();
             $result = $cache->save($config);
-            if (PEAR::isError($result)) {
-                trigger_error("Cannot write the Piece_Flow object to the cache file in the directory [ {$this->_cacheDirectory} ].",
+            $isError = ErrorReporting::invokeWith(error_reporting() & ~E_STRICT, function () use ($result) {
+                return \PEAR::isError($result);
+            });
+            if ($isError) {
+                trigger_error("Cannot write the Piece_Flow object to the cache file in the directory [ {$this->cacheDirectory} ].",
                               E_USER_WARNING
                               );
             }
@@ -537,9 +386,6 @@ class Piece_Flow_ConfigReader_Common
 
         return $config;
     }
-
-    // }}}
-    // {{{ _parseSource()
 
     /**
      * Parses the given source and returns an array which represent a flow
@@ -550,245 +396,152 @@ class Piece_Flow_ConfigReader_Common
      *
      * @return array
      */
-    function _parseSource() {}
-
-    // }}}
-    // {{{ _configureFirstState()
+    protected function parseSource()
+    {
+    }
 
     /**
      * Configures the first state.
      *
      * @param array $firstState
+     * @throws \Piece\Flow\ConfigReader\InvalidFormatException
      * @since Method available since Release 1.10.0
      */
-    function _configureFirstState($firstState)
+    protected function configureFirstState($firstState)
     {
         if (is_null($firstState)) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                   "The \"firstState\" element is required in the flow definition file [ {$this->_source} ]."
-                                   );
-            return;
+            throw new InvalidFormatException("The \"firstState\" element is required in the flow definition file [ {$this->source} ].");
         }
 
         if (!strlen($firstState)) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                   "The \"firstState\" element is invalid in the flow definition file [ {$this->_source} ]."
-                                   );
-            return;
+            throw new InvalidFormatException("The \"firstState\" element is invalid in the flow definition file [ {$this->source} ].");
         }
 
-        $this->_config->setFirstState($firstState);
+        $this->config->setFirstState($firstState);
     }
-
-    // }}}
-    // {{{ _configureLastState()
 
     /**
      * Configures the last state.
      *
      * @param array $lastState
-     * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
+     * @throws \Piece\Flow\ConfigReader\InvalidFormatException
      * @since Method available since Release 1.10.0
      */
-    function _configureLastState($lastState)
+    protected function configureLastState($lastState)
     {
         if (is_null($lastState)) {
             return;
         }
 
         if (!array_key_exists('name', $lastState)) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                   "The \"name\" element in the \"lastState\" element is required in the flow definition file [ {$this->_source} ]."
-                                   );
-            return;
+            throw new InvalidFormatException("The \"name\" element in the \"lastState\" element is required in the flow definition file [ {$this->source} ].");
         }
 
         if (is_null($lastState['name']) || !strlen($lastState['name'])) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                   "The \"name\" element in the \"lastState\" element is invalid in the flow definition file [ {$this->_source} ]."
-                                   );
-            return;
+            throw new InvalidFormatException("The \"name\" element in the \"lastState\" element is invalid in the flow definition file [ {$this->source} ].");
         }
 
         if (!array_key_exists('view', $lastState)) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                   "The \"view\" element in the \"lastState\" element is required in the flow definition file [ {$this->_source} ]."
-                                   );
-            return;
+            throw new InvalidFormatException("The \"view\" element in the \"lastState\" element is required in the flow definition file [ {$this->source} ].");
         }
 
         if (is_null($lastState['view']) || !strlen($lastState['view'])) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                   "The \"view\" element in the \"lastState\" element is invalid in the flow definition file [ {$this->_source} ]."
-                                   );
-            return;
+            throw new InvalidFormatException("The \"view\" element in the \"lastState\" element is invalid in the flow definition file [ {$this->source} ].");
         }
 
-        $this->_config->setLastState($lastState['name'], $lastState['view']);
-        $this->_configureState($lastState);
+        $this->config->setLastState($lastState['name'], $lastState['view']);
+        $this->configureState($lastState);
     }
-
-    // }}}
-    // {{{ _configureInitialAction()
 
     /**
      * Configures the initial action.
      *
      * @param array $initialAction
-     * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
+     * @throws \Piece\Flow\ConfigReader\InvalidFormatException
      * @since Method available since Release 1.10.0
      */
-    function _configureInitialAction($initialAction)
+    protected function configureInitialAction($initialAction)
     {
         if (is_null($initialAction)) {
             return;
         }
 
         if (!is_array($initialAction)) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                   "The \"initial\" element is invalid in the flow definition file [ {$this->_source} ]."
-                                   );
-            return;
+            throw new InvalidFormatException("The \"initial\" element is invalid in the flow definition file [ {$this->source} ].");
         }
 
         if (!array_key_exists('method', $initialAction)) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                   "The \"method\" element in the \"initial\" element is required in the flow definition file [ {$this->_source} ]."
-                                   );
-            return;
+            throw new InvalidFormatException("The \"method\" element in the \"initial\" element is required in the flow definition file [ {$this->source} ].");
         }
 
         if (is_null($initialAction['method']) || !strlen($initialAction['method'])) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                   "The \"method\" element in the \"initial\" element is invalid in the flow definition file [ {$this->_source} ]."
-                                   );
-            return;
+            throw new InvalidFormatException("The \"method\" element in the \"initial\" element is invalid in the flow definition file [ {$this->source} ].");
         }
 
         if (array_key_exists('class', $initialAction)) {
             if (!strlen($initialAction['class'])) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                       "The \"class\" element in the \"initial\" element is invalid in the flow definition file [ {$this->_source} ]."
-                                       );
-                return;
+                throw new InvalidFormatException("The \"class\" element in the \"initial\" element is invalid in the flow definition file [ {$this->source} ].");
             }
         }
 
-        $this->_config->setInitialAction($initialAction);
+        $this->config->setInitialAction($initialAction);
     }
-
-    // }}}
-    // {{{ _configureFinalAction()
 
     /**
      * Configures the final action.
      *
      * @param array $finalAction
-     * @throws PIECE_FLOW_ERROR_INVALID_FORMAT
+     * @throws \Piece\Flow\ConfigReader\InvalidFormatException
      * @since Method available since Release 1.10.0
      */
-    function _configureFinalAction($finalAction)
+    protected function configureFinalAction($finalAction)
     {
         if (is_null($finalAction)) {
             return;
         }
 
         if (!is_array($finalAction)) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                   "The \"final\" element is invalid in the flow definition file [ {$this->_source} ]."
-                                   );
-            return;
+            throw new InvalidFormatException("The \"final\" element is invalid in the flow definition file [ {$this->source} ].");
         }
 
         if (!array_key_exists('method', $finalAction)) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                   "The \"method\" element in the \"final\" element is required in the flow definition file [ {$this->_source} ]."
-                                   );
-            return;
+            throw new InvalidFormatException("The \"method\" element in the \"final\" element is required in the flow definition file [ {$this->source} ].");
         }
 
         if (is_null($finalAction['method']) || !strlen($finalAction['method'])) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                   "The \"method\" element in the \"final\" element is invalid in the flow definition file [ {$this->_source} ]."
-                                   );
-            return;
+            throw new InvalidFormatException("The \"method\" element in the \"final\" element is invalid in the flow definition file [ {$this->source} ].");
         }
 
         if (array_key_exists('class', $finalAction)) {
             if (!strlen($finalAction['class'])) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_FORMAT,
-                                       "The \"class\" element in the \"final\" element is invalid in the flow definition file [ {$this->_source} ]."
-                                       );
-                return;
+                throw new InvalidFormatException("The \"class\" element in the \"final\" element is invalid in the flow definition file [ {$this->source} ].");
             }
         }
 
-        $this->_config->setFinalAction($finalAction);
+        $this->config->setFinalAction($finalAction);
     }
-
-    // }}}
-    // {{{ _createConfigurationFromSource()
 
     /**
-     * Parses the given source and returns a Piece_Flow_Config object.
+     * Parses the given source and returns a Config object.
      *
-     * @return Piece_Flow_Config
+     * @return \Piece\Flow\Config
      * @since Method available since Release 1.11.0
      */
-    function &_createConfigurationFromSource()
+    protected function createConfigurationFromSource()
     {
-        $flow = $this->_parseSource();
-        if (Piece_Flow_Error::hasErrors()) {
-            $return = null;
-            return $return;
-        }
+        $flow = $this->parseSource();
 
-        $this->_config = &new Piece_Flow_Config();
-        $this->_configureFirstState(@$flow['firstState']);
-        if (Piece_Flow_Error::hasErrors()) {
-            $return = null;
-            return $return;
-        }
+        $this->config = new Config();
+        $this->configureFirstState(@$flow['firstState']);
+        $this->configureLastState(@$flow['lastState']);
+        $this->configureViewStates(@$flow['viewState']);
+        $this->configureActionStates(@$flow['actionState']);
+        $this->configureInitialAction(@$flow['initial']);
+        $this->configureFinalAction(@$flow['final']);
 
-        $this->_configureLastState(@$flow['lastState']);
-        if (Piece_Flow_Error::hasErrors()) {
-            $return = null;
-            return $return;
-        }
-
-        $this->_configureViewStates(@$flow['viewState']);
-        if (Piece_Flow_Error::hasErrors()) {
-            $return = null;
-            return $return;
-        }
-
-        $this->_configureActionStates(@$flow['actionState']);
-        if (Piece_Flow_Error::hasErrors()) {
-            $return = null;
-            return $return;
-        }
-
-        $this->_configureInitialAction(@$flow['initial']);
-        if (Piece_Flow_Error::hasErrors()) {
-            $return = null;
-            return $return;
-        }
-
-        $this->_configureFinalAction(@$flow['final']);
-        if (Piece_Flow_Error::hasErrors()) {
-            $return = null;
-            return $return;
-        }
-
-        return $this->_config;
+        return $this->config;
     }
-
-    /**#@-*/
-
-    // }}}
 }
-
-// }}}
 
 /*
  * Local Variables:

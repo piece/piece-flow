@@ -2,9 +2,9 @@
 /* vim: set expandtab tabstop=4 shiftwidth=4: */
 
 /**
- * PHP versions 4 and 5
+ * PHP version 5.3
  *
- * Copyright (c) 2007-2008 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2007-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,68 +29,45 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2007-2008 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2007-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      File available since Release 1.14.0
  */
 
-// {{{ Piece_Flow_Continuation_FlowExecution
+namespace Piece\Flow\Continuation;
+
+use Piece\Flow\Flow;
 
 /**
  * The container class for all flow executions in the continuation server.
  *
  * @package    Piece_Flow
- * @copyright  2007-2008 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2007-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      Class available since Release 1.14.0
  */
-class Piece_Flow_Continuation_FlowExecution
+class FlowExecution
 {
-
-    // {{{ properties
-
-    /**#@+
-     * @access public
-     */
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    var $_flowExecutions = array();
-    var $_activeFlowExecutionTicket;
-    var $_activated = false;
-    var $_exclusiveFlowExecutionTicketsByFlowID = array();
-    var $_exclusiveFlowIDsByFlowExecutionTicket = array();
-    var $_activeFlowID;
-
-    /**#@-*/
-
-    /**#@+
-     * @access public
-     */
-
-    // }}}
-    // {{{ disableFlowExecution()
+    protected $flowExecutions = array();
+    protected $activeFlowExecutionTicket;
+    protected $activated = false;
+    protected $exclusiveFlowExecutionTicketsByFlowID = array();
+    protected $exclusiveFlowIDsByFlowExecutionTicket = array();
+    protected $activeFlowID;
 
     /**
      * Disables the flow execution for the given flow execution ticket.
      *
      * @param string $flowExecutionTicket
      */
-    function disableFlowExecution($flowExecutionTicket)
+    public function disableFlowExecution($flowExecutionTicket)
     {
         if ($this->hasFlowExecution($flowExecutionTicket)) {
-            $this->_flowExecutions[$flowExecutionTicket]['flow'] = null;
+            $this->flowExecutions[$flowExecutionTicket]['flow'] = null;
         }
     }
-
-    // }}}
-    // {{{ checkLastEvent()
 
     /**
      * Returns whether the last event which is given by a user is valid or
@@ -98,17 +75,14 @@ class Piece_Flow_Continuation_FlowExecution
      *
      * @return boolean
      */
-    function checkLastEvent()
+    public function checkLastEvent()
     {
         if (!$this->activated()) {
             return true;
         }
 
-        return $this->_flowExecutions[ $this->getActiveFlowExecutionTicket() ]['flow']->checkLastEvent();
+        return $this->flowExecutions[ $this->getActiveFlowExecutionTicket() ]['flow']->checkLastEvent();
     }
-
-    // }}}
-    // {{{ activateFlowExecution()
 
     /**
      * Activates the flow execution which is indicated by the given flow
@@ -117,28 +91,22 @@ class Piece_Flow_Continuation_FlowExecution
      * @param string $flowExecutionTicket
      * @param string $flowID
      */
-    function activateFlowExecution($flowExecutionTicket, $flowID)
+    public function activateFlowExecution($flowExecutionTicket, $flowID)
     {
-        $this->_activeFlowExecutionTicket = $flowExecutionTicket;
-        $this->_activeFlowID = $flowID;
-        $this->_activated = true;
+        $this->activeFlowExecutionTicket = $flowExecutionTicket;
+        $this->activeFlowID = $flowID;
+        $this->activated = true;
     }
-
-    // }}}
-    // {{{ activated()
 
     /**
      * Returns whether the flow execution has activated or not.
      *
      * @return boolean
      */
-    function activated()
+    public function activated()
     {
-        return $this->_activated;
+        return $this->activated;
     }
-
-    // }}}
-    // {{{ hasFlowExecution()
 
     /**
      * Returns whether or not a flow execution exists in the flow executions.
@@ -146,13 +114,10 @@ class Piece_Flow_Continuation_FlowExecution
      * @param string $flowExecutionTicket
      * @return boolean
      */
-    function hasFlowExecution($flowExecutionTicket)
+    public function hasFlowExecution($flowExecutionTicket)
     {
-        return array_key_exists($flowExecutionTicket, $this->_flowExecutions);
+        return array_key_exists($flowExecutionTicket, $this->flowExecutions);
     }
-
-    // }}}
-    // {{{ removeFlowExecution()
 
     /**
      * Removes a flow execution.
@@ -160,50 +125,41 @@ class Piece_Flow_Continuation_FlowExecution
      * @param string $flowExecutionTicket
      * @param string $flowID
      */
-    function removeFlowExecution($flowExecutionTicket, $flowID)
+    public function removeFlowExecution($flowExecutionTicket, $flowID)
     {
-        $this->_flowExecutions[$flowExecutionTicket]['flow'] = null;
-        $this->_flowExecutions[$flowExecutionTicket]['id'] = null;
-        unset($this->_flowExecutions[$flowExecutionTicket]);
+        $this->flowExecutions[$flowExecutionTicket]['flow'] = null;
+        $this->flowExecutions[$flowExecutionTicket]['id'] = null;
+        unset($this->flowExecutions[$flowExecutionTicket]);
         if ($this->hasExclusiveFlowExecution($flowID)) {
-            unset($this->_exclusiveFlowExecutionTicketsByFlowID[$flowID]);
-            unset($this->_exclusiveFlowIDsByFlowExecutionTicket[$flowExecutionTicket]);
+            unset($this->exclusiveFlowExecutionTicketsByFlowID[$flowID]);
+            unset($this->exclusiveFlowIDsByFlowExecutionTicket[$flowExecutionTicket]);
         }
     }
-
-    // }}}
-    // {{{ inactivateFlowExecution()
 
     /**
      * Inactivates the flow execution.
      */
-    function inactivateFlowExecution()
+    public function inactivateFlowExecution()
     {
-        $this->_activated = false;
-        $this->_activeFlowExecutionTicket = null;
-        $this->_activeFlowID = null;
+        $this->activated = false;
+        $this->activeFlowExecutionTicket = null;
+        $this->activeFlowID = null;
     }
 
-    // }}}
-    // {{{ addFlowExecution()
-
     /**
-     * Adds a Piece_Flow object with the given flow execution ticket to
+     * Adds a Flow object with the given flow execution ticket to
      * the list of flow executions.
      *
      * @param string     $flowExecutionTicket
-     * @param Piece_Flow &$flow
+     * @param \Piece\Flow\Flow $flow
      * @param string     $flowID
      */
-    function addFlowExecution($flowExecutionTicket, &$flow, $flowID)
+    public function addFlowExecution($flowExecutionTicket, Flow $flow, $flowID)
     {
-        $this->_flowExecutions[$flowExecutionTicket] = array('flow' => &$flow,
+        $this->flowExecutions[$flowExecutionTicket] = array('flow' => &$flow,
                                                              'id' => $flowID
                                                              );
     }
-
-    // }}}
-    // {{{ markFlowExecutionAsExclusive()
 
     /**
      * Marks a flow execution which is indicated by the given flow execution
@@ -212,14 +168,11 @@ class Piece_Flow_Continuation_FlowExecution
      * @param string $flowExecutionTicket
      * @param string $flowID
      */
-    function markFlowExecutionAsExclusive($flowExecutionTicket, $flowID)
+    public function markFlowExecutionAsExclusive($flowExecutionTicket, $flowID)
     {
-        $this->_exclusiveFlowExecutionTicketsByFlowID[$flowID] = $flowExecutionTicket;
-        $this->_exclusiveFlowIDsByFlowExecutionTicket[$flowExecutionTicket] = $flowID;
+        $this->exclusiveFlowExecutionTicketsByFlowID[$flowID] = $flowExecutionTicket;
+        $this->exclusiveFlowIDsByFlowExecutionTicket[$flowExecutionTicket] = $flowID;
     }
-
-    // }}}
-    // {{{ hasExclusiveFlowExecution()
 
     /**
      * Returns whether the given flow ID has the exclusive flow execution
@@ -228,26 +181,20 @@ class Piece_Flow_Continuation_FlowExecution
      * @param string $flowID
      * @return boolean
      */
-    function hasExclusiveFlowExecution($flowID)
+    public function hasExclusiveFlowExecution($flowID)
     {
-        return array_key_exists($flowID, $this->_exclusiveFlowExecutionTicketsByFlowID);
+        return array_key_exists($flowID, $this->exclusiveFlowExecutionTicketsByFlowID);
     }
-
-    // }}}
-    // {{{ getActiveFlow()
 
     /**
-     * Gets the active Piece_Flow object.
+     * Gets the active Flow object.
      *
-     * @return Piece_Flow
+     * @return \Piece\Flow\Flow
      */
-    function &getActiveFlow()
+    public function getActiveFlow()
     {
-        return $this->_flowExecutions[ $this->getActiveFlowExecutionTicket() ]['flow'];
+        return $this->flowExecutions[ $this->getActiveFlowExecutionTicket() ]['flow'];
     }
-
-    // }}}
-    // {{{ getFlowID()
 
     /**
      * Gets the flow ID by the given flow execution ticket.
@@ -256,13 +203,10 @@ class Piece_Flow_Continuation_FlowExecution
      * @return string
      * @since Method available since Release 1.15.0
      */
-    function getFlowID($flowExecutionTicket)
+    public function getFlowID($flowExecutionTicket)
     {
-        return $this->_flowExecutions[$flowExecutionTicket]['id'];
+        return $this->flowExecutions[$flowExecutionTicket]['id'];
     }
-
-    // }}}
-    // {{{ getFlowExecutionTicketByFlowID()
 
     /**
      * Gets a flow execution ticket by the given flow ID.
@@ -274,13 +218,10 @@ class Piece_Flow_Continuation_FlowExecution
      * @return string
      * @since Method available since Release 1.15.0
      */
-    function getFlowExecutionTicketByFlowID($flowID)
+    public function getFlowExecutionTicketByFlowID($flowID)
     {
-        return @$this->_exclusiveFlowExecutionTicketsByFlowID[$flowID];
+        return @$this->exclusiveFlowExecutionTicketsByFlowID[$flowID];
     }
-
-    // }}}
-    // {{{ getActiveFlowID()
 
     /**
      * Gets the flow ID for the active flow execution.
@@ -288,13 +229,10 @@ class Piece_Flow_Continuation_FlowExecution
      * @return string
      * @since Method available since Release 1.15.0
      */
-    function getActiveFlowID()
+    public function getActiveFlowID()
     {
-        return $this->_activeFlowID;
+        return $this->activeFlowID;
     }
-
-    // }}}
-    // {{{ getActiveFlowExecutionTicket()
 
     /**
      * Gets the flow execution ticket for the active flow execution.
@@ -302,23 +240,11 @@ class Piece_Flow_Continuation_FlowExecution
      * @return string
      * @since Method available since Release 1.16.0
      */
-    function getActiveFlowExecutionTicket()
+    public function getActiveFlowExecutionTicket()
     {
-        return $this->_activeFlowExecutionTicket;
+        return $this->activeFlowExecutionTicket;
     }
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    /**#@-*/
-
-    // }}}
 }
-
-// }}}
 
 /*
  * Local Variables:

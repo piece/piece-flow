@@ -2,9 +2,9 @@
 /* vim: set expandtab tabstop=4 shiftwidth=4: */
 
 /**
- * PHP versions 4 and 5
+ * PHP version 5.3
  *
- * Copyright (c) 2006-2008 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,127 +29,78 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2006-2008 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      File available since Release 1.0.0
  */
 
-require_once realpath(dirname(__FILE__) . '/../../../prepare.php');
-require_once 'PHPUnit.php';
-require_once 'Piece/Flow/Action/Factory.php';
-require_once 'Piece/Flow/Error.php';
+namespace Piece\Flow\Action;
 
-// {{{ Piece_Flow_Action_FactoryTestCase
+use Piece\Flow\Action;
 
 /**
- * Some tests for Piece_Flow_Action_Factory.
- *
  * @package    Piece_Flow
- * @copyright  2006-2008 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      Class available since Release 1.0.0
  */
-class Piece_Flow_Action_FactoryTestCase extends PHPUnit_TestCase
+class FactoryTestCase extends \PHPUnit_Framework_TestCase
 {
+    protected function tearDown()
+    {
+        Factory::clearInstances();
+        Factory::setActionDirectory(null);
+    }
 
-    // {{{ properties
-
-    /**#@+
-     * @access public
+    /**
+     * @expectedException \Piece\Flow\Action\ActionDirectoryRequiredException
      */
+    public function testFailureToCreateByEmptyActionDirectory()
+    {
+        Factory::factory('\Piece_Flow_Action_FooAction');
+    }
 
-    /**#@-*/
-
-    /**#@+
-     * @access private
+    /**
+     * @expectedException \Piece\Flow\FileNotFoundException
      */
+    public function testFailureToCreateByNonExistingFile()
+    {
+        Factory::setActionDirectory(dirname(__FILE__) . '/../../..');
+        Factory::factory('Piece_Flow_Action_NonExistingAction');
+    }
 
-    /**#@-*/
-
-    /**#@+
-     * @access public
+    /**
+     * @expectedException \Piece\Flow\Action\ClassNotFoundException
      */
-
-    function tearDown()
+    public function testFailureToCreateByInvalidAction()
     {
-        Piece_Flow_Action_Factory::clearInstances();
-        Piece_Flow_Action_Factory::setActionDirectory(null);
-        Piece_Flow_Error::clearErrors();
+        Factory::setActionDirectory(dirname(__FILE__) . '/../../..');
+        Factory::factory('\Piece_Flow_Action_InvalidAction');
     }
 
-    function testFailureToCreateByEmptyActionDirectory()
+    public function testFactory()
     {
-        Piece_Flow_Error::disableCallback();
-        Piece_Flow_Action_Factory::factory('Piece_Flow_Action_FooAction');
-        Piece_Flow_Error::enableCallback();
+        Factory::setActionDirectory(dirname(__FILE__) . '/../../..');
+        $fooAction = Factory::factory('\Piece_Flow_Action_FooAction');
 
-        $this->assertTrue(Piece_Flow_Error::hasErrors());
+        $this->assertTrue($fooAction instanceof Action);
+        $this->assertTrue($fooAction instanceof \Piece_Flow_Action_FooAction);
 
-        $error = Piece_Flow_Error::pop();
+        $barAction = Factory::factory('\Piece_Flow_Action_BarAction');
 
-        $this->assertEquals(PIECE_FLOW_ERROR_NOT_GIVEN, $error['code']);
-    }
-
-    function testFailureToCreateByNonExistingFile()
-    {
-        Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/../../..');
-        Piece_Flow_Error::disableCallback();
-        Piece_Flow_Action_Factory::factory('Piece_Flow_Action_NonExistingAction');
-        Piece_Flow_Error::enableCallback();
-
-        $this->assertTrue(Piece_Flow_Error::hasErrors());
-
-        $error = Piece_Flow_Error::pop();
-
-        $this->assertEquals(PIECE_FLOW_ERROR_NOT_FOUND, $error['code']);
-    }
-
-    function testFailureToCreateByInvalidAction()
-    {
-        Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/../../..');
-        Piece_Flow_Error::disableCallback();
-        Piece_Flow_Action_Factory::factory('Piece_Flow_Action_InvalidAction');
-        Piece_Flow_Error::enableCallback();
-
-        $this->assertTrue(Piece_Flow_Error::hasErrors());
-
-        $error = Piece_Flow_Error::pop();
-
-        $this->assertEquals(PIECE_FLOW_ERROR_NOT_FOUND, $error['code']);
-    }
-
-    function testFactory()
-    {
-        Piece_Flow_Action_Factory::setActionDirectory(dirname(__FILE__) . '/../../..');
-        $fooAction = &Piece_Flow_Action_Factory::factory('Piece_Flow_Action_FooAction');
-
-        $this->assertTrue(is_a($fooAction, 'Piece_Flow_Action_FooAction'));
-
-        $barAction = &Piece_Flow_Action_Factory::factory('Piece_Flow_Action_BarAction');
-
-        $this->assertTrue(is_a($barAction, 'Piece_Flow_Action_BarAction'));
+        $this->assertFalse($barAction instanceof Action);
+        $this->assertTrue($barAction instanceof \Piece_Flow_Action_BarAction);
 
         $fooAction->baz = 'qux';
 
-        $action = &Piece_Flow_Action_Factory::factory('Piece_Flow_Action_FooAction');
+        $action = Factory::factory('\Piece_Flow_Action_FooAction');
 
-        $this->assertTrue(array_key_exists('baz', $fooAction));
+        $this->assertTrue(property_exists($fooAction, 'baz'));
+        $this->assertEquals('qux', $fooAction->baz);
     }
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    /**#@-*/
-
-    // }}}
 }
-
-// }}}
 
 /*
  * Local Variables:

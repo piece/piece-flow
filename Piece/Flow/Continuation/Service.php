@@ -2,9 +2,9 @@
 /* vim: set expandtab tabstop=4 shiftwidth=4: */
 
 /**
- * PHP versions 4 and 5
+ * PHP version 5.3
  *
- * Copyright (c) 2007-2008 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2007-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,158 +29,110 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2007-2008 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2007-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      File available since Release 1.14.0
  */
 
-require_once 'Piece/Flow/Error.php';
+namespace Piece\Flow\Continuation;
 
-// {{{ Piece_Flow_Continuation_Service
+use Piece\Flow\MethodInvocationException;
 
 /**
  * A service class which provides simple interfaces to access attributes of
  * the active flow object and to get some information from flow executions.
  *
  * @package    Piece_Flow
- * @copyright  2007-2008 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2007-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      Class available since Release 1.14.0
  */
-class Piece_Flow_Continuation_Service
+class Service
 {
-
-    // {{{ properties
-
-    /**#@+
-     * @access public
-     */
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    var $_flowExecution;
-
-    /**#@-*/
-
-    /**#@+
-     * @access public
-     */
-
-    // }}}
-    // {{{ constructor
+    protected $flowExecution;
 
     /**
-     * Sets the active Piece_Flow object if the flow execution has activated
-     * and the Piece_Flow_Continuation_FlowExecution object to the properties.
+     * Sets the active Flow object if the flow execution has activated
+     * and the FlowExecution object to the properties.
      *
-     * @param Piece_Flow_Continuation_FlowExecution &$flowExecution
+     * @param \Piece\Flow\Continuation\FlowExecution $flowExecution
      */
-    function Piece_Flow_Continuation_Service(&$flowExecution)
+    public function __construct(FlowExecution $flowExecution)
     {
-        $this->_flowExecution = &$flowExecution;
+        $this->flowExecution = $flowExecution;
     }
-
-    // }}}
-    // {{{ setAttribute()
 
     /**
      * Sets an attribute for the active flow object.
      *
      * @param string $name
      * @param mixed  $value
-     * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
+     * @throws \Piece\Flow\MethodInvocationException
      */
-    function setAttribute($name, $value)
+    public function setAttribute($name, $value)
     {
-        if (!$this->_flowExecution->activated()) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
-                                   __FUNCTION__ . ' method must be called after starting/continuing flows.'
-                                   );
-            return;
+        if (!$this->flowExecution->activated()) {
+            throw new MethodInvocationException(__FUNCTION__ . ' method must be called after starting/continuing flows.');
         }
 
-        $flow = &$this->_flowExecution->getActiveFlow();
+        $flow = $this->flowExecution->getActiveFlow();
         $flow->setAttribute($name, $value);
     }
-
-    // }}}
-    // {{{ hasAttribute()
 
     /**
      * Returns whether the active flow object has an attribute with a given name.
      *
      * @param string $name
      * @return boolean
-     * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
+     * @throws \Piece\Flow\MethodInvocationException
      */
-    function hasAttribute($name)
+    public function hasAttribute($name)
     {
-        if (!$this->_flowExecution->activated()) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
-                                   __FUNCTION__ . ' method must be called after starting/continuing flows.'
-                                   );
-            return;
+        if (!$this->flowExecution->activated()) {
+            throw new MethodInvocationException(__FUNCTION__ . ' method must be called after starting/continuing flows.');
         }
 
-        $flow = &$this->_flowExecution->getActiveFlow();
+        $flow = $this->flowExecution->getActiveFlow();
         return $flow->hasAttribute($name);
     }
-
-    // }}}
-    // {{{ getAttribute()
 
     /**
      * Gets an attribute for the active flow object.
      *
      * @param string $name
      * @return mixed
-     * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
+     * @throws \Piece\Flow\MethodInvocationException
      */
-    function &getAttribute($name)
+    public function &getAttribute($name)
     {
-        if (!$this->_flowExecution->activated()) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
-                                   __FUNCTION__ . ' method must be called after starting/continuing flows.'
-                                   );
+        if (!$this->flowExecution->activated()) {
+            throw new MethodInvocationException(__FUNCTION__ . ' method must be called after starting/continuing flows.');
             $return = null;
             return $return;
         }
 
-        $flow = &$this->_flowExecution->getActiveFlow();
+        $flow = $this->flowExecution->getActiveFlow();
         return $flow->getAttribute($name);
     }
-
-    // }}}
-    // {{{ setAttributeByRef()
 
     /**
      * Sets an attribute by reference for the active flow object.
      *
      * @param string $name
      * @param mixed  &$value
-     * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
+     * @throws \Piece\Flow\MethodInvocationException
      */
     function setAttributeByRef($name, &$value)
     {
-        if (!$this->_flowExecution->activated()) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
-                                   __FUNCTION__ . ' method must be called after starting/continuing flows.'
-                                   );
-            return;
+        if (!$this->flowExecution->activated()) {
+            throw new MethodInvocationException(__FUNCTION__ . ' method must be called after starting/continuing flows.');
         }
 
-        $flow = &$this->_flowExecution->getActiveFlow();
+        $flow = $this->flowExecution->getActiveFlow();
         $flow->setAttributeByRef($name, $value);
     }
-
-    // }}}
-    // {{{ getFlowExecutionTicketByFlowName()
 
     /**
      * Gets a flow execution ticket by the given flow ID.
@@ -192,13 +144,10 @@ class Piece_Flow_Continuation_Service
      * @return string
      * @deprecated Method deprecated in Release 1.15.0
      */
-    function getFlowExecutionTicketByFlowName($flowID)
+    public function getFlowExecutionTicketByFlowName($flowID)
     {
         return $this->getFlowExecutionTicketByFlowID($flowID);
     }
-
-    // }}}
-    // {{{ checkLastEvent()
 
     /**
      * Returns whether the last event which is given by a user is valid or
@@ -206,13 +155,10 @@ class Piece_Flow_Continuation_Service
      *
      * @return boolean
      */
-    function checkLastEvent()
+    public function checkLastEvent()
     {
-        return $this->_flowExecution->checkLastEvent();
+        return $this->flowExecution->checkLastEvent();
     }
-
-    // }}}
-    // {{{ getActiveFlowName()
 
     /**
      * Gets the flow ID for the active flow execution.
@@ -220,13 +166,10 @@ class Piece_Flow_Continuation_Service
      * @return string
      * @deprecated Method deprecated in Release 1.15.0
      */
-    function getActiveFlowName()
+    public function getActiveFlowName()
     {
         return $this->getActiveFlowID();
     }
-
-    // }}}
-    // {{{ getCurrentFlowName()
 
     /**
      * Gets the flow ID for the active flow execution.
@@ -234,35 +177,26 @@ class Piece_Flow_Continuation_Service
      * @return string
      * @deprecated Method deprecated in Release 1.14.0
      */
-    function getCurrentFlowName()
+    public function getCurrentFlowName()
     {
         return $this->getActiveFlowID();
     }
-
-    // }}}
-    // {{{ getCurrentStateName()
 
     /**
      * Gets the current state name for the active flow object.
      *
      * @return string
-     * @throws PIECE_FLOW_ERROR_INVALID_OPERATION
+     * @throws \Piece\Flow\MethodInvocationException
      */
-    function getCurrentStateName()
+    public function getCurrentStateName()
     {
-        if (!$this->_flowExecution->activated()) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_OPERATION,
-                                   __FUNCTION__ . ' method must be called after starting/continuing flows.'
-                                   );
-            return;
+        if (!$this->flowExecution->activated()) {
+            throw new MethodInvocationException(__FUNCTION__ . ' method must be called after starting/continuing flows.');
         }
 
-        $flow = &$this->_flowExecution->getActiveFlow();
+        $flow = $this->flowExecution->getActiveFlow();
         return $flow->getCurrentStateName();
     }
-
-    // }}}
-    // {{{ getFlowExecutionTicketByFlowID()
 
     /**
      * Gets a flow execution ticket by the given flow ID.
@@ -274,13 +208,10 @@ class Piece_Flow_Continuation_Service
      * @return string
      * @since Method available since Release 1.15.0
      */
-    function getFlowExecutionTicketByFlowID($flowID)
+    public function getFlowExecutionTicketByFlowID($flowID)
     {
-        return $this->_flowExecution->getFlowExecutionTicketByFlowID($flowID);
+        return $this->flowExecution->getFlowExecutionTicketByFlowID($flowID);
     }
-
-    // }}}
-    // {{{ getActiveFlowID()
 
     /**
      * Gets the flow ID for the active flow execution.
@@ -288,13 +219,10 @@ class Piece_Flow_Continuation_Service
      * @return string
      * @since Method available since Release 1.15.0
      */
-    function getActiveFlowID()
+    public function getActiveFlowID()
     {
-        return $this->_flowExecution->getActiveFlowID();
+        return $this->flowExecution->getActiveFlowID();
     }
-
-    // }}}
-    // {{{ getActiveFlowExecutionTicket()
 
     /**
      * Gets the flow execution ticket for the active flow execution.
@@ -302,23 +230,11 @@ class Piece_Flow_Continuation_Service
      * @return string
      * @since Method available since Release 1.16.0
      */
-    function getActiveFlowExecutionTicket()
+    public function getActiveFlowExecutionTicket()
     {
-        return $this->_flowExecution->getActiveFlowExecutionTicket();
+        return $this->flowExecution->getActiveFlowExecutionTicket();
     }
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    /**#@-*/
-
-    // }}}
 }
-
-// }}}
 
 /*
  * Local Variables:

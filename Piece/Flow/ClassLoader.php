@@ -2,9 +2,9 @@
 /* vim: set expandtab tabstop=4 shiftwidth=4: */
 
 /**
- * PHP versions 4 and 5
+ * PHP version 5.3
  *
- * Copyright (c) 2007-2008 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2007-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,119 +29,70 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2007-2008 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2007-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      File available since Release 1.10.0
  */
 
-require_once 'Piece/Flow/Error.php';
-
-// {{{ Piece_Flow_ClassLoader
+namespace Piece\Flow;
 
 /**
  * A class loader.
  *
  * @package    Piece_Flow
- * @copyright  2007-2008 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2007-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      Class available since Release 1.10.0
  */
-class Piece_Flow_ClassLoader
+class ClassLoader
 {
-
-    // {{{ properties
-
-    /**#@+
-     * @access public
-     */
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    /**#@-*/
-
-    /**#@+
-     * @access public
-     */
-
-    // }}}
-    // {{{ load()
-
     /**
      * Loads a class.
      *
      * @param string $class
      * @param string $directory
-     * @throws PIECE_FLOW_ERROR_NOT_READABLE
-     * @throws PIECE_FLOW_ERROR_NOT_FOUND
-     * @throws PIECE_FLOW_ERROR_CANNOT_READ
-     * @static
+     * @throws \Piece\Flow\FileNotReadableException
+     * @throws \Piece\Flow\FileNotFoundException
+     * @throws \Piece\Flow\FileIncludeException
      */
-    function load($class, $directory = null)
+    public static function load($class, $directory = null)
     {
-        $file = str_replace('_', '/', $class) . '.php';
+        if (strpos($class, '\\') === 0) {
+            $class = substr($class, 1);
+        }
+
+        $file = str_replace('\\', '/', str_replace('_', '/', $class)) . '.php';
 
         if (!is_null($directory)) {
             $file = "$directory/$file";
 
             if (!file_exists($file)) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
-                                       "The class file [ $file ] for the class [ $class ] is not found."
-                                       );
-                return;
+                throw new FileNotFoundException("The class file [ $file ] for the class [ $class ] is not found.");
             }
 
             if (!is_readable($file)) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_READABLE,
-                                       "The class file [ $file ] is not readable."
-                                       );
-                return;
+                throw new FileNotReadableException("The class file [ $file ] is not readable.");
             }
         }
 
         if (!include_once $file) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_CANNOT_READ,
-                                   "The class file [ $file ] is not found or is not readable."
-                                   );
+            throw new FileIncludeException("The class file [ $file ] is not found or is not readable.");
         }
     }
-
-    // }}}
-    // {{{ loaded()
 
     /**
      * Returns whether the given class has already been loaded or not.
      *
      * @param string $class
      * @return boolean
-     * @static
      */
-    function loaded($class)
+    public static function loaded($class)
     {
-        if (version_compare(phpversion(), '5.0.0', '<')) {
-            return class_exists($class);
-        } else {
-            return class_exists($class, false);
-        }
+        return class_exists($class, false);
     }
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    /**#@-*/
-
-    // }}}
 }
-
-// }}}
 
 /*
  * Local Variables:

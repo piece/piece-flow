@@ -2,9 +2,9 @@
 /* vim: set expandtab tabstop=4 shiftwidth=4: */
 
 /**
- * PHP versions 4 and 5
+ * PHP version 5.3
  *
- * Copyright (c) 2006-2008 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,58 +29,32 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2006-2008 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      File available since Release 1.0.0
  */
 
-require_once 'Piece/Flow/Error.php';
-require_once 'Piece/Flow/ClassLoader.php';
+namespace Piece\Flow\Action;
 
-// {{{ GLOBALS
-
-$GLOBALS['PIECE_FLOW_Action_Instances'] = array();
-$GLOBALS['PIECE_FLOW_Action_Directory'] = null;
-$GLOBALS['PIECE_FLOW_Action_DefaultContextID'] = '_default';
-$GLOBALS['PIECE_FLOW_Action_ContextID']        = $GLOBALS['PIECE_FLOW_Action_DefaultContextID'];
-
-// }}}
-// {{{ Piece_Flow_Action_Factory
+use Piece\Flow\ClassLoader;
 
 /**
  * A factory class for creating action objects.
  *
  * @package    Piece_Flow
- * @copyright  2006-2008 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      Class available since Release 1.0.0
  */
-class Piece_Flow_Action_Factory
+class Factory
 {
+    const DEFAULT_CONTEXT_ID = '_default';
 
-    // {{{ properties
-
-    /**#@+
-     * @access public
-     */
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    /**#@-*/
-
-    /**#@+
-     * @access public
-     * @static
-     */
-
-    // }}}
-    // {{{ factory()
+    private static $instances = array();
+    private static $actionDirectory;
+    private static $contextID = self::DEFAULT_CONTEXT_ID;
 
     /**
      * Creates an action object from a configuration file or a cache.
@@ -88,148 +62,102 @@ class Piece_Flow_Action_Factory
      * @param string $class
      * @return mixed
      */
-    function &factory($class)
+    public static function factory($class)
     {
-        if (!array_key_exists($GLOBALS['PIECE_FLOW_Action_ContextID'], $GLOBALS['PIECE_FLOW_Action_Instances'])
-            || !array_key_exists($class, $GLOBALS['PIECE_FLOW_Action_Instances'][ $GLOBALS['PIECE_FLOW_Action_ContextID'] ])
+        if (!array_key_exists(self::$contextID, self::$instances)
+            || !array_key_exists($class, self::$instances[ self::$contextID ])
             ) {
-            Piece_Flow_Action_Factory::load($class);
-            if (Piece_Flow_Error::hasErrors()) {
-                $return = null;
-                return $return;
-            }
-
-            $GLOBALS['PIECE_FLOW_Action_Instances'][ $GLOBALS['PIECE_FLOW_Action_ContextID'] ][$class] = &new $class();
+            self::load($class);
+            self::$instances[ self::$contextID ][$class] = new $class();
         }
 
-        return $GLOBALS['PIECE_FLOW_Action_Instances'][ $GLOBALS['PIECE_FLOW_Action_ContextID'] ][$class];
+        return self::$instances[ self::$contextID ][$class];
     }
-
-    // }}}
-    // {{{ setActionDirectory()
 
     /**
      * Sets a directory as the action directory.
      *
      * @param string $directory
      */
-    function setActionDirectory($directory)
+    public static function setActionDirectory($directory)
     {
-        $GLOBALS['PIECE_FLOW_Action_Directory'] = $directory;
+        self::$actionDirectory = $directory;
     }
-
-    // }}}
-    // {{{ clearInstances()
 
     /**
      * Clears the action instances.
      */
-    function clearInstances()
+    public static function clearInstances()
     {
-        $GLOBALS['PIECE_FLOW_Action_Instances'] = array();
+        self::$instances = array();
     }
-
-    // }}}
-    // {{{ getInstances()
 
     /**
      * Gets the action instances.
      *
      * @return array
      */
-    function getInstances()
+    public static function getInstances()
     {
-        if (array_key_exists($GLOBALS['PIECE_FLOW_Action_ContextID'], $GLOBALS['PIECE_FLOW_Action_Instances'])) {
-            return $GLOBALS['PIECE_FLOW_Action_Instances'][ $GLOBALS['PIECE_FLOW_Action_ContextID'] ];
+        if (array_key_exists(self::$contextID, self::$instances)) {
+            return self::$instances[ self::$contextID ];
         } else {
             return array();
         }
     }
-
-    // }}}
-    // {{{ setInstances()
 
     /**
      * Sets an array as the action instances.
      *
      * @param array $instances
      */
-    function setInstances($instances)
+    public static function setInstances($instances)
     {
-        $GLOBALS['PIECE_FLOW_Action_Instances'][ $GLOBALS['PIECE_FLOW_Action_ContextID'] ]= $instances;
+        self::$instances[ self::$contextID ]= $instances;
     }
-
-    // }}}
-    // {{{ load()
 
     /**
      * Loads an action class corresponding to the given class name.
      *
      * @param string $class
-     * @throws PIECE_FLOW_ERROR_NOT_GIVEN
-     * @throws PIECE_FLOW_ERROR_NOT_FOUND
+     * @throws \Piece\Flow\Action\ActionDirectoryRequiredException
+     * @throws \Piece\Flow\Action\ClassNotFoundException
      */
-    function load($class)
+    public static function load($class)
     {
-        if (!Piece_Flow_ClassLoader::loaded($class)) {
-            if (is_null($GLOBALS['PIECE_FLOW_Action_Directory'])) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_GIVEN,
-                                       'The action directory is not given.'
-                                       );
-                return;
+        if (!ClassLoader::loaded($class)) {
+            if (is_null(self::$actionDirectory)) {
+                throw new ActionDirectoryRequiredException('The action directory is not given.');
             }
 
-            Piece_Flow_ClassLoader::load($class, $GLOBALS['PIECE_FLOW_Action_Directory']);
-            if (Piece_Flow_Error::hasErrors()) {
-                return;
-            }
+            ClassLoader::load($class, self::$actionDirectory);
 
-            if (!Piece_Flow_ClassLoader::loaded($class)) {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
-                                       "The class [ $class ] not found in the loaded file."
-                                       );
+            if (!ClassLoader::loaded($class)) {
+                throw new ClassNotFoundException("The class [ $class ] not found in the loaded file.");
             }
         }
     }
-
-    // }}}
-    // {{{ setContextID()
 
     /**
      * Sets the context ID.
      *
      * @param string $contextID
      */
-    function setContextID($contextID)
+    public static function setContextID($contextID)
     {
-        $GLOBALS['PIECE_FLOW_Action_ContextID'] = $contextID;
+        self::$contextID = $contextID;
     }
-
-    // }}}
-    // {{{ clearContextID()
 
     /**
      * Clears the context ID.
      *
      * @param string $contextID
      */
-    function clearContextID()
+    public static function clearContextID()
     {
-        $GLOBALS['PIECE_FLOW_Action_ContextID'] = $GLOBALS['PIECE_FLOW_Action_DefaultContextID'];
+        self::$contextID = self::DEFAULT_CONTEXT_ID;
     }
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    /**#@-*/
-
-    // }}}
 }
-
-// }}}
 
 /*
  * Local Variables:

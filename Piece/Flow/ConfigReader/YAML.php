@@ -2,9 +2,9 @@
 /* vim: set expandtab tabstop=4 shiftwidth=4: */
 
 /**
- * PHP versions 4 and 5
+ * PHP version 5.3
  *
- * Copyright (c) 2006-2007 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,63 +29,27 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2006-2007 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @link       http://spyc.sourceforge.net/
  * @since      File available since Release 0.1.0
  */
 
-require_once 'Piece/Flow/ConfigReader/Common.php';
+namespace Piece\Flow\ConfigReader;
 
-if (version_compare(phpversion(), '5.0.0', '<')) {
-    require_once 'spyc.php';
-} else {
-    require_once 'spyc.php5';
-}
-
-// {{{ Piece_Flow_ConfigReader_YAML
+use Symfony\Component\Yaml\Exception\ParseException;
 
 /**
  * A configuration reader for YAML.
  *
  * @package    Piece_Flow
- * @copyright  2006-2007 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @link       http://spyc.sourceforge.net/
  * @since      Class available since Release 0.1.0
  */
-class Piece_Flow_ConfigReader_YAML extends Piece_Flow_ConfigReader_Common
+class YAML extends Common
 {
-
-    // {{{ properties
-
-    /**#@+
-     * @access public
-     */
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    /**#@-*/
-
-    /**#@+
-     * @access public
-     */
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    // }}}
-    // {{{ _parseSource()
-
     /**
      * Parses the given source and returns an array which represent a flow
      * structure.
@@ -94,18 +58,17 @@ class Piece_Flow_ConfigReader_YAML extends Piece_Flow_ConfigReader_Common
      * file.
      *
      * @return array
+     * @throws \Piece\Flow\ConfigReader\InvalidFormatException
      */
-    function _parseSource()
+    protected function parseSource()
     {
-        return Spyc::YAMLLoad($this->_source);
+        try {
+            return \Symfony\Component\Yaml\Yaml::parse($this->source);
+        } catch (ParseException $e) {
+            throw new InvalidFormatException($e->getMessage());
+        }
     }
-
-    /**#@-*/
-
-    // }}}
 }
-
-// }}}
 
 /*
  * Local Variables:

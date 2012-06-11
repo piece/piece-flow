@@ -2,9 +2,9 @@
 /* vim: set expandtab tabstop=4 shiftwidth=4: */
 
 /**
- * PHP versions 4 and 5
+ * PHP version 5.3
  *
- * Copyright (c) 2006-2008 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,135 +29,77 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2006-2008 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      File available since Release 0.1.0
  */
 
-require_once realpath(dirname(__FILE__) . '/../../prepare.php');
-require_once 'PHPUnit.php';
-require_once 'Piece/Flow/ConfigReader.php';
-require_once 'Piece/Flow/Error.php';
+namespace Piece\Flow;
 
-// {{{ Piece_Flow_ConfigReaderTestCase
+require_once 'Cache/Lite/File.php';
+
+use Piece\Flow\Util\ErrorReporting;
 
 /**
- * Some tests for Piece_Flow_ConfigReader.
- *
  * @package    Piece_Flow
- * @copyright  2006-2008 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
  */
-class Piece_Flow_ConfigReaderTestCase extends PHPUnit_TestCase
+class ConfigReaderTestCase extends \PHPUnit_Framework_TestCase
 {
+    protected $cacheDirectory;
 
-    // {{{ properties
-
-    /**#@+
-     * @access public
-     */
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    var $_cacheDirectory;
-
-    /**#@-*/
-
-    /**#@+
-     * @access public
-     */
-
-    function setUp()
+    protected function setUp()
     {
-        $this->_cacheDirectory = dirname(__FILE__) . '/' . basename(__FILE__, '.php');
+        $this->cacheDirectory = dirname(__FILE__) . '/' . basename(__FILE__, '.php');
     }
 
-    function tearDown()
+    protected function tearDown()
     {
-        $cache = &new Cache_Lite_File(array('cacheDir' => "{$this->_cacheDirectory}/",
-                                            'masterFile' => '',
-                                            'automaticSerialization' => true,
-                                            'errorHandlingAPIBreak' => true)
-                                      );
+        $cacheDirectory = $this->cacheDirectory;
+        $cache = ErrorReporting::invokeWith(error_reporting() & ~E_STRICT, function () use ($cacheDirectory) {
+            return new \Cache_Lite_File(array(
+                'cacheDir' => $cacheDirectory . '/',
+                'masterFile' => '',
+                'automaticSerialization' => true,
+                'errorHandlingAPIBreak' => true
+            ));
+        });
         $cache->clean();
-        Piece_Flow_Error::clearErrors();
     }
 
-    function testGuessingFromFileExtension()
+    public function testGuessingFromFileExtension()
     {
-        $this->assertEquals(strtolower('Piece_Flow_Config'), strtolower(get_class(Piece_Flow_ConfigReader::read("{$this->_cacheDirectory}/foo.yaml", null, null, null, null))));
-        $this->assertEquals(strtolower('Piece_Flow_Config'), strtolower(get_class(Piece_Flow_ConfigReader::read("{$this->_cacheDirectory}/foo.xml", null, null, null, null))));
+        $this->assertTrue(ConfigReader::read("{$this->cacheDirectory}/foo.yaml", null, null, null, null) instanceof Config);
+        $this->assertTrue(ConfigReader::read("{$this->cacheDirectory}/foo.xml", null, null, null, null) instanceof Config);
     }
 
-    function testSpecifyingDriverType()
+    public function testSpecifyingDriverType()
     {
-        $this->assertEquals(strtolower('Piece_Flow_Config'), strtolower(get_class(Piece_Flow_ConfigReader::read("{$this->_cacheDirectory}/foo.yaml", 'YAML', null, null, null))));
-        $this->assertEquals(strtolower('Piece_Flow_Config'), strtolower(get_class(Piece_Flow_ConfigReader::read("{$this->_cacheDirectory}/foo.xml", 'XML', null, null, null))));
-    }
-
-    function testInvalidDriver()
-    {
-        $oldIncludePath = set_include_path(dirname(__FILE__) . '/' . basename(__FILE__, '.php'));
-        Piece_Flow_Error::disableCallback();
-        Piece_Flow_ConfigReader::read('foo.bar', 'Baz', null, null, null);
-        Piece_Flow_Error::enableCallback();
-
-        $this->assertTrue(Piece_Flow_Error::hasErrors());
-
-        $error = Piece_Flow_Error::pop();
-
-        $this->assertEquals(PIECE_FLOW_ERROR_NOT_FOUND, $error['code']);
-
-        set_include_path($oldIncludePath);
+        $this->assertTrue(ConfigReader::read("{$this->cacheDirectory}/foo.yaml", 'YAML', null, null, null) instanceof Config);
+        $this->assertTrue(ConfigReader::read("{$this->cacheDirectory}/foo.xml", 'XML', null, null, null) instanceof Config);
     }
 
     /**
      * @since Method available since Release 1.13.0
      */
-    function testConfigurationFileWithoutExtensionShouldBeReadAsYAML()
+    public function testConfigurationFileWithoutExtensionShouldBeReadAsYAML()
     {
-        Piece_Flow_Error::disableCallback();
-        Piece_Flow_ConfigReader::read("{$this->_cacheDirectory}/foo.flow", null, $this->_cacheDirectory, null, null);
-        Piece_Flow_Error::enableCallback();
-
-        $this->assertFalse(Piece_Flow_Error::hasErrors());
+        ConfigReader::read("{$this->cacheDirectory}/foo.flow", null, $this->cacheDirectory, null, null);
     }
 
     /**
+     * @expectedException \Piece\Flow\FileNotFoundException
      * @since Method available since Release 1.13.0
      */
-    function testNotFoundExceptionShouldBeRaisedWhenNonExistingConfigurationFileIsSpecified()
+    public function testNotFoundExceptionShouldBeRaisedWhenNonExistingConfigurationFileIsSpecified()
     {
-        Piece_Flow_Error::disableCallback();
-        Piece_Flow_ConfigReader::read("{$this->_cacheDirectory}/foo.bar", null, $this->_cacheDirectory, null, null);
-        Piece_Flow_Error::enableCallback();
-
-        $this->assertTrue(Piece_Flow_Error::hasErrors());
-
-        $error = Piece_Flow_Error::pop();
-
-        $this->assertEquals(PIECE_FLOW_ERROR_NOT_FOUND, $error['code']);
+        ConfigReader::read("{$this->cacheDirectory}/foo.bar", null, $this->cacheDirectory, null, null);
     }
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    /**#@-*/
-
-    // }}}
 }
-
-// }}}
 
 /*
  * Local Variables:

@@ -1,0 +1,103 @@
+# Copyright (c) 2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+#     * Redistributions of source code must retain the above copyright notice,
+#       this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+
+firstState: DisplayForm
+lastState:
+  name: Finish
+  view: Finish
+  entry:
+    class: Piece_FlowTestCaseAction
+    method: setupForm
+  exit:
+    class: Piece_FlowTestCaseAction
+    method: teardownForm
+  activity:
+    class: Piece_FlowTestCaseAction
+    method: countDisplay
+viewState:
+  - name: DisplayForm
+    view: Form
+    entry:
+      class: Piece_FlowTestCaseAction
+      method: setupForm
+    exit:
+      class: Piece_FlowTestCaseAction
+      method: teardownForm
+    activity:
+      class: Piece_FlowTestCaseAction
+      method: countDisplay
+    transition:
+      - event: submit
+        nextState: processSubmitDisplayForm
+        action:
+          class: Piece_FlowTestCaseAction
+          method: validateInput
+        guard:
+          class: Piece_FlowTestCaseAction
+          method: isPermitted
+  - name: ConfirmForm
+    view: Confirmation
+    transition:
+      - event: submit
+        nextState: processSubmitConfirmForm
+        action:
+          class: Piece_FlowTestCaseAction
+          method: validateConfirmation
+actionState:
+  - name: processSubmitDisplayForm
+    transition:
+      - event: raiseError
+        nextState: DisplayForm
+      - event: succeed
+        nextState: ConfirmForm
+  - name: processSubmitConfirmForm
+    transition:
+      - event: raiseError
+        nextState: DisplayForm
+      - event: succeed
+        nextState: Register
+        action:
+          class: Piece_FlowTestCaseAction
+          method: register
+  - name: Register
+    transition:
+      - event: raiseError
+        nextState: DisplayForm
+      - event: succeed
+        nextState: Finish
+initial:
+  class: Piece_FlowTestCaseAction
+  method: initialize
+final:
+  class: Piece_FlowTestCaseAction
+  method: finalize
+
+# Local Variables:
+# mode: conf
+# coding: iso-8859-1
+# tab-width: 2
+# c-basic-offset: 2
+# c-hanging-comment-ender-p: nil
+# indent-tabs-mode: nil
+# End:

@@ -2,9 +2,9 @@
 /* vim: set expandtab tabstop=4 shiftwidth=4: */
 
 /**
- * PHP versions 4 and 5
+ * PHP version 5.3
  *
- * Copyright (c) 2006-2008 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,135 +29,90 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2006-2008 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      File available since Release 0.1.0
  */
 
-require_once 'Piece/Flow/Action/Factory.php';
-require_once 'Piece/Flow/Error.php';
+namespace Piece\Flow;
 
-// {{{ Piece_Flow_EventHandler
+use Stagehand\FSM\Event;
+use Stagehand\FSM\FSM;
+
+use Piece\Flow\Action\Factory;
 
 /**
  * The invoker for an event handler.
  *
  * @package    Piece_Flow
- * @copyright  2006-2008 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
  */
-class Piece_Flow_EventHandler
+class EventHandler
 {
-
-    // {{{ properties
-
-    /**#@+
-     * @access public
-     */
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    var $_flow;
-    var $_class;
-    var $_method;
-    var $_actionDirectory;
-
-    /**#@-*/
-
-    /**#@+
-     * @access public
-     */
-
-    // }}}
-    // {{{ constructor
+    protected $flow;
+    protected $class;
+    protected $method;
+    protected $actionDirectory;
 
     /**
-     * Wraps a action up with a Piece_Flow_EventHandler object.
+     * Wraps a action up with an EventHandler object.
      *
-     * @param Piece_Flow &$flow
+     * @param \Piece\Flow $flow
      * @param string     $class
      * @param string     $method
      * @param string     $actionDirectory
      */
-    function Piece_Flow_EventHandler(&$flow, $class, $method, $actionDirectory)
+    public function __construct(Flow $flow, $class, $method, $actionDirectory)
     {
-        $this->_flow = &$flow;
+        $this->flow = $flow;
 
         if (is_null($class) || !strlen($class)) {
-            $this->_class = $this->_flow->getName() . 'Action';
+            $this->class = $this->flow->getName() . 'Action';
         } else {
-            $this->_class = $class;
+            $this->class = $class;
         }
 
-        $this->_method = $method;
-        $this->_actionDirectory = $actionDirectory;
+        $this->method = $method;
+        $this->actionDirectory = $actionDirectory;
     }
-
-    // }}}
-    // {{{ invoke()
 
     /**
      * Invokes an event handler in an action.
      *
-     * @param Stagehand_FSM       &$fsm
-     * @param Stagehand_FSM_Event &$event
+     * @param \Stagehand\FSM\FSM $fsm
+     * @param \Stagehand\FSM\Event $event
      * @param mixed               &$payload
      * @return mixed
      */
-    function invoke(&$fsm, &$event, &$payload)
+    public function invoke(FSM $fsm, Event $event, &$payload)
     {
-        return $this->_invokeEventHandler($event->getName(), $payload);
+        return $this->invokeEventHandler($event->getName(), $payload);
     }
-
-    // }}}
-    // {{{ invokeAndTriggerEvent()
 
     /**
      * Invokes an event handler in an action and triggers an event returned
      * from the action.
      *
-     * @param Stagehand_FSM       &$fsm
-     * @param Stagehand_FSM_Event &$event
+     * @param \Stagehand\FSM\FSM $fsm
+     * @param \Stagehand\FSM\Event $event
      * @param mixed               &$payload
-     * @throws PIECE_FLOW_ERROR_INVALID_EVENT
+     * @throws \Piece\Flow\EventNotFoundException
      */
-    function invokeAndTriggerEvent(&$fsm, &$event, &$payload)
+    public function invokeAndTriggerEvent(FSM $fsm, Event $event, &$payload)
     {
-        $result = $this->_invokeEventHandler($event->getName(), $payload);
-        if (Piece_Flow_Error::hasErrors()) {
-            return;
-        }
-
+        $result = $this->invokeEventHandler($event->getName(), $payload);
         if (!is_null($result)) {
             if ($fsm->hasEvent($result)) {
                 $fsm->queueEvent($result);
             } else {
-                Piece_Flow_Error::push(PIECE_FLOW_ERROR_INVALID_EVENT,
-                                       "An invalid event [ $result ] is returned from [ {$this->_class}::{$this->_method}() ] method on the state [ " . $this->_flow->getCurrentStateName() . ' ]. Check the flow definition and the action class.',
-                                       'exception',
-                                       array('event' => $result,
-                                             'class' => $this->_class,
-                                             'method' => $this->_method)
-                                       );
+                throw new EventNotFoundException("An invalid event [ $result ] is returned from [ {$this->class}::{$this->method}() ] method on the state [ " . $this->flow->getCurrentStateName() . ' ]. Check the flow definition and the action class.');
             }
         }
     }
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    // }}}
-    // {{{ _invokeEventHandler()
 
     /**
      * Invokes an event handler in an action.
@@ -165,28 +120,21 @@ class Piece_Flow_EventHandler
      * @param string $eventName
      * @param mixed  &$payload
      * @return string
-     * @throws PIECE_FLOW_ERROR_NOT_FOUND
+     * @throws \Piece\Flow\HandlerNotFoundException
      */
-    function _invokeEventHandler($eventName, &$payload)
+    protected function invokeEventHandler($eventName, &$payload)
     {
-        if (!is_null($this->_actionDirectory)) {
-            Piece_Flow_Action_Factory::setActionDirectory($this->_actionDirectory);
+        if (!is_null($this->actionDirectory)) {
+            Factory::setActionDirectory($this->actionDirectory);
         }
 
-        $action = &Piece_Flow_Action_Factory::factory($this->_class);
-        if (Piece_Flow_Error::hasErrors()) {
-            return;
-        }
-
-        if (!method_exists($action, $this->_method)) {
-            Piece_Flow_Error::push(PIECE_FLOW_ERROR_NOT_FOUND,
-                                   "The method [ {$this->_method} ] does not exist in the action class [ {$this->_class} ]."
-                                   );
-            return;
+        $action = Factory::factory($this->class);
+        if (!method_exists($action, $this->method)) {
+            throw new HandlerNotFoundException("The method [ {$this->method} ] does not exist in the action class [ {$this->class} ].");
         }
 
         if (method_exists($action, 'setFlow')) {
-            $action->setFlow($this->_flow);
+            $action->setFlow($this->flow);
         }
 
         if (method_exists($action, 'setPayload')) {
@@ -201,7 +149,7 @@ class Piece_Flow_EventHandler
             $action->prepare();
         }
 
-        $result = call_user_func(array(&$action, $this->_method));
+        $result = call_user_func(array($action, $this->method));
 
         if (method_exists($action, 'clear')) {
             $action->clear();
@@ -209,13 +157,7 @@ class Piece_Flow_EventHandler
 
         return $result;
     }
-
-    /**#@-*/
-
-    // }}}
 }
-
-// }}}
 
 /*
  * Local Variables:

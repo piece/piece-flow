@@ -2,9 +2,9 @@
 /* vim: set expandtab tabstop=4 shiftwidth=4: */
 
 /**
- * PHP versions 4 and 5
+ * PHP version 5.3
  *
- * Copyright (c) 2006-2007 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,80 +29,52 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2006-2007 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      File available since Release 0.1.0
  */
 
-// {{{ Piece_Flow_Config
+namespace Piece\Flow;
 
 /**
  * A class representing a configuration of one flow.
  *
  * @package    Piece_Flow
- * @copyright  2006-2007 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
  */
-class Piece_Flow_Config
+class Config
 {
-
-    // {{{ properties
-
-    /**#@+
-     * @access public
-     */
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    var $_name;
-    var $_firstState;
-    var $_lastState;
-    var $_viewStates = array();
-    var $_actionStates = array();
-    var $_initialAction;
-    var $_finalAction;
-
-    /**#@-*/
-
-    /**#@+
-     * @access public
-     */
-
-    // }}}
-    // {{{ setName()
+    protected $name;
+    protected $firstState;
+    protected $lastState;
+    protected $viewStates = array();
+    protected $actionStates = array();
+    protected $initialAction;
+    protected $finalAction;
 
     /**
      * Sets the name of the flow.
      *
      * @param string $name
      */
-    function setName($name)
+    public function setName($name)
     {
-        $this->_name = $name;
+        $this->name = $name;
     }
-
-    // }}}
-    // {{{ setFirstState()
 
     /**
      * Sets the given state as the first state.
      *
      * @param string $state
      */
-    function setFirstState($state)
+    public function setFirstState($state)
     {
-        $this->_firstState = $state;
+        $this->firstState = $state;
     }
-
-    // }}}
-    // {{{ setLastState()
 
     /**
      * Sets the given state and the view string as the last state.
@@ -110,14 +82,11 @@ class Piece_Flow_Config
      * @param string $state
      * @param string $view
      */
-    function setLastState($state, $view)
+    public function setLastState($state, $view)
     {
-        $this->_lastState = $state;
+        $this->lastState = $state;
         $this->addViewState($state, $view);
     }
-
-    // }}}
-    // {{{ addViewState()
 
     /**
      * Adds the state as view state. The view string will correspond to the
@@ -126,9 +95,9 @@ class Piece_Flow_Config
      * @param string $state
      * @param string $view
      */
-    function addViewState($state, $view)
+    public function addViewState($state, $view)
     {
-        $this->_viewStates[$state] = array('name' => $state,
+        $this->viewStates[$state] = array('name' => $state,
                                            'view' => $view,
                                            'transitions' => array(),
                                            'entry' => null,
@@ -137,26 +106,20 @@ class Piece_Flow_Config
                                            );
     }
 
-    // }}}
-    // {{{ addActionState()
-
     /**
      * Adds the state as action state.
      *
      * @param string $state
      */
-    function addActionState($state)
+    public function addActionState($state)
     {
-        $this->_actionStates[$state] = array('name' => $state,
+        $this->actionStates[$state] = array('name' => $state,
                                              'transitions' => array(),
                                              'entry' => null,
                                              'exit' => null,
                                              'activity' => null
                                              );
     }
-
-    // }}}
-    // {{{ addTransition()
 
     /**
      * Adds the state transition.
@@ -167,11 +130,11 @@ class Piece_Flow_Config
      * @param array  $action
      * @param array  $guard
      */
-    function addTransition($state, $event, $nextState, $action = null,
+    public function addTransition($state, $event, $nextState, $action = null,
                            $guard = null
                            )
     {
-        $states = &$this->_getAppropriateStates($state);
+        $states = &$this->getAppropriateStates($state);
         $states[$state]['transitions'][] = array('event' => $event,
                                                  'nextState' => $nextState,
                                                  'action' => $action,
@@ -179,23 +142,17 @@ class Piece_Flow_Config
                                                  );
     }
 
-    // }}}
-    // {{{ setEntryAction()
-
     /**
      * Sets the entry action to the given state.
      *
      * @param string $state
      * @param array  $action
      */
-    function setEntryAction($state, $action)
+    public function setEntryAction($state, $action)
     {
-        $states = &$this->_getAppropriateStates($state);
+        $states = &$this->getAppropriateStates($state);
         $states[$state]['entry'] = $action;
     }
-
-    // }}}
-    // {{{ setExitAction()
 
     /**
      * Sets the exit action to the given state.
@@ -203,14 +160,11 @@ class Piece_Flow_Config
      * @param string $state
      * @param array  $action
      */
-    function setExitAction($state, $action)
+    public function setExitAction($state, $action)
     {
-        $states = &$this->_getAppropriateStates($state);
+        $states = &$this->getAppropriateStates($state);
         $states[$state]['exit'] = $action;
     }
-
-    // }}}
-    // {{{ setActivity()
 
     /**
      * Sets the activity to the given state.
@@ -218,101 +172,80 @@ class Piece_Flow_Config
      * @param string $state
      * @param array  $activity
      */
-    function setActivity($state, $activity)
+    public function setActivity($state, $activity)
     {
-        $states = &$this->_getAppropriateStates($state);
+        $states = &$this->getAppropriateStates($state);
         $states[$state]['activity'] = $activity;
     }
-
-    // }}}
-    // {{{ getName()
 
     /**
      * Gets the name of the flow.
      *
      * @return string
      */
-    function getName()
+    public function getName()
     {
-        return $this->_name;
+        return $this->name;
     }
-
-    // }}}
-    // {{{ getFirstState()
 
     /**
      * Gets the first state of the flow.
      *
      * @return string
      */
-    function getFirstState()
+    public function getFirstState()
     {
-        return $this->_firstState;
+        return $this->firstState;
     }
-
-    // }}}
-    // {{{ getLastState()
 
     /**
      * Gets the last state of the flow.
      *
      * @return string
      */
-    function getLastState()
+    public function getLastState()
     {
-        return $this->_lastState;
+        return $this->lastState;
     }
-
-    // }}}
-    // {{{ getViewStates()
 
     /**
      * Gets view states of the flow.
      *
      * @return array
      */
-    function getViewStates()
+    public function getViewStates()
     {
-        return $this->_viewStates;
+        return $this->viewStates;
     }
-
-    // }}}
-    // {{{ getActionStates()
 
     /**
      * Gets action states of the flow.
      *
      * @return array
      */
-    function getActionStates()
+    public function getActionStates()
     {
-        return $this->_actionStates;
+        return $this->actionStates;
     }
-
-    // }}}
-    // {{{ setInitialAction()
 
     /**
      * Sets the initial action of the flow.
      *
      * @param array $action
      */
-    function setInitialAction($action)
+    public function setInitialAction($action)
     {
-        $this->_initialAction = $action;
+        $this->initialAction = $action;
     }
-
-    // }}}
-    // {{{ getInitialAction()
 
     /**
      * Gets the initial action of the flow.
      *
      * @return array
      */
-    function getInitialAction()
+    public function getInitialAction()
     {
-        return $this->_initialAction;
+        return $this->initialAction;
     }
 
     /**
@@ -320,32 +253,20 @@ class Piece_Flow_Config
      *
      * @param array $action
      */
-    function setFinalAction($action)
+    public function setFinalAction($action)
     {
-        $this->_finalAction = $action;
+        $this->finalAction = $action;
     }
-
-    // }}}
-    // {{{ getFinalAction()
 
     /**
      * Gets the final action of the flow.
      *
      * @return array
      */
-    function getFinalAction()
+    public function getFinalAction()
     {
-        return $this->_finalAction;
+        return $this->finalAction;
     }
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    // }}}
-    // {{{ _getAppropriateStates()
 
     /**
      * Gets an appropriate states corresponding to the given state.
@@ -353,21 +274,15 @@ class Piece_Flow_Config
      * @param string $state
      * @return array
      */
-    function &_getAppropriateStates($state)
+    protected function &getAppropriateStates($state)
     {
-        if (array_key_exists($state, $this->_viewStates)) {
-            return $this->_viewStates;
+        if (array_key_exists($state, $this->viewStates)) {
+            return $this->viewStates;
         }
 
-        return $this->_actionStates;
+        return $this->actionStates;
     }
-
-    /**#@-*/
-
-    // }}}
 }
-
-// }}}
 
 /*
  * Local Variables:

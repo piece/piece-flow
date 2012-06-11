@@ -1,0 +1,10 @@
+# $Id$
+firstState: Stop
+viewState:
+  - name: Stop
+    view: Stop
+    transition:
+      - event: __protected
+        nextState: Playing
+  - name: Playing
+    view: Playing

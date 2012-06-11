@@ -2,9 +2,9 @@
 /* vim: set expandtab tabstop=4 shiftwidth=4: */
 
 /**
- * PHP versions 5
+ * PHP version 5.3
  *
- * Copyright (c) 2006-2008 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,98 +29,49 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2006-2008 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      File available since Release 0.1.0
  */
 
-if (version_compare(phpversion(), '5.0.0', '<')) {
-    return;
-}
-
-require_once dirname(__FILE__) . '/CompatibilityTests.php';
-require_once 'Piece/Flow/ConfigReader/XML5.php';
-require_once 'Piece/Flow/Error.php';
-
-// {{{ Piece_Flow_ConfigReader_XML5TestCase
+namespace Piece\Flow\ConfigReader;
 
 /**
- * Some tests for Piece_Flow_ConfigReader_XML5.
- *
  * @package    Piece_Flow
- * @copyright  2006-2008 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
  */
-class Piece_Flow_ConfigReader_XML5TestCase extends Piece_Flow_ConfigReader_CompatibilityTests
+class XML5TestCase extends CompatibilityTests
 {
-
-    // {{{ properties
-
-    /**#@+
-     * @access public
+    /**
+     * @expectedException \Piece\Flow\ConfigReader\InvalidFormatException
      */
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    /**#@-*/
-
-    /**#@+
-     * @access public
-     */
-
-    function testInvalidFormat()
+    public function testInvalidFormat()
     {
-        $reader = $this->_createConfigReader("{$this->_cacheDirectory}/invalid" . $this->_getExtension());
-        Piece_Flow_Error::disableCallback();
-        $config = @$reader->read();
-        Piece_Flow_Error::enableCallback();
-
-        $this->assertNull($config);
-        $this->assertTrue(Piece_Flow_Error::hasErrors());
-
-        $error = Piece_Flow_Error::pop();
-
-        $this->assertEquals(PIECE_FLOW_ERROR_INVALID_FORMAT, $error['code']);
+        $this->createConfigReader("{$this->cacheDirectory}/invalid" . $this->getExtension())->read();
     }
 
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    function &_createConfigReader($source)
+    protected function createConfigReader($source)
     {
-        $reader = &new Piece_Flow_ConfigReader_XML5($source, $this->_cacheDirectory);
-        return $reader;
+        return new XML5($source, $this->cacheDirectory);
     }
 
-    function _doSetUp()
+    protected function doSetUp()
     {
-        $this->_cacheDirectory = dirname(__FILE__) . '/XMLTestCase';
+        $this->cacheDirectory = dirname(__FILE__) . '/XMLTestCase';
     }
 
     /**
      * @since Method available since Release 1.14.0
      */
-    function _getExtension()
+    protected function getExtension()
     {
         return '.xml';
     }
-
-    /**#@-*/
-
-    // }}}
 }
-
-// }}}
 
 /*
  * Local Variables:

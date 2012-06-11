@@ -2,9 +2,9 @@
 /* vim: set expandtab tabstop=4 shiftwidth=4: */
 
 /**
- * PHP versions 4 and 5
+ * PHP version 5.3
  *
- * Copyright (c) 2006-2007 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,73 +29,40 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2006-2007 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @see        Piece_Flow_EventHandlerTestCase
  * @since      File available since Release 1.9.0
  */
 
-require_once 'Piece/Flow/Action.php';
-
-// {{{ PieceFlowEventHandlerTestCasePieceFlowAction
+use Piece\Flow\Action;
 
 /**
  * A class for unit tests.
  *
  * @package    Piece_Flow
- * @copyright  2006-2007 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @see        Piece_Flow_EventHandlerTestCase
  * @since      Class available since Release 1.9.0
  */
-class PieceFlowEventHandlerTestCasePieceFlowAction extends Piece_Flow_Action
+class PieceFlowEventHandlerTestCasePieceFlowAction extends Action
 {
+    public $prepareCalled = false;
+    public $eventHandlerCalled = false;
 
-    // {{{ properties
-
-    /**#@+
-     * @access public
-     */
-
-    var $prepareCalled = false;
-    var $eventHandlerCalled = false;
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    /**#@-*/
-
-    /**#@+
-     * @access public
-     */
-
-    function prepare()
+    public function prepare()
     {
         $this->prepareCalled = true;
     }
 
-    function foo()
+    public function foo()
     {
         $this->eventHandlerCalled = true;
     }
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    /**#@-*/
-
-    // }}}
 }
-
-// }}}
 
 /*
  * Local Variables:

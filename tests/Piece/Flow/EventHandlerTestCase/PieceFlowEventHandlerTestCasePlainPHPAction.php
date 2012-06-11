@@ -2,9 +2,9 @@
 /* vim: set expandtab tabstop=4 shiftwidth=4: */
 
 /**
- * PHP versions 4 and 5
+ * PHP version 5.3
  *
- * Copyright (c) 2006-2007 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,90 +29,59 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2006-2007 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        Piece_Flow_EventHandlerTestCase
+ * @see        \Piece\Flow\EventHandlerTestCase
  * @since      File available since Release 1.9.0
  */
 
-// {{{ PieceFlowEventHandlerTestCasePlainPHPAction
+use Piece\Flow\Flow;
 
 /**
  * A class for unit tests.
  *
  * @package    Piece_Flow
- * @copyright  2006-2007 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        Piece_Flow_EventHandlerTestCase
+ * @see        \Piece\Flow\EventHandlerTestCase
  * @since      Class available since Release 1.9.0
  */
 class PieceFlowEventHandlerTestCasePlainPHPAction
 {
+    public $prepareCalled = false;
+    public $eventHandlerCalled = false;
 
-    // {{{ properties
+    public $flow;
+    public $payload;
+    public $event;
 
-    /**#@+
-     * @access public
-     */
-
-    var $prepareCalled = false;
-    var $eventHandlerCalled = false;
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    var $_flow;
-    var $_payload;
-    var $_event;
-
-    /**#@-*/
-
-    /**#@+
-     * @access public
-     */
-
-    function setFlow(&$flow)
+    public function setFlow(Flow $flow)
     {
-        $this->_flow = &$flow;
+        $this->flow = $flow;
     }
 
-    function setPayload(&$payload)
+    public function setPayload(&$payload)
     {
-        $this->_payload = &$payload;
+        $this->payload = &$payload;
     }
 
-    function setEvent($event)
+    public function setEvent($event)
     {
-        $this->_event = $event;
+        $this->event = $event;
     }
 
-    function prepare()
+    public function prepare()
     {
         $this->prepareCalled = true;
     }
 
-    function foo()
+    public function foo()
     {
         $this->eventHandlerCalled = true;
     }
-
-    /**#@-*/
-
-    /**#@+
-     * @access private
-     */
-
-    /**#@-*/
-
-    // }}}
 }
-
-// }}}
 
 /*
  * Local Variables:
