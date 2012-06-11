@@ -44,7 +44,7 @@ namespace Piece\Flow\ConfigReader;
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
  */
-class XML5TestCase extends CompatibilityTests
+class XMLTest extends CompatibilityTests
 {
     /**
      * @expectedException \Piece\Flow\ConfigReader\InvalidFormatException
@@ -61,7 +61,7 @@ class XML5TestCase extends CompatibilityTests
 
     protected function doSetUp()
     {
-        $this->cacheDirectory = dirname(__FILE__) . '/XMLTestCase';
+        $this->cacheDirectory = dirname(__FILE__) . '/XMLTest';
     }
 
     /**

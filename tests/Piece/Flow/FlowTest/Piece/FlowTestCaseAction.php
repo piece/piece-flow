@@ -32,32 +32,88 @@
  * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        \Piece\Flow\FlowTestCase
- * @since      File available since Release 1.2.0
+ * @see        \Piece\Flow\FlowTest
+ * @since      File available since Release 1.0.0
  */
 
 use Piece\Flow\Action;
 
 /**
+ * A class for unit tests.
+ *
  * @package    Piece_Flow
  * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        \Piece\Flow\FlowTestCase
- * @since      Class available since Release 1.2.0
+ * @see        \Piece\Flow\FlowTest
+ * @since      Class available since Release 1.0.0
  */
-class Piece_FlowCDPlayerAction extends Action
+class Piece_FlowTestCaseAction extends Action
 {
-    public function increase()
+    public function validateInput()
     {
-        if ($this->flow->hasAttribute('numberOfUpdate')) {
-            $numberOfUpdate = $this->flow->getAttribute('numberOfUpdate');
-        } else {
-            $numberOfUpdate = 0;
+        $GLOBALS['validateInputCalled'] = true;
+
+        if (array_key_exists('hasErrors', $GLOBALS)
+            && $GLOBALS['hasErrors']
+            ) {
+            return 'raiseError';
         }
 
-        ++$numberOfUpdate;
-        $this->flow->setAttribute('numberOfUpdate', $numberOfUpdate);
+        return 'succeed';
+    }
+
+    public function validateConfirmation()
+    {
+        $GLOBALS['validateConfirmationCalled'] = true;
+
+        if (array_key_exists('hasErrors', $GLOBALS)
+            && $GLOBALS['hasErrors']
+            ) {
+            return 'raiseError';
+        }
+
+        return 'succeed';
+    }
+
+    public function register()
+    {
+        return 'succeed';
+    }
+
+    public function isPermitted()
+    {
+        return true;
+    }
+
+    public function setupForm()
+    {
+        $GLOBALS['setupFormCalled'] = true;
+    }
+
+    public function teardownForm()
+    {
+        $GLOBALS['teardownFormCalled'] = true;
+    }
+
+    public function countDisplay()
+    {
+        if (array_key_exists('displayCounter', $GLOBALS)) {
+            ++$GLOBALS['displayCounter'];
+        }
+    }
+
+    public function initialize()
+    {
+    }
+
+    public function finalize()
+    {
+    }
+
+    public function prepare()
+    {
+        $GLOBALS['prepareCalled'] = true;
     }
 }
 

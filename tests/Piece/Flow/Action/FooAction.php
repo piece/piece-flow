@@ -32,7 +32,7 @@
  * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        \Piece\Flow\Action\FactoryTestCase
+ * @see        \Piece\Flow\Action\FactoryTest
  * @since      File available since Release 1.0.0
  */
 
@@ -43,7 +43,7 @@ use Piece\Flow\Action;
  * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        \Piece\Flow\Action\FactoryTestCase
+ * @see        \Piece\Flow\Action\FactoryTest
  * @since      Class available since Release 1.0.0
  */
 class Piece_Flow_Action_FooAction extends Action

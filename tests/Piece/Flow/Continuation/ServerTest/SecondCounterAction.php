@@ -32,7 +32,7 @@
  * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        \Piece\Flow\Continuation\ServerTestCase
+ * @see        \Piece\Flow\Continuation\ServerTest
  * @since      File available since Release 1.0.0
  */
 
@@ -43,14 +43,24 @@ use Piece\Flow\Action;
  * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        \Piece\Flow\Continuation\ServerTestCase
+ * @see        \Piece\Flow\Continuation\ServerTest
  * @since      Class available since Release 1.0.0
  */
-class ShutdownAction extends Action
+class SecondCounterAction extends Action
 {
-    public function finalize()
+    public function setup()
     {
-        ++$GLOBALS['ShutdownCount'];
+        if (!$this->flow->hasAttribute('counter')) {
+            $this->flow->setAttribute('counter', 0);
+        }
+    }
+
+    public function increase()
+    {
+        $this->flow->setAttribute('counter',
+                                   $this->flow->getAttribute('counter') + 1
+                                   );
+        return 'succeed';
     }
 }
 

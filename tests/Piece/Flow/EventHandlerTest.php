@@ -50,7 +50,7 @@ use Piece\Flow\EventHandler;
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
  */
-class EventHandlerTestCase extends \PHPUnit_Framework_TestCase
+class EventHandlerTest extends \PHPUnit_Framework_TestCase
 {
     protected $actionDirectory;
 

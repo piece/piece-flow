@@ -32,8 +32,8 @@
  * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        \Piece\Flow\FlowTestCase
- * @since      File available since Release 1.3.0
+ * @see        \Piece\Flow\Continuation\ServerTest
+ * @since      File available since Release 1.0.0
  */
 
 use Piece\Flow\Action;
@@ -43,25 +43,24 @@ use Piece\Flow\Action;
  * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        \Piece\Flow\FlowTestCase
- * @since      Class available since Release 1.3.0
+ * @see        \Piece\Flow\Continuation\ServerTest
+ * @since      Class available since Release 1.0.0
  */
-class Piece_FlowInvalidEventFromTransitionActionsOrActivitiesAction extends Action
+class CounterAction extends Action
 {
-    public function register()
+    public function setup()
     {
-        if ($GLOBALS['invalidEventFrom'] == 'register') {
-            return 'invalidEventFromRegister';
+        if (!$this->flow->hasAttribute('counter')) {
+            $this->flow->setAttribute('counter', 0);
         }
-
-        return 'goDisplayFinish';
     }
 
-    public function setupFinish()
+    public function increase()
     {
-        if ($GLOBALS['invalidEventFrom'] == 'setupFinish') {
-            return 'invalidEventFromSetupFinish';
-        }
+        $this->flow->setAttribute('counter',
+                                   $this->flow->getAttribute('counter') + 1
+                                    );
+        return 'succeed';
     }
 }
 

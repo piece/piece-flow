@@ -4,7 +4,7 @@
 /**
  * PHP version 5.3
  *
- * Copyright (c) 2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,35 +29,38 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        \Piece\Flow\Continuation\ServerTestCase
- * @since      File available since Release 1.8.0
+ * @see        \Piece\Flow\Continuation\ServerTest
+ * @since      File available since Release 1.15.0
  */
 
 use Piece\Flow\Action;
 
 /**
  * @package    Piece_Flow
- * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        \Piece\Flow\Continuation\ServerTestCase
- * @since      Class available since Release 1.8.0
+ * @see        \Piece\Flow\Continuation\ServerTest
+ * @since      Class available since Release 1.15.0
  */
-class BindActionsWithFlowExecutionAction extends Action
+class Counter_TwoAction extends Action
 {
-    protected $counter = 0;
+    public function setup()
+    {
+        if (!$this->flow->hasAttribute('counter')) {
+            $this->flow->setAttribute('counter', 0);
+        }
+    }
 
     public function increase()
     {
-        ++$this->counter;
-    }
-
-    public function reached()
-    {
-        return $this->counter >= 2;
+        $this->flow->setAttribute('counter',
+                                   $this->flow->getAttribute('counter') + 1
+                                   );
+        return 'succeed';
     }
 }
 

@@ -48,7 +48,7 @@ use Piece\Flow\Util\ErrorReporting;
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
  */
-class ConfigReaderTestCase extends \PHPUnit_Framework_TestCase
+class ConfigReaderTest extends \PHPUnit_Framework_TestCase
 {
     protected $cacheDirectory;
 

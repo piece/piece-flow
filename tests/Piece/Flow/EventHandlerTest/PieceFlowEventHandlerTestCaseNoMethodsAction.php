@@ -32,7 +32,7 @@
  * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        \Piece\Flow\EventHandlerTestCase
+ * @see        \Piece\Flow\EventHandlerTest
  * @since      File available since Release 1.9.0
  */
 
@@ -43,7 +43,7 @@
  * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        \Piece\Flow\EventHandlerTestCase
+ * @see        \Piece\Flow\EventHandlerTest
  * @since      Class available since Release 1.9.0
  */
 class PieceFlowEventHandlerTestCaseNoMethodsAction

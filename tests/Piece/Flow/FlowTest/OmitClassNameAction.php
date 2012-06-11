@@ -4,7 +4,7 @@
 /**
  * PHP version 5.3
  *
- * Copyright (c) 2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,38 +29,30 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        \Piece\Flow\Continuation\ServerTestCase
- * @since      File available since Release 1.15.0
+ * @see        \Piece\Flow\FlowTest
+ * @since      File available since Release 1.7.0
  */
 
 use Piece\Flow\Action;
 
 /**
+ * An action class for the flow OmitClassName.
+ *
  * @package    Piece_Flow
- * @copyright  2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        \Piece\Flow\Continuation\ServerTestCase
- * @since      Class available since Release 1.15.0
+ * @see        \Piece\Flow\FlowTest
+ * @since      Class available since Release 1.7.0
  */
-class Counter_TwoAction extends Action
+class OmitClassNameAction extends Action
 {
-    public function setup()
+    public function initialize()
     {
-        if (!$this->flow->hasAttribute('counter')) {
-            $this->flow->setAttribute('counter', 0);
-        }
-    }
-
-    public function increase()
-    {
-        $this->flow->setAttribute('counter',
-                                   $this->flow->getAttribute('counter') + 1
-                                   );
-        return 'succeed';
+        $GLOBALS['initializeCalled'] = true;
     }
 }
 

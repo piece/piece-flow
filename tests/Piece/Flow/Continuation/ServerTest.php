@@ -49,7 +49,7 @@ use Piece\Flow\Util\ErrorReporting;
  * @version    Release: @package_version@
  * @since      Class available since Release 1.14.0
  */
-class ServerTestCase extends \PHPUnit_Framework_TestCase
+class ServerTest extends \PHPUnit_Framework_TestCase
 {
     protected $cacheDirectory;
 

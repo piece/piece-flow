@@ -50,7 +50,7 @@ use Piece\Flow\Util\ErrorReporting;
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
  */
-class FlowTestCase extends \PHPUnit_Framework_TestCase
+class FlowTest extends \PHPUnit_Framework_TestCase
 {
     protected $source;
     protected $config;

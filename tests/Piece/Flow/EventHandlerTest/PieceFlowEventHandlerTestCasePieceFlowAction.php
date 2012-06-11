@@ -32,27 +32,35 @@
  * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        \Piece\Flow\FlowTestCase
- * @since      File available since Release 1.7.0
+ * @see        \Piece\Flow\EventHandlerTest
+ * @since      File available since Release 1.9.0
  */
 
 use Piece\Flow\Action;
 
 /**
- * An action class for the flow OmitClassName.
+ * A class for unit tests.
  *
  * @package    Piece_Flow
  * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        \Piece\Flow\FlowTestCase
- * @since      Class available since Release 1.7.0
+ * @see        \Piece\Flow\EventHandlerTest
+ * @since      Class available since Release 1.9.0
  */
-class OmitClassNameAction extends Action
+class PieceFlowEventHandlerTestCasePieceFlowAction extends Action
 {
-    public function initialize()
+    public $prepareCalled = false;
+    public $eventHandlerCalled = false;
+
+    public function prepare()
     {
-        $GLOBALS['initializeCalled'] = true;
+        $this->prepareCalled = true;
+    }
+
+    public function foo()
+    {
+        $this->eventHandlerCalled = true;
     }
 }
 

@@ -4,7 +4,7 @@
 /**
  * PHP version 5.3
  *
- * Copyright (c) 2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,76 +29,28 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
+ * @see        \Piece\Flow\Continuation\ServerTest
  * @since      File available since Release 1.0.0
  */
-
-namespace Piece\Flow\Action;
 
 use Piece\Flow\Action;
 
 /**
  * @package    Piece_Flow
- * @copyright  2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
+ * @see        \Piece\Flow\Continuation\ServerTest
  * @since      Class available since Release 1.0.0
  */
-class FactoryTestCase extends \PHPUnit_Framework_TestCase
+class ShutdownAction extends Action
 {
-    protected function tearDown()
+    public function finalize()
     {
-        Factory::clearInstances();
-        Factory::setActionDirectory(null);
-    }
-
-    /**
-     * @expectedException \Piece\Flow\Action\ActionDirectoryRequiredException
-     */
-    public function testFailureToCreateByEmptyActionDirectory()
-    {
-        Factory::factory('\Piece_Flow_Action_FooAction');
-    }
-
-    /**
-     * @expectedException \Piece\Flow\FileNotFoundException
-     */
-    public function testFailureToCreateByNonExistingFile()
-    {
-        Factory::setActionDirectory(dirname(__FILE__) . '/../../..');
-        Factory::factory('Piece_Flow_Action_NonExistingAction');
-    }
-
-    /**
-     * @expectedException \Piece\Flow\Action\ClassNotFoundException
-     */
-    public function testFailureToCreateByInvalidAction()
-    {
-        Factory::setActionDirectory(dirname(__FILE__) . '/../../..');
-        Factory::factory('\Piece_Flow_Action_InvalidAction');
-    }
-
-    public function testFactory()
-    {
-        Factory::setActionDirectory(dirname(__FILE__) . '/../../..');
-        $fooAction = Factory::factory('\Piece_Flow_Action_FooAction');
-
-        $this->assertTrue($fooAction instanceof Action);
-        $this->assertTrue($fooAction instanceof \Piece_Flow_Action_FooAction);
-
-        $barAction = Factory::factory('\Piece_Flow_Action_BarAction');
-
-        $this->assertFalse($barAction instanceof Action);
-        $this->assertTrue($barAction instanceof \Piece_Flow_Action_BarAction);
-
-        $fooAction->baz = 'qux';
-
-        $action = Factory::factory('\Piece_Flow_Action_FooAction');
-
-        $this->assertTrue(property_exists($fooAction, 'baz'));
-        $this->assertEquals('qux', $fooAction->baz);
+        ++$GLOBALS['ShutdownCount'];
     }
 }
 

@@ -32,30 +32,37 @@
  * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        \Piece\Flow\FlowTestCase
- * @since      File available since Release 1.0.0
+ * @since      File available since Release 0.1.0
  */
 
-use Piece\Flow\Action;
+namespace Piece\Flow\ConfigReader;
 
 /**
  * @package    Piece_Flow
  * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        \Piece\Flow\FlowTestCase
- * @since      Class available since Release 1.0.0
+ * @since      Class available since Release 0.1.0
  */
-class Piece_FlowInitialAction extends Action
+class YAMLTest extends CompatibilityTests
 {
-    public function initialize()
+    protected function createConfigReader($source)
     {
-        $GLOBALS['initializeCalled'] = true;
+        $reader = new YAML($source, $this->cacheDirectory);
+        return $reader;
     }
 
-    public function finalize()
+    protected function doSetUp()
     {
-        $GLOBALS['finalizeCalled'] = true;
+        $this->cacheDirectory = dirname(__FILE__) . '/' . basename(__FILE__, '.php');
+    }
+
+    /**
+     * @since Method available since Release 1.14.0
+     */
+    protected function getExtension()
+    {
+        return '.yaml';
     }
 }
 
