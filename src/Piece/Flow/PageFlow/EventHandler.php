@@ -89,7 +89,7 @@ class EventHandler
      * @return mixed
      * @throws \Piece\Flow\PageFlow\HandlerNotFoundException
      */
-    public function invoke(FSM $fsm, Event $event, &$payload)
+    public function invokeAction(FSM $fsm, Event $event, &$payload)
     {
         if (!is_null($this->actionDirectory)) {
             Factory::setActionDirectory($this->actionDirectory);
@@ -136,7 +136,7 @@ class EventHandler
      */
     public function invokeAndTriggerEvent(FSM $fsm, Event $event, &$payload)
     {
-        $result = $this->invoke($fsm, $event, $payload);
+        $result = $this->invokeAction($fsm, $event, $payload);
         if (!is_null($result)) {
             if ($fsm->hasEvent($result)) {
                 $fsm->queueEvent($result);
