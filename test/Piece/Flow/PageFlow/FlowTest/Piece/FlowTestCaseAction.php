@@ -32,36 +32,88 @@
  * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        \Piece\Flow\FlowTest
- * @since      File available since Release 1.3.0
+ * @see        \Piece\Flow\PageFlow\FlowTest
+ * @since      File available since Release 1.0.0
  */
 
 use Piece\Flow\Action;
 
 /**
+ * A class for unit tests.
+ *
  * @package    Piece_Flow
  * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        \Piece\Flow\FlowTest
- * @since      Class available since Release 1.3.0
+ * @see        \Piece\Flow\PageFlow\FlowTest
+ * @since      Class available since Release 1.0.0
  */
-class Piece_FlowInvalidEventFromTransitionActionsOrActivitiesAction extends Action
+class Piece_FlowTestCaseAction extends Action
 {
-    public function register()
+    public function validateInput()
     {
-        if ($GLOBALS['invalidEventFrom'] == 'register') {
-            return 'invalidEventFromRegister';
+        $GLOBALS['validateInputCalled'] = true;
+
+        if (array_key_exists('hasErrors', $GLOBALS)
+            && $GLOBALS['hasErrors']
+            ) {
+            return 'raiseError';
         }
 
-        return 'goDisplayFinish';
+        return 'succeed';
     }
 
-    public function setupFinish()
+    public function validateConfirmation()
     {
-        if ($GLOBALS['invalidEventFrom'] == 'setupFinish') {
-            return 'invalidEventFromSetupFinish';
+        $GLOBALS['validateConfirmationCalled'] = true;
+
+        if (array_key_exists('hasErrors', $GLOBALS)
+            && $GLOBALS['hasErrors']
+            ) {
+            return 'raiseError';
         }
+
+        return 'succeed';
+    }
+
+    public function register()
+    {
+        return 'succeed';
+    }
+
+    public function isPermitted()
+    {
+        return true;
+    }
+
+    public function setupForm()
+    {
+        $GLOBALS['setupFormCalled'] = true;
+    }
+
+    public function teardownForm()
+    {
+        $GLOBALS['teardownFormCalled'] = true;
+    }
+
+    public function countDisplay()
+    {
+        if (array_key_exists('displayCounter', $GLOBALS)) {
+            ++$GLOBALS['displayCounter'];
+        }
+    }
+
+    public function initialize()
+    {
+    }
+
+    public function finalize()
+    {
+    }
+
+    public function prepare()
+    {
+        $GLOBALS['prepareCalled'] = true;
     }
 }
 

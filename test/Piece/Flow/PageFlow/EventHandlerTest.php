@@ -42,7 +42,7 @@ use Stagehand\FSM\FSM;
 
 use Piece\Flow\Action;
 use Piece\Flow\Action\Factory;
-use Piece\Flow\Flow;
+use Piece\Flow\PageFlow\Flow;
 
 /**
  * @package    Piece_Flow

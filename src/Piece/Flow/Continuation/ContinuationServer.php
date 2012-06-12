@@ -38,8 +38,8 @@
 namespace Piece\Flow\Continuation;
 
 use Piece\Flow\Action\Factory;
-use Piece\Flow\Flow;
 use Piece\Flow\MethodInvocationException;
+use Piece\Flow\PageFlow\Flow;
 
 /**
  * The continuation server.

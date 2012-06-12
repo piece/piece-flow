@@ -41,7 +41,6 @@ use Stagehand\FSM\Event;
 use Stagehand\FSM\FSM;
 
 use Piece\Flow\Action\Factory;
-use Piece\Flow\Flow;
 
 /**
  * The invoker for an event handler.

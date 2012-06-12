@@ -32,32 +32,27 @@
  * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        \Piece\Flow\FlowTest
- * @since      File available since Release 1.2.0
+ * @see        \Piece\Flow\PageFlow\FlowTest
+ * @since      File available since Release 1.7.0
  */
 
 use Piece\Flow\Action;
 
 /**
+ * An action class for the flow OmitClassName.
+ *
  * @package    Piece_Flow
  * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        \Piece\Flow\FlowTest
- * @since      Class available since Release 1.2.0
+ * @see        \Piece\Flow\PageFlow\FlowTest
+ * @since      Class available since Release 1.7.0
  */
-class Piece_FlowCDPlayerAction extends Action
+class OmitClassNameAction extends Action
 {
-    public function increase()
+    public function initialize()
     {
-        if ($this->flow->hasAttribute('numberOfUpdate')) {
-            $numberOfUpdate = $this->flow->getAttribute('numberOfUpdate');
-        } else {
-            $numberOfUpdate = 0;
-        }
-
-        ++$numberOfUpdate;
-        $this->flow->setAttribute('numberOfUpdate', $numberOfUpdate);
+        $GLOBALS['initializeCalled'] = true;
     }
 }
 

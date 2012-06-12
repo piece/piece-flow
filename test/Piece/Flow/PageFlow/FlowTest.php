@@ -35,12 +35,13 @@
  * @since      File available since Release 0.1.0
  */
 
-namespace Piece\Flow;
+namespace Piece\Flow\PageFlow;
 
 use Stagehand\FSM\Event;
 use Stagehand\FSM\FSMAlreadyShutdownException;
 
 use Piece\Flow\Action\Factory;
+use Piece\Flow\ConfigReader;
 use Piece\Flow\PageFlow\EventNotFoundException;
 use Piece\Flow\Util\ErrorReporting;
 

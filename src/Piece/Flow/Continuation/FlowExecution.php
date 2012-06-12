@@ -37,7 +37,7 @@
 
 namespace Piece\Flow\Continuation;
 
-use Piece\Flow\Flow;
+use Piece\Flow\PageFlow\Flow;
 
 /**
  * The container class for all flow executions in the continuation server.
@@ -151,7 +151,7 @@ class FlowExecution
      * the list of flow executions.
      *
      * @param string     $flowExecutionTicket
-     * @param \Piece\Flow\Flow $flow
+     * @param \Piece\Flow\PageFlow\Flow $flow
      * @param string     $flowID
      */
     public function addFlowExecution($flowExecutionTicket, Flow $flow, $flowID)
@@ -189,7 +189,7 @@ class FlowExecution
     /**
      * Gets the active Flow object.
      *
-     * @return \Piece\Flow\Flow
+     * @return \Piece\Flow\PageFlow\Flow
      */
     public function getActiveFlow()
     {

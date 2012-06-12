@@ -39,12 +39,17 @@
  * @since      File available since Release 0.1.0
  */
 
-namespace Piece\Flow;
+namespace Piece\Flow\PageFlow;
 
 use Stagehand\FSM\Event;
 use Stagehand\FSM\FSM;
 use Stagehand\FSM\FSMAlreadyShutdownException;
 use Stagehand\FSM\State;
+
+use Piece\Flow\ConfigReader;
+use Piece\Flow\FSMBuilder;
+use Piece\Flow\InvalidTransitionException;
+use Piece\Flow\MethodInvocationException;
 
 /**
  * A web flow engine for handling page flows of web applications.

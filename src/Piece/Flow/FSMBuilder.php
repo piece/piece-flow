@@ -41,6 +41,7 @@ use Stagehand\FSM\Event;
 use Stagehand\FSM\State;
 
 use Piece\Flow\PageFlow\EventHandler;
+use Piece\Flow\PageFlow\Flow;
 
 /**
  * The FSM builder.
@@ -65,7 +66,7 @@ class FSMBuilder
     /**
      * Sets a Flow object to the property.
      *
-     * @param \Piece\Flow\Flow $flow
+     * @param \Piece\Flow\PageFlow\Flow $flow
      * @param string     $actionDirectory
      */
     public function __construct(Flow $flow, $actionDirectory)

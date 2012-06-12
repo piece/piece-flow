@@ -32,8 +32,8 @@
  * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        \Piece\Flow\FlowTest
- * @since      File available since Release 1.0.0
+ * @see        \Piece\Flow\PageFlow\FlowTest
+ * @since      File available since Release 1.2.0
  */
 
 use Piece\Flow\Action;
@@ -43,19 +43,21 @@ use Piece\Flow\Action;
  * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        \Piece\Flow\FlowTest
- * @since      Class available since Release 1.0.0
+ * @see        \Piece\Flow\PageFlow\FlowTest
+ * @since      Class available since Release 1.2.0
  */
-class Piece_FlowInitialAction extends Action
+class Piece_FlowCDPlayerAction extends Action
 {
-    public function initialize()
+    public function increase()
     {
-        $GLOBALS['initializeCalled'] = true;
-    }
+        if ($this->flow->hasAttribute('numberOfUpdate')) {
+            $numberOfUpdate = $this->flow->getAttribute('numberOfUpdate');
+        } else {
+            $numberOfUpdate = 0;
+        }
 
-    public function finalize()
-    {
-        $GLOBALS['finalizeCalled'] = true;
+        ++$numberOfUpdate;
+        $this->flow->setAttribute('numberOfUpdate', $numberOfUpdate);
     }
 }
 

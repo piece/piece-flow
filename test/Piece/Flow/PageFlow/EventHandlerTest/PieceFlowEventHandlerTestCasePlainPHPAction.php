@@ -36,7 +36,7 @@
  * @since      File available since Release 1.9.0
  */
 
-use Piece\Flow\Flow;
+use Piece\Flow\PageFlow\Flow;
 
 /**
  * A class for unit tests.
