@@ -134,7 +134,7 @@ class EventHandler
      * @param mixed               &$payload
      * @throws \Piece\Flow\PageFlow\EventNotFoundException
      */
-    public function invokeAndTriggerEvent(FSM $fsm, Event $event, &$payload)
+    public function invokeActionAndTriggerEvent(FSM $fsm, Event $event, &$payload)
     {
         $result = $this->invokeAction($fsm, $event, $payload);
         if (!is_null($result)) {

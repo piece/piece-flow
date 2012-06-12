@@ -237,7 +237,7 @@ class FSMBuilder
         }
 
         $eventHandler = new EventHandler($this->flow, @$action['class'], $action['method'], $this->actionDirectory);
-        return array($eventHandler, 'invokeAndTriggerEvent');
+        return array($eventHandler, 'invokeActionAndTriggerEvent');
     }
 }
 
