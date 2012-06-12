@@ -32,7 +32,7 @@
  * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        \Piece\Flow\EventHandlerTest
+ * @see        \Piece\Flow\PageFlow\EventHandlerTest
  * @since      File available since Release 1.9.0
  */
 
@@ -45,7 +45,7 @@ use Piece\Flow\Flow;
  * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        \Piece\Flow\EventHandlerTest
+ * @see        \Piece\Flow\PageFlow\EventHandlerTest
  * @since      Class available since Release 1.9.0
  */
 class PieceFlowEventHandlerTestCasePlainPHPAction

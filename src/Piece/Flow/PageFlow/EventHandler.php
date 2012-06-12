@@ -35,12 +35,13 @@
  * @since      File available since Release 0.1.0
  */
 
-namespace Piece\Flow;
+namespace Piece\Flow\PageFlow;
 
 use Stagehand\FSM\Event;
 use Stagehand\FSM\FSM;
 
 use Piece\Flow\Action\Factory;
+use Piece\Flow\Flow;
 
 /**
  * The invoker for an event handler.
@@ -100,7 +101,7 @@ class EventHandler
      * @param \Stagehand\FSM\FSM $fsm
      * @param \Stagehand\FSM\Event $event
      * @param mixed               &$payload
-     * @throws \Piece\Flow\EventNotFoundException
+     * @throws \Piece\Flow\PageFlow\EventNotFoundException
      */
     public function invokeAndTriggerEvent(FSM $fsm, Event $event, &$payload)
     {
@@ -120,7 +121,7 @@ class EventHandler
      * @param string $eventName
      * @param mixed  &$payload
      * @return string
-     * @throws \Piece\Flow\HandlerNotFoundException
+     * @throws \Piece\Flow\PageFlow\HandlerNotFoundException
      */
     protected function invokeEventHandler($eventName, &$payload)
     {

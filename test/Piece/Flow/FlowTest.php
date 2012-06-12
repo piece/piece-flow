@@ -41,6 +41,7 @@ use Stagehand\FSM\Event;
 use Stagehand\FSM\FSMAlreadyShutdownException;
 
 use Piece\Flow\Action\Factory;
+use Piece\Flow\PageFlow\EventNotFoundException;
 use Piece\Flow\Util\ErrorReporting;
 
 /**

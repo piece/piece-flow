@@ -40,6 +40,8 @@ namespace Piece\Flow;
 use Stagehand\FSM\Event;
 use Stagehand\FSM\State;
 
+use Piece\Flow\PageFlow\EventHandler;
+
 /**
  * The FSM builder.
  *

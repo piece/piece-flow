@@ -35,13 +35,14 @@
  * @since      File available since Release 0.1.0
  */
 
-namespace Piece\Flow;
+namespace Piece\Flow\PageFlow;
 
 use Stagehand\FSM\Event;
 use Stagehand\FSM\FSM;
 
+use Piece\Flow\Action;
 use Piece\Flow\Action\Factory;
-use Piece\Flow\EventHandler;
+use Piece\Flow\Flow;
 
 /**
  * @package    Piece_Flow
@@ -137,7 +138,7 @@ class EventHandlerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Piece\Flow\HandlerNotFoundException
+     * @expectedException \Piece\Flow\PageFlow\HandlerNotFoundException
      * @since Method available since Release 1.9.0
      */
     public function testEventHandlerNotFound()

@@ -4,7 +4,7 @@
 /**
  * PHP version 5.3
  *
- * Copyright (c) 2012 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,23 +29,37 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2012 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @since      File available since Release 2.0.0
+ * @see        \Piece\Flow\PageFlow\EventHandlerTest
+ * @since      File available since Release 1.9.0
  */
-
-namespace Piece\Flow;
 
 /**
+ * A class for unit tests.
+ *
  * @package    Piece_Flow
- * @copyright  2012 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @since      Class available since Release 2.0.0
+ * @see        \Piece\Flow\PageFlow\EventHandlerTest
+ * @since      Class available since Release 1.9.0
  */
-class EventNotFoundException extends \RuntimeException
+class PieceFlowEventHandlerTestCaseNoMethodsAction
 {
+    public $constructorCalled = false;
+    public $eventHandlerCalled = false;
+
+    public function __construct()
+    {
+        $this->constructorCalled = true;
+    }
+
+    public function foo()
+    {
+        $this->eventHandlerCalled = true;
+    }
 }
 
 /*
