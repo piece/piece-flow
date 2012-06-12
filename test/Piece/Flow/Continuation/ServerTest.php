@@ -92,72 +92,12 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $cache->clean();
     }
 
-    public function testAddingFlowInSingleFlowMode()
-    {
-        $server = new Server(true);
-        $server->setCacheDirectory($this->cacheDirectory);
-        $server->addFlow('foo', '/path/to/foo.xml');
-    }
-
-    /**
-     * @expectedException \Piece\Flow\Continuation\FlowDefinitionAlreadyExistsException
-     */
-    public function testFailureToAddFlowForSecondTimeInSingleFlowMode()
-    {
-        $server = new Server(true);
-        $server->setCacheDirectory($this->cacheDirectory);
-        $server->addFlow('foo', '/path/to/foo.xml');
-        $server->addFlow('bar', '/path/to/bar.xml');
-    }
-
     public function testSettingFlowInMultipleFlowMode()
     {
         $server = new Server();
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow('foo', '/path/to/foo.xml');
         $server->addFlow('bar', '/path/to/bar.xml');
-    }
-
-    public function testFirstTimeInvocationInSingleFlowMode()
-    {
-        $server = new Server(true);
-        $server->setCacheDirectory($this->cacheDirectory);
-        $server->addFlow('Counter', "{$this->cacheDirectory}/Counter.yaml");
-        $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
-        $server->setActionDirectory($this->cacheDirectory);
-        $flowExecutionTicket = $server->invoke(new \stdClass());
-        $service = $server->createService();
-
-        $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket);
-        $this->assertEquals('Counter', $server->getView());
-        $this->assertEquals(0, $service->getAttribute('counter'));
-    }
-
-    public function testSecondTimeInvocationInSingleFlowMode()
-    {
-        $server = new Server(true);
-        $server->setCacheDirectory($this->cacheDirectory);
-        $server->addFlow('Counter', "{$this->cacheDirectory}/Counter.yaml");
-        $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
-        $server->setActionDirectory($this->cacheDirectory);
-
-        $GLOBALS['flowID'] = 'Counter';
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = null;
-        $flowExecutionTicket1 = $server->invoke(new \stdClass());
-        $server->shutdown();
-
-        $GLOBALS['flowID'] = 'Counter';
-        $GLOBALS['eventName'] = 'increase';
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket1;
-        $flowExecutionTicket2 = $server->invoke(new \stdClass());
-        $service = $server->createService();
-
-        $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket1);
-        $this->assertEquals('Counter', $server->getView());
-        $this->assertEquals(1, $service->getAttribute('counter'));
-        $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket2);
     }
 
     public function testInvocationInMultipleFlowModeAndFlowInNonExclusiveMode()
@@ -274,31 +214,6 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($flowExecutionTicket2 != $flowExecutionTicket5);
     }
 
-    public function testSuccessOfContinuationByInvalidFlowNameInSingleFlowMode()
-    {
-        $server = new Server(true);
-        $server->setCacheDirectory($this->cacheDirectory);
-        $server->addFlow('Counter', "{$this->cacheDirectory}/Counter.yaml");
-        $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array(__CLASS__, 'getFlowID'));
-        $server->setActionDirectory($this->cacheDirectory);
-
-        $GLOBALS['flowID'] = 'Counter';
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = null;
-        $flowExecutionTicket = $server->invoke(new \stdClass());
-        $server->shutdown();
-
-        $GLOBALS['flowID'] = 'InvalidFlowName';
-        $GLOBALS['eventName'] = 'increase';
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket;
-        $server->invoke(new \stdClass());
-        $service = $server->createService();
-
-        $this->assertEquals(1, $service->getAttribute('counter'));
-    }
-
     /**
      * @expectedException \Piece\Flow\Continuation\InvalidFlowIDException
      */
@@ -387,37 +302,9 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($flowExecutionTicket1 != $flowExecutionTicket3);
     }
 
-    public function testInvocationInSingleFlowModeAndFlowInExclusiveMode()
-    {
-        $server = new Server(true);
-        $server->setCacheDirectory($this->cacheDirectory);
-        $server->addFlow('Counter', "{$this->cacheDirectory}/Counter.yaml", true);
-        $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array(__CLASS__, 'getFlowID'));
-        $server->setActionDirectory($this->cacheDirectory);
-
-        $GLOBALS['flowID'] = 'Counter';
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = null;
-        $flowExecutionTicket1 = $server->invoke(new \stdClass());
-        $server->shutdown();
-
-        $GLOBALS['flowID'] = 'Counter';
-        $GLOBALS['eventName'] = 'increase';
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket1;
-        $flowExecutionTicket2 = $server->invoke(new \stdClass());
-        $service = $server->createService();
-
-        $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket1);
-        $this->assertEquals('Counter', $server->getView());
-        $this->assertEquals(1, $service->getAttribute('counter'));
-        $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket2);
-    }
-
     public function testSettingAttribute()
     {
-        $server = new Server(true);
+        $server = new Server();
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow('Counter', "{$this->cacheDirectory}/Counter.yaml", true);
         $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
@@ -472,7 +359,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
      */
     public function testFailureToSetAttributeBeforeStartingContinuation()
     {
-        $server = new Server(true);
+        $server = new Server();
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow('Counter', "{$this->cacheDirectory}/Counter.yaml", true);
         $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
@@ -487,7 +374,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
      */
     public function testFailureToGetAttributeBeforeStartingContinuation()
     {
-        $server = new Server(true);
+        $server = new Server();
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow('Counter', "{$this->cacheDirectory}/Counter.yaml", true);
         $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
@@ -584,49 +471,6 @@ class ServerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue($flowExecutionTicket1 != $flowExecutionTicket3);
         $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket3);
-    }
-
-    /**
-     * @expectedException \Stagehand\FSM\FSMAlreadyShutdownException
-     */
-    public function testStartingNewFlowExecutionAfterShuttingDownContinuationInSingleFlowMode()
-    {
-        $GLOBALS['ShutdownCount'] = 0;
-
-        $server = new Server(true);
-        $server->setCacheDirectory($this->cacheDirectory);
-        $server->addFlow('Shutdown', "{$this->cacheDirectory}/Shutdown.yaml");
-        $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array(__CLASS__, 'getFlowID'));
-
-        /*
-         * Starting a new 'Shutdown'.
-         */
-        $GLOBALS['flowID'] = 'Shutdown';
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = null;
-        $flowExecutionTicket1 = $server->invoke(new \stdClass());
-        $server->shutdown();
-
-        $GLOBALS['flowID'] = 'Shutdown';
-        $GLOBALS['eventName'] = 'go';
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket1;
-        $flowExecutionTicket2 = $server->invoke(new \stdClass());
-        $server->shutdown();
-
-        $this->assertEquals(1, $GLOBALS['ShutdownCount']);
-        $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket2);
-
-        /*
-         * Failure to continue the 'Shutdown' from the previous flow
-         * execution ticket. The continuation server never starts a new
-         * 'Shutdown' again.
-         */
-        $GLOBALS['flowID'] = 'Shutdown';
-        $GLOBALS['eventName'] = 'go';
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket1;
-        $server->invoke(new \stdClass());
     }
 
     /**
@@ -797,7 +641,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
     public function testFlowExecutionExpiredExceptionShouldBeRaisedWhenFlowExecutionHasExpired()
     {
         $flowName = 'FlowExecutionExpired';
-        $server = new Server(false, true, 1);
+        $server = new Server(true, 1);
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow($flowName, "{$this->cacheDirectory}/$flowName.yaml");
         $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
@@ -824,7 +668,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
     public function testFlowExecutionExpiredExceptionShouldNotBeRaisedWhenFlowExecutionHasNotExpired()
     {
         $flowName = 'FlowExecutionExpired';
-        $server = new Server(false, true, 2);
+        $server = new Server(true, 2);
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow($flowName, "{$this->cacheDirectory}/$flowName.yaml");
         $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
@@ -866,7 +710,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
     {
         $flowName = 'FlowExecutionExpired';
         $GLOBALS['flowID'] = $flowName;
-        $server = new Server(false, true, 1);
+        $server = new Server(true, 1);
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow($flowName, "{$this->cacheDirectory}/$flowName.yaml");
         $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
@@ -907,7 +751,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
     public function testCheckLastEventShouldReturnTrueIfContinuationHasJustStarted()
     {
         $flowName = 'CheckLastEvent';
-        $server = new Server(false);
+        $server = new Server();
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow($flowName, "{$this->cacheDirectory}/$flowName.yaml");
         $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
@@ -929,7 +773,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
     public function testCheckLastEventShouldReturnTrueWhenValidEventIsGivenByUser()
     {
         $flowName = 'CheckLastEvent';
-        $server = new Server(false);
+        $server = new Server();
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow($flowName, "{$this->cacheDirectory}/$flowName.yaml");
         $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
@@ -967,7 +811,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
     public function testCheckLastEventShouldReturnFalseWhenInvalidEventIsGivenByUser()
     {
         $flowName = 'CheckLastEvent';
-        $server = new Server(false);
+        $server = new Server();
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow($flowName, "{$this->cacheDirectory}/$flowName.yaml");
         $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
@@ -995,7 +839,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
     public function testCheckLastEventShouldReturnTrueIfContinuationHasNotActivatedYet()
     {
         $flowName = 'CheckLastEvent';
-        $server = new Server(false);
+        $server = new Server();
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow($flowName, "{$this->cacheDirectory}/$flowName.yaml");
         $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
@@ -1016,7 +860,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
     public function testCurrentStateNameShouldBeAbleToGetIfContinuationHasActivated()
     {
         $flowName = 'CheckLastEvent';
-        $server = new Server(false);
+        $server = new Server();
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow($flowName, "{$this->cacheDirectory}/$flowName.yaml");
         $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
@@ -1059,7 +903,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
     public function testGetCurrentStateNameShouldRaiseExceptionIfContinuationHasNotActivated()
     {
         $flowName = 'CheckLastEvent';
-        $server = new Server(false);
+        $server = new Server();
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow($flowName, "{$this->cacheDirectory}/$flowName.yaml");
         $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
@@ -1170,7 +1014,7 @@ class ServerTest extends \PHPUnit_Framework_TestCase
     public function testFlowExecutionExpiredExceptionShouldRaiseAfterSweepingIt()
     {
         $flowName = 'FlowExecutionExpired';
-        $server = new Server(false, true, 1);
+        $server = new Server(true, 1);
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow($flowName, "{$this->cacheDirectory}/$flowName.yaml");
         $server->setEventNameCallback(array(__CLASS__, 'getEventName'));

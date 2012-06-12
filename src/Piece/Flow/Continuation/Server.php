@@ -53,7 +53,6 @@ use Piece\Flow\MethodInvocationException;
 class Server
 {
     protected $flowDefinitions = array();
-    protected $enableSingleFlowMode;
     protected $cacheDirectory;
     protected $flowExecutionTicketCallback;
     protected $flowIDCallback;
@@ -73,23 +72,16 @@ class Server
     private static $shutdownRegistered = false;
 
     /**
-     * Sets whether the continuation server should be work in the single flow
-     * mode.
-     *
-     * @param boolean $enableSingleFlowMode
      * @param integer $enableGC
      * @param integer $gcExpirationTime
      */
-    public function __construct($enableSingleFlowMode = false, $enableGC = false, $gcExpirationTime = 1440)
+    public function __construct($enableGC = false, $gcExpirationTime = 1440)
     {
-        if (!$enableSingleFlowMode) {
-            if ($enableGC) {
-                $this->gc = new GC($gcExpirationTime);
-                $this->enableGC = true;
-            }
+        if ($enableGC) {
+            $this->gc = new GC($gcExpirationTime);
+            $this->enableGC = true;
         }
 
-        $this->enableSingleFlowMode = $enableSingleFlowMode;
         $this->flowExecution = new FlowExecution();
     }
 
@@ -99,14 +91,9 @@ class Server
      * @param string  $flowID
      * @param mixed   $source
      * @param boolean $isExclusive
-     * @throws \Piece\Flow\Continuation\FlowDefinitionAlreadyExistsException
      */
     public function addFlow($flowID, $source, $isExclusive = false)
     {
-        if ($this->enableSingleFlowMode && count($this->flowDefinitions)) {
-            throw new FlowDefinitionAlreadyExistsException('A flow definition already exists in the continuation object.');
-        }
-
         $this->flowDefinitions[$flowID] = array('source' => $source,
                                                  'isExclusive' => $isExclusive
                                                  );
@@ -221,9 +208,7 @@ class Server
      */
     public function clear()
     {
-        if ($this->flowExecution->hasFlowExecution($this->activeFlowExecutionTicket)
-            && !$this->enableSingleFlowMode
-            ) {
+        if ($this->flowExecution->hasFlowExecution($this->activeFlowExecutionTicket)) {
             $flow = $this->flowExecution->getActiveFlow();
             if ($flow->isFinalState()) {
                 $this->flowExecution->removeFlowExecution($this->activeFlowExecutionTicket, $this->activeFlowID);
@@ -347,15 +332,13 @@ class Server
         if ($this->flowExecution->hasFlowExecution($currentFlowExecutionTicket)) {
             $registeredFlowID = $this->flowExecution->getFlowID($currentFlowExecutionTicket);
 
-            if (!$this->enableSingleFlowMode) {
-                $flowID = $this->getFlowID();
-                if (is_null($flowID) || !strlen($flowID)) {
-                    throw new FlowIDRequiredException('A flow ID must be given in this case.');
-                }
+            $flowID = $this->getFlowID();
+            if (is_null($flowID) || !strlen($flowID)) {
+                throw new FlowIDRequiredException('A flow ID must be given in this case.');
+            }
 
-                if ($flowID != $registeredFlowID) {
-                    throw new InvalidFlowIDException('The given flow ID is different from the registerd flow ID.');
-                }
+            if ($flowID != $registeredFlowID) {
+                throw new InvalidFlowIDException('The given flow ID is different from the registerd flow ID.');
             }
 
             $this->activeFlowID = $registeredFlowID;
@@ -457,12 +440,7 @@ class Server
      */
     protected function getFlowID()
     {
-        if (!$this->enableSingleFlowMode) {
-            return call_user_func($this->flowIDCallback);
-        } else {
-            $flowIDs = array_keys($this->flowDefinitions);
-            return $flowIDs[0];
-        }
+        return call_user_func($this->flowIDCallback);
     }
 
     /**
@@ -472,11 +450,7 @@ class Server
      */
     protected function isExclusive()
     {
-        if (!$this->enableSingleFlowMode) {
-            return $this->flowDefinitions[$this->activeFlowID]['isExclusive'];
-        } else {
-            return true;
-        }
+        return $this->flowDefinitions[$this->activeFlowID]['isExclusive'];
     }
 
     /**
