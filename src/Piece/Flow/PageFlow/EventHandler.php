@@ -43,7 +43,7 @@ use Stagehand\FSM\FSM;
 use Piece\Flow\Action\Factory;
 
 /**
- * The invoker for an event handler.
+ * The event handler to handle all events raised on the specified PageFlow object.
  *
  * @package    Piece_Flow
  * @copyright  2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
@@ -81,7 +81,7 @@ class EventHandler
     }
 
     /**
-     * Invokes an event handler in an action.
+     * Invokes the action with the event context.
      *
      * @param \Stagehand\FSM\FSM $fsm
      * @param \Stagehand\FSM\Event $event
@@ -126,7 +126,7 @@ class EventHandler
     }
 
     /**
-     * Invokes an event handler in an action and triggers an event returned
+     * Invokes the action with the event context and triggers an event returned
      * from the action.
      *
      * @param \Stagehand\FSM\FSM $fsm
