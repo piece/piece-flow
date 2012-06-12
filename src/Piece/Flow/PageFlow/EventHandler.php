@@ -136,7 +136,7 @@ class EventHandler
      */
     public function invokeAndTriggerEvent(FSM $fsm, Event $event, &$payload)
     {
-        $result = $this->invokeEventHandler($event->getName(), $payload);
+        $result = $this->invoke($fsm, $event, $payload);
         if (!is_null($result)) {
             if ($fsm->hasEvent($result)) {
                 $fsm->queueEvent($result);
@@ -144,50 +144,6 @@ class EventHandler
                 throw new EventNotFoundException("An invalid event [ $result ] is returned from [ {$this->class}::{$this->method}() ] method on the state [ " . $this->flow->getCurrentStateName() . ' ]. Check the flow definition and the action class.');
             }
         }
-    }
-
-    /**
-     * Invokes an event handler in an action.
-     *
-     * @param string $eventName
-     * @param mixed  &$payload
-     * @return string
-     * @throws \Piece\Flow\PageFlow\HandlerNotFoundException
-     */
-    protected function invokeEventHandler($eventName, &$payload)
-    {
-        if (!is_null($this->actionDirectory)) {
-            Factory::setActionDirectory($this->actionDirectory);
-        }
-
-        $action = Factory::factory($this->class);
-        if (!method_exists($action, $this->method)) {
-            throw new HandlerNotFoundException("The method [ {$this->method} ] does not exist in the action class [ {$this->class} ].");
-        }
-
-        if (method_exists($action, 'setFlow')) {
-            $action->setFlow($this->flow);
-        }
-
-        if (method_exists($action, 'setPayload')) {
-            $action->setPayload($payload);
-        }
-
-        if (method_exists($action, 'setEvent')) {
-            $action->setEvent($eventName);
-        }
-
-        if (method_exists($action, 'prepare')) {
-            $action->prepare();
-        }
-
-        $result = call_user_func(array($action, $this->method));
-
-        if (method_exists($action, 'clear')) {
-            $action->clear();
-        }
-
-        return $result;
     }
 }
 
