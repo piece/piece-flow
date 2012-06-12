@@ -50,7 +50,7 @@ use Piece\Flow\MethodInvocationException;
  * @version    Release: @package_version@
  * @since      Class available since Release 1.14.0
  */
-class Server
+class ContinuationServer
 {
     protected $flowDefinitions = array();
     protected $cacheDirectory;
