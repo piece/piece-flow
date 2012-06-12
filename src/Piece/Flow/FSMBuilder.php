@@ -41,7 +41,7 @@ use Stagehand\FSM\Event;
 use Stagehand\FSM\State;
 
 use Piece\Flow\PageFlow\EventHandler;
-use Piece\Flow\PageFlow\Flow;
+use Piece\Flow\PageFlow\PageFlow;
 
 /**
  * The FSM builder.
@@ -66,10 +66,10 @@ class FSMBuilder
     /**
      * Sets a Flow object to the property.
      *
-     * @param \Piece\Flow\PageFlow\Flow $flow
+     * @param \Piece\Flow\PageFlow\PageFlow $flow
      * @param string     $actionDirectory
      */
-    public function __construct(Flow $flow, $actionDirectory)
+    public function __construct(PageFlow $flow, $actionDirectory)
     {
         $this->fsmBuilder = new \Stagehand\FSM\FSMBuilder();
         $this->flow = $flow;
@@ -161,7 +161,7 @@ class FSMBuilder
     protected function configureState(array $state)
     {
         for ($i = 0, $count = count(@$state['transitions']); $i < $count; ++$i) {
-            if ($state['transitions'][$i]['event'] == Flow::EVENT_PROTECTED
+            if ($state['transitions'][$i]['event'] == PageFlow::EVENT_PROTECTED
                 || $this->fsmBuilder->getFSM()->isProtectedEvent($state['transitions'][$i]['event'])
                 ) {
                 throw new ProtectedEventException("The event [ {$state['transitions'][$i]['event']} ] cannot be used in flow definitions.");

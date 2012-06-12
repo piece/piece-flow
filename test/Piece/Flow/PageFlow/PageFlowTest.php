@@ -52,7 +52,7 @@ use Piece\Flow\Util\ErrorReporting;
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
  */
-class FlowTest extends \PHPUnit_Framework_TestCase
+class PageFlowTest extends \PHPUnit_Framework_TestCase
 {
     protected $source;
     protected $config;
@@ -85,7 +85,7 @@ class FlowTest extends \PHPUnit_Framework_TestCase
 
     public function testConfiguration()
     {
-        $flow = new Flow();
+        $flow = new PageFlow();
         $flow->configure($this->source, null, $this->cacheDirectory, $this->cacheDirectory);
 
         $this->assertEquals($this->config->getName(), $flow->getName());
@@ -94,7 +94,7 @@ class FlowTest extends \PHPUnit_Framework_TestCase
     public function testGettingView()
     {
         $viewStates = $this->config->getViewStates();
-        $flow = new Flow();
+        $flow = new PageFlow();
         $flow->configure($this->source, null, $this->cacheDirectory, $this->cacheDirectory);
         $flow->start();
 
@@ -108,7 +108,7 @@ class FlowTest extends \PHPUnit_Framework_TestCase
         $GLOBALS['validateInputCalled'] = false;
         $GLOBALS['prepareCalled'] = false;
         $viewStates = $this->config->getViewStates();
-        $flow = new Flow();
+        $flow = new PageFlow();
         $flow->configure($this->source, null, $this->cacheDirectory, $this->cacheDirectory);
         $flow->start();
         $flow->triggerEvent('submit');
@@ -122,7 +122,7 @@ class FlowTest extends \PHPUnit_Framework_TestCase
 
     public function testGettingPreviousStateName()
     {
-        $flow = new Flow();
+        $flow = new PageFlow();
         $flow->configure($this->source, null, $this->cacheDirectory, $this->cacheDirectory);
         $flow->start();
         $flow->triggerEvent('submit');
@@ -132,7 +132,7 @@ class FlowTest extends \PHPUnit_Framework_TestCase
 
     public function testGettingCurrentStateName()
     {
-        $flow = new Flow();
+        $flow = new PageFlow();
         $flow->configure($this->source, null, $this->cacheDirectory, $this->cacheDirectory);
         $flow->start();
         $flow->triggerEvent('submit');
@@ -145,7 +145,7 @@ class FlowTest extends \PHPUnit_Framework_TestCase
         $GLOBALS['validateInputCalled'] = false;
         $GLOBALS['validateConfirmationCalled'] = false;
         $viewStates = $this->config->getViewStates();
-        $flow = new Flow();
+        $flow = new PageFlow();
         $flow->configure($this->source, null, $this->cacheDirectory, $this->cacheDirectory);
         $flow->start();
         $flow->triggerEvent('submit');
@@ -168,7 +168,7 @@ class FlowTest extends \PHPUnit_Framework_TestCase
     {
         $GLOBALS['hasErrors'] = true;
         $viewStates = $this->config->getViewStates();
-        $flow = new Flow();
+        $flow = new PageFlow();
         $flow->configure($this->source, null, $this->cacheDirectory, $this->cacheDirectory);
         $flow->start();
         $flow->triggerEvent('submit');
@@ -181,7 +181,7 @@ class FlowTest extends \PHPUnit_Framework_TestCase
     public function testActivity()
     {
         $GLOBALS['displayCounter'] = 0;
-        $flow = new Flow();
+        $flow = new PageFlow();
         $flow->configure($this->source, null, $this->cacheDirectory, $this->cacheDirectory);
         $flow->start();
 
@@ -197,7 +197,7 @@ class FlowTest extends \PHPUnit_Framework_TestCase
     {
         $GLOBALS['setupFormCalled'] = false;
         $GLOBALS['teardownFormCalled'] = false;
-        $flow = new Flow();
+        $flow = new PageFlow();
         $flow->configure($this->source, null, $this->cacheDirectory, $this->cacheDirectory);
         $flow->start();
 
@@ -211,7 +211,7 @@ class FlowTest extends \PHPUnit_Framework_TestCase
 
     public function testSettingAttribute()
     {
-        $flow = new Flow();
+        $flow = new PageFlow();
         $flow->configure($this->source, null, $this->cacheDirectory, $this->cacheDirectory);
         $flow->start();
         $flow->setAttribute('foo', 'bar');
@@ -225,7 +225,7 @@ class FlowTest extends \PHPUnit_Framework_TestCase
      */
     public function testFailureToSetAttributeBeforeStartingFlow()
     {
-        $flow = new Flow();
+        $flow = new PageFlow();
         $flow->configure($this->source, null, $this->cacheDirectory, $this->cacheDirectory);
         $flow->setAttribute('foo', 'bar');
     }
@@ -235,20 +235,20 @@ class FlowTest extends \PHPUnit_Framework_TestCase
      */
     public function testFailureToSetPayloadBeforeConfiguringFlow()
     {
-        $flow = new Flow();
+        $flow = new PageFlow();
         $flow->setPayload(new \stdClass());
     }
 
     public function testOptionalElements()
     {
-        $flow = new Flow();
+        $flow = new PageFlow();
         $flow->configure("{$this->cacheDirectory}/optional.xml", null, $this->cacheDirectory, $this->cacheDirectory);
         $flow->setPayload(new \stdClass());
         $flow->start();
 
         $this->assertEquals('foo', $flow->getView());
 
-        $flow = new Flow();
+        $flow = new PageFlow();
         $flow->configure("{$this->cacheDirectory}/optional.yaml", null, $this->cacheDirectory, $this->cacheDirectory);
         $flow->setPayload(new \stdClass());
         $flow->start();
@@ -271,7 +271,7 @@ class FlowTest extends \PHPUnit_Framework_TestCase
      */
     public function testFailureToGetViewBeforeStartingFlow()
     {
-        $flow = new Flow();
+        $flow = new PageFlow();
         $flow->configure($this->source, null, $this->cacheDirectory, $this->cacheDirectory);
         $flow->getView();
     }
@@ -281,7 +281,7 @@ class FlowTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidTransition()
     {
-        $flow = new Flow();
+        $flow = new PageFlow();
         $flow->configure("{$this->cacheDirectory}/invalid.yaml", null, $this->cacheDirectory, $this->cacheDirectory);
         $flow->setPayload(new \stdClass());
         $flow->start();
@@ -291,7 +291,7 @@ class FlowTest extends \PHPUnit_Framework_TestCase
 
     public function testCheckingWhetherCurrentStateIsFinalState()
     {
-        $flow = new Flow();
+        $flow = new PageFlow();
         $flow->configure("{$this->cacheDirectory}/initial.yaml", null, $this->cacheDirectory, $this->cacheDirectory);
         $flow->setPayload(new \stdClass());
         $flow->start();
@@ -305,7 +305,7 @@ class FlowTest extends \PHPUnit_Framework_TestCase
 
     public function testSettingAttributeByReference()
     {
-        $flow = new Flow();
+        $flow = new PageFlow();
         $flow->configure($this->source, null, $this->cacheDirectory, $this->cacheDirectory);
         $flow->start();
 
@@ -323,7 +323,7 @@ class FlowTest extends \PHPUnit_Framework_TestCase
 
     public function testRemovingAttribute()
     {
-        $flow = new Flow();
+        $flow = new PageFlow();
         $flow->configure($this->source, null, $this->cacheDirectory, $this->cacheDirectory);
         $flow->start();
         $flow->setAttribute('foo', 'bar');
@@ -337,7 +337,7 @@ class FlowTest extends \PHPUnit_Framework_TestCase
 
     public function testClearingAttributes()
     {
-        $flow = new Flow();
+        $flow = new PageFlow();
         $flow->configure($this->source, null, $this->cacheDirectory, $this->cacheDirectory);
         $flow->start();
         $flow->setAttribute('foo', 'bar');
@@ -357,7 +357,7 @@ class FlowTest extends \PHPUnit_Framework_TestCase
      */
     public function testToPreventTriggeringProtectedEvents()
     {
-        $flow = new Flow();
+        $flow = new PageFlow();
         $flow->configure("{$this->cacheDirectory}/CDPlayer.yaml", null, $this->cacheDirectory, $this->cacheDirectory);
         $flow->setPayload(new \stdClass());
         $flow->start();
@@ -407,7 +407,7 @@ class FlowTest extends \PHPUnit_Framework_TestCase
      */
     public function testProtectedEvents()
     {
-        $flow = new Flow();
+        $flow = new PageFlow();
         $flow->configure("{$this->cacheDirectory}/ProtectedEvents.yaml", null, $this->cacheDirectory, $this->cacheDirectory);
     }
 
@@ -417,7 +417,7 @@ class FlowTest extends \PHPUnit_Framework_TestCase
      */
     public function testProtectedStates()
     {
-        $flow = new Flow();
+        $flow = new PageFlow();
         $flow->configure("{$this->cacheDirectory}/ProtectedStates.yaml", null, $this->cacheDirectory, $this->cacheDirectory);
     }
 
@@ -427,7 +427,7 @@ class FlowTest extends \PHPUnit_Framework_TestCase
     public function testInvalidEventFromATransitionActionsOrActivities()
     {
         $GLOBALS['invalidEventFrom'] = 'register';
-        $flow1 = new Flow();
+        $flow1 = new PageFlow();
         $flow1->configure("{$this->cacheDirectory}/InvalidEventFromTransitionActionsOrActivities.yaml", null, $this->cacheDirectory, $this->cacheDirectory);
         $flow1->setPayload(new \stdClass());
         $flow1->start();
@@ -446,7 +446,7 @@ class FlowTest extends \PHPUnit_Framework_TestCase
 
         $GLOBALS['invalidEventFrom'] = 'setupFinish';
 
-        $flow2 = new Flow();
+        $flow2 = new PageFlow();
         $flow2->configure("{$this->cacheDirectory}/InvalidEventFromTransitionActionsOrActivities.yaml", null, $this->cacheDirectory, $this->cacheDirectory);
         $flow2->setPayload(new \stdClass());
         $flow2->start();
@@ -469,7 +469,7 @@ class FlowTest extends \PHPUnit_Framework_TestCase
      */
     public function testProblemThatActivityIsInvokedTwiceUnexpectedly()
     {
-        $flow = new Flow();
+        $flow = new PageFlow();
         $flow->configure("{$this->cacheDirectory}/ProblemThatActivityIsInvokedTwiceUnexpectedly.yaml", null, $this->cacheDirectory, $this->cacheDirectory);
         $flow->setPayload(new \stdClass());
         $flow->start();
@@ -497,7 +497,7 @@ class FlowTest extends \PHPUnit_Framework_TestCase
         $GLOBALS['initializeCalled'] = false;
         $GLOBALS['finalizeCalled'] = false;
 
-        $flow = new Flow();
+        $flow = new PageFlow();
         $flow->configure("{$this->cacheDirectory}/$source", null, $this->cacheDirectory, $this->cacheDirectory);
         $flow->setPayload(new \stdClass());
         $flow->start();
@@ -524,7 +524,7 @@ class FlowTest extends \PHPUnit_Framework_TestCase
     protected function assertOmitClassName($extension)
     {
         $GLOBALS['initializeCalled'] = false;
-        $flow = new Flow();
+        $flow = new PageFlow();
         $flow->configure("{$this->cacheDirectory}/OmitClassName$extension",
                          null,
                          $this->cacheDirectory,

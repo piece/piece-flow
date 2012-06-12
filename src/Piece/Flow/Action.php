@@ -37,7 +37,7 @@
 
 namespace Piece\Flow;
 
-use Piece\Flow\PageFlow\Flow;
+use Piece\Flow\PageFlow\PageFlow;
 
 /**
  * The base class for Piece_Flow actions.
@@ -58,9 +58,9 @@ class Action
      * Sets the Piece_Flow object which is used by the flow execution
      * in progress.
      *
-     * @param \Piece\Flow\PageFlow\Flow $flow
+     * @param \Piece\Flow\PageFlow\PageFlow $flow
      */
-    public function setFlow(Flow $flow)
+    public function setFlow(PageFlow $flow)
     {
         $this->flow = $flow;
     }

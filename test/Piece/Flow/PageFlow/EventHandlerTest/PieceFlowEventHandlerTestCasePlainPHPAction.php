@@ -36,7 +36,7 @@
  * @since      File available since Release 1.9.0
  */
 
-use Piece\Flow\PageFlow\Flow;
+use Piece\Flow\PageFlow\PageFlow;
 
 /**
  * A class for unit tests.
@@ -57,7 +57,7 @@ class PieceFlowEventHandlerTestCasePlainPHPAction
     public $payload;
     public $event;
 
-    public function setFlow(Flow $flow)
+    public function setFlow(PageFlow $flow)
     {
         $this->flow = $flow;
     }

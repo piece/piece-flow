@@ -32,8 +32,8 @@
  * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        \Piece\Flow\PageFlow\FlowTest
- * @since      File available since Release 1.3.0
+ * @see        \Piece\Flow\PageFlow\PageFlowTest
+ * @since      File available since Release 1.2.0
  */
 
 use Piece\Flow\Action;
@@ -43,25 +43,21 @@ use Piece\Flow\Action;
  * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        \Piece\Flow\PageFlow\FlowTest
- * @since      Class available since Release 1.3.0
+ * @see        \Piece\Flow\PageFlow\PageFlowTest
+ * @since      Class available since Release 1.2.0
  */
-class Piece_FlowInvalidEventFromTransitionActionsOrActivitiesAction extends Action
+class Piece_FlowCDPlayerAction extends Action
 {
-    public function register()
+    public function increase()
     {
-        if ($GLOBALS['invalidEventFrom'] == 'register') {
-            return 'invalidEventFromRegister';
+        if ($this->flow->hasAttribute('numberOfUpdate')) {
+            $numberOfUpdate = $this->flow->getAttribute('numberOfUpdate');
+        } else {
+            $numberOfUpdate = 0;
         }
 
-        return 'goDisplayFinish';
-    }
-
-    public function setupFinish()
-    {
-        if ($GLOBALS['invalidEventFrom'] == 'setupFinish') {
-            return 'invalidEventFromSetupFinish';
-        }
+        ++$numberOfUpdate;
+        $this->flow->setAttribute('numberOfUpdate', $numberOfUpdate);
     }
 }
 

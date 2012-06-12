@@ -61,12 +61,12 @@ class EventHandler
     /**
      * Wraps a action up with an EventHandler object.
      *
-     * @param \Piece\Flow $flow
+     * @param \Piece\Flow\PageFlow\PageFlow $flow
      * @param string     $class
      * @param string     $method
      * @param string     $actionDirectory
      */
-    public function __construct(Flow $flow, $class, $method, $actionDirectory)
+    public function __construct(PageFlow $flow, $class, $method, $actionDirectory)
     {
         $this->flow = $flow;
 

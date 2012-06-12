@@ -39,7 +39,7 @@ namespace Piece\Flow\Continuation;
 
 use Piece\Flow\Action\Factory;
 use Piece\Flow\MethodInvocationException;
-use Piece\Flow\PageFlow\Flow;
+use Piece\Flow\PageFlow\PageFlow;
 
 /**
  * The continuation server.
@@ -403,7 +403,7 @@ class ContinuationServer
             throw new FlowNotFoundException("The flow ID [ {$this->activeFlowID} ] not found in the flow definitions.");
         }
 
-        $flow = new Flow();
+        $flow = new PageFlow();
         $flow->configure($this->flowDefinitions[$this->activeFlowID]['source'],
                          null,
                          $this->cacheDirectory,

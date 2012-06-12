@@ -42,7 +42,7 @@ use Stagehand\FSM\FSM;
 
 use Piece\Flow\Action;
 use Piece\Flow\Action\Factory;
-use Piece\Flow\PageFlow\Flow;
+use Piece\Flow\PageFlow\PageFlow;
 
 /**
  * @package    Piece_Flow
@@ -71,7 +71,7 @@ class EventHandlerTest extends \PHPUnit_Framework_TestCase
      */
     public function testPieceFlowAction()
     {
-        $flow = new Flow();
+        $flow = new PageFlow();
         $payload = new \stdClass();
         $invoker = new EventHandler($flow, '\PieceFlowEventHandlerTestCasePieceFlowAction', 'foo', $this->actionDirectory);
         $invoker->invoke(new FSM(), new Event('bar'), $payload);
@@ -97,7 +97,7 @@ class EventHandlerTest extends \PHPUnit_Framework_TestCase
      */
     public function testPlainPHPAction()
     {
-        $flow = new Flow();
+        $flow = new PageFlow();
         $payload = new \stdClass();
         $invoker = new EventHandler($flow, '\PieceFlowEventHandlerTestCasePlainPHPAction', 'foo', $this->actionDirectory);
         $invoker->invoke(new FSM(), new Event('bar'), $payload);
@@ -128,7 +128,7 @@ class EventHandlerTest extends \PHPUnit_Framework_TestCase
      */
     public function testActionHasNoMethods()
     {
-        $invoker = new EventHandler(new Flow(), '\PieceFlowEventHandlerTestCaseNoMethodsAction', 'foo', $this->actionDirectory);
+        $invoker = new EventHandler(new PageFlow(), '\PieceFlowEventHandlerTestCaseNoMethodsAction', 'foo', $this->actionDirectory);
         $invoker->invoke(new FSM(), new Event('bar'), new \stdClass());
         $action = Factory::factory('\PieceFlowEventHandlerTestCaseNoMethodsAction');
 
@@ -143,7 +143,7 @@ class EventHandlerTest extends \PHPUnit_Framework_TestCase
      */
     public function testEventHandlerNotFound()
     {
-        $invoker = new EventHandler(new Flow(), 'PieceFlowEventHandlerTestCasePlainPHPAction', 'bar', $this->actionDirectory);
+        $invoker = new EventHandler(new PageFlow(), 'PieceFlowEventHandlerTestCasePlainPHPAction', 'bar', $this->actionDirectory);
         $invoker->invoke(new FSM(), new Event('bar'), new \stdClass());
     }
 }

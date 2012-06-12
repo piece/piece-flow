@@ -32,8 +32,8 @@
  * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        \Piece\Flow\PageFlow\FlowTest
- * @since      File available since Release 1.2.0
+ * @see        \Piece\Flow\PageFlow\PageFlowTest
+ * @since      File available since Release 1.3.0
  */
 
 use Piece\Flow\Action;
@@ -43,21 +43,25 @@ use Piece\Flow\Action;
  * @copyright  2006-2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @see        \Piece\Flow\PageFlow\FlowTest
- * @since      Class available since Release 1.2.0
+ * @see        \Piece\Flow\PageFlow\PageFlowTest
+ * @since      Class available since Release 1.3.0
  */
-class Piece_FlowCDPlayerAction extends Action
+class Piece_FlowInvalidEventFromTransitionActionsOrActivitiesAction extends Action
 {
-    public function increase()
+    public function register()
     {
-        if ($this->flow->hasAttribute('numberOfUpdate')) {
-            $numberOfUpdate = $this->flow->getAttribute('numberOfUpdate');
-        } else {
-            $numberOfUpdate = 0;
+        if ($GLOBALS['invalidEventFrom'] == 'register') {
+            return 'invalidEventFromRegister';
         }
 
-        ++$numberOfUpdate;
-        $this->flow->setAttribute('numberOfUpdate', $numberOfUpdate);
+        return 'goDisplayFinish';
+    }
+
+    public function setupFinish()
+    {
+        if ($GLOBALS['invalidEventFrom'] == 'setupFinish') {
+            return 'invalidEventFromSetupFinish';
+        }
     }
 }
 

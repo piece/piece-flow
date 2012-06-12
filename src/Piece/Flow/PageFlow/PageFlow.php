@@ -71,7 +71,7 @@ use Piece\Flow\MethodInvocationException;
  * @link       http://www-06.ibm.com/jp/developerworks/java/060412/j_j-cb03216.shtml
  * @since      Class available since Release 0.1.0
  */
-class Flow
+class PageFlow
 {
     /**
      * @since Constant available since Release 2.0.0
