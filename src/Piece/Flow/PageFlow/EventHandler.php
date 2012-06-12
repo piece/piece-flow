@@ -87,10 +87,42 @@ class EventHandler
      * @param \Stagehand\FSM\Event $event
      * @param mixed               &$payload
      * @return mixed
+     * @throws \Piece\Flow\PageFlow\HandlerNotFoundException
      */
     public function invoke(FSM $fsm, Event $event, &$payload)
     {
-        return $this->invokeEventHandler($event->getName(), $payload);
+        if (!is_null($this->actionDirectory)) {
+            Factory::setActionDirectory($this->actionDirectory);
+        }
+
+        $action = Factory::factory($this->class);
+        if (!method_exists($action, $this->method)) {
+            throw new HandlerNotFoundException("The method [ {$this->method} ] does not exist in the action class [ {$this->class} ].");
+        }
+
+        if (method_exists($action, 'setFlow')) {
+            $action->setFlow($this->flow);
+        }
+
+        if (method_exists($action, 'setPayload')) {
+            $action->setPayload($payload);
+        }
+
+        if (method_exists($action, 'setEvent')) {
+            $action->setEvent($event->getName());
+        }
+
+        if (method_exists($action, 'prepare')) {
+            $action->prepare();
+        }
+
+        $result = call_user_func(array($action, $this->method));
+
+        if (method_exists($action, 'clear')) {
+            $action->clear();
+        }
+
+        return $result;
     }
 
     /**
