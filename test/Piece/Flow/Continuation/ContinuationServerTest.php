@@ -355,7 +355,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Piece\Flow\MethodInvocationException
+     * @expectedException \Piece\Flow\Core\MethodInvocationException
      */
     public function testFailureToSetAttributeBeforeStartingContinuation()
     {
@@ -370,7 +370,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Piece\Flow\MethodInvocationException
+     * @expectedException \Piece\Flow\Core\MethodInvocationException
      */
     public function testFailureToGetAttributeBeforeStartingContinuation()
     {
@@ -897,7 +897,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Piece\Flow\MethodInvocationException
+     * @expectedException \Piece\Flow\Core\MethodInvocationException
      * @since Method available since Release 1.14.0
      */
     public function testGetCurrentStateNameShouldRaiseExceptionIfContinuationHasNotActivated()

@@ -49,7 +49,7 @@ use Stagehand\FSM\State;
 use Piece\Flow\ConfigReader;
 use Piece\Flow\FSMBuilder;
 use Piece\Flow\InvalidTransitionException;
-use Piece\Flow\MethodInvocationException;
+use Piece\Flow\Core\MethodInvocationException;
 
 /**
  * A web flow engine for handling page flows of web applications.
@@ -131,7 +131,7 @@ class PageFlow
      * state.
      *
      * @return string
-     * @throws \Piece\Flow\MethodInvocationException
+     * @throws \Piece\Flow\Core\MethodInvocationException
      * @throws \Piece\Flow\InvalidTransitionException
      */
     public function getView()
@@ -177,7 +177,7 @@ class PageFlow
      * @param string $eventName
      * @param boolean $transitionToHistoryMarker
      * @return \Stagehand\FSM\State
-     * @throws \Piece\Flow\MethodInvocationException
+     * @throws \Piece\Flow\Core\MethodInvocationException
      */
     public function triggerEvent($eventName, $transitionToHistoryMarker = false)
     {
@@ -212,7 +212,7 @@ class PageFlow
      * Gets the previous state name.
      *
      * @return string
-     * @throws \Piece\Flow\MethodInvocationException
+     * @throws \Piece\Flow\Core\MethodInvocationException
      */
     public function getPreviousStateName()
     {
@@ -228,7 +228,7 @@ class PageFlow
      * Gets the current state name.
      *
      * @return string
-     * @throws \Piece\Flow\MethodInvocationException
+     * @throws \Piece\Flow\Core\MethodInvocationException
      */
     public function getCurrentStateName()
     {
@@ -245,7 +245,7 @@ class PageFlow
      *
      * @param string $name
      * @param mixed  $value
-     * @throws \Piece\Flow\MethodInvocationException
+     * @throws \Piece\Flow\Core\MethodInvocationException
      */
     public function setAttribute($name, $value)
     {
@@ -261,7 +261,7 @@ class PageFlow
      *
      * @param string $name
      * @param mixed  &$value
-     * @throws \Piece\Flow\MethodInvocationException
+     * @throws \Piece\Flow\Core\MethodInvocationException
      */
     public function setAttributeByRef($name, &$value)
     {
@@ -277,7 +277,7 @@ class PageFlow
      *
      * @param string $name
      * @return boolean
-     * @throws \Piece\Flow\MethodInvocationException
+     * @throws \Piece\Flow\Core\MethodInvocationException
      */
     public function hasAttribute($name)
     {
@@ -293,7 +293,7 @@ class PageFlow
      *
      * @param string $name
      * @return mixed
-     * @throws \Piece\Flow\MethodInvocationException
+     * @throws \Piece\Flow\Core\MethodInvocationException
      */
     public function &getAttribute($name)
     {
@@ -308,7 +308,7 @@ class PageFlow
      * Sets a user defined payload to the FSM.
      *
      * @param mixed &$payload
-     * @throws \Piece\Flow\MethodInvocationException
+     * @throws \Piece\Flow\Core\MethodInvocationException
      */
     public function setPayload(&$payload)
     {
@@ -324,7 +324,7 @@ class PageFlow
      * state.
      *
      * @return boolean
-     * @throws \Piece\Flow\MethodInvocationException
+     * @throws \Piece\Flow\Core\MethodInvocationException
      */
     public function isFinalState()
     {
@@ -342,7 +342,7 @@ class PageFlow
      * Removes an attribute from the flow execution.
      *
      * @param string $name
-     * @throws \Piece\Flow\MethodInvocationException
+     * @throws \Piece\Flow\Core\MethodInvocationException
      */
     public function removeAttribute($name)
     {
@@ -356,7 +356,7 @@ class PageFlow
     /**
      * Removes all attributes from the flow execution.
      *
-     * @throws \Piece\Flow\MethodInvocationException
+     * @throws \Piece\Flow\Core\MethodInvocationException
      */
     public function clearAttributes()
     {
@@ -370,7 +370,7 @@ class PageFlow
     /**
      * Removes the payload from the FSM.
      *
-     * @throws \Piece\Flow\MethodInvocationException
+     * @throws \Piece\Flow\Core\MethodInvocationException
      * @since Method available since Release 1.11.0
      */
     public function clearPayload()

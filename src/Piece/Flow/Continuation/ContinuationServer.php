@@ -38,7 +38,7 @@
 namespace Piece\Flow\Continuation;
 
 use Piece\Flow\Action\Factory;
-use Piece\Flow\MethodInvocationException;
+use Piece\Flow\Core\MethodInvocationException;
 use Piece\Flow\PageFlow\PageFlow;
 
 /**
@@ -146,7 +146,7 @@ class ContinuationServer
      * state.
      *
      * @return string
-     * @throws \Piece\Flow\MethodInvocationException
+     * @throws \Piece\Flow\Core\MethodInvocationException
      */
     public function getView()
     {

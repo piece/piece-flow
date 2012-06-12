@@ -37,7 +37,7 @@
 
 namespace Piece\Flow\Continuation;
 
-use Piece\Flow\MethodInvocationException;
+use Piece\Flow\Core\MethodInvocationException;
 
 /**
  * A service class which provides simple interfaces to access attributes of
@@ -69,7 +69,7 @@ class Service
      *
      * @param string $name
      * @param mixed  $value
-     * @throws \Piece\Flow\MethodInvocationException
+     * @throws \Piece\Flow\Core\MethodInvocationException
      */
     public function setAttribute($name, $value)
     {
@@ -86,7 +86,7 @@ class Service
      *
      * @param string $name
      * @return boolean
-     * @throws \Piece\Flow\MethodInvocationException
+     * @throws \Piece\Flow\Core\MethodInvocationException
      */
     public function hasAttribute($name)
     {
@@ -103,7 +103,7 @@ class Service
      *
      * @param string $name
      * @return mixed
-     * @throws \Piece\Flow\MethodInvocationException
+     * @throws \Piece\Flow\Core\MethodInvocationException
      */
     public function &getAttribute($name)
     {
@@ -122,7 +122,7 @@ class Service
      *
      * @param string $name
      * @param mixed  &$value
-     * @throws \Piece\Flow\MethodInvocationException
+     * @throws \Piece\Flow\Core\MethodInvocationException
      */
     function setAttributeByRef($name, &$value)
     {
@@ -149,7 +149,7 @@ class Service
      * Gets the current state name for the active flow object.
      *
      * @return string
-     * @throws \Piece\Flow\MethodInvocationException
+     * @throws \Piece\Flow\Core\MethodInvocationException
      */
     public function getCurrentStateName()
     {
