@@ -1,10 +1,8 @@
 # $Id$
 firstState: starting
 initial:
-  class: Piece_FlowInitialAction
   method: initialize
 final:
-  class: Piece_FlowInitialAction
   method: finalize
 lastState: { name: ending, view: end }
 viewState:

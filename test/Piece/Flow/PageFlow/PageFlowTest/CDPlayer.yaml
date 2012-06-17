@@ -4,7 +4,6 @@ viewState:
   - name: Stop
     view: Stop
     activity:
-      class: Piece_FlowCDPlayerAction
       method: increase
     transition:
       - event: play

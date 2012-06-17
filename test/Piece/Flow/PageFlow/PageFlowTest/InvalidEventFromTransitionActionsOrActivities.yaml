@@ -7,12 +7,10 @@ viewState:
       - event: register
         nextState: ProcessRegister
         action:
-          class: Piece_FlowInvalidEventFromTransitionActionsOrActivitiesAction
           method: register
   - name: DisplayFinish
     view: Finish
     activity:
-      class: Piece_FlowInvalidEventFromTransitionActionsOrActivitiesAction
       method: setupFinish
 actionState:
   - name: ProcessRegister

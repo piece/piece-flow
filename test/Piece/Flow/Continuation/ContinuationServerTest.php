@@ -37,10 +37,7 @@
 
 namespace Piece\Flow\Continuation;
 
-require_once 'Cache/Lite/File.php';
-
-use Piece\Flow\Action\Factory;
-use Piece\Flow\Util\ErrorReporting;
+use Piece\Flow\PageFlow\EventContext;
 
 /**
  * @package    Piece_Flow
@@ -53,51 +50,50 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
 {
     protected $cacheDirectory;
 
-    public static function getFlowExecutionTicket()
+    /**
+     * @var string
+     * @since Property available since Release 2.0.0
+     */
+    protected $flowExecutionTicket;
+
+    /**
+     * @var string
+     * @since Property available since Release 2.0.0
+     */
+    protected $flowID;
+
+    /**
+     * @var string
+     * @since Property available since Release 2.0.0
+     */
+    protected $eventName;
+
+    public function getFlowExecutionTicket()
     {
-        return $GLOBALS['flowExecutionTicket'];
+        return $this->flowExecutionTicket;
     }
 
-    public static function getFlowID()
+    public function getFlowID()
     {
-        return $GLOBALS['flowID'];
+        return $this->flowID;
     }
 
-    public static function getEventName()
+    public function getEventName()
     {
-        return $GLOBALS['eventName'];
+        return $this->eventName;
     }
 
     protected function setUp()
     {
         $this->cacheDirectory = dirname(__FILE__) . '/' . basename(__FILE__, '.php');
-        Factory::clearInstances();
-        Factory::setActionDirectory(null);
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowID'] = null;
-        $GLOBALS['flowExecutionTicket'] = null;
-    }
-
-    protected function tearDown()
-    {
-        $cacheDirectory = $this->cacheDirectory;
-        $cache = ErrorReporting::invokeWith(error_reporting() & ~E_STRICT, function () use ($cacheDirectory) {
-            return new \Cache_Lite_File(array(
-                'cacheDir' => $cacheDirectory . '/',
-                'masterFile' => '',
-                'automaticSerialization' => true,
-                'errorHandlingAPIBreak' => true
-            ));
-        });
-        $cache->clean();
     }
 
     public function testSettingFlowInMultipleFlowMode()
     {
         $server = new ContinuationServer();
         $server->setCacheDirectory($this->cacheDirectory);
-        $server->addFlow('foo', '/path/to/foo.xml');
-        $server->addFlow('bar', '/path/to/bar.xml');
+        $server->addFlow('foo', '/path/to/foo.flow');
+        $server->addFlow('bar', '/path/to/bar.flow');
     }
 
     public function testInvocationInMultipleFlowModeAndFlowInNonExclusiveMode()
@@ -105,20 +101,21 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server = new ContinuationServer();
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow('Counter', "{$this->cacheDirectory}/Counter.yaml");
-        $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array(__CLASS__, 'getFlowID'));
-        $server->setActionDirectory($this->cacheDirectory);
+        $server->setEventNameCallback(array($this, 'getEventName'));
+        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
+        $server->setFlowIDCallback(array($this, 'getFlowID'));
+        $actionInvoker = $this->createCounterActionInvoker();
+        $server->setActionInvoker($actionInvoker);
 
-        $GLOBALS['flowID'] = 'Counter';
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = null;
+        $this->flowID = 'Counter';
+        $this->eventName = null;
+        $this->flowExecutionTicket = null;
         $flowExecutionTicket1 = $server->invoke(new \stdClass());
         $server->shutdown();
 
-        $GLOBALS['flowID'] = 'Counter';
-        $GLOBALS['eventName'] = 'increase';
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket1;
+        $this->flowID = 'Counter';
+        $this->eventName = 'increase';
+        $this->flowExecutionTicket = $flowExecutionTicket1;
         $flowExecutionTicket2 = $server->invoke(new \stdClass());
         $service = $server->createService();
 
@@ -134,17 +131,17 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow('Counter', "{$this->cacheDirectory}/Counter.yaml");
         $server->addFlow('SecondCounter', "{$this->cacheDirectory}/SecondCounter.yaml");
-        $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array(__CLASS__, 'getFlowID'));
-        $server->setActionDirectory($this->cacheDirectory);
+        $server->setEventNameCallback(array($this, 'getEventName'));
+        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
+        $server->setFlowIDCallback(array($this, 'getFlowID'));
+        $server->setActionInvoker($this->createCounterActionInvoker());
 
         /*
          * Starting a new 'Counter'.
          */
-        $GLOBALS['flowID'] = 'Counter';
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = null;
+        $this->flowID = 'Counter';
+        $this->eventName = null;
+        $this->flowExecutionTicket = null;
         $flowExecutionTicket1 = $server->invoke(new \stdClass());
         $service = $server->createService();
 
@@ -155,9 +152,9 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         /*
          * Starting a new 'SecondCounter'.
          */
-        $GLOBALS['flowID'] = 'SecondCounter';
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = null;
+        $this->flowID = 'SecondCounter';
+        $this->eventName = null;
+        $this->flowExecutionTicket = null;
         $flowExecutionTicket2 = $server->invoke(new \stdClass());
         $service = $server->createService();
 
@@ -172,9 +169,9 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         /*
          * Continuing the first 'Counter'.
          */
-        $GLOBALS['flowID'] = 'Counter';
-        $GLOBALS['eventName'] = 'increase';
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket1;
+        $this->flowID = 'Counter';
+        $this->eventName = 'increase';
+        $this->flowExecutionTicket = $flowExecutionTicket1;
         $flowExecutionTicket3 = $server->invoke(new \stdClass());
         $service = $server->createService();
 
@@ -188,9 +185,9 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         /*
          * Continuing the first 'SecondCounter'.
          */
-        $GLOBALS['flowID'] = 'SecondCounter';
-        $GLOBALS['eventName'] = 'increase';
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket2;
+        $this->flowID = 'SecondCounter';
+        $this->eventName = 'increase';
+        $this->flowExecutionTicket = $flowExecutionTicket2;
         $flowExecutionTicket4 = $server->invoke(new \stdClass());
         $service = $server->createService();
 
@@ -203,9 +200,9 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         /*
          * Starting a new 'SecondCounter'.
          */
-        $GLOBALS['flowID'] = 'SecondCounter';
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = null;
+        $this->flowID = 'SecondCounter';
+        $this->eventName = null;
+        $this->flowExecutionTicket = null;
         $flowExecutionTicket5 = $server->invoke(new \stdClass());
         $service = $server->createService();
 
@@ -222,37 +219,39 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server = new ContinuationServer();
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow('Counter', "{$this->cacheDirectory}/Counter.yaml");
-        $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array(__CLASS__, 'getFlowID'));
+        $server->setEventNameCallback(array($this, 'getEventName'));
+        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
+        $server->setFlowIDCallback(array($this, 'getFlowID'));
+        $server->setActionInvoker($this->createCounterActionInvoker());
 
-        $GLOBALS['flowID'] = 'Counter';
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = null;
+        $this->flowID = 'Counter';
+        $this->eventName = null;
+        $this->flowExecutionTicket = null;
         $flowExecutionTicket = $server->invoke(new \stdClass());
         $server->shutdown();
 
-        $GLOBALS['flowID'] = 'InvalidFlowName';
-        $GLOBALS['eventName'] = 'increase';
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket;
+        $this->flowID = 'InvalidFlowName';
+        $this->eventName = 'increase';
+        $this->flowExecutionTicket = $flowExecutionTicket;
         $server->invoke(new \stdClass());
     }
 
     /**
-     * @expectedException \Piece\Flow\FileNotFoundException
+     * @expectedException \Piece\Flow\PageFlow\FileNotFoundException
      */
     public function testFailureToInvokeByNonExistingFlowConfiguration()
     {
         $server = new ContinuationServer();
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow('NonExistingFile', "{$this->cacheDirectory}/NonExistingFile.yaml");
-        $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array(__CLASS__, 'getFlowID'));
+        $server->setEventNameCallback(array($this, 'getEventName'));
+        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
+        $server->setFlowIDCallback(array($this, 'getFlowID'));
+        $server->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
 
-        $GLOBALS['flowID'] = 'NonExistingFile';
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = null;
+        $this->flowID = 'NonExistingFile';
+        $this->eventName = null;
+        $this->flowExecutionTicket = null;
         $server->invoke(new \stdClass());
     }
 
@@ -262,14 +261,14 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow('Counter', "{$this->cacheDirectory}/Counter.yaml", true);
         $server->addFlow('SecondCounter', "{$this->cacheDirectory}/SecondCounter.yaml");
-        $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array(__CLASS__, 'getFlowID'));
-        $server->setActionDirectory($this->cacheDirectory);
+        $server->setEventNameCallback(array($this, 'getEventName'));
+        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
+        $server->setFlowIDCallback(array($this, 'getFlowID'));
+        $server->setActionInvoker($this->createCounterActionInvoker());
 
-        $GLOBALS['flowID'] = 'Counter';
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = null;
+        $this->flowID = 'Counter';
+        $this->eventName = null;
+        $this->flowExecutionTicket = null;
         $flowExecutionTicket1 = $server->invoke(new \stdClass());
         $service = $server->createService();
 
@@ -277,9 +276,9 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
 
         $server->shutdown();
 
-        $GLOBALS['flowID'] = 'SecondCounter';
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = null;
+        $this->flowID = 'SecondCounter';
+        $this->eventName = null;
+        $this->flowExecutionTicket = null;
         $flowExecutionTicket3 = $server->invoke(new \stdClass());
         $service = $server->createService();
 
@@ -287,9 +286,9 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
 
         $server->shutdown();
 
-        $GLOBALS['flowID'] = 'Counter';
-        $GLOBALS['eventName'] = 'increase';
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket1;
+        $this->flowID = 'Counter';
+        $this->eventName = 'increase';
+        $this->flowExecutionTicket = $flowExecutionTicket1;
         $flowExecutionTicket2 = $server->invoke(new \stdClass());
         $service = $server->createService();
 
@@ -307,32 +306,32 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server = new ContinuationServer();
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow('Counter', "{$this->cacheDirectory}/Counter.yaml", true);
-        $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array(__CLASS__, 'getFlowID'));
-        $server->setActionDirectory($this->cacheDirectory);
+        $server->setEventNameCallback(array($this, 'getEventName'));
+        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
+        $server->setFlowIDCallback(array($this, 'getFlowID'));
+        $server->setActionInvoker($this->createCounterActionInvoker());
 
-        $GLOBALS['flowID'] = 'Counter';
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = null;
+        $this->flowID = 'Counter';
+        $this->eventName = null;
+        $this->flowExecutionTicket = null;
         $flowExecutionTicket = $server->invoke(new \stdClass());
         $service = $server->createService();
         $service->setAttribute('foo', 'bar');
         $server->shutdown();
 
-        $GLOBALS['flowID'] = 'Counter';
-        $GLOBALS['eventName'] = 'increase';
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket;
+        $this->flowID = 'Counter';
+        $this->eventName = 'increase';
+        $this->flowExecutionTicket = $flowExecutionTicket;
         $server->invoke(new \stdClass());
         $service = $server->createService();
         $service->setAttribute('bar', 'baz');
         $baz1 = new \stdClass();
-        $service->setAttributeByRef('baz', $baz1);
+        $service->setAttribute('baz', $baz1);
         $server->shutdown();
 
-        $GLOBALS['flowID'] = 'Counter';
-        $GLOBALS['eventName'] = 'increase';
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket;
+        $this->flowID = 'Counter';
+        $this->eventName = 'increase';
+        $this->flowExecutionTicket = $flowExecutionTicket;
         $server->invoke(new \stdClass());
         $service = $server->createService();
 
@@ -362,9 +361,9 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server = new ContinuationServer();
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow('Counter', "{$this->cacheDirectory}/Counter.yaml", true);
-        $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array(__CLASS__, 'getFlowID'));
+        $server->setEventNameCallback(array($this, 'getEventName'));
+        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
+        $server->setFlowIDCallback(array($this, 'getFlowID'));
         $service = $server->createService();
         $service->setAttribute('foo', 'bar');
     }
@@ -377,40 +376,43 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server = new ContinuationServer();
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow('Counter', "{$this->cacheDirectory}/Counter.yaml", true);
-        $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array(__CLASS__, 'getFlowID'));
+        $server->setEventNameCallback(array($this, 'getEventName'));
+        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
+        $server->setFlowIDCallback(array($this, 'getFlowID'));
         $service = $server->createService();
         $service->getAttribute('foo');
     }
 
     public function testStartingNewFlowExecutionAfterShuttingDownContinuationInNonExclusiveMode()
     {
-        $GLOBALS['ShutdownCount'] = 0;
-
+        $shutdownCount = 0;
+        $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
+        \Phake::when($actionInvoker)->invoke('finalize', $this->anything())->thenGetReturnByLambda(function ($actionID, EventContext $eventContext) use (&$shutdownCount) {
+            ++$shutdownCount;
+        });
         $server = new ContinuationServer();
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow('Shutdown', "{$this->cacheDirectory}/Shutdown.yaml");
-        $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array(__CLASS__, 'getFlowID'));
-        $server->setActionDirectory($this->cacheDirectory);
+        $server->setEventNameCallback(array($this, 'getEventName'));
+        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
+        $server->setFlowIDCallback(array($this, 'getFlowID'));
+        $server->setActionInvoker($actionInvoker);
 
         /*
          * Starting a new 'Shutdown'.
          */
-        $GLOBALS['flowID'] = 'Shutdown';
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = null;
+        $this->flowID = 'Shutdown';
+        $this->eventName = null;
+        $this->flowExecutionTicket = null;
         $flowExecutionTicket1 = $server->invoke(new \stdClass());
         $server->shutdown();
 
-        $GLOBALS['flowID'] = 'Shutdown';
-        $GLOBALS['eventName'] = 'go';
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket1;
+        $this->flowID = 'Shutdown';
+        $this->eventName = 'go';
+        $this->flowExecutionTicket = $flowExecutionTicket1;
         $flowExecutionTicket2 = $server->invoke(new \stdClass());
 
-        $this->assertEquals(1, $GLOBALS['ShutdownCount']);
+        $this->assertEquals(1, $shutdownCount);
         $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket2);
 
         $server->shutdown();
@@ -419,9 +421,9 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
          * Failure to continue the 'Shutdown' from the previous flow
          * execution ticket.
          */
-        $GLOBALS['flowID'] = null;
-        $GLOBALS['eventName'] = 'go';
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket1;
+        $this->flowID = null;
+        $this->eventName = 'go';
+        $this->flowExecutionTicket = $flowExecutionTicket1;
 
         try {
             $server->invoke(new \stdClass());
@@ -432,31 +434,35 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
 
     public function testStartingNewFlowExecutionAfterShuttingDownContinuationInExclusiveMode()
     {
-        $GLOBALS['ShutdownCount'] = 0;
-
+        $shutdownCount = 0;
+        $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
+        \Phake::when($actionInvoker)->invoke('finalize', $this->anything())->thenGetReturnByLambda(function ($actionID, EventContext $eventContext) use (&$shutdownCount) {
+            ++$shutdownCount;
+        });
         $server = new ContinuationServer();
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow('Shutdown', "{$this->cacheDirectory}/Shutdown.yaml", true);
-        $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array(__CLASS__, 'getFlowID'));
+        $server->setEventNameCallback(array($this, 'getEventName'));
+        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
+        $server->setFlowIDCallback(array($this, 'getFlowID'));
+        $server->setActionInvoker($actionInvoker);
 
         /*
          * Starting a new 'Shutdown'.
          */
-        $GLOBALS['flowID'] = 'Shutdown';
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = null;
+        $this->flowID = 'Shutdown';
+        $this->eventName = null;
+        $this->flowExecutionTicket = null;
         $flowExecutionTicket1 = $server->invoke(new \stdClass());
         $server->shutdown();
 
-        $GLOBALS['flowID'] = 'Shutdown';
-        $GLOBALS['eventName'] = 'go';
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket1;
+        $this->flowID = 'Shutdown';
+        $this->eventName = 'go';
+        $this->flowExecutionTicket = $flowExecutionTicket1;
         $flowExecutionTicket2 = $server->invoke(new \stdClass());
         $server->shutdown();
 
-        $this->assertEquals(1, $GLOBALS['ShutdownCount']);
+        $this->assertEquals(1, $shutdownCount);
         $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket2);
         $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket1);
 
@@ -464,9 +470,9 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
          * Failure to continue the 'Shutdown' from the previous flow
          * execution ticket. And starting a new 'Shutdown'.
          */
-        $GLOBALS['flowID'] = 'Shutdown';
-        $GLOBALS['eventName'] = 'go';
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket1;
+        $this->flowID = 'Shutdown';
+        $this->eventName = 'go';
+        $this->flowExecutionTicket = $flowExecutionTicket1;
         $flowExecutionTicket3 = $server->invoke(new \stdClass());
 
         $this->assertTrue($flowExecutionTicket1 != $flowExecutionTicket3);
@@ -481,13 +487,14 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server = new ContinuationServer();
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow('Counter', "{$this->cacheDirectory}/Counter.yaml", true);
-        $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array(__CLASS__, 'getFlowID'));
+        $server->setEventNameCallback(array($this, 'getEventName'));
+        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
+        $server->setFlowIDCallback(array($this, 'getFlowID'));
+        $server->setActionInvoker($this->createCounterActionInvoker());
 
-        $GLOBALS['flowID'] = 'Counter';
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = null;
+        $this->flowID = 'Counter';
+        $this->eventName = null;
+        $this->flowExecutionTicket = null;
         $flowExecutionTicket1 = $server->invoke(new \stdClass());
         $service = $server->createService();
 
@@ -495,9 +502,9 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
 
         $server->shutdown();
 
-        $GLOBALS['flowID'] = 'Counter';
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = null;
+        $this->flowID = 'Counter';
+        $this->eventName = null;
+        $this->flowExecutionTicket = null;
         $hasWarnings = false;
         set_error_handler(function ($code, $message, $file, $line) use (&$hasWarnings) {
             if ($code == E_USER_WARNING) {
@@ -522,26 +529,27 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow('Counter', "{$this->cacheDirectory}/Counter.yaml", true);
         $server->addFlow('SecondCounter', "{$this->cacheDirectory}/SecondCounter.yaml");
-        $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array(__CLASS__, 'getFlowID'));
+        $server->setEventNameCallback(array($this, 'getEventName'));
+        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
+        $server->setFlowIDCallback(array($this, 'getFlowID'));
+        $server->setActionInvoker($this->createCounterActionInvoker());
 
-        $GLOBALS['flowID'] = 'Counter';
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = null;
+        $this->flowID = 'Counter';
+        $this->eventName = null;
+        $this->flowExecutionTicket = null;
         $flowExecutionTicket1 = $server->invoke(new \stdClass());
 
-        $GLOBALS['flowID'] = 'Counter';
-        $GLOBALS['eventName'] = 'increase';
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket1;
+        $this->flowID = 'Counter';
+        $this->eventName = 'increase';
+        $this->flowExecutionTicket = $flowExecutionTicket1;
         $server->invoke(new \stdClass());
         $service = $server->createService();
 
         $this->assertEquals(1, $service->getAttribute('counter'));
 
-        $GLOBALS['flowID'] = 'SecondCounter';
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = null;
+        $this->flowID = 'SecondCounter';
+        $this->eventName = null;
+        $this->flowExecutionTicket = null;
         $flowExecutionTicket2 = $server->invoke(new \stdClass());
         $service = $server->createService();
 
@@ -549,89 +557,6 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($flowExecutionTicket1 == $flowExecutionTicket2);
         $this->assertEquals($flowExecutionTicket1, $service->getFlowExecutionTicketByFlowID('Counter'));
         $this->assertNull($service->getFlowExecutionTicketByFlowID('SecondCounter'));
-    }
-
-    /**
-     * @since Method available since Release 1.8.0
-     */
-    public function testBindActionsWithFlowExecution()
-    {
-        $flowName = 'BindActionsWithFlowExecution';
-        $server = new ContinuationServer();
-        $server->setCacheDirectory($this->cacheDirectory);
-        $server->addFlow($flowName, "{$this->cacheDirectory}/$flowName.yaml");
-        $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array(__CLASS__, 'getFlowID'));
-        $server->setActionDirectory($this->cacheDirectory);
-
-        // The first time invocation for the flow execution one.
-        $GLOBALS['flowID'] = $flowName;
-        $GLOBALS['eventName'] = 'goDisplayFinishFromDisplayCounter';
-        $GLOBALS['flowExecutionTicket'] = null;
-        $flowExecutionTicket1 = $server->invoke(new \stdClass(), true);
-
-        $this->assertEquals('Counter', $server->getView());
-
-        $server->shutdown();
-        Factory::clearInstances();
-
-        // The first time invocation for the flow execution two.
-        $GLOBALS['flowID'] = $flowName;
-        $GLOBALS['eventName'] = 'goDisplayFinishFromDisplayCounter';
-        $GLOBALS['flowExecutionTicket'] = null;
-        $flowExecutionTicket2 = $server->invoke(new \stdClass(), true);
-
-        $this->assertEquals('Counter', $server->getView());
-
-        $server->shutdown();
-        Factory::clearInstances();
-
-        $this->assertTrue($flowExecutionTicket1 != $flowExecutionTicket2);
-
-        // The second time invocation for the flow execution one.
-        $GLOBALS['flowID'] = $flowName;
-        $GLOBALS['eventName'] = 'goDisplayFinishFromDisplayCounter';
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket1;
-        $server->invoke(new \stdClass(), true);
-
-        $this->assertEquals('Counter', $server->getView());
-
-        $server->shutdown();
-        Factory::clearInstances();
-
-        // The last invocation for the flow execution one.
-        $GLOBALS['flowID'] = $flowName;
-        $GLOBALS['eventName'] = 'goDisplayFinishFromDisplayCounter';
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket1;
-        $server->invoke(new \stdClass(), true);
-
-        $this->assertEquals('Finish', $server->getView());
-
-        $server->shutdown();
-        Factory::clearInstances();
-
-        // The second time invocation for the flow execution two.
-        $GLOBALS['flowID'] = $flowName;
-        $GLOBALS['eventName'] = 'goDisplayFinishFromDisplayCounter';
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket2;
-        $server->invoke(new \stdClass(), true);
-
-        $this->assertEquals('Counter', $server->getView());
-
-        $server->shutdown();
-        Factory::clearInstances();
-
-        // The last invocation for the flow execution two.
-        $GLOBALS['flowID'] = $flowName;
-        $GLOBALS['eventName'] = 'goDisplayFinishFromDisplayCounter';
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket2;
-        $server->invoke(new \stdClass(), true);
-
-        $this->assertEquals('Finish', $server->getView());
-
-        $server->shutdown();
-        Factory::clearInstances();
     }
 
     /**
@@ -644,21 +569,22 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server = new ContinuationServer(true, 1);
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow($flowName, "{$this->cacheDirectory}/$flowName.yaml");
-        $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array(__CLASS__, 'getFlowID'));
+        $server->setEventNameCallback(array($this, 'getEventName'));
+        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
+        $server->setFlowIDCallback(array($this, 'getFlowID'));
+        $server->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
 
-        $GLOBALS['flowID'] = $flowName;
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = null;
+        $this->flowID = $flowName;
+        $this->eventName = null;
+        $this->flowExecutionTicket = null;
         $flowExecutionTicket = $server->invoke(new \stdClass());
         $server->shutdown();
 
         sleep(2);
 
-        $GLOBALS['flowID'] = $flowName;
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket;
+        $this->flowID = $flowName;
+        $this->eventName = null;
+        $this->flowExecutionTicket = $flowExecutionTicket;
         $server->invoke(new \stdClass());
     }
 
@@ -671,35 +597,36 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server = new ContinuationServer(true, 2);
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow($flowName, "{$this->cacheDirectory}/$flowName.yaml");
-        $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array(__CLASS__, 'getFlowID'));
+        $server->setEventNameCallback(array($this, 'getEventName'));
+        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
+        $server->setFlowIDCallback(array($this, 'getFlowID'));
+        $server->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
 
-        $GLOBALS['flowID'] = $flowName;
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = null;
+        $this->flowID = $flowName;
+        $this->eventName = null;
+        $this->flowExecutionTicket = null;
         $flowExecutionTicket = $server->invoke(new \stdClass());
         $server->shutdown();
 
         sleep(1);
 
-        $GLOBALS['flowID'] = $flowName;
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket;
+        $this->flowID = $flowName;
+        $this->eventName = null;
+        $this->flowExecutionTicket = $flowExecutionTicket;
         $server->invoke(new \stdClass());
 
         sleep(1);
 
-        $GLOBALS['flowID'] = $flowName;
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket;
+        $this->flowID = $flowName;
+        $this->eventName = null;
+        $this->flowExecutionTicket = $flowExecutionTicket;
         $server->invoke(new \stdClass());
 
         sleep(1);
 
-        $GLOBALS['flowID'] = $flowName;
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket;
+        $this->flowID = $flowName;
+        $this->eventName = null;
+        $this->flowExecutionTicket = $flowExecutionTicket;
         $server->invoke(new \stdClass());
     }
 
@@ -709,25 +636,26 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
     public function testNewFlowExecutionShouldBeAbleToStartWithSameRequestAfterFlowExecutionIsExpired()
     {
         $flowName = 'FlowExecutionExpired';
-        $GLOBALS['flowID'] = $flowName;
+        $this->flowID = $flowName;
         $server = new ContinuationServer(true, 1);
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow($flowName, "{$this->cacheDirectory}/$flowName.yaml");
-        $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array(__CLASS__, 'getFlowID'));
+        $server->setEventNameCallback(array($this, 'getEventName'));
+        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
+        $server->setFlowIDCallback(array($this, 'getFlowID'));
+        $server->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
 
-        $GLOBALS['flowID'] = $flowName;
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = null;
+        $this->flowID = $flowName;
+        $this->eventName = null;
+        $this->flowExecutionTicket = null;
         $flowExecutionTicket = $server->invoke(new \stdClass());
         $server->shutdown();
 
         sleep(2);
 
-        $GLOBALS['flowID'] = $flowName;
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket;
+        $this->flowID = $flowName;
+        $this->eventName = null;
+        $this->flowExecutionTicket = $flowExecutionTicket;
 
         try {
             $server->invoke(new \stdClass());
@@ -737,12 +665,12 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
 
         $server->shutdown();
 
-        $GLOBALS['flowID'] = $flowName;
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket;
+        $this->flowID = $flowName;
+        $this->eventName = null;
+        $this->flowExecutionTicket = $flowExecutionTicket;
         $newFlowExecutionTicket = $server->invoke(new \stdClass());
 
-        $this->assertTrue($newFlowExecutionTicket != $GLOBALS['flowExecutionTicket']);
+        $this->assertTrue($newFlowExecutionTicket != $this->flowExecutionTicket);
     }
 
     /**
@@ -754,13 +682,14 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server = new ContinuationServer();
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow($flowName, "{$this->cacheDirectory}/$flowName.yaml");
-        $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array(__CLASS__, 'getFlowID'));
+        $server->setEventNameCallback(array($this, 'getEventName'));
+        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
+        $server->setFlowIDCallback(array($this, 'getFlowID'));
+        $server->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
 
-        $GLOBALS['flowID'] = $flowName;
-        $GLOBALS['eventName'] = 'foo';
-        $GLOBALS['flowExecutionTicket'] = null;
+        $this->flowID = $flowName;
+        $this->eventName = 'foo';
+        $this->flowExecutionTicket = null;
         $server->invoke(new \stdClass());
         $service = $server->createService();
 
@@ -776,19 +705,20 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server = new ContinuationServer();
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow($flowName, "{$this->cacheDirectory}/$flowName.yaml");
-        $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array(__CLASS__, 'getFlowID'));
+        $server->setEventNameCallback(array($this, 'getEventName'));
+        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
+        $server->setFlowIDCallback(array($this, 'getFlowID'));
+        $server->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
 
-        $GLOBALS['flowID'] = $flowName;
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = null;
+        $this->flowID = $flowName;
+        $this->eventName = null;
+        $this->flowExecutionTicket = null;
         $flowExecutionTicket = $server->invoke(new \stdClass());
         $server->shutdown();
 
-        $GLOBALS['flowID'] = $flowName;
-        $GLOBALS['eventName'] = 'DisplayEditConfirmFromDisplayEdit';
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket;
+        $this->flowID = $flowName;
+        $this->eventName = 'DisplayEditConfirmFromDisplayEdit';
+        $this->flowExecutionTicket = $flowExecutionTicket;
         $server->invoke(new \stdClass());
         $service = $server->createService();
 
@@ -796,9 +726,9 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
 
         $server->shutdown();
 
-        $GLOBALS['flowID'] = $flowName;
-        $GLOBALS['eventName'] = 'DisplayEditFinishFromDisplayEditConfirm';
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket;
+        $this->flowID = $flowName;
+        $this->eventName = 'DisplayEditFinishFromDisplayEditConfirm';
+        $this->flowExecutionTicket = $flowExecutionTicket;
         $server->invoke(new \stdClass());
         $service = $server->createService();
 
@@ -814,19 +744,20 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server = new ContinuationServer();
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow($flowName, "{$this->cacheDirectory}/$flowName.yaml");
-        $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array(__CLASS__, 'getFlowID'));
+        $server->setEventNameCallback(array($this, 'getEventName'));
+        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
+        $server->setFlowIDCallback(array($this, 'getFlowID'));
+        $server->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
 
-        $GLOBALS['flowID'] = $flowName;
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = null;
+        $this->flowID = $flowName;
+        $this->eventName = null;
+        $this->flowExecutionTicket = null;
         $flowExecutionTicket = $server->invoke(new \stdClass());
         $server->shutdown();
 
-        $GLOBALS['flowID'] = $flowName;
-        $GLOBALS['eventName'] = 'foo';
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket;
+        $this->flowID = $flowName;
+        $this->eventName = 'foo';
+        $this->flowExecutionTicket = $flowExecutionTicket;
         $server->invoke(new \stdClass());
         $service = $server->createService();
 
@@ -842,13 +773,13 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server = new ContinuationServer();
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow($flowName, "{$this->cacheDirectory}/$flowName.yaml");
-        $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array(__CLASS__, 'getFlowID'));
+        $server->setEventNameCallback(array($this, 'getEventName'));
+        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
+        $server->setFlowIDCallback(array($this, 'getFlowID'));
 
-        $GLOBALS['flowID'] = $flowName;
-        $GLOBALS['eventName'] = 'foo';
-        $GLOBALS['flowExecutionTicket'] = null;
+        $this->flowID = $flowName;
+        $this->eventName = 'foo';
+        $this->flowExecutionTicket = null;
         $service = $server->createService();
 
         $this->assertTrue($service->checkLastEvent());
@@ -863,13 +794,14 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server = new ContinuationServer();
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow($flowName, "{$this->cacheDirectory}/$flowName.yaml");
-        $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array(__CLASS__, 'getFlowID'));
+        $server->setEventNameCallback(array($this, 'getEventName'));
+        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
+        $server->setFlowIDCallback(array($this, 'getFlowID'));
+        $server->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
 
-        $GLOBALS['flowID'] = $flowName;
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = null;
+        $this->flowID = $flowName;
+        $this->eventName = null;
+        $this->flowExecutionTicket = null;
         $flowExecutionTicket = $server->invoke(new \stdClass());
         $service = $server->createService();
 
@@ -877,9 +809,9 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
 
         $server->shutdown();
 
-        $GLOBALS['flowID'] = $flowName;
-        $GLOBALS['eventName'] = 'DisplayEditConfirmFromDisplayEdit';
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket;
+        $this->flowID = $flowName;
+        $this->eventName = 'DisplayEditConfirmFromDisplayEdit';
+        $this->flowExecutionTicket = $flowExecutionTicket;
         $server->invoke(new \stdClass());
         $service = $server->createService();
 
@@ -887,9 +819,9 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
 
         $server->shutdown();
 
-        $GLOBALS['flowID'] = $flowName;
-        $GLOBALS['eventName'] = 'DisplayEditFinishFromDisplayEditConfirm';
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket;
+        $this->flowID = $flowName;
+        $this->eventName = 'DisplayEditFinishFromDisplayEditConfirm';
+        $this->flowExecutionTicket = $flowExecutionTicket;
         $server->invoke(new \stdClass());
         $service = $server->createService();
 
@@ -906,13 +838,13 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server = new ContinuationServer();
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow($flowName, "{$this->cacheDirectory}/$flowName.yaml");
-        $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array(__CLASS__, 'getFlowID'));
+        $server->setEventNameCallback(array($this, 'getEventName'));
+        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
+        $server->setFlowIDCallback(array($this, 'getFlowID'));
 
-        $GLOBALS['flowID'] = $flowName;
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = null;
+        $this->flowID = $flowName;
+        $this->eventName = null;
+        $this->flowExecutionTicket = null;
         $service = $server->createService();
         $service->getCurrentStateName();
     }
@@ -924,21 +856,19 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
     {
         $server = new ContinuationServer();
         $server->setCacheDirectory($this->cacheDirectory);
-        $server->addFlow('/counter/one.php', 'Counter_One');
-        $server->addFlow('/counter/two.php', 'Counter_Two');
-        $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array(__CLASS__, 'getFlowID'));
-        $server->setActionDirectory($this->cacheDirectory);
-        $server->setConfigDirectory($this->cacheDirectory);
-        $server->setConfigExtension('.flow');
+        $server->addFlow('/counter/one.php', $this->cacheDirectory . '/Counter/One.flow');
+        $server->addFlow('/counter/two.php', $this->cacheDirectory . '/Counter/Two.flow');
+        $server->setEventNameCallback(array($this, 'getEventName'));
+        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
+        $server->setFlowIDCallback(array($this, 'getFlowID'));
+        $server->setActionInvoker($this->createCounterActionInvoker());
 
         /*
          * Starting a new '/counter/one.php'.
          */
-        $GLOBALS['flowID'] = '/counter/one.php';
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = null;
+        $this->flowID = '/counter/one.php';
+        $this->eventName = null;
+        $this->flowExecutionTicket = null;
         $flowExecutionTicket1 = $server->invoke(new \stdClass());
         $service = $server->createService();
 
@@ -949,9 +879,9 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         /*
          * Starting a new '/counter/two.php'.
          */
-        $GLOBALS['flowID'] = '/counter/two.php';
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = null;
+        $this->flowID = '/counter/two.php';
+        $this->eventName = null;
+        $this->flowExecutionTicket = null;
         $flowExecutionTicket2 = $server->invoke(new \stdClass());
         $service = $server->createService();
 
@@ -966,9 +896,9 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         /*
          * Continuing the first '/counter/one.php'.
          */
-        $GLOBALS['flowID'] = '/counter/one.php';
-        $GLOBALS['eventName'] = 'increase';
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket1;
+        $this->flowID = '/counter/one.php';
+        $this->eventName = 'increase';
+        $this->flowExecutionTicket = $flowExecutionTicket1;
         $flowExecutionTicket3 = $server->invoke(new \stdClass());
         $service = $server->createService();
 
@@ -982,9 +912,9 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         /*
          * Continuing the first '/counter/two.php'.
          */
-        $GLOBALS['flowID'] = '/counter/two.php';
-        $GLOBALS['eventName'] = 'increase';
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket2;
+        $this->flowID = '/counter/two.php';
+        $this->eventName = 'increase';
+        $this->flowExecutionTicket = $flowExecutionTicket2;
         $flowExecutionTicket4 = $server->invoke(new \stdClass());
         $service = $server->createService();
 
@@ -997,9 +927,9 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         /*
          * Starting a new '/counter/two.php'.
          */
-        $GLOBALS['flowID'] = '/counter/two.php';
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = null;
+        $this->flowID = '/counter/two.php';
+        $this->eventName = null;
+        $this->flowExecutionTicket = null;
         $flowExecutionTicket5 = $server->invoke(new \stdClass());
         $service = $server->createService();
 
@@ -1017,35 +947,56 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server = new ContinuationServer(true, 1);
         $server->setCacheDirectory($this->cacheDirectory);
         $server->addFlow($flowName, "{$this->cacheDirectory}/$flowName.yaml");
-        $server->setEventNameCallback(array(__CLASS__, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array(__CLASS__, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array(__CLASS__, 'getFlowID'));
+        $server->setEventNameCallback(array($this, 'getEventName'));
+        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
+        $server->setFlowIDCallback(array($this, 'getFlowID'));
+        $server->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
 
-        $GLOBALS['flowID'] = $flowName;
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = null;
+        $this->flowID = $flowName;
+        $this->eventName = null;
+        $this->flowExecutionTicket = null;
         $flowExecutionTicket1 = $server->invoke(new \stdClass());
         $server->shutdown();
 
         sleep(2);
 
-        $GLOBALS['flowID'] = $flowName;
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = null;
+        $this->flowID = $flowName;
+        $this->eventName = null;
+        $this->flowExecutionTicket = null;
         $flowExecutionTicket2 = $server->invoke(new \stdClass());
         $server->shutdown();
 
         $this->assertTrue($flowExecutionTicket1 != $flowExecutionTicket2);
 
-        $GLOBALS['flowID'] = $flowName;
-        $GLOBALS['eventName'] = null;
-        $GLOBALS['flowExecutionTicket'] = $flowExecutionTicket1;
+        $this->flowID = $flowName;
+        $this->eventName = null;
+        $this->flowExecutionTicket = $flowExecutionTicket1;
 
         try {
             $server->invoke(new \stdClass());
             $this->fail('An expected exception has not been raised.');
         } catch (FlowExecutionExpiredException $e) {
         }
+    }
+
+    /**
+     * @return \Piece\Flow\PageFlow\ActionInvoker
+     */
+    protected function createCounterActionInvoker()
+    {
+        $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
+        \Phake::when($actionInvoker)->invoke('setup', $this->anything())->thenGetReturnByLambda(function ($actionID, EventContext $eventContext) {
+            if (!$eventContext->getPageFlow()->hasAttribute('counter')) {
+                $eventContext->getPageFlow()->setAttribute('counter', 0);
+            }
+        });
+        \Phake::when($actionInvoker)->invoke('increase', $this->anything())->thenGetReturnByLambda(function ($actionID, EventContext $eventContext) {
+            $eventContext->getPageFlow()->setAttribute('counter', $eventContext->getPageFlow()->getAttribute('counter') + 1);
+
+            return 'succeed';
+        });
+
+        return $actionInvoker;
     }
 }
 

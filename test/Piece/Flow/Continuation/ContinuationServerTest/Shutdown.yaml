@@ -2,7 +2,6 @@
 name: Shutdown
 firstState: starting
 final:
-  class: ShutdownAction
   method: finalize
 lastState: { name: ending, view: end }
 viewState:

@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- $Id$ -->
-<flow firstState="foo">
-  <viewState name="foo" view="foo">
-  </viewState>
-</flow>

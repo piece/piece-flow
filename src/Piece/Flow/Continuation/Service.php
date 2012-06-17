@@ -105,7 +105,7 @@ class Service
      * @return mixed
      * @throws \Piece\Flow\Core\MethodInvocationException
      */
-    public function &getAttribute($name)
+    public function getAttribute($name)
     {
         if (!$this->flowExecution->activated()) {
             throw new MethodInvocationException(__FUNCTION__ . ' method must be called after starting/continuing flows.');
@@ -115,23 +115,6 @@ class Service
 
         $flow = $this->flowExecution->getActiveFlow();
         return $flow->getAttribute($name);
-    }
-
-    /**
-     * Sets an attribute by reference for the active flow object.
-     *
-     * @param string $name
-     * @param mixed  &$value
-     * @throws \Piece\Flow\Core\MethodInvocationException
-     */
-    function setAttributeByRef($name, &$value)
-    {
-        if (!$this->flowExecution->activated()) {
-            throw new MethodInvocationException(__FUNCTION__ . ' method must be called after starting/continuing flows.');
-        }
-
-        $flow = $this->flowExecution->getActiveFlow();
-        $flow->setAttributeByRef($name, $value);
     }
 
     /**

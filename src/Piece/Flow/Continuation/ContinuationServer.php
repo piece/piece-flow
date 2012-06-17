@@ -37,8 +37,9 @@
 
 namespace Piece\Flow\Continuation;
 
-use Piece\Flow\Action\Factory;
 use Piece\Flow\Core\MethodInvocationException;
+use Piece\Flow\PageFlow\ActionInvoker;
+use Piece\Flow\PageFlow\FSMBuilder;
 use Piece\Flow\PageFlow\PageFlow;
 
 /**
@@ -63,10 +64,12 @@ class ContinuationServer
     protected $gc;
     protected $enableGC = false;
     protected $flowExecution;
-    protected $actionDirectory;
-    protected $useContext = false;
-    protected $configDirectory;
-    protected $configExtension;
+
+    /**
+     * @var \Piece\Flow\PageFlow\ActionInvoker
+     * @since Property available since Release 2.0.0
+     */
+    protected $actionInvoker;
 
     private static $activeInstances = array();
     private static $shutdownRegistered = false;
@@ -89,7 +92,7 @@ class ContinuationServer
      * Adds a flow definition to the Continuation object.
      *
      * @param string  $flowID
-     * @param mixed   $source
+     * @param string   $source
      * @param boolean $isExclusive
      */
     public function addFlow($flowID, $source, $isExclusive = false)
@@ -102,11 +105,10 @@ class ContinuationServer
     /**
      * Invokes a flow and returns a flow execution ticket.
      *
-     * @param mixed   &$payload
-     * @param boolean $bindActionsWithFlowExecution
+     * @param mixed   $payload
      * @return string
      */
-    public function invoke(&$payload, $bindActionsWithFlowExecution = false)
+    public function invoke($payload)
     {
         if ($this->enableGC) {
             $this->gc->setGCCallback(array($this->flowExecution, 'disableFlowExecution'));
@@ -116,20 +118,13 @@ class ContinuationServer
         $this->prepare();
 
         if (!$this->isFirstTime) {
-            $this->continueFlowExecution($payload, $bindActionsWithFlowExecution);
+            $this->continueFlowExecution($payload);
         } else {
             $this->startFlowExecution($payload);
         }
 
         if ($this->enableGC && !$this->isExclusive()) {
             $this->gc->update($this->activeFlowExecutionTicket);
-        }
-
-        if ($bindActionsWithFlowExecution) {
-            $flow = $this->flowExecution->getActiveFlow();
-            $flow->clearPayload();
-            $this->prepareContext();
-            $flow->setAttribute('_actionInstances', Factory::getInstances());
         }
 
         self::$activeInstances[] = $this;
@@ -234,26 +229,14 @@ class ContinuationServer
     }
 
     /**
-     * Sets a directory as the action directory.
+     * Sets the action invoker.
      *
-     * @param string $actionDirectory
-     * @since Method available since Release 1.15.0
+     * @param \Piece\Flow\PageFlow\ActionInvoker $actionInvoker
+     * @since Method available since Release 2.0.0
      */
-    public function setActionDirectory($actionDirectory)
+    public function setActionInvoker(ActionInvoker $actionInvoker)
     {
-        $this->actionDirectory = $actionDirectory;
-    }
-
-    /**
-     * Sets whether or not the continuation server use the context by flow
-     * execution ticket.
-     *
-     * @param boolean $useContext
-     * @since Method available since Release 1.15.0
-     */
-    public function setUseContext($useContext)
-    {
-        $this->useContext = $useContext;
+        $this->actionInvoker = $actionInvoker;
     }
 
     /**
@@ -265,28 +248,6 @@ class ContinuationServer
     public function setFlowIDCallback($callback)
     {
         $this->flowIDCallback = $callback;
-    }
-
-    /**
-     * Sets the config directory for the flow definitions.
-     *
-     * @param string $configDirectory
-     * @since Method available since Release 1.15.0
-     */
-    public function setConfigDirectory($configDirectory)
-    {
-        $this->configDirectory = $configDirectory;
-    }
-
-    /**
-     * Sets the extension for the flow definitions.
-     *
-     * @param string $configExtension
-     * @since Method available since Release 1.15.0
-     */
-    public function setConfigExtension($configExtension)
-    {
-        $this->configExtension = $configExtension;
     }
 
     /**
@@ -365,11 +326,10 @@ class ContinuationServer
     /**
      * Continues a flow execution.
      *
-     * @param mixed   &$payload
-     * @param boolean $bindActionsWithFlowExecution
+     * @param mixed   $payload
      * @throws \Piece\Flow\Continuation\FlowExecutionExpiredException
      */
-    protected function continueFlowExecution(&$payload, $bindActionsWithFlowExecution)
+    protected function continueFlowExecution($payload)
     {
         if ($this->enableGC) {
             if ($this->gc->isMarked($this->activeFlowExecutionTicket)) {
@@ -380,12 +340,8 @@ class ContinuationServer
 
         $this->flowExecution->activateFlowExecution($this->activeFlowExecutionTicket, $this->activeFlowID);
         $flow = $this->flowExecution->getActiveFlow();
+        $flow->setActionInvoker($this->actionInvoker);
         $flow->setPayload($payload);
-        $this->prepareContext();
-
-        if ($bindActionsWithFlowExecution) {
-            Factory::setInstances($flow->getAttribute('_actionInstances'));
-        }
 
         $flow->triggerEvent(call_user_func($this->eventNameCallback));
     }
@@ -393,24 +349,20 @@ class ContinuationServer
     /**
      * Starts a flow execution.
      *
-     * @param mixed &$payload
+     * @param mixed $payload
      * @return string
      * @throws \Piece\Flow\Continuation\FlowNotFoundException
      */
-    protected function startFlowExecution(&$payload)
+    protected function startFlowExecution($payload)
     {
         if (!array_key_exists($this->activeFlowID, $this->flowDefinitions)) {
             throw new FlowNotFoundException("The flow ID [ {$this->activeFlowID} ] not found in the flow definitions.");
         }
 
         $flow = new PageFlow();
-        $flow->configure($this->flowDefinitions[$this->activeFlowID]['source'],
-                         null,
-                         $this->cacheDirectory,
-                         $this->actionDirectory,
-                         $this->configDirectory,
-                         $this->configExtension
-                         );
+        $flow->setActionInvoker($this->actionInvoker);
+        $fsmBuilder = new FSMBuilder($flow, $this->flowDefinitions[$this->activeFlowID]['source']);
+        $fsmBuilder->build();
 
         while (true) {
             $flowExecutionTicket = $this->generateFlowExecutionTicket();
@@ -427,7 +379,6 @@ class ContinuationServer
         $this->flowExecution->activateFlowExecution($flowExecutionTicket, $this->activeFlowID);
         $this->activeFlowExecutionTicket = $flowExecutionTicket;
         $flow->setPayload($payload);
-        $this->prepareContext();
         $flow->start();
 
         return $flowExecutionTicket;
@@ -451,20 +402,6 @@ class ContinuationServer
     protected function isExclusive()
     {
         return $this->flowDefinitions[$this->activeFlowID]['isExclusive'];
-    }
-
-    /**
-     * Prepares the context by flow execution ticket.
-     *
-     * @since Method available since Release 1.15.0
-     */
-    protected function prepareContext()
-    {
-        if ($this->useContext) {
-            Factory::setContextID($this->activeFlowExecutionTicket);
-        } else {
-            Factory::clearContextID();
-        }
     }
 }
 

@@ -46,9 +46,6 @@ use Stagehand\FSM\FSM;
 use Stagehand\FSM\FSMAlreadyShutdownException;
 use Stagehand\FSM\State;
 
-use Piece\Flow\ConfigReader;
-use Piece\Flow\FSMBuilder;
-use Piece\Flow\InvalidTransitionException;
 use Piece\Flow\Core\MethodInvocationException;
 
 /**
@@ -79,51 +76,52 @@ class PageFlow
     const EVENT_PROTECTED = '__protected';
 
     protected $fsm;
-    protected $name;
     protected $views;
     protected $attributes = array();
     protected $lastState;
     protected $lastEventIsValid = true;
-    protected $actionDirectory;
 
     /**
-     * Builds a FSM with the given configuration.
-     *
-     * @param mixed  $source
-     * @param string $driverName
-     * @param string $cacheDirectory
-     * @param string $actionDirectory
-     * @param string $configDirectory
-     * @param string $configExtension
+     * @var \Piece\Flow\PageFlow\ActionInvoker
+     * @since Property available since Release 2.0.0
      */
-    public function configure($source,
-                       $driverName = null,
-                       $cacheDirectory = null,
-                       $actionDirectory = null,
-                       $configDirectory = null,
-                       $configExtension = null
-                       )
+    protected $actionInvoker;
+
+    /**
+     * @param string $stateID
+     * @param string $view
+     * @since Method available since Release 2.0.0
+     */
+    public function addView($stateID, $view)
     {
-        $config = ConfigReader::read($source,
-                                                 $driverName,
-                                                 $cacheDirectory,
-                                                 $configDirectory,
-                                                 $configExtension
-                                                 );
-        $this->name = $config->getName();
-        $fsmBuilder = new FSMBuilder($this, $actionDirectory);
-        $this->fsm = $fsmBuilder->build($config);
+        $this->views[$stateID] = $view;
+    }
 
-        $lastState = $config->getLastState();
-        if (!is_null($lastState)) {
-            $this->lastState = $lastState;
-        }
+    /**
+     * @param \Stagehand\FSM\FSM $fsm
+     * @since Method available since Release 2.0.0
+     */
+    public function setFSM(FSM $fsm)
+    {
+        $this->fsm = $fsm;
+    }
 
-        foreach ($config->getViewStates() as $key => $state) {
-            $this->views[ $state['name'] ] = $state['view'];
-        }
+    /**
+     * @param string $stateID
+     * @since Method available since Release 2.0.0
+     */
+    public function setLastState($stateID)
+    {
+        $this->lastState = $stateID;
+    }
 
-        $this->actionDirectory = $actionDirectory;
+    /**
+     * @param \Piece\Flow\PageFlow\ActionInvoker $actionInvoker
+     * @since Method available since Release 2.0.0
+     */
+    public function setActionInvoker(ActionInvoker $actionInvoker)
+    {
+        $this->actionInvoker = $actionInvoker;
     }
 
     /**
@@ -132,7 +130,7 @@ class PageFlow
      *
      * @return string
      * @throws \Piece\Flow\Core\MethodInvocationException
-     * @throws \Piece\Flow\InvalidTransitionException
+     * @throws \Piece\Flow\PageFlow\InvalidTransitionException
      */
     public function getView()
     {
@@ -147,20 +145,20 @@ class PageFlow
         }
 
         if (!array_key_exists($viewIndex, $this->views)) {
-            throw new InvalidTransitionException("A invalid transition detected. The state [ $viewIndex ] does not have a view. Maybe The state [ $viewIndex ] is an action state. Check the definition of the flow [ {$this->name} ].");
+            throw new InvalidTransitionException("A invalid transition detected. The state [ $viewIndex ] does not have a view. Maybe The state [ $viewIndex ] is an action state. Check the definition of the flow [ {$this->getID()} ].");
         }
 
         return $this->views[$viewIndex];
     }
 
     /**
-     * Gets the name of the flow.
+     * Gets the ID of the flow.
      *
      * @return string
      */
-    function getName()
+    public function getID()
     {
-        return $this->name;
+        return $this->fsm->getID();
     }
 
     /**
@@ -186,10 +184,6 @@ class PageFlow
         }
 
         if ($eventName == self::EVENT_PROTECTED || $this->fsm->isProtectedEvent($eventName)) {
-            trigger_error("The event [ $eventName ] cannot be called directly. The current state [ " .
-                          $this->getCurrentStateName() . ' ] will only be updated.',
-                          E_USER_WARNING
-                          );
             $eventName = self::EVENT_PROTECTED;
         }
 
@@ -257,22 +251,6 @@ class PageFlow
     }
 
     /**
-     * Sets an attribute by reference for the flow execution.
-     *
-     * @param string $name
-     * @param mixed  &$value
-     * @throws \Piece\Flow\Core\MethodInvocationException
-     */
-    public function setAttributeByRef($name, &$value)
-    {
-        if (!$this->started()) {
-            throw new MethodInvocationException(__FUNCTION__ . ' method must be called after starting flows.');
-        }
-
-        $this->attributes[$name] = &$value;
-    }
-
-    /**
      * Returns whether the flow execution has an attribute with a given name.
      *
      * @param string $name
@@ -295,7 +273,7 @@ class PageFlow
      * @return mixed
      * @throws \Piece\Flow\Core\MethodInvocationException
      */
-    public function &getAttribute($name)
+    public function getAttribute($name)
     {
         if (!$this->started()) {
             throw new MethodInvocationException(__FUNCTION__ . ' method must be called after starting flows.');
@@ -307,10 +285,10 @@ class PageFlow
     /**
      * Sets a user defined payload to the FSM.
      *
-     * @param mixed &$payload
+     * @param mixed $payload
      * @throws \Piece\Flow\Core\MethodInvocationException
      */
-    public function setPayload(&$payload)
+    public function setPayload($payload)
     {
         if (is_null($this->fsm)) {
             throw new MethodInvocationException(__FUNCTION__ . ' method must be called after configuring flows.');
@@ -400,6 +378,17 @@ class PageFlow
     public function isViewState()
     {
         return array_key_exists($this->_getViewIndex(), $this->views);
+    }
+
+    /**
+     * @param string $actionID
+     * @param \Piece\Flow\PageFlow\EventContext $eventContext
+     * @return string
+     * @since Method available since Release 2.0.0
+     */
+    public function invokeAction($actionID, EventContext $eventContext)
+    {
+        return $this->actionInvoker->invoke($actionID, $eventContext);
     }
 
     /**

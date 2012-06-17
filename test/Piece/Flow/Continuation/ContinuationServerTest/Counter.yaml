@@ -6,13 +6,11 @@ viewState:
   - name: DisplayForm
     view: Counter
     entry:
-      class: CounterAction
       method: setup
     transition:
       - event: increase
         nextState: increased
         action:
-          class: CounterAction
           method: increase
 actionState:
   - name: increased

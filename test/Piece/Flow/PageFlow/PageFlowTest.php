@@ -39,11 +39,7 @@ namespace Piece\Flow\PageFlow;
 
 use Stagehand\FSM\Event;
 use Stagehand\FSM\FSMAlreadyShutdownException;
-
-use Piece\Flow\Action\Factory;
-use Piece\Flow\ConfigReader;
-use Piece\Flow\PageFlow\EventNotFoundException;
-use Piece\Flow\Util\ErrorReporting;
+use Stagehand\FSM\State;
 
 /**
  * @package    Piece_Flow
@@ -55,75 +51,40 @@ use Piece\Flow\Util\ErrorReporting;
 class PageFlowTest extends \PHPUnit_Framework_TestCase
 {
     protected $source;
-    protected $config;
     protected $cacheDirectory;
 
     protected function setUp()
     {
         $this->cacheDirectory = dirname(__FILE__) . '/' . basename(__FILE__, '.php');
         $this->source = "{$this->cacheDirectory}/Registration.yaml";
-        $this->config = ConfigReader::read($this->source, null, $this->cacheDirectory, null, null);
     }
 
     protected function tearDown()
     {
-        Factory::clearInstances();
-        Factory::setActionDirectory(null);
         $cacheDirectory = $this->cacheDirectory;
-        $cache = ErrorReporting::invokeWith(error_reporting() & ~E_STRICT, function () use ($cacheDirectory) {
-            return new \Cache_Lite_File(array(
-                'cacheDir' => $cacheDirectory . '/',
-                'masterFile' => '',
-                'automaticSerialization' => true,
-                'errorHandlingAPIBreak' => true
-            ));
-        });
-        $cache->clean();
         $this->source = null;
-        $this->config = null;
      }
-
-    public function testConfiguration()
-    {
-        $flow = new PageFlow();
-        $flow->configure($this->source, null, $this->cacheDirectory, $this->cacheDirectory);
-
-        $this->assertEquals($this->config->getName(), $flow->getName());
-    }
 
     public function testGettingView()
     {
-        $viewStates = $this->config->getViewStates();
         $flow = new PageFlow();
-        $flow->configure($this->source, null, $this->cacheDirectory, $this->cacheDirectory);
+        $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
+        $fsmBuilder = new FSMBuilder($flow, $this->source);
+        $fsmBuilder->build();
         $flow->start();
 
-        $this->assertEquals($viewStates['DisplayForm']['view'],
-                            $flow->getView()
-                            );
-    }
-
-    public function testInvokingCallback()
-    {
-        $GLOBALS['validateInputCalled'] = false;
-        $GLOBALS['prepareCalled'] = false;
-        $viewStates = $this->config->getViewStates();
-        $flow = new PageFlow();
-        $flow->configure($this->source, null, $this->cacheDirectory, $this->cacheDirectory);
-        $flow->start();
-        $flow->triggerEvent('submit');
-
-        $this->assertTrue($GLOBALS['validateInputCalled']);
-        $this->assertEquals($viewStates['ConfirmForm']['view'],
-                            $flow->getView()
-                            );
-        $this->assertTrue($GLOBALS['prepareCalled']);
+        $this->assertEquals('Form', $flow->getView());
     }
 
     public function testGettingPreviousStateName()
     {
+        $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
+        \Phake::when($actionInvoker)->invoke('isPermitted', $this->anything())->thenReturn(true);
+        \Phake::when($actionInvoker)->invoke('validateInput', $this->anything())->thenReturn('succeed');
         $flow = new PageFlow();
-        $flow->configure($this->source, null, $this->cacheDirectory, $this->cacheDirectory);
+        $flow->setActionInvoker($actionInvoker);
+        $fsmBuilder = new FSMBuilder($flow, $this->source);
+        $fsmBuilder->build();
         $flow->start();
         $flow->triggerEvent('submit');
 
@@ -132,8 +93,13 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
 
     public function testGettingCurrentStateName()
     {
+        $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
+        \Phake::when($actionInvoker)->invoke('isPermitted', $this->anything())->thenReturn(true);
+        \Phake::when($actionInvoker)->invoke('validateInput', $this->anything())->thenReturn('succeed');
         $flow = new PageFlow();
-        $flow->configure($this->source, null, $this->cacheDirectory, $this->cacheDirectory);
+        $flow->setActionInvoker($actionInvoker);
+        $fsmBuilder = new FSMBuilder($flow, $this->source);
+        $fsmBuilder->build();
         $flow->start();
         $flow->triggerEvent('submit');
 
@@ -142,77 +108,85 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
 
     public function testTriggeringEventAndInvokingTransitionAction()
     {
-        $GLOBALS['validateInputCalled'] = false;
-        $GLOBALS['validateConfirmationCalled'] = false;
-        $viewStates = $this->config->getViewStates();
+        $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
+        \Phake::when($actionInvoker)->invoke('isPermitted', $this->anything())->thenReturn(true);
+        \Phake::when($actionInvoker)->invoke('validateInput', $this->anything())->thenReturn('succeed');
+        \Phake::when($actionInvoker)->invoke('validateConfirmation', $this->anything())->thenReturn('succeed');
+        \Phake::when($actionInvoker)->invoke('register', $this->anything())->thenReturn('succeed');
         $flow = new PageFlow();
-        $flow->configure($this->source, null, $this->cacheDirectory, $this->cacheDirectory);
+        $flow->setActionInvoker($actionInvoker);
+        $fsmBuilder = new FSMBuilder($flow, $this->source);
+        $fsmBuilder->build();
         $flow->start();
         $flow->triggerEvent('submit');
 
-        $this->assertTrue($GLOBALS['validateInputCalled']);
-        $this->assertEquals($viewStates['ConfirmForm']['view'],
-                            $flow->getView()
-                            );
+        $this->assertThat($flow->getCurrentStateName(), $this->equalTo('ConfirmForm'));
 
         $flow->triggerEvent('submit');
 
-        $this->assertTrue($GLOBALS['validateConfirmationCalled']);
-
-        $lastState = $this->config->getLastState();
-
-        $this->assertEquals($viewStates[$lastState]['view'], $flow->getView());
+        $this->assertThat($flow->getCurrentStateName(), $this->equalTo(State::STATE_FINAL));
     }
 
     public function testTriggeringRaiseErrorEvent()
     {
-        $GLOBALS['hasErrors'] = true;
-        $viewStates = $this->config->getViewStates();
+        $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
+        \Phake::when($actionInvoker)->invoke('isPermitted', $this->anything())->thenReturn(true);
+        \Phake::when($actionInvoker)->invoke('validateInput', $this->anything())->thenReturn('raiseError');
         $flow = new PageFlow();
-        $flow->configure($this->source, null, $this->cacheDirectory, $this->cacheDirectory);
+        $flow->setActionInvoker($actionInvoker);
+        $fsmBuilder = new FSMBuilder($flow, $this->source);
+        $fsmBuilder->build();
         $flow->start();
         $flow->triggerEvent('submit');
 
-        $this->assertEquals($viewStates['DisplayForm']['view'],
-                            $flow->getView()
-                            );
+        $this->assertThat($flow->getCurrentStateName(), $this->equalTo('DisplayForm'));
+        $this->assertThat($flow->getPreviousStateName(), $this->equalTo('processSubmitDisplayForm'));
     }
 
     public function testActivity()
     {
-        $GLOBALS['displayCounter'] = 0;
+        $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
         $flow = new PageFlow();
-        $flow->configure($this->source, null, $this->cacheDirectory, $this->cacheDirectory);
+        $flow->setActionInvoker($actionInvoker);
+        $fsmBuilder = new FSMBuilder($flow, $this->source);
+        $fsmBuilder->build();
         $flow->start();
 
-        $this->assertEquals(1, $GLOBALS['displayCounter']);
+        \Phake::verify($actionInvoker)->invoke('countDisplay', $this->anything());
 
         $flow->triggerEvent('foo');
         $flow->triggerEvent('bar');
 
-        $this->assertEquals(3, $GLOBALS['displayCounter']);
+        \Phake::verify($actionInvoker, \Phake::times(3))->invoke('countDisplay', $this->anything());
     }
 
     public function testExitAndEntryActions()
     {
-        $GLOBALS['setupFormCalled'] = false;
-        $GLOBALS['teardownFormCalled'] = false;
+        $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
+        \Phake::when($actionInvoker)->invoke('validateInput', $this->anything())
+            ->thenReturn('succeed');
+        \Phake::when($actionInvoker)->invoke('isPermitted', $this->anything())
+            ->thenReturn(true);
+
         $flow = new PageFlow();
-        $flow->configure($this->source, null, $this->cacheDirectory, $this->cacheDirectory);
+        $flow->setActionInvoker($actionInvoker);
+        $fsmBuilder = new FSMBuilder($flow, $this->source);
+        $fsmBuilder->build();
         $flow->start();
 
-        $this->assertTrue($GLOBALS['setupFormCalled']);
-        $this->assertFalse($GLOBALS['teardownFormCalled']);
+        \Phake::verify($actionInvoker)->invoke('setupForm', $this->anything());
 
         $flow->triggerEvent('submit');
 
-        $this->assertTrue($GLOBALS['teardownFormCalled']);
+        \Phake::verify($actionInvoker)->invoke('teardownForm', $this->anything());
     }
 
     public function testSettingAttribute()
     {
         $flow = new PageFlow();
-        $flow->configure($this->source, null, $this->cacheDirectory, $this->cacheDirectory);
+        $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
+        $fsmBuilder = new FSMBuilder($flow, $this->source);
+        $fsmBuilder->build();
         $flow->start();
         $flow->setAttribute('foo', 'bar');
 
@@ -226,7 +200,9 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
     public function testFailureToSetAttributeBeforeStartingFlow()
     {
         $flow = new PageFlow();
-        $flow->configure($this->source, null, $this->cacheDirectory, $this->cacheDirectory);
+        $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
+        $fsmBuilder = new FSMBuilder($flow, $this->source);
+        $fsmBuilder->build();
         $flow->setAttribute('foo', 'bar');
     }
 
@@ -242,23 +218,13 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
     public function testOptionalElements()
     {
         $flow = new PageFlow();
-        $flow->configure("{$this->cacheDirectory}/optional.xml", null, $this->cacheDirectory, $this->cacheDirectory);
+        $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
+        $fsmBuilder = new FSMBuilder($flow, "{$this->cacheDirectory}/optional.yaml");
+        $fsmBuilder->build();
         $flow->setPayload(new \stdClass());
         $flow->start();
 
         $this->assertEquals('foo', $flow->getView());
-
-        $flow = new PageFlow();
-        $flow->configure("{$this->cacheDirectory}/optional.yaml", null, $this->cacheDirectory, $this->cacheDirectory);
-        $flow->setPayload(new \stdClass());
-        $flow->start();
-
-        $this->assertEquals('foo', $flow->getView());
-    }
-
-    public function testInitialAndFinalActionsWithXML()
-    {
-        $this->assertInitialAndFinalActions('/initial.xml');
     }
 
     public function testInitialAndFinalActionsWithYAML()
@@ -272,17 +238,21 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
     public function testFailureToGetViewBeforeStartingFlow()
     {
         $flow = new PageFlow();
-        $flow->configure($this->source, null, $this->cacheDirectory, $this->cacheDirectory);
+        $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
+        $fsmBuilder = new FSMBuilder($flow, $this->source);
+        $fsmBuilder->build();
         $flow->getView();
     }
 
     /**
-     * @expectedException \Piece\Flow\InvalidTransitionException
+     * @expectedException \Piece\Flow\PageFlow\InvalidTransitionException
      */
     public function testInvalidTransition()
     {
         $flow = new PageFlow();
-        $flow->configure("{$this->cacheDirectory}/invalid.yaml", null, $this->cacheDirectory, $this->cacheDirectory);
+        $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
+        $fsmBuilder = new FSMBuilder($flow, "{$this->cacheDirectory}/invalid.yaml");
+        $fsmBuilder->build();
         $flow->setPayload(new \stdClass());
         $flow->start();
         $flow->triggerEvent('go');
@@ -292,7 +262,9 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
     public function testCheckingWhetherCurrentStateIsFinalState()
     {
         $flow = new PageFlow();
-        $flow->configure("{$this->cacheDirectory}/initial.yaml", null, $this->cacheDirectory, $this->cacheDirectory);
+        $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
+        $fsmBuilder = new FSMBuilder($flow, "{$this->cacheDirectory}/initial.yaml");
+        $fsmBuilder->build();
         $flow->setPayload(new \stdClass());
         $flow->start();
 
@@ -303,28 +275,12 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($flow->isFinalState());
     }
 
-    public function testSettingAttributeByReference()
-    {
-        $flow = new PageFlow();
-        $flow->configure($this->source, null, $this->cacheDirectory, $this->cacheDirectory);
-        $flow->start();
-
-        $foo1 = new \stdClass();
-        $flow->setAttributeByRef('foo', $foo1);
-        $foo1->bar = 'baz';
-
-        $this->assertTrue($flow->hasAttribute('foo'));
-
-        $foo2 = &$flow->getAttribute('foo');
-
-        $this->assertTrue(property_exists($foo2, 'bar'));
-        $this->assertEquals('baz', $foo2->bar);
-    }
-
     public function testRemovingAttribute()
     {
         $flow = new PageFlow();
-        $flow->configure($this->source, null, $this->cacheDirectory, $this->cacheDirectory);
+        $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
+        $fsmBuilder = new FSMBuilder($flow, $this->source);
+        $fsmBuilder->build();
         $flow->start();
         $flow->setAttribute('foo', 'bar');
 
@@ -338,7 +294,9 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
     public function testClearingAttributes()
     {
         $flow = new PageFlow();
-        $flow->configure($this->source, null, $this->cacheDirectory, $this->cacheDirectory);
+        $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
+        $fsmBuilder = new FSMBuilder($flow, $this->source);
+        $fsmBuilder->build();
         $flow->start();
         $flow->setAttribute('foo', 'bar');
         $flow->setAttribute('bar', 'baz');
@@ -357,8 +315,23 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
      */
     public function testToPreventTriggeringProtectedEvents()
     {
+        $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
+        \Phake::when($actionInvoker)->invoke($this->anything(), $this->anything())
+            ->thenGetReturnByLambda(function ($actionID, EventContext $eventContext) {
+                if ($eventContext->getPageFlow()->hasAttribute('numberOfUpdate')) {
+                    $numberOfUpdate = $eventContext->getPageFlow()->getAttribute('numberOfUpdate');
+                } else {
+                    $numberOfUpdate = 0;
+                }
+
+                ++$numberOfUpdate;
+                $eventContext->getPageFlow()->setAttribute('numberOfUpdate', $numberOfUpdate);
+            });
+
         $flow = new PageFlow();
-        $flow->configure("{$this->cacheDirectory}/CDPlayer.yaml", null, $this->cacheDirectory, $this->cacheDirectory);
+        $flow->setActionInvoker($actionInvoker);
+        $fsmBuilder = new FSMBuilder($flow, "{$this->cacheDirectory}/CDPlayer.yaml");
+        $fsmBuilder->build();
         $flow->setPayload(new \stdClass());
         $flow->start();
 
@@ -370,27 +343,27 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Stop', $flow->getCurrentStateName());
         $this->assertEquals(2, $flow->getAttribute('numberOfUpdate'));
 
-        @$flow->triggerEvent(Event::EVENT_ENTRY);
+        $flow->triggerEvent(Event::EVENT_ENTRY);
 
         $this->assertEquals('Stop', $flow->getCurrentStateName());
         $this->assertEquals(3, $flow->getAttribute('numberOfUpdate'));
 
-        @$flow->triggerEvent(Event::EVENT_EXIT);
+        $flow->triggerEvent(Event::EVENT_EXIT);
 
         $this->assertEquals('Stop', $flow->getCurrentStateName());
         $this->assertEquals(4, $flow->getAttribute('numberOfUpdate'));
 
-        @$flow->triggerEvent(Event::EVENT_START);
+        $flow->triggerEvent(Event::EVENT_START);
 
         $this->assertEquals('Stop', $flow->getCurrentStateName());
         $this->assertEquals(5, $flow->getAttribute('numberOfUpdate'));
 
-        @$flow->triggerEvent(Event::EVENT_END);
+        $flow->triggerEvent(Event::EVENT_END);
 
         $this->assertEquals('Stop', $flow->getCurrentStateName());
         $this->assertEquals(6, $flow->getAttribute('numberOfUpdate'));
 
-        @$flow->triggerEvent(Event::EVENT_DO);
+        $flow->triggerEvent(Event::EVENT_DO);
 
         $this->assertEquals('Stop', $flow->getCurrentStateName());
         $this->assertEquals(7, $flow->getAttribute('numberOfUpdate'));
@@ -402,23 +375,27 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Piece\Flow\ProtectedEventException
+     * @expectedException \Piece\Flow\PageFlow\ProtectedEventException
      * @since Method available since Release 1.2.0
      */
     public function testProtectedEvents()
     {
         $flow = new PageFlow();
-        $flow->configure("{$this->cacheDirectory}/ProtectedEvents.yaml", null, $this->cacheDirectory, $this->cacheDirectory);
+        $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
+        $fsmBuilder = new FSMBuilder($flow, "{$this->cacheDirectory}/ProtectedEvents.yaml");
+        $fsmBuilder->build();
     }
 
     /**
-     * @expectedException \Piece\Flow\ProtectedStateException
+     * @expectedException \Piece\Flow\PageFlow\ProtectedStateException
      * @since Method available since Release 1.2.0
      */
     public function testProtectedStates()
     {
         $flow = new PageFlow();
-        $flow->configure("{$this->cacheDirectory}/ProtectedStates.yaml", null, $this->cacheDirectory, $this->cacheDirectory);
+        $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
+        $fsmBuilder = new FSMBuilder($flow, "{$this->cacheDirectory}/ProtectedStates.yaml");
+        $fsmBuilder->build();
     }
 
     /**
@@ -426,9 +403,13 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidEventFromATransitionActionsOrActivities()
     {
-        $GLOBALS['invalidEventFrom'] = 'register';
+        $actionInvoker1 = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
+        \Phake::when($actionInvoker1)->invoke('register', $this->anything())->thenReturn('invalidEventFromRegister');
+
         $flow1 = new PageFlow();
-        $flow1->configure("{$this->cacheDirectory}/InvalidEventFromTransitionActionsOrActivities.yaml", null, $this->cacheDirectory, $this->cacheDirectory);
+        $flow1->setActionInvoker($actionInvoker1);
+        $fsmBuilder = new FSMBuilder($flow1, "{$this->cacheDirectory}/InvalidEventFromTransitionActionsOrActivities.yaml");
+        $fsmBuilder->build();
         $flow1->setPayload(new \stdClass());
         $flow1->start();
 
@@ -444,10 +425,17 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
         } catch (EventNotFoundException $e) {
         }
 
-        $GLOBALS['invalidEventFrom'] = 'setupFinish';
+        $this->assertEquals('ProcessRegister', $flow1->getCurrentStateName());
+
+        $actionInvoker2 = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
+        \Phake::when($actionInvoker2)->invoke('register', $this->anything())->thenReturn('goDisplayFinish');
+        \Phake::when($actionInvoker2)->invoke('setupFinish', $this->anything())->thenReturn('invalidEventFromSetupFinish');
+
 
         $flow2 = new PageFlow();
-        $flow2->configure("{$this->cacheDirectory}/InvalidEventFromTransitionActionsOrActivities.yaml", null, $this->cacheDirectory, $this->cacheDirectory);
+        $flow2->setActionInvoker($actionInvoker2);
+        $fsmBuilder = new FSMBuilder($flow2, "{$this->cacheDirectory}/InvalidEventFromTransitionActionsOrActivities.yaml");
+        $fsmBuilder->build();
         $flow2->setPayload(new \stdClass());
         $flow2->start();
 
@@ -462,6 +450,8 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
             $this->fail('An expected exception has not been raised.');
         } catch (EventNotFoundException $e) {
         }
+
+        $this->assertEquals('DisplayFinish', $flow2->getCurrentStateName());
     }
 
     /**
@@ -469,71 +459,49 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
      */
     public function testProblemThatActivityIsInvokedTwiceUnexpectedly()
     {
+        $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
+        \Phake::when($actionInvoker)->invoke('validate', $this->anything())->thenReturn('goDisplayConfirmation');
+
         $flow = new PageFlow();
-        $flow->configure("{$this->cacheDirectory}/ProblemThatActivityIsInvokedTwiceUnexpectedly.yaml", null, $this->cacheDirectory, $this->cacheDirectory);
+        $flow->setActionInvoker($actionInvoker);
+        $fsmBuilder = new FSMBuilder($flow, "{$this->cacheDirectory}/ProblemThatActivityIsInvokedTwiceUnexpectedly.yaml");
+        $fsmBuilder->build();
         $flow->setPayload(new \stdClass());
         $flow->start();
 
-        $this->assertEquals(1, $flow->getAttribute('setupFormProblemThatActivityIsInvokedTwiceCalled'));
+        \Phake::verify($actionInvoker)->invoke('setupForm', $this->anything());
 
         $flow->triggerEvent('confirmForm');
 
-        $this->assertEquals(1, $flow->getAttribute('setupFormProblemThatActivityIsInvokedTwiceCalled'));
-        $this->assertEquals(1, $flow->getAttribute('validateProblemThatActivityIsInvokedTwiceCalled'));
-        $this->assertEquals(1, $flow->getAttribute('setupConfirmationProblemThatActivityIsInvokedTwiceCalled'));
-    }
-
-    /**
-     * @since Method available since Release 1.7.0
-     */
-    public function testOmitClassName()
-    {
-        $this->assertOmitClassName('.yaml');
-        $this->assertOmitClassName('.xml');
+        \Phake::verify($actionInvoker)->invoke('validate', $this->anything());
+        \Phake::verify($actionInvoker)->invoke('setupConfirmation', $this->anything());
     }
 
     protected function assertInitialAndFinalActions($source)
     {
-        $GLOBALS['initializeCalled'] = false;
-        $GLOBALS['finalizeCalled'] = false;
+        $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
 
         $flow = new PageFlow();
-        $flow->configure("{$this->cacheDirectory}/$source", null, $this->cacheDirectory, $this->cacheDirectory);
+        $flow->setActionInvoker($actionInvoker);
+        $fsmBuilder = new FSMBuilder($flow, "{$this->cacheDirectory}/$source");
+        $fsmBuilder->build();
         $flow->setPayload(new \stdClass());
         $flow->start();
 
         $this->assertEquals('start', $flow->getView());
-        $this->assertTrue($GLOBALS['initializeCalled']);
-        $this->assertFalse($GLOBALS['finalizeCalled']);
+        \Phake::verify($actionInvoker)->invoke('initialize', $this->anything());
+        \Phake::verify($actionInvoker, \Phake::times(0))->invoke('finalize', $this->anything());
 
         $flow->triggerEvent('go');
 
         $this->assertEquals('end', $flow->getView());
-        $this->assertTrue($GLOBALS['finalizeCalled']);
+        \Phake::verify($actionInvoker)->invoke('finalize', $this->anything());
 
         try {
             $flow->triggerEvent('go');
             $this->fail('An expected exception has not been raised.');
         } catch (FSMAlreadyShutdownException $e) {
         }
-    }
-
-    /**
-     * @since Method available since Release 1.7.0
-     */
-    protected function assertOmitClassName($extension)
-    {
-        $GLOBALS['initializeCalled'] = false;
-        $flow = new PageFlow();
-        $flow->configure("{$this->cacheDirectory}/OmitClassName$extension",
-                         null,
-                         $this->cacheDirectory,
-                         $this->cacheDirectory
-                         );
-        $flow->setPayload(new \stdClass());
-        $flow->start();
-
-        $this->assertTrue($GLOBALS['initializeCalled']);
     }
 }
 

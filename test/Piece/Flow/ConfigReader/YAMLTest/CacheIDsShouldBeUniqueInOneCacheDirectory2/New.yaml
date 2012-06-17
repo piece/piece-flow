@@ -1,5 +1,0 @@
-# $Id$
-firstState: DisplayNew
-viewState:
-  - name: DisplayNew
-    view: New

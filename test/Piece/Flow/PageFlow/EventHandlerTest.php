@@ -40,10 +40,6 @@ namespace Piece\Flow\PageFlow;
 use Stagehand\FSM\Event;
 use Stagehand\FSM\FSM;
 
-use Piece\Flow\Action;
-use Piece\Flow\Action\Factory;
-use Piece\Flow\PageFlow\PageFlow;
-
 /**
  * @package    Piece_Flow
  * @copyright  2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
@@ -53,98 +49,65 @@ use Piece\Flow\PageFlow\PageFlow;
  */
 class EventHandlerTest extends \PHPUnit_Framework_TestCase
 {
-    protected $actionDirectory;
-
-    protected function setUp()
-    {
-        $this->actionDirectory = dirname(__FILE__) . '/' . basename(__FILE__, '.php');
-    }
-
-    protected function tearDown()
-    {
-        Factory::clearInstances();
-        Factory::setActionDirectory(null);
-    }
-
     /**
-     * @since Method available since Release 1.9.0
+     * @test
+     * @since Method available since Release 2.0.0
      */
-    public function testPieceFlowAction()
+    public function invokesTheAction()
     {
-        $flow = new PageFlow();
+        $pageFlow = \Phake::mock('Piece\Flow\PageFlow\PageFlow');
+        \Phake::when($pageFlow)->invokeAction($this->anything(), $this->anything())->thenReturn('foo');
+        $event = new Event('bar');
         $payload = new \stdClass();
-        $invoker = new EventHandler($flow, '\PieceFlowEventHandlerTestCasePieceFlowAction', 'foo', $this->actionDirectory);
-        $invoker->invokeAction(new Event('bar'), $payload, new FSM());
-        $action = Factory::factory('\PieceFlowEventHandlerTestCasePieceFlowAction');
+        $eventHandler = new EventHandler('my_controller:onRegister', $pageFlow);
+        $nextEvent = $eventHandler->invokeAction($event, $payload, new FSM());
 
-        $this->assertTrue($action instanceof Action);
-        $this->assertSame($payload, $this->readAttribute($action, 'payload'));
-        $this->assertEquals('bar', $this->readAttribute($action, 'event'));
-        $this->assertTrue($action->prepareCalled);
-        $this->assertTrue($action->eventHandlerCalled);
-
-        $flow->foo = 'bar';
-        $payload->bar = 'baz';
-
-        $this->assertTrue(property_exists($this->readAttribute($action, 'flow'), 'foo'));
-        $this->assertEquals('bar', $this->readAttribute($action, 'flow')->foo);
-        $this->assertTrue(property_exists($this->readAttribute($action, 'payload'), 'bar'));
-        $this->assertEquals('baz', $this->readAttribute($action, 'payload')->bar);
+        $this->assertEquals($nextEvent, 'foo');
+        \Phake::verify($pageFlow)->invokeAction('my_controller:onRegister', \Phake::capture($eventContext)); /* @var $eventContext \Piece\Flow\PageFlow\EventContext */
+        $this->assertSame($event, $eventContext->getEvent());
+        $this->assertSame($pageFlow, $eventContext->getPageFlow());
+        $this->assertSame($payload, $eventContext->getPayload());
     }
 
     /**
-     * @since Method available since Release 1.9.0
+     * @test
+     * @since Method available since Release 2.0.0
      */
-    public function testPlainPHPAction()
+    public function invokesTheActionAndTriggersTheNextEvent()
     {
-        $flow = new PageFlow();
+        $fsm = \Phake::mock('Stagehand\FSM\FSM');
+        \Phake::when($fsm)->hasEvent($this->anything())->thenReturn(true);
+        $pageFlow = \Phake::mock('Piece\Flow\PageFlow\PageFlow');
+        \Phake::when($pageFlow)->invokeAction($this->anything(), $this->anything())->thenReturn('foo');
+        $event = new Event('bar');
         $payload = new \stdClass();
-        $invoker = new EventHandler($flow, '\PieceFlowEventHandlerTestCasePlainPHPAction', 'foo', $this->actionDirectory);
-        $invoker->invokeAction(new Event('bar'), $payload, new FSM());
-        $action = Factory::factory('\PieceFlowEventHandlerTestCasePlainPHPAction');
+        $eventHandler = new EventHandler('my_controller:onRegister', $pageFlow);
+        $eventHandler->invokeActionAndTriggerEvent($event, $payload, $fsm);
 
-        $this->assertFalse($action instanceof Action);
-        $this->assertTrue($action instanceof \PieceFlowEventHandlerTestCasePlainPHPAction);
-        $this->assertTrue(property_exists($action, 'flow'));
-        $this->assertSame($flow, $action->flow);
-        $this->assertTrue(property_exists($action, 'payload'));
-        $this->assertSame($payload, $action->payload);
-        $this->assertTrue(property_exists($action, 'event'));
-        $this->assertEquals('bar', $action->event);
-        $this->assertTrue($action->prepareCalled);
-        $this->assertTrue($action->eventHandlerCalled);
+        \Phake::verify($pageFlow)->invokeAction('my_controller:onRegister', \Phake::capture($eventContext)); /* @var $eventContext \Piece\Flow\PageFlow\EventContext */
+        $this->assertSame($event, $eventContext->getEvent());
+        $this->assertSame($pageFlow, $eventContext->getPageFlow());
+        $this->assertSame($payload, $eventContext->getPayload());
 
-        $flow->foo = 'bar';
-        $payload->bar = 'baz';
-
-        $this->assertTrue(property_exists($this->readAttribute($action, 'flow'), 'foo'));
-        $this->assertEquals('bar', $this->readAttribute($action, 'flow')->foo);
-        $this->assertTrue(property_exists($this->readAttribute($action, 'payload'), 'bar'));
-        $this->assertEquals('baz', $this->readAttribute($action, 'payload')->bar);
+        \Phake::verify($fsm)->hasEvent('foo');
+        \Phake::verify($fsm)->queueEvent('foo');
     }
 
     /**
-     * @since Method available since Release 1.9.0
+     * @test
+     * @expectedException \Piece\Flow\PageFlow\EventNotFoundException
+     * @since Method available since Release 2.0.0
      */
-    public function testActionHasNoMethods()
+    public function raisesAnExceptionWhenTheNextEventIsNotFound()
     {
-        $invoker = new EventHandler(new PageFlow(), '\PieceFlowEventHandlerTestCaseNoMethodsAction', 'foo', $this->actionDirectory);
-        $invoker->invokeAction(new Event('bar'), new \stdClass(), new FSM());
-        $action = Factory::factory('\PieceFlowEventHandlerTestCaseNoMethodsAction');
-
-        $this->assertTrue($action instanceof \PieceFlowEventHandlerTestCaseNoMethodsAction);
-        $this->assertTrue($action->constructorCalled);
-        $this->assertTrue($action->eventHandlerCalled);
-    }
-
-    /**
-     * @expectedException \Piece\Flow\PageFlow\HandlerNotFoundException
-     * @since Method available since Release 1.9.0
-     */
-    public function testEventHandlerNotFound()
-    {
-        $invoker = new EventHandler(new PageFlow(), 'PieceFlowEventHandlerTestCasePlainPHPAction', 'bar', $this->actionDirectory);
-        $invoker->invokeAction(new Event('bar'), new \stdClass(), new FSM());
+        $fsm = \Phake::mock('Stagehand\FSM\FSM');
+        \Phake::when($fsm)->hasEvent($this->anything())->thenReturn(false);
+        $pageFlow = \Phake::mock('Piece\Flow\PageFlow\PageFlow');
+        \Phake::when($pageFlow)->invokeAction($this->anything(), $this->anything())->thenReturn('foo');
+        $event = new Event('bar');
+        $payload = new \stdClass();
+        $eventHandler = new EventHandler('my_controller:onRegister', $pageFlow);
+        $eventHandler->invokeActionAndTriggerEvent($event, $payload, $fsm);
     }
 }
 

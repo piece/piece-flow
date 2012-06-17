@@ -4,7 +4,7 @@
 /**
  * PHP version 5.3
  *
- * Copyright (c) 2007-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2012 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,22 +29,76 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2007-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2012 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
- * @since      File available since Release 1.11.0
+ * @since      File available since Release 2.0.0
  */
 
-error_reporting(error_reporting() | E_STRICT | E_DEPRECATED);
+namespace Piece\Flow\PageFlow;
 
-$classLoader = require __DIR__ . '/../vendor/autoload.php'; /* @var $classLoader \Composer\Autoload\ClassLoader */
-$classLoader->add('Piece\Flow', __DIR__);
+use Stagehand\FSM\Event;
 
-require_once 'Phake.php';
+/**
+ * @package    Piece_Flow
+ * @copyright  2012 KUBO Atsuhiro <kubo@iteman.jp>
+ * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
+ * @version    Release: @package_version@
+ * @since      Class available since Release 2.0.0
+ */
+class EventContext
+{
+    /**
+     * @var \Stagehand\FSM\Event
+     */
+    protected $event;
 
-\Phake::setClient(\Phake::CLIENT_PHPUNIT);
+    /**
+     * @var mixed
+     */
+    protected $payload;
 
-\Piece\Flow\Util\ErrorReporting::enableErrorToException();
+    /**
+     * @var \Piece\Flow\PageFlow\PageFlow
+     */
+    protected $pageFlow;
+
+    /**
+     * @param \Stagehand\FSM\Event $event
+     * @param mixed $payload
+     * @param \Piece\Flow\PageFlow\PageFlow $pageFlow
+     */
+    public function __construct(Event $event, $payload, PageFlow $pageFlow)
+    {
+        $this->event = $event;
+        $this->payload = $payload;
+        $this->pageFlow = $pageFlow;
+    }
+
+    /**
+     * @return \Stagehand\FSM\Event
+     */
+    public function getEvent()
+    {
+        return $this->event;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPayload()
+    {
+        return $this->payload;
+    }
+
+    /**
+     * @return \Piece\Flow\PageFlow\PageFlow
+     */
+    public function getPageFlow()
+    {
+        return $this->pageFlow;
+    }
+}
 
 /*
  * Local Variables:

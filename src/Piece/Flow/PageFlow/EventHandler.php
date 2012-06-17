@@ -40,8 +40,6 @@ namespace Piece\Flow\PageFlow;
 use Stagehand\FSM\Event;
 use Stagehand\FSM\FSM;
 
-use Piece\Flow\Action\Factory;
-
 /**
  * The event handler to handle all events raised on the specified PageFlow object.
  *
@@ -53,31 +51,24 @@ use Piece\Flow\Action\Factory;
  */
 class EventHandler
 {
+    /**
+     * @var string
+     * @since Property available since Release 2.0.0
+     */
+    protected $actionID;
+
     protected $flow;
-    protected $class;
-    protected $method;
-    protected $actionDirectory;
 
     /**
      * Wraps a action up with an EventHandler object.
      *
+     * @param string $actionID
      * @param \Piece\Flow\PageFlow\PageFlow $flow
-     * @param string     $class
-     * @param string     $method
-     * @param string     $actionDirectory
      */
-    public function __construct(PageFlow $flow, $class, $method, $actionDirectory)
+    public function __construct($actionID, PageFlow $flow)
     {
+        $this->actionID = $actionID;
         $this->flow = $flow;
-
-        if (is_null($class) || !strlen($class)) {
-            $this->class = $this->flow->getName() . 'Action';
-        } else {
-            $this->class = $class;
-        }
-
-        $this->method = $method;
-        $this->actionDirectory = $actionDirectory;
     }
 
     /**
@@ -86,43 +77,11 @@ class EventHandler
      * @param \Stagehand\FSM\Event $event
      * @param mixed $payload
      * @param \Stagehand\FSM\FSM $fsm
-     * @return mixed
-     * @throws \Piece\Flow\PageFlow\HandlerNotFoundException
+     * @return string
      */
     public function invokeAction(Event $event, $payload, FSM $fsm)
     {
-        if (!is_null($this->actionDirectory)) {
-            Factory::setActionDirectory($this->actionDirectory);
-        }
-
-        $action = Factory::factory($this->class);
-        if (!method_exists($action, $this->method)) {
-            throw new HandlerNotFoundException("The method [ {$this->method} ] does not exist in the action class [ {$this->class} ].");
-        }
-
-        if (method_exists($action, 'setFlow')) {
-            $action->setFlow($this->flow);
-        }
-
-        if (method_exists($action, 'setPayload')) {
-            $action->setPayload($payload);
-        }
-
-        if (method_exists($action, 'setEvent')) {
-            $action->setEvent($event->getID());
-        }
-
-        if (method_exists($action, 'prepare')) {
-            $action->prepare();
-        }
-
-        $result = call_user_func(array($action, $this->method));
-
-        if (method_exists($action, 'clear')) {
-            $action->clear();
-        }
-
-        return $result;
+        return $this->flow->invokeAction($this->actionID, new EventContext($event, $payload, $this->flow));
     }
 
     /**
@@ -141,7 +100,12 @@ class EventHandler
             if ($fsm->hasEvent($result)) {
                 $fsm->queueEvent($result);
             } else {
-                throw new EventNotFoundException("An invalid event [ $result ] is returned from [ {$this->class}::{$this->method}() ] method on the state [ " . $this->flow->getCurrentStateName() . ' ]. Check the flow definition and the action class.');
+                throw new EventNotFoundException(sprintf(
+                    'The event [ %s ] returned from the action [ %s ] is not found on the current state [ %s ].',
+                    $result,
+                    $this->actionID,
+                    $this->flow->getCurrentStateName()
+                ));
             }
         }
     }

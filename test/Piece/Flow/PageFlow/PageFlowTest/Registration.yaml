@@ -27,34 +27,26 @@ lastState:
   name: Finish
   view: Finish
   entry:
-    class: Piece_FlowTestCaseAction
     method: setupForm
   exit:
-    class: Piece_FlowTestCaseAction
     method: teardownForm
   activity:
-    class: Piece_FlowTestCaseAction
     method: countDisplay
 viewState:
   - name: DisplayForm
     view: Form
     entry:
-      class: Piece_FlowTestCaseAction
       method: setupForm
     exit:
-      class: Piece_FlowTestCaseAction
       method: teardownForm
     activity:
-      class: Piece_FlowTestCaseAction
       method: countDisplay
     transition:
       - event: submit
         nextState: processSubmitDisplayForm
         action:
-          class: Piece_FlowTestCaseAction
           method: validateInput
         guard:
-          class: Piece_FlowTestCaseAction
           method: isPermitted
   - name: ConfirmForm
     view: Confirmation
@@ -62,7 +54,6 @@ viewState:
       - event: submit
         nextState: processSubmitConfirmForm
         action:
-          class: Piece_FlowTestCaseAction
           method: validateConfirmation
 actionState:
   - name: processSubmitDisplayForm
@@ -78,7 +69,6 @@ actionState:
       - event: succeed
         nextState: Register
         action:
-          class: Piece_FlowTestCaseAction
           method: register
   - name: Register
     transition:
@@ -87,10 +77,8 @@ actionState:
       - event: succeed
         nextState: Finish
 initial:
-  class: Piece_FlowTestCaseAction
   method: initialize
 final:
-  class: Piece_FlowTestCaseAction
   method: finalize
 
 # Local Variables:
