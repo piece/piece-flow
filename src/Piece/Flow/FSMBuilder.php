@@ -91,7 +91,7 @@ class FSMBuilder
         }
 
         $this->fsmBuilder->setFirstState($firstState);
-        $this->fsmBuilder->setName($config->getName());
+        $this->fsmBuilder->setID($config->getName());
 
         $lastState = $config->getLastState();
         if (!is_null($lastState)) {

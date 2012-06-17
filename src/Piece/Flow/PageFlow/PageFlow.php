@@ -200,7 +200,7 @@ class PageFlow
                                             );
 
         if (!is_null($this->lastState)
-            && $state->getName() == $this->lastState
+            && $state->getID() == $this->lastState
             ) {
             $state = $this->fsm->triggerEvent(Event::EVENT_END);
         }
@@ -221,7 +221,7 @@ class PageFlow
         }
 
         $state = $this->fsm->getPreviousState();
-        return $state->getName();
+        return $state->getID();
     }
 
     /**
@@ -237,7 +237,7 @@ class PageFlow
         }
 
         $state = $this->fsm->getCurrentState();
-        return $state->getName();
+        return $state->getID();
     }
 
     /**

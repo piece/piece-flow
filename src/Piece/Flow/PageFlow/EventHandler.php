@@ -83,13 +83,13 @@ class EventHandler
     /**
      * Invokes the action with the event context.
      *
-     * @param \Stagehand\FSM\FSM $fsm
      * @param \Stagehand\FSM\Event $event
-     * @param mixed               &$payload
+     * @param mixed $payload
+     * @param \Stagehand\FSM\FSM $fsm
      * @return mixed
      * @throws \Piece\Flow\PageFlow\HandlerNotFoundException
      */
-    public function invokeAction(FSM $fsm, Event $event, &$payload)
+    public function invokeAction(Event $event, $payload, FSM $fsm)
     {
         if (!is_null($this->actionDirectory)) {
             Factory::setActionDirectory($this->actionDirectory);
@@ -109,7 +109,7 @@ class EventHandler
         }
 
         if (method_exists($action, 'setEvent')) {
-            $action->setEvent($event->getName());
+            $action->setEvent($event->getID());
         }
 
         if (method_exists($action, 'prepare')) {
@@ -129,14 +129,14 @@ class EventHandler
      * Invokes the action with the event context and triggers an event returned
      * from the action.
      *
-     * @param \Stagehand\FSM\FSM $fsm
      * @param \Stagehand\FSM\Event $event
-     * @param mixed               &$payload
+     * @param mixed $payload
+     * @param \Stagehand\FSM\FSM $fsm
      * @throws \Piece\Flow\PageFlow\EventNotFoundException
      */
-    public function invokeActionAndTriggerEvent(FSM $fsm, Event $event, &$payload)
+    public function invokeActionAndTriggerEvent(Event $event, $payload, FSM $fsm)
     {
-        $result = $this->invokeAction($fsm, $event, $payload);
+        $result = $this->invokeAction($event, $payload, $fsm);
         if (!is_null($result)) {
             if ($fsm->hasEvent($result)) {
                 $fsm->queueEvent($result);

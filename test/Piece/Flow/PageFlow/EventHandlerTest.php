@@ -74,7 +74,7 @@ class EventHandlerTest extends \PHPUnit_Framework_TestCase
         $flow = new PageFlow();
         $payload = new \stdClass();
         $invoker = new EventHandler($flow, '\PieceFlowEventHandlerTestCasePieceFlowAction', 'foo', $this->actionDirectory);
-        $invoker->invokeAction(new FSM(), new Event('bar'), $payload);
+        $invoker->invokeAction(new Event('bar'), $payload, new FSM());
         $action = Factory::factory('\PieceFlowEventHandlerTestCasePieceFlowAction');
 
         $this->assertTrue($action instanceof Action);
@@ -100,7 +100,7 @@ class EventHandlerTest extends \PHPUnit_Framework_TestCase
         $flow = new PageFlow();
         $payload = new \stdClass();
         $invoker = new EventHandler($flow, '\PieceFlowEventHandlerTestCasePlainPHPAction', 'foo', $this->actionDirectory);
-        $invoker->invokeAction(new FSM(), new Event('bar'), $payload);
+        $invoker->invokeAction(new Event('bar'), $payload, new FSM());
         $action = Factory::factory('\PieceFlowEventHandlerTestCasePlainPHPAction');
 
         $this->assertFalse($action instanceof Action);
@@ -129,7 +129,7 @@ class EventHandlerTest extends \PHPUnit_Framework_TestCase
     public function testActionHasNoMethods()
     {
         $invoker = new EventHandler(new PageFlow(), '\PieceFlowEventHandlerTestCaseNoMethodsAction', 'foo', $this->actionDirectory);
-        $invoker->invokeAction(new FSM(), new Event('bar'), new \stdClass());
+        $invoker->invokeAction(new Event('bar'), new \stdClass(), new FSM());
         $action = Factory::factory('\PieceFlowEventHandlerTestCaseNoMethodsAction');
 
         $this->assertTrue($action instanceof \PieceFlowEventHandlerTestCaseNoMethodsAction);
@@ -144,7 +144,7 @@ class EventHandlerTest extends \PHPUnit_Framework_TestCase
     public function testEventHandlerNotFound()
     {
         $invoker = new EventHandler(new PageFlow(), 'PieceFlowEventHandlerTestCasePlainPHPAction', 'bar', $this->actionDirectory);
-        $invoker->invokeAction(new FSM(), new Event('bar'), new \stdClass());
+        $invoker->invokeAction(new Event('bar'), new \stdClass(), new FSM());
     }
 }
 
