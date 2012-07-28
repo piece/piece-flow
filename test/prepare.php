@@ -37,14 +37,10 @@
 
 error_reporting(error_reporting() | E_STRICT | E_DEPRECATED);
 
-$classLoader = require __DIR__ . '/../vendor/autoload.php'; /* @var $classLoader \Composer\Autoload\ClassLoader */
-$classLoader->add('Piece\Flow', __DIR__);
-
+require_once __DIR__ . '/../vendor/autoload.php';
 require_once 'Phake.php';
 
 \Phake::setClient(\Phake::CLIENT_PHPUNIT);
-
-\Piece\Flow\Util\ErrorReporting::enableErrorToException();
 
 /*
  * Local Variables:
