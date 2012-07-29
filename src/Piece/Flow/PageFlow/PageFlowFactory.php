@@ -56,7 +56,7 @@ class PageFlowFactory
         $pageFlow = new PageFlow();
         $pageFlow->setActionInvoker($actionInvoker);
         $pageFlowGenerator = new PageFlowGenerator($pageFlow, $definitionFile);
-        $pageFlowGenerator->build();
+        $pageFlowGenerator->generate();
 
         return $pageFlow;
     }

@@ -90,11 +90,11 @@ class PageFlowGenerator
     }
 
     /**
-     * Builds a FSM with the given configuration.
+     * Configures a PageFlow object from the specified definition.
      *
      * @throws \Piece\Flow\PageFlow\ProtectedStateException
      */
-    public function build()
+    public function generate()
     {
         $definition = $this->readDefinition();
         if ($this->fsmBuilder->getFSM()->isProtectedState($definition['firstState'])) {
