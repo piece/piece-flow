@@ -55,8 +55,8 @@ class PageFlowFactory
     {
         $pageFlow = new PageFlow();
         $pageFlow->setActionInvoker($actionInvoker);
-        $fsmBuilder = new FSMBuilder($pageFlow, $definitionFile);
-        $fsmBuilder->build();
+        $pageFlowGenerator = new PageFlowGenerator($pageFlow, $definitionFile);
+        $pageFlowGenerator->build();
 
         return $pageFlow;
     }

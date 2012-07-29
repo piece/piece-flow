@@ -38,12 +38,13 @@
 namespace Piece\Flow\PageFlow;
 
 use Stagehand\FSM\Event;
+use Stagehand\FSM\FSMBuilder;
 use Stagehand\FSM\State;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Yaml\Yaml;
 
 /**
- * The FSM builder.
+ * The configuration generator for PageFlow objects.
  *
  * @package    Piece_Flow
  * @copyright  2007-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
@@ -51,7 +52,7 @@ use Symfony\Component\Yaml\Yaml;
  * @version    Release: @package_version@
  * @since      Class available since Release 1.14.0
  */
-class FSMBuilder
+class PageFlowGenerator
 {
     /**
      * @var \Piece\Flow\PageFlow\PageFlow
@@ -85,7 +86,7 @@ class FSMBuilder
 
         $this->definitionFile = $definitionFile;
         $this->pageFlow = $pageFlow;
-        $this->fsmBuilder = new \Stagehand\FSM\FSMBuilder();
+        $this->fsmBuilder = new FSMBuilder();
     }
 
     /**
