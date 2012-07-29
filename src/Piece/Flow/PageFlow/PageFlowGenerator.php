@@ -72,20 +72,17 @@ class PageFlowGenerator
     protected $definitionFile;
 
     /**
-     * Sets a PageFlow object to the property.
-     *
-     * @param \Piece\Flow\PageFlow\PageFlow $pageFlow
      * @param string $definitionFile
      * @throws \Piece\Flow\PageFlow\FileNotFoundException
      */
-    public function __construct(PageFlow $pageFlow, $definitionFile)
+    public function __construct($definitionFile)
     {
         if (!file_exists($definitionFile)) {
             throw new FileNotFoundException(sprintf('The flow definition file [ %s ] is not found.', $definitionFile));
         }
 
         $this->definitionFile = $definitionFile;
-        $this->pageFlow = $pageFlow;
+        $this->pageFlow = new PageFlow();
         $this->fsmBuilder = new FSMBuilder();
     }
 
@@ -132,6 +129,8 @@ class PageFlowGenerator
         }
 
         $this->pageFlow->setFSM($this->fsmBuilder->getFSM());
+
+        return $this->pageFlow;
     }
 
     /**
