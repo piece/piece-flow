@@ -53,7 +53,10 @@ use Symfony\Component\Yaml\Yaml;
  */
 class FSMBuilder
 {
-    protected $flow;
+    /**
+     * @var \Piece\Flow\PageFlow\PageFlow
+     */
+    protected $pageFlow;
 
     /**
      * @var \Stagehand\FSM\FSMBuilder
@@ -70,18 +73,18 @@ class FSMBuilder
     /**
      * Sets a PageFlow object to the property.
      *
-     * @param \Piece\Flow\PageFlow\PageFlow $flow
+     * @param \Piece\Flow\PageFlow\PageFlow $pageFlow
      * @param string $definitionFile
      * @throws \Piece\Flow\PageFlow\FileNotFoundException
      */
-    public function __construct(PageFlow $flow, $definitionFile)
+    public function __construct(PageFlow $pageFlow, $definitionFile)
     {
         if (!file_exists($definitionFile)) {
             throw new FileNotFoundException(sprintf('The flow definition file [ %s ] is not found.', $definitionFile));
         }
 
         $this->definitionFile = $definitionFile;
-        $this->flow = $flow;
+        $this->pageFlow = $pageFlow;
         $this->fsmBuilder = new \Stagehand\FSM\FSMBuilder();
     }
 
@@ -112,8 +115,8 @@ class FSMBuilder
 
             $this->fsmBuilder->addTransition($definition['lastState']['name'], Event::EVENT_END, State::STATE_FINAL);
             $this->configureViewState($definition['lastState']);
-            $this->flow->setLastState($definition['lastState']['name']);
-            $this->flow->addView($definition['lastState']['name'], $definition['lastState']['view']);
+            $this->pageFlow->setLastState($definition['lastState']['name']);
+            $this->pageFlow->addView($definition['lastState']['name'], $definition['lastState']['view']);
         }
 
         $this->configureViewStates($definition['viewState']);
@@ -127,7 +130,7 @@ class FSMBuilder
             $this->fsmBuilder->setEntryAction(State::STATE_FINAL, $this->wrapAction($definition['final']));
         }
 
-        $this->flow->setFSM($this->fsmBuilder->getFSM());
+        $this->pageFlow->setFSM($this->fsmBuilder->getFSM());
     }
 
     /**
@@ -144,7 +147,7 @@ class FSMBuilder
             }
 
             $this->configureViewState($state);
-            $this->flow->addView($state['name'], $state['view']);
+            $this->pageFlow->addView($state['name'], $state['view']);
         }
     }
 
@@ -227,7 +230,7 @@ class FSMBuilder
             $actionID = $action['class'] . ':' . $action['method'];
         }
 
-        $eventHandler = new EventHandler($actionID, $this->flow);
+        $eventHandler = new EventHandler($actionID, $this->pageFlow);
         return array($eventHandler, 'invokeAction');
     }
 
@@ -261,7 +264,7 @@ class FSMBuilder
             $actionID = $action['class'] . ':' . $action['method'];
         }
 
-        $eventHandler = new EventHandler($actionID, $this->flow);
+        $eventHandler = new EventHandler($actionID, $this->pageFlow);
         return array($eventHandler, 'invokeActionAndTriggerEvent');
     }
 
