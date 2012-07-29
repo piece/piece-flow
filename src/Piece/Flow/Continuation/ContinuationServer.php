@@ -39,8 +39,7 @@ namespace Piece\Flow\Continuation;
 
 use Piece\Flow\Core\MethodInvocationException;
 use Piece\Flow\PageFlow\ActionInvoker;
-use Piece\Flow\PageFlow\FSMBuilder;
-use Piece\Flow\PageFlow\PageFlow;
+use Piece\Flow\PageFlow\PageFlowFactory;
 
 /**
  * The continuation server.
@@ -71,6 +70,12 @@ class ContinuationServer
      */
     protected $actionInvoker;
 
+    /**
+     * @var \Piece\Flow\PageFlow\PageFlowFactory
+     * @since Property available since Release 2.0.0
+     */
+    protected $pageFlowFactory;
+
     private static $activeInstances = array();
     private static $shutdownRegistered = false;
 
@@ -86,6 +91,7 @@ class ContinuationServer
         }
 
         $this->flowExecution = new FlowExecution();
+        $this->pageFlowFactory = new PageFlowFactory();
     }
 
     /**
@@ -359,10 +365,7 @@ class ContinuationServer
             throw new FlowNotFoundException("The flow ID [ {$this->activeFlowID} ] not found in the flow definitions.");
         }
 
-        $flow = new PageFlow();
-        $flow->setActionInvoker($this->actionInvoker);
-        $fsmBuilder = new FSMBuilder($flow, $this->flowDefinitions[$this->activeFlowID]['source']);
-        $fsmBuilder->build();
+        $flow = $this->pageFlowFactory->create($this->flowDefinitions[$this->activeFlowID]['source'], $this->actionInvoker);
 
         while (true) {
             $flowExecutionTicket = $this->generateFlowExecutionTicket();

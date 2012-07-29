@@ -53,10 +53,17 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
     protected $source;
     protected $cacheDirectory;
 
+    /**
+     * @var \Piece\Flow\PageFlow\PageFlowFactory
+     * @since Property available since Release 2.0.0
+     */
+    protected $pageFlowFactory;
+
     protected function setUp()
     {
         $this->cacheDirectory = dirname(__FILE__) . '/' . basename(__FILE__, '.php');
         $this->source = "{$this->cacheDirectory}/Registration.yaml";
+        $this->pageFlowFactory = new PageFlowFactory();
     }
 
     protected function tearDown()
@@ -67,10 +74,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
 
     public function testGettingView()
     {
-        $flow = new PageFlow();
-        $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
-        $fsmBuilder = new FSMBuilder($flow, $this->source);
-        $fsmBuilder->build();
+        $flow = $this->pageFlowFactory->create($this->source, \Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
         $flow->start();
 
         $this->assertEquals('Form', $flow->getView());
@@ -81,10 +85,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
         $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
         \Phake::when($actionInvoker)->invoke('isPermitted', $this->anything())->thenReturn(true);
         \Phake::when($actionInvoker)->invoke('validateInput', $this->anything())->thenReturn('succeed');
-        $flow = new PageFlow();
-        $flow->setActionInvoker($actionInvoker);
-        $fsmBuilder = new FSMBuilder($flow, $this->source);
-        $fsmBuilder->build();
+        $flow = $this->pageFlowFactory->create($this->source, $actionInvoker);
         $flow->start();
         $flow->triggerEvent('submit');
 
@@ -96,10 +97,8 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
         $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
         \Phake::when($actionInvoker)->invoke('isPermitted', $this->anything())->thenReturn(true);
         \Phake::when($actionInvoker)->invoke('validateInput', $this->anything())->thenReturn('succeed');
-        $flow = new PageFlow();
+        $flow = $this->pageFlowFactory->create($this->source, $actionInvoker);
         $flow->setActionInvoker($actionInvoker);
-        $fsmBuilder = new FSMBuilder($flow, $this->source);
-        $fsmBuilder->build();
         $flow->start();
         $flow->triggerEvent('submit');
 
@@ -113,10 +112,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
         \Phake::when($actionInvoker)->invoke('validateInput', $this->anything())->thenReturn('succeed');
         \Phake::when($actionInvoker)->invoke('validateConfirmation', $this->anything())->thenReturn('succeed');
         \Phake::when($actionInvoker)->invoke('register', $this->anything())->thenReturn('succeed');
-        $flow = new PageFlow();
-        $flow->setActionInvoker($actionInvoker);
-        $fsmBuilder = new FSMBuilder($flow, $this->source);
-        $fsmBuilder->build();
+        $flow = $this->pageFlowFactory->create($this->source, $actionInvoker);
         $flow->start();
         $flow->triggerEvent('submit');
 
@@ -132,10 +128,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
         $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
         \Phake::when($actionInvoker)->invoke('isPermitted', $this->anything())->thenReturn(true);
         \Phake::when($actionInvoker)->invoke('validateInput', $this->anything())->thenReturn('raiseError');
-        $flow = new PageFlow();
-        $flow->setActionInvoker($actionInvoker);
-        $fsmBuilder = new FSMBuilder($flow, $this->source);
-        $fsmBuilder->build();
+        $flow = $this->pageFlowFactory->create($this->source, $actionInvoker);
         $flow->start();
         $flow->triggerEvent('submit');
 
@@ -146,10 +139,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
     public function testActivity()
     {
         $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
-        $flow = new PageFlow();
-        $flow->setActionInvoker($actionInvoker);
-        $fsmBuilder = new FSMBuilder($flow, $this->source);
-        $fsmBuilder->build();
+        $flow = $this->pageFlowFactory->create($this->source, $actionInvoker);
         $flow->start();
 
         \Phake::verify($actionInvoker)->invoke('countDisplay', $this->anything());
@@ -167,11 +157,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
             ->thenReturn('succeed');
         \Phake::when($actionInvoker)->invoke('isPermitted', $this->anything())
             ->thenReturn(true);
-
-        $flow = new PageFlow();
-        $flow->setActionInvoker($actionInvoker);
-        $fsmBuilder = new FSMBuilder($flow, $this->source);
-        $fsmBuilder->build();
+        $flow = $this->pageFlowFactory->create($this->source, $actionInvoker);
         $flow->start();
 
         \Phake::verify($actionInvoker)->invoke('setupForm', $this->anything());
@@ -183,10 +169,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
 
     public function testSettingAttribute()
     {
-        $flow = new PageFlow();
-        $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
-        $fsmBuilder = new FSMBuilder($flow, $this->source);
-        $fsmBuilder->build();
+        $flow = $this->pageFlowFactory->create($this->source, \Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
         $flow->start();
         $flow->setAttribute('foo', 'bar');
 
@@ -199,10 +182,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
      */
     public function testFailureToSetAttributeBeforeStartingFlow()
     {
-        $flow = new PageFlow();
-        $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
-        $fsmBuilder = new FSMBuilder($flow, $this->source);
-        $fsmBuilder->build();
+        $flow = $this->pageFlowFactory->create($this->source, \Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
         $flow->setAttribute('foo', 'bar');
     }
 
@@ -217,10 +197,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
 
     public function testOptionalElements()
     {
-        $flow = new PageFlow();
-        $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
-        $fsmBuilder = new FSMBuilder($flow, "{$this->cacheDirectory}/optional.yaml");
-        $fsmBuilder->build();
+        $flow = $this->pageFlowFactory->create("{$this->cacheDirectory}/optional.yaml", \Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
         $flow->setPayload(new \stdClass());
         $flow->start();
 
@@ -237,10 +214,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
      */
     public function testFailureToGetViewBeforeStartingFlow()
     {
-        $flow = new PageFlow();
-        $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
-        $fsmBuilder = new FSMBuilder($flow, $this->source);
-        $fsmBuilder->build();
+        $flow = $this->pageFlowFactory->create($this->source, \Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
         $flow->getView();
     }
 
@@ -249,10 +223,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidTransition()
     {
-        $flow = new PageFlow();
-        $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
-        $fsmBuilder = new FSMBuilder($flow, "{$this->cacheDirectory}/invalid.yaml");
-        $fsmBuilder->build();
+        $flow = $this->pageFlowFactory->create("{$this->cacheDirectory}/invalid.yaml", \Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
         $flow->setPayload(new \stdClass());
         $flow->start();
         $flow->triggerEvent('go');
@@ -261,10 +232,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
 
     public function testCheckingWhetherCurrentStateIsFinalState()
     {
-        $flow = new PageFlow();
-        $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
-        $fsmBuilder = new FSMBuilder($flow, "{$this->cacheDirectory}/initial.yaml");
-        $fsmBuilder->build();
+        $flow = $this->pageFlowFactory->create("{$this->cacheDirectory}/initial.yaml", \Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
         $flow->setPayload(new \stdClass());
         $flow->start();
 
@@ -277,10 +245,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
 
     public function testRemovingAttribute()
     {
-        $flow = new PageFlow();
-        $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
-        $fsmBuilder = new FSMBuilder($flow, $this->source);
-        $fsmBuilder->build();
+        $flow = $this->pageFlowFactory->create($this->source, \Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
         $flow->start();
         $flow->setAttribute('foo', 'bar');
 
@@ -293,10 +258,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
 
     public function testClearingAttributes()
     {
-        $flow = new PageFlow();
-        $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
-        $fsmBuilder = new FSMBuilder($flow, $this->source);
-        $fsmBuilder->build();
+        $flow = $this->pageFlowFactory->create($this->source, \Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
         $flow->start();
         $flow->setAttribute('foo', 'bar');
         $flow->setAttribute('bar', 'baz');
@@ -328,10 +290,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
                 $eventContext->getPageFlow()->setAttribute('numberOfUpdate', $numberOfUpdate);
             });
 
-        $flow = new PageFlow();
-        $flow->setActionInvoker($actionInvoker);
-        $fsmBuilder = new FSMBuilder($flow, "{$this->cacheDirectory}/CDPlayer.yaml");
-        $fsmBuilder->build();
+        $flow = $this->pageFlowFactory->create("{$this->cacheDirectory}/CDPlayer.yaml", $actionInvoker);
         $flow->setPayload(new \stdClass());
         $flow->start();
 
@@ -380,10 +339,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
      */
     public function testProtectedEvents()
     {
-        $flow = new PageFlow();
-        $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
-        $fsmBuilder = new FSMBuilder($flow, "{$this->cacheDirectory}/ProtectedEvents.yaml");
-        $fsmBuilder->build();
+        $this->pageFlowFactory->create("{$this->cacheDirectory}/ProtectedEvents.yaml", \Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
     }
 
     /**
@@ -392,10 +348,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
      */
     public function testProtectedStates()
     {
-        $flow = new PageFlow();
-        $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
-        $fsmBuilder = new FSMBuilder($flow, "{$this->cacheDirectory}/ProtectedStates.yaml");
-        $fsmBuilder->build();
+        $this->pageFlowFactory->create("{$this->cacheDirectory}/ProtectedStates.yaml", \Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
     }
 
     /**
@@ -405,11 +358,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
     {
         $actionInvoker1 = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
         \Phake::when($actionInvoker1)->invoke('register', $this->anything())->thenReturn('invalidEventFromRegister');
-
-        $flow1 = new PageFlow();
-        $flow1->setActionInvoker($actionInvoker1);
-        $fsmBuilder = new FSMBuilder($flow1, "{$this->cacheDirectory}/InvalidEventFromTransitionActionsOrActivities.yaml");
-        $fsmBuilder->build();
+        $flow1 = $this->pageFlowFactory->create("{$this->cacheDirectory}/InvalidEventFromTransitionActionsOrActivities.yaml", $actionInvoker1);
         $flow1->setPayload(new \stdClass());
         $flow1->start();
 
@@ -430,12 +379,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
         $actionInvoker2 = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
         \Phake::when($actionInvoker2)->invoke('register', $this->anything())->thenReturn('goDisplayFinish');
         \Phake::when($actionInvoker2)->invoke('setupFinish', $this->anything())->thenReturn('invalidEventFromSetupFinish');
-
-
-        $flow2 = new PageFlow();
-        $flow2->setActionInvoker($actionInvoker2);
-        $fsmBuilder = new FSMBuilder($flow2, "{$this->cacheDirectory}/InvalidEventFromTransitionActionsOrActivities.yaml");
-        $fsmBuilder->build();
+        $flow2 = $this->pageFlowFactory->create("{$this->cacheDirectory}/InvalidEventFromTransitionActionsOrActivities.yaml", $actionInvoker2);
         $flow2->setPayload(new \stdClass());
         $flow2->start();
 
@@ -461,11 +405,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
     {
         $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
         \Phake::when($actionInvoker)->invoke('validate', $this->anything())->thenReturn('goDisplayConfirmation');
-
-        $flow = new PageFlow();
-        $flow->setActionInvoker($actionInvoker);
-        $fsmBuilder = new FSMBuilder($flow, "{$this->cacheDirectory}/ProblemThatActivityIsInvokedTwiceUnexpectedly.yaml");
-        $fsmBuilder->build();
+        $flow = $this->pageFlowFactory->create("{$this->cacheDirectory}/ProblemThatActivityIsInvokedTwiceUnexpectedly.yaml", $actionInvoker);
         $flow->setPayload(new \stdClass());
         $flow->start();
 
@@ -480,11 +420,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
     protected function assertInitialAndFinalActions($source)
     {
         $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
-
-        $flow = new PageFlow();
-        $flow->setActionInvoker($actionInvoker);
-        $fsmBuilder = new FSMBuilder($flow, "{$this->cacheDirectory}/$source");
-        $fsmBuilder->build();
+        $flow = $this->pageFlowFactory->create("{$this->cacheDirectory}/$source", $actionInvoker);
         $flow->setPayload(new \stdClass());
         $flow->start();
 
