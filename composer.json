@@ -18,6 +18,14 @@
         "symfony/config": ">=2.0.0",
         "symfony/yaml": ">=2.0.0"
     },
+    "require-dev": {
+        "symfony/dependency-injection": ">=2.0.0",
+        "symfony/http-kernel": ">=2.0.0"
+    },
+    "suggest": {
+        "symfony/dependency-injection": "Allows to use configuration knowledge of Piece_Flow's components directly by using Symfony DependencyInjection and Config components.",
+        "symfony/http-kernel": "Allows to use configuration knowledge of Piece_Flow's components directly by using Symfony DependencyInjection and Config components."
+    },
     "autoload": {
         "psr-0": { "Piece\\Flow": "src/" }
     },
