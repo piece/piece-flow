@@ -57,7 +57,7 @@ class GC
      *
      * @param integer $expirationTime
      */
-    public function __construct($expirationTime)
+    public function __construct($expirationTime = 1440)
     {
         $this->expirationTime = $expirationTime;
     }

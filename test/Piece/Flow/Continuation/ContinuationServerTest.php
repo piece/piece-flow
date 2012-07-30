@@ -548,7 +548,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
     public function testFlowExecutionExpiredExceptionShouldBeRaisedWhenFlowExecutionHasExpired()
     {
         $flowName = 'FlowExecutionExpired';
-        $server = new ContinuationServer(new PageFlowRepository(new PageFlowCacheFactory($this->cacheDirectory, true)), true, 1);
+        $server = new ContinuationServer(new PageFlowRepository(new PageFlowCacheFactory($this->cacheDirectory, true)), new GC(1));
         $server->addFlow($flowName, "{$this->cacheDirectory}/$flowName.yaml");
         $server->setEventNameCallback(array($this, 'getEventName'));
         $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
@@ -575,7 +575,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
     public function testFlowExecutionExpiredExceptionShouldNotBeRaisedWhenFlowExecutionHasNotExpired()
     {
         $flowName = 'FlowExecutionExpired';
-        $server = new ContinuationServer(new PageFlowRepository(new PageFlowCacheFactory($this->cacheDirectory, true)), true, 2);
+        $server = new ContinuationServer(new PageFlowRepository(new PageFlowCacheFactory($this->cacheDirectory, true)), new GC(2));
         $server->addFlow($flowName, "{$this->cacheDirectory}/$flowName.yaml");
         $server->setEventNameCallback(array($this, 'getEventName'));
         $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
@@ -617,7 +617,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
     {
         $flowName = 'FlowExecutionExpired';
         $this->flowID = $flowName;
-        $server = new ContinuationServer(new PageFlowRepository(new PageFlowCacheFactory($this->cacheDirectory, true)), true, 1);
+        $server = new ContinuationServer(new PageFlowRepository(new PageFlowCacheFactory($this->cacheDirectory, true)), new GC(1));
         $server->addFlow($flowName, "{$this->cacheDirectory}/$flowName.yaml");
         $server->setEventNameCallback(array($this, 'getEventName'));
         $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
@@ -916,7 +916,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
     public function testFlowExecutionExpiredExceptionShouldRaiseAfterSweepingIt()
     {
         $flowName = 'FlowExecutionExpired';
-        $server = new ContinuationServer(new PageFlowRepository(new PageFlowCacheFactory($this->cacheDirectory, true)), true, 1);
+        $server = new ContinuationServer(new PageFlowRepository(new PageFlowCacheFactory($this->cacheDirectory, true)), new GC(1));
         $server->addFlow($flowName, "{$this->cacheDirectory}/$flowName.yaml");
         $server->setEventNameCallback(array($this, 'getEventName'));
         $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));

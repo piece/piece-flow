@@ -60,7 +60,6 @@ class ContinuationServer
     protected $activeFlowID;
     protected $activeFlowExecutionTicket;
     protected $gc;
-    protected $enableGC = false;
     protected $flowExecution;
 
     /**
@@ -80,18 +79,13 @@ class ContinuationServer
 
     /**
      * @param \Piece\Flow\PageFlow\PageFlowRepository $pageFlowRepository
-     * @param integer $enableGC
-     * @param integer $gcExpirationTime
+     * @param \Piece\Flow\Continuation\GC $gc
      */
-    public function __construct(PageFlowRepository $pageFlowRepository, $enableGC = false, $gcExpirationTime = 1440)
+    public function __construct(PageFlowRepository $pageFlowRepository, GC $gc = null)
     {
-        if ($enableGC) {
-            $this->gc = new GC($gcExpirationTime);
-            $this->enableGC = true;
-        }
-
         $this->flowExecution = new FlowExecution();
         $this->pageFlowRepository = $pageFlowRepository;
+        $this->gc = $gc;
     }
 
     /**
@@ -117,7 +111,7 @@ class ContinuationServer
      */
     public function invoke($payload)
     {
-        if ($this->enableGC) {
+        if (!is_null($this->gc)) {
             $this->gc->setGCCallback(array($this->flowExecution, 'disableFlowExecution'));
             $this->gc->mark();
         }
@@ -130,7 +124,7 @@ class ContinuationServer
             $this->startFlowExecution($payload);
         }
 
-        if ($this->enableGC && !$this->isExclusive()) {
+        if (!is_null($this->gc) && !$this->isExclusive()) {
             $this->gc->update($this->activeFlowExecutionTicket);
         }
 
@@ -211,7 +205,7 @@ class ContinuationServer
         $this->activeFlowID = null;
         $this->activeFlowExecutionTicket = null;
         $this->flowExecution->inactivateFlowExecution();
-        if ($this->enableGC) {
+        if (!is_null($this->gc)) {
             $this->gc->sweep();
         }
     }
@@ -317,7 +311,7 @@ class ContinuationServer
      */
     protected function continueFlowExecution($payload)
     {
-        if ($this->enableGC) {
+        if (!is_null($this->gc)) {
             if ($this->gc->isMarked($this->activeFlowExecutionTicket)) {
                 $this->flowExecution->removeFlowExecution($this->activeFlowExecutionTicket, $this->activeFlowID);
                 throw new FlowExecutionExpiredException('The flow execution for the given flow execution ticket has expired.');
