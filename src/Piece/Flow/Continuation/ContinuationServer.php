@@ -39,7 +39,7 @@ namespace Piece\Flow\Continuation;
 
 use Piece\Flow\Core\MethodInvocationException;
 use Piece\Flow\PageFlow\ActionInvoker;
-use Piece\Flow\PageFlow\PageFlowFactory;
+use Piece\Flow\PageFlow\PageFlowRepository;
 
 /**
  * The continuation server.
@@ -53,7 +53,6 @@ use Piece\Flow\PageFlow\PageFlowFactory;
 class ContinuationServer
 {
     protected $flowDefinitions = array();
-    protected $cacheDirectory;
     protected $flowExecutionTicketCallback;
     protected $flowIDCallback;
     protected $eventNameCallback;
@@ -71,19 +70,20 @@ class ContinuationServer
     protected $actionInvoker;
 
     /**
-     * @var \Piece\Flow\PageFlow\PageFlowFactory
+     * @var \Piece\Flow\PageFlow\PageFlowRepository
      * @since Property available since Release 2.0.0
      */
-    protected $pageFlowFactory;
+    protected $pageFlowRepository;
 
     private static $activeInstances = array();
     private static $shutdownRegistered = false;
 
     /**
+     * @param \Piece\Flow\PageFlow\PageFlowRepository $pageFlowRepository
      * @param integer $enableGC
      * @param integer $gcExpirationTime
      */
-    public function __construct($enableGC = false, $gcExpirationTime = 1440)
+    public function __construct(PageFlowRepository $pageFlowRepository, $enableGC = false, $gcExpirationTime = 1440)
     {
         if ($enableGC) {
             $this->gc = new GC($gcExpirationTime);
@@ -91,7 +91,7 @@ class ContinuationServer
         }
 
         $this->flowExecution = new FlowExecution();
-        $this->pageFlowFactory = new PageFlowFactory();
+        $this->pageFlowRepository = $pageFlowRepository;
     }
 
     /**
@@ -106,6 +106,7 @@ class ContinuationServer
         $this->flowDefinitions[$flowID] = array('source' => $source,
                                                  'isExclusive' => $isExclusive
                                                  );
+        $this->pageFlowRepository->add($source);
     }
 
     /**
@@ -177,16 +178,6 @@ class ContinuationServer
     public function setFlowExecutionTicketCallback($callback)
     {
         $this->flowExecutionTicketCallback = $callback;
-    }
-
-    /**
-     * Sets the cache directory for the flow definitions.
-     *
-     * @param string $cacheDirectory
-     */
-    public function setCacheDirectory($cacheDirectory)
-    {
-        $this->cacheDirectory = $cacheDirectory;
     }
 
     /**
@@ -365,7 +356,12 @@ class ContinuationServer
             throw new FlowNotFoundException("The flow ID [ {$this->activeFlowID} ] not found in the flow definitions.");
         }
 
-        $flow = $this->pageFlowFactory->create($this->flowDefinitions[$this->activeFlowID]['source'], $this->actionInvoker);
+        $flow = $this->pageFlowRepository->findByDefinitionFile($this->flowDefinitions[$this->activeFlowID]['source']);
+        if (is_null($flow)) {
+            throw new FlowNotFoundException(sprintf('The page flow for the definition file [ %s ] is not found in the repository.', $this->flowDefinitions[$this->activeFlowID]['source']));
+        }
+
+        $flow->setActionInvoker($this->actionInvoker);
 
         while (true) {
             $flowExecutionTicket = $this->generateFlowExecutionTicket();

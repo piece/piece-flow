@@ -44,16 +44,68 @@ namespace Piece\Flow\PageFlow;
  * @version    Release: @package_version@
  * @since      Class available since Release 2.0.0
  */
-class PageFlowFactory
+class PageFlowRepository
 {
+    /**
+     * @var \Piece\Flow\PageFlow\PageFlowCacheFactory
+     */
+    protected $pageFlowCacheFactory;
+
+    /**
+     * @var \Piece\Flow\PageFlow\PageFlowFactory
+     */
+    protected $pageFlowFactory;
+
+    /**
+     * @var array
+     */
+    protected $pageFlows = array();
+
+    /**
+     * @param \Piece\Flow\PageFlow\PageFlowCacheFactory $pageFlowCacheFactory
+     */
+    public function __construct(PageFlowCacheFactory $pageFlowCacheFactory)
+    {
+        $this->pageFlowCacheFactory = $pageFlowCacheFactory;
+        $this->pageFlowFactory = new PageFlowFactory();
+    }
+
+    /**
+     * @param string $definitionFile
+     * @throws \Piece\Flow\PageFlow\FileNotFoundException
+     */
+    public function add($definitionFile)
+    {
+        $absoluteDefinitionFile = realpath($definitionFile);
+        if (!$absoluteDefinitionFile) {
+            throw new FileNotFoundException(sprintf('The page flow definition file [ %s ] is not found or not readable.', $definitionFile));
+        }
+
+        $pageFlowCache = $this->pageFlowCacheFactory->create($absoluteDefinitionFile);
+        if (!$pageFlowCache->isFresh()) {
+            $pageFlowCache->write($this->pageFlowFactory->create($absoluteDefinitionFile));
+        }
+
+        $this->pageFlows[$absoluteDefinitionFile] = $pageFlowCache;
+    }
+
     /**
      * @param string $definitionFile
      * @return \Piece\Flow\PageFlow\PageFlow
+     * @throws \Piece\Flow\PageFlow\FileNotFoundException
      */
-    public function create($definitionFile)
+    public function findByDefinitionFile($definitionFile)
     {
-        $pageFlowGenerator = new PageFlowGenerator($definitionFile);
-        return $pageFlowGenerator->generate();
+        $absoluteDefinitionFile = realpath($definitionFile);
+        if (!$absoluteDefinitionFile) {
+            throw new FileNotFoundException(sprintf('The page flow definition file [ %s ] is not found or not readable.', $definitionFile));
+        }
+
+        if (array_key_exists($absoluteDefinitionFile, $this->pageFlows)) {
+            return $this->pageFlows[$absoluteDefinitionFile]->read();
+        } else {
+            return null;
+        }
     }
 }
 

@@ -37,6 +37,9 @@
 
 namespace Piece\Flow\PageFlow;
 
+use Symfony\Component\Config\ConfigCache;
+use Symfony\Component\Config\Resource\FileResource;
+
 /**
  * @package    Piece_Flow
  * @copyright  2012 KUBO Atsuhiro <kubo@iteman.jp>
@@ -44,16 +47,84 @@ namespace Piece\Flow\PageFlow;
  * @version    Release: @package_version@
  * @since      Class available since Release 2.0.0
  */
-class PageFlowFactory
+class PageFlowCache
 {
     /**
+     * @var string
+     */
+    protected $cacheFile;
+
+    /**
+     * @var string
+     */
+    protected $clearCacheOnDestruction;
+
+    /**
+     * @var \Symfony\Component\Config\ConfigCache
+     */
+    protected $configCache;
+
+    /**
+     * @var string
+     */
+    protected $definitionFile;
+
+    /**
      * @param string $definitionFile
+     * @param string $cacheDir
+     * @param boolean $clearCacheOnDestruction
+     */
+    public function __construct($definitionFile, $cacheDir, $clearCacheOnDestruction)
+    {
+        $this->definitionFile = $definitionFile;
+        $this->cacheFile = $cacheDir . '/' . sha1($this->definitionFile) . '.cache';
+        $this->configCache = new ConfigCache($this->cacheFile, true);
+        $this->clearCacheOnDestruction = $clearCacheOnDestruction;
+    }
+
+    public function __destruct()
+    {
+        if ($this->clearCacheOnDestruction && file_exists($this->cacheFile)) {
+            unlink($this->cacheFile);
+            unlink($this->cacheFile . '.meta');
+        }
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isFresh()
+    {
+        return $this->configCache->isFresh();
+    }
+
+    /**
      * @return \Piece\Flow\PageFlow\PageFlow
      */
-    public function create($definitionFile)
+    public function read()
     {
-        $pageFlowGenerator = new PageFlowGenerator($definitionFile);
-        return $pageFlowGenerator->generate();
+        return unserialize(serialize(unserialize(require $this->cacheFile)));
+    }
+
+    /**
+     * @param \Piece\Flow\PageFlow\PageFlow $pageFlow
+     */
+    public function write(PageFlow $pageFlow)
+    {
+        $pageFlowClass = new \ReflectionObject($pageFlow);
+        $this->configCache->write($this->createContents(addslashes(serialize($pageFlow))), array(
+            new FileResource($this->definitionFile),
+            new FileResource($pageFlowClass->getFileName()),
+        ));
+    }
+
+    /**
+     * @param string $data
+     * @return string
+     */
+    protected function createContents($data)
+    {
+        return '<?php return "' . $data . '";' . PHP_EOL;
     }
 }
 

@@ -88,6 +88,20 @@ class PageFlow
     protected $actionInvoker;
 
     /**
+     * @return array
+     * @since Method available since Release 2.0.0
+     */
+    public function __sleep()
+    {
+        return array(
+            'fsm',
+            'views',
+            'attributes',
+            'lastState',
+        );
+    }
+
+    /**
      * @param string $stateID
      * @param string $view
      * @since Method available since Release 2.0.0

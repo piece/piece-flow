@@ -44,16 +44,35 @@ namespace Piece\Flow\PageFlow;
  * @version    Release: @package_version@
  * @since      Class available since Release 2.0.0
  */
-class PageFlowFactory
+class PageFlowCacheFactory
 {
     /**
+     * @var string
+     */
+    protected $cacheDir;
+
+    /**
+     * @var string
+     */
+    protected $clearCacheOnDestruction = false;
+
+    /**
+     * @param string $cacheDir
+     * @param boolean $clearCacheOnDestruction
+     */
+    public function __construct($cacheDir, $clearCacheOnDestruction = false)
+    {
+        $this->cacheDir = $cacheDir;
+        $this->clearCacheOnDestruction = $clearCacheOnDestruction;
+    }
+
+    /**
      * @param string $definitionFile
-     * @return \Piece\Flow\PageFlow\PageFlow
+     * @return \Piece\Flow\PageFlow\PageFlowCache
      */
     public function create($definitionFile)
     {
-        $pageFlowGenerator = new PageFlowGenerator($definitionFile);
-        return $pageFlowGenerator->generate();
+        return new PageFlowCache($definitionFile, $this->cacheDir, $this->clearCacheOnDestruction);
     }
 }
 
