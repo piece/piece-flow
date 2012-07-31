@@ -335,9 +335,6 @@ class PageFlow
         return $this->getCurrentStateName() == State::STATE_FINAL;
     }
 
-    // }}}
-    // {{{ removeAttribute()
-
     /**
      * Removes an attribute from the flow execution.
      *
