@@ -259,17 +259,6 @@ class ContinuationServer
     }
 
     /**
-     * Gets the flow source for the active flow execution.
-     *
-     * @return mixed
-     * @since Method available since Release 1.15.0
-     */
-    public function getActiveFlowSource()
-    {
-        return $this->flowDefinitions[$this->activeFlowID]['source'];
-    }
-
-    /**
      * Generates a flow execution ticket.
      */
     protected function generateFlowExecutionTicket()
