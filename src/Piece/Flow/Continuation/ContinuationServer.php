@@ -52,7 +52,7 @@ use Piece\Flow\PageFlow\PageFlowRepository;
  */
 class ContinuationServer
 {
-    protected $flowDefinitions = array();
+    protected $exclusivePageFlows = array();
     protected $flowExecutionTicketCallback;
     protected $flowIDCallback;
     protected $eventNameCallback;
@@ -96,8 +96,10 @@ class ContinuationServer
      */
     public function addFlow($flowID, $isExclusive = false)
     {
-        $this->flowDefinitions[$flowID] = array('isExclusive' => $isExclusive);
         $this->pageFlowRepository->add($flowID);
+        if ($isExclusive) {
+            $this->exclusivePageFlows[] = $flowID;
+        }
     }
 
     /**
@@ -376,7 +378,7 @@ class ContinuationServer
      */
     protected function isExclusive()
     {
-        return $this->flowDefinitions[$this->activeFlowID]['isExclusive'];
+        return in_array($this->activeFlowID, $this->exclusivePageFlows);
     }
 }
 
