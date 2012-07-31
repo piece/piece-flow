@@ -332,10 +332,6 @@ class ContinuationServer
      */
     protected function startFlowExecution($payload)
     {
-        if (!array_key_exists($this->activeFlowID, $this->flowDefinitions)) {
-            throw new FlowNotFoundException("The flow ID [ {$this->activeFlowID} ] not found in the flow definitions.");
-        }
-
         $flow = $this->pageFlowRepository->findByID($this->activeFlowID);
         if (is_null($flow)) {
             throw new FlowNotFoundException(sprintf('The page flow for ID [ %s ] is not found in the repository.', $this->activeFlowID));
