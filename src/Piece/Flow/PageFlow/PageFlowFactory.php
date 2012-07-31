@@ -47,12 +47,25 @@ namespace Piece\Flow\PageFlow;
 class PageFlowFactory
 {
     /**
-     * @param string $definitionFile
+     * @var \Piece\Flow\PageFlow\PageFlowRegistry
+     */
+    protected $pageFlowRegistry;
+
+    /**
+     * @param \Piece\Flow\PageFlow\PageFlowRegistry $pageFlowRegistry
+     */
+    public function __construct(PageFlowRegistry $pageFlowRegistry)
+    {
+        $this->pageFlowRegistry = $pageFlowRegistry;
+    }
+
+    /**
+     * @param string $id
      * @return \Piece\Flow\PageFlow\PageFlow
      */
-    public function create($definitionFile)
+    public function create($id)
     {
-        $pageFlowGenerator = new PageFlowGenerator($definitionFile);
+        $pageFlowGenerator = new PageFlowGenerator($id, $this->pageFlowRegistry);
         return $pageFlowGenerator->generate();
     }
 }

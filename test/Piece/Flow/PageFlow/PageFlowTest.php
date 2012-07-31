@@ -62,8 +62,8 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->cacheDirectory = dirname(__FILE__) . '/' . basename(__FILE__, '.php');
-        $this->source = "{$this->cacheDirectory}/Registration.yaml";
-        $this->pageFlowFactory = new PageFlowFactory();
+        $this->source = 'Registration';
+        $this->pageFlowFactory = new PageFlowFactory(new PageFlowRegistry($this->cacheDirectory, '.yaml'));
     }
 
     public function testGettingView()
@@ -193,13 +193,13 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
      */
     public function testFailureToSetPayloadBeforeConfiguringFlow()
     {
-        $flow = new PageFlow();
+        $flow = new PageFlow('foo');
         $flow->setPayload(new \stdClass());
     }
 
     public function testOptionalElements()
     {
-        $flow = $this->pageFlowFactory->create("{$this->cacheDirectory}/optional.yaml");
+        $flow = $this->pageFlowFactory->create('optional');
         $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
         $flow->setPayload(new \stdClass());
         $flow->start();
@@ -209,7 +209,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
 
     public function testInitialAndFinalActionsWithYAML()
     {
-        $this->assertInitialAndFinalActions('/initial.yaml');
+        $this->assertInitialAndFinalActions('initial');
     }
 
     /**
@@ -227,7 +227,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
      */
     public function testInvalidTransition()
     {
-        $flow = $this->pageFlowFactory->create("{$this->cacheDirectory}/invalid.yaml");
+        $flow = $this->pageFlowFactory->create('invalid');
         $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
         $flow->setPayload(new \stdClass());
         $flow->start();
@@ -237,7 +237,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
 
     public function testCheckingWhetherCurrentStateIsFinalState()
     {
-        $flow = $this->pageFlowFactory->create("{$this->cacheDirectory}/initial.yaml");
+        $flow = $this->pageFlowFactory->create('initial');
         $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
         $flow->setPayload(new \stdClass());
         $flow->start();
@@ -298,7 +298,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
                 $eventContext->getPageFlow()->setAttribute('numberOfUpdate', $numberOfUpdate);
             });
 
-        $flow = $this->pageFlowFactory->create("{$this->cacheDirectory}/CDPlayer.yaml");
+        $flow = $this->pageFlowFactory->create('CDPlayer');
         $flow->setActionInvoker($actionInvoker);
         $flow->setPayload(new \stdClass());
         $flow->start();
@@ -348,7 +348,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
      */
     public function testProtectedEvents()
     {
-        $this->pageFlowFactory->create("{$this->cacheDirectory}/ProtectedEvents.yaml", \Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
+        $this->pageFlowFactory->create('ProtectedEvents', \Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
     }
 
     /**
@@ -357,7 +357,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
      */
     public function testProtectedStates()
     {
-        $this->pageFlowFactory->create("{$this->cacheDirectory}/ProtectedStates.yaml", \Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
+        $this->pageFlowFactory->create('ProtectedStates', \Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
     }
 
     /**
@@ -367,7 +367,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
     {
         $actionInvoker1 = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
         \Phake::when($actionInvoker1)->invoke('register', $this->anything())->thenReturn('invalidEventFromRegister');
-        $flow1 = $this->pageFlowFactory->create("{$this->cacheDirectory}/InvalidEventFromTransitionActionsOrActivities.yaml");
+        $flow1 = $this->pageFlowFactory->create('InvalidEventFromTransitionActionsOrActivities');
         $flow1->setActionInvoker($actionInvoker1);
         $flow1->setPayload(new \stdClass());
         $flow1->start();
@@ -389,7 +389,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
         $actionInvoker2 = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
         \Phake::when($actionInvoker2)->invoke('register', $this->anything())->thenReturn('goDisplayFinish');
         \Phake::when($actionInvoker2)->invoke('setupFinish', $this->anything())->thenReturn('invalidEventFromSetupFinish');
-        $flow2 = $this->pageFlowFactory->create("{$this->cacheDirectory}/InvalidEventFromTransitionActionsOrActivities.yaml");
+        $flow2 = $this->pageFlowFactory->create('InvalidEventFromTransitionActionsOrActivities');
         $flow2->setActionInvoker($actionInvoker2);
         $flow2->setPayload(new \stdClass());
         $flow2->start();
@@ -416,7 +416,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
     {
         $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
         \Phake::when($actionInvoker)->invoke('validate', $this->anything())->thenReturn('goDisplayConfirmation');
-        $flow = $this->pageFlowFactory->create("{$this->cacheDirectory}/ProblemThatActivityIsInvokedTwiceUnexpectedly.yaml");
+        $flow = $this->pageFlowFactory->create('ProblemThatActivityIsInvokedTwiceUnexpectedly');
         $flow->setActionInvoker($actionInvoker);
         $flow->setPayload(new \stdClass());
         $flow->start();
@@ -432,7 +432,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
     protected function assertInitialAndFinalActions($source)
     {
         $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
-        $flow = $this->pageFlowFactory->create("{$this->cacheDirectory}/$source");
+        $flow = $this->pageFlowFactory->create($source);
         $flow->setActionInvoker($actionInvoker);
         $flow->setPayload(new \stdClass());
         $flow->start();

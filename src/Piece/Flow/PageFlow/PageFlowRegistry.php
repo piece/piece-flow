@@ -44,68 +44,35 @@ namespace Piece\Flow\PageFlow;
  * @version    Release: @package_version@
  * @since      Class available since Release 2.0.0
  */
-class PageFlowRepository
+class PageFlowRegistry
 {
     /**
-     * @var \Piece\Flow\PageFlow\PageFlowCacheFactory
+     * @var string
      */
-    protected $pageFlowCacheFactory;
+    protected $baseDir;
 
     /**
-     * @var \Piece\Flow\PageFlow\PageFlowFactory
+     * @var string
      */
-    protected $pageFlowFactory;
+    protected $extension;
 
     /**
-     * @var \Piece\Flow\PageFlow\PageFlowRegistry
+     * @param string $baseDir
+     * @param string $extension
      */
-    protected $pageFlowRegistry;
-
-    /**
-     * @var arrayn
-     */
-    protected $pageFlows = array();
-
-    /**
-     * @param \Piece\Flow\PageFlow\PageFlowRegistry $pageFlowRegistry
-     * @param \Piece\Flow\PageFlow\PageFlowCacheFactory $pageFlowCacheFactory
-     */
-    public function __construct(PageFlowRegistry $pageFlowRegistry, PageFlowCacheFactory $pageFlowCacheFactory)
+    public function __construct($baseDir, $extension)
     {
-        $this->pageFlowRegistry = $pageFlowRegistry;
-        $this->pageFlowCacheFactory = $pageFlowCacheFactory;
-        $this->pageFlowFactory = new PageFlowFactory($this->pageFlowRegistry);
+        $this->baseDir = $baseDir;
+        $this->extension = $extension;
     }
 
     /**
      * @param string $id
-     * @throws \Piece\Flow\PageFlow\FileNotFoundException
+     * @return string
      */
-    public function add($id)
+    public function getFileName($id)
     {
-        if (!file_exists($this->pageFlowRegistry->getFileName($id))) {
-            throw new FileNotFoundException(sprintf('The page flow definition file [ %s ] is not found.', $this->pageFlowRegistry->getFileName($id)));
-        }
-
-        $pageFlowCache = $this->pageFlowCacheFactory->create($this->pageFlowRegistry->getFileName($id));
-        if (!$pageFlowCache->isFresh()) {
-            $pageFlowCache->write($this->pageFlowFactory->create($id));
-        }
-
-        $this->pageFlows[$id] = $pageFlowCache;
-    }
-
-    /**
-     * @param string $id
-     * @return \Piece\Flow\PageFlow\PageFlow
-     */
-    public function findByID($id)
-    {
-        if (array_key_exists($id, $this->pageFlows)) {
-            return $this->pageFlows[$id]->read();
-        } else {
-            return null;
-        }
+        return $this->baseDir . '/' . $id . $this->extension;
     }
 }
 

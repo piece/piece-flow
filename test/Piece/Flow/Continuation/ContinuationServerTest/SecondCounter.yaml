@@ -1,5 +1,3 @@
-# $Id$
-name: SecondCounter
 firstState: DisplayForm
 lastState: { name: Finish, view: Finish }
 viewState:

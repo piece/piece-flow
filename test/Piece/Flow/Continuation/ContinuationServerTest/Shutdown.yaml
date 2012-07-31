@@ -1,5 +1,3 @@
-# $Id: Counter.yaml 95 2006-06-09 17:03:08Z iteman $
-name: Shutdown
 firstState: starting
 final:
   method: finalize

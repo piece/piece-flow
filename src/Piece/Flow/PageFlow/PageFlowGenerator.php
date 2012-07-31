@@ -60,30 +60,26 @@ class PageFlowGenerator
     protected $pageFlow;
 
     /**
+     * @var \Piece\Flow\PageFlow\PageFlowRegistry
+     * @since Property available since Release 2.0.0
+     */
+    protected $pageFlowRegistry;
+
+    /**
      * @var \Stagehand\FSM\FSMBuilder
      * @since Property available since Release 2.0.0
      */
     protected $fsmBuilder;
 
     /**
-     * @param string $definitionFile
-     * @since Property available since Release 2.0.0
+     * @param string $id
+     * @param \Piece\Flow\PageFlow\PageFlowRegistry $pageFlowRegistry
      */
-    protected $definitionFile;
-
-    /**
-     * @param string $definitionFile
-     * @throws \Piece\Flow\PageFlow\FileNotFoundException
-     */
-    public function __construct($definitionFile)
+    public function __construct($id, PageFlowRegistry $pageFlowRegistry)
     {
-        if (!file_exists($definitionFile)) {
-            throw new FileNotFoundException(sprintf('The flow definition file [ %s ] is not found.', $definitionFile));
-        }
-
-        $this->definitionFile = $definitionFile;
-        $this->pageFlow = new PageFlow();
-        $this->fsmBuilder = new FSMBuilder();
+        $this->pageFlow = new PageFlow($id);
+        $this->pageFlowRegistry = $pageFlowRegistry;
+        $this->fsmBuilder = new FSMBuilder($this->pageFlow->getID());
     }
 
     /**
@@ -96,12 +92,6 @@ class PageFlowGenerator
         $definition = $this->readDefinition();
         if ($this->fsmBuilder->getFSM()->isProtectedState($definition['firstState'])) {
             throw new ProtectedStateException("The state [ {$definition['firstState']} ] cannot be used in flow definitions.");
-        }
-
-        if (is_null($definition['name'])) {
-            $this->fsmBuilder->setID(realpath($this->definitionFile));
-        } else {
-            $this->fsmBuilder->setID($definition['name']);
         }
 
         $this->fsmBuilder->setFirstState($definition['firstState']);
@@ -277,7 +267,7 @@ class PageFlowGenerator
         $processor = new Processor();
         return $processor->processConfiguration(
             new Definition17Configuration(),
-            array('definition17' => Yaml::parse($this->definitionFile))
+            array('definition17' => Yaml::parse($this->pageFlowRegistry->getFileName($this->pageFlow->getID())))
         );
     }
 }

@@ -54,7 +54,6 @@ class Definition17Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $treeBuilder->root('definition17')
             ->children()
-                ->scalarNode('name')->defaultNull()->cannotBeEmpty()->end()
                 ->scalarNode('firstState')->isRequired()->cannotBeEmpty()->end()
                 ->arrayNode('viewState')
                     ->isRequired()

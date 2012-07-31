@@ -92,15 +92,12 @@ class ContinuationServer
      * Adds a flow definition to the Continuation object.
      *
      * @param string  $flowID
-     * @param string   $source
      * @param boolean $isExclusive
      */
-    public function addFlow($flowID, $source, $isExclusive = false)
+    public function addFlow($flowID, $isExclusive = false)
     {
-        $this->flowDefinitions[$flowID] = array('source' => $source,
-                                                 'isExclusive' => $isExclusive
-                                                 );
-        $this->pageFlowRepository->add($source);
+        $this->flowDefinitions[$flowID] = array('isExclusive' => $isExclusive);
+        $this->pageFlowRepository->add($flowID);
     }
 
     /**
@@ -339,9 +336,9 @@ class ContinuationServer
             throw new FlowNotFoundException("The flow ID [ {$this->activeFlowID} ] not found in the flow definitions.");
         }
 
-        $flow = $this->pageFlowRepository->findByDefinitionFile($this->flowDefinitions[$this->activeFlowID]['source']);
+        $flow = $this->pageFlowRepository->findByID($this->activeFlowID);
         if (is_null($flow)) {
-            throw new FlowNotFoundException(sprintf('The page flow for the definition file [ %s ] is not found in the repository.', $this->flowDefinitions[$this->activeFlowID]['source']));
+            throw new FlowNotFoundException(sprintf('The page flow for ID [ %s ] is not found in the repository.', $this->activeFlowID));
         }
 
         $flow->setActionInvoker($this->actionInvoker);

@@ -76,6 +76,7 @@ class PageFlow
     const EVENT_PROTECTED = '__protected';
 
     protected $fsm;
+    protected $id;
     protected $views;
     protected $attributes = array();
     protected $lastState;
@@ -86,6 +87,15 @@ class PageFlow
      * @since Property available since Release 2.0.0
      */
     protected $actionInvoker;
+
+    /**
+     * @param string $id
+     * @since Method available since Release 2.0.0
+     */
+    public function __construct($id)
+    {
+        $this->id = $id;
+    }
 
     /**
      * @return array
@@ -159,7 +169,7 @@ class PageFlow
         }
 
         if (!array_key_exists($viewIndex, $this->views)) {
-            throw new InvalidTransitionException("A invalid transition detected. The state [ $viewIndex ] does not have a view. Maybe The state [ $viewIndex ] is an action state. Check the definition of the flow [ {$this->getID()} ].");
+            throw new InvalidTransitionException("A invalid transition detected. The state [ $viewIndex ] does not have a view. Maybe The state [ $viewIndex ] is an action state. Check the definition of the flow [ {$this->id} ].");
         }
 
         return $this->views[$viewIndex];
@@ -172,7 +182,7 @@ class PageFlow
      */
     public function getID()
     {
-        return $this->fsm->getID();
+        return $this->id;
     }
 
     /**
