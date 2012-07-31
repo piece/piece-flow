@@ -47,9 +47,14 @@ namespace Piece\Flow\PageFlow;
 class PageFlowRepository
 {
     /**
-     * @var \Piece\Flow\PageFlow\PageFlowCacheFactory
+     * @var string
      */
-    protected $pageFlowCacheFactory;
+    protected $cacheDir;
+
+    /**
+     * @var string
+     */
+    protected $clearCacheOnDestruction = false;
 
     /**
      * @var \Piece\Flow\PageFlow\PageFlowFactory
@@ -68,13 +73,15 @@ class PageFlowRepository
 
     /**
      * @param \Piece\Flow\PageFlow\PageFlowRegistry $pageFlowRegistry
-     * @param \Piece\Flow\PageFlow\PageFlowCacheFactory $pageFlowCacheFactory
+     * @param string $cacheDir
+     * @param boolean $clearCacheOnDestruction
      */
-    public function __construct(PageFlowRegistry $pageFlowRegistry, PageFlowCacheFactory $pageFlowCacheFactory)
+    public function __construct(PageFlowRegistry $pageFlowRegistry, $cacheDir, $clearCacheOnDestruction = false)
     {
         $this->pageFlowRegistry = $pageFlowRegistry;
-        $this->pageFlowCacheFactory = $pageFlowCacheFactory;
         $this->pageFlowFactory = new PageFlowFactory($this->pageFlowRegistry);
+        $this->cacheDir = $cacheDir;
+        $this->clearCacheOnDestruction = $clearCacheOnDestruction;
     }
 
     /**
@@ -87,7 +94,7 @@ class PageFlowRepository
             throw new FileNotFoundException(sprintf('The page flow definition file [ %s ] is not found.', $this->pageFlowRegistry->getFileName($id)));
         }
 
-        $pageFlowCache = $this->pageFlowCacheFactory->create($this->pageFlowRegistry->getFileName($id));
+        $pageFlowCache = new PageFlowCache($this->pageFlowRegistry->getFileName($id), $this->cacheDir, $this->clearCacheOnDestruction);
         if (!$pageFlowCache->isFresh()) {
             $pageFlowCache->write($this->pageFlowFactory->create($id));
         }

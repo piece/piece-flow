@@ -93,7 +93,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
 
     public function testInvocationInMultipleFlowModeAndFlowInNonExclusiveMode()
     {
-        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), new PageFlowCacheFactory($this->cacheDirectory, true)));
+        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
         $server->addFlow('Counter');
         $server->setEventNameCallback(array($this, 'getEventName'));
         $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
@@ -121,7 +121,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
 
     public function testMultipleInvocationInMultipleFlowModeAndFlowInNonExclusiveMode()
     {
-        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), new PageFlowCacheFactory($this->cacheDirectory, true)));
+        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
         $server->addFlow('Counter');
         $server->addFlow('SecondCounter');
         $server->setEventNameCallback(array($this, 'getEventName'));
@@ -209,7 +209,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
      */
     public function testFailureOfContinuationByInvalidFlowNameInMultipleFlowMode()
     {
-        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), new PageFlowCacheFactory($this->cacheDirectory, true)));
+        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
         $server->addFlow('Counter');
         $server->setEventNameCallback(array($this, 'getEventName'));
         $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
@@ -233,7 +233,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
      */
     public function testFailureToInvokeByNonExistingFlowConfiguration()
     {
-        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), new PageFlowCacheFactory($this->cacheDirectory, true)));
+        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
         $server->addFlow('NonExistingFile');
         $server->setEventNameCallback(array($this, 'getEventName'));
         $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
@@ -248,7 +248,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
 
     public function testInvocationInMultipleFlowModeAndFlowInExclusiveMode()
     {
-        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), new PageFlowCacheFactory($this->cacheDirectory, true)));
+        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
         $server->addFlow('Counter');
         $server->addFlow('SecondCounter');
         $server->setEventNameCallback(array($this, 'getEventName'));
@@ -293,7 +293,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
 
     public function testSettingAttribute()
     {
-        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), new PageFlowCacheFactory($this->cacheDirectory, true)));
+        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
         $server->addFlow('Counter');
         $server->setEventNameCallback(array($this, 'getEventName'));
         $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
@@ -347,7 +347,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
      */
     public function testFailureToSetAttributeBeforeStartingContinuation()
     {
-        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), new PageFlowCacheFactory($this->cacheDirectory, true)));
+        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
         $server->addFlow('Counter');
         $server->setEventNameCallback(array($this, 'getEventName'));
         $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
@@ -361,7 +361,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
      */
     public function testFailureToGetAttributeBeforeStartingContinuation()
     {
-        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), new PageFlowCacheFactory($this->cacheDirectory, true)));
+        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
         $server->addFlow('Counter');
         $server->setEventNameCallback(array($this, 'getEventName'));
         $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
@@ -377,7 +377,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         \Phake::when($actionInvoker)->invoke('finalize', $this->anything())->thenGetReturnByLambda(function ($actionID, EventContext $eventContext) use (&$shutdownCount) {
             ++$shutdownCount;
         });
-        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), new PageFlowCacheFactory($this->cacheDirectory, true)));
+        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
         $server->addFlow('Shutdown');
         $server->setEventNameCallback(array($this, 'getEventName'));
         $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
@@ -425,7 +425,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         \Phake::when($actionInvoker)->invoke('finalize', $this->anything())->thenGetReturnByLambda(function ($actionID, EventContext $eventContext) use (&$shutdownCount) {
             ++$shutdownCount;
         });
-        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), new PageFlowCacheFactory($this->cacheDirectory, true)));
+        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
         $server->addFlow('Shutdown');
         $server->setEventNameCallback(array($this, 'getEventName'));
         $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
@@ -469,7 +469,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
      */
     public function testShouldBeRequiredFlowExecutionTicketWheneverContinuingFlowExecution()
     {
-        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), new PageFlowCacheFactory($this->cacheDirectory, true)));
+        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
         $server->addFlow('Counter', true);
         $server->setEventNameCallback(array($this, 'getEventName'));
         $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
@@ -509,7 +509,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
      */
     public function testGettingFlowExecutionTicketByFlowName()
     {
-        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), new PageFlowCacheFactory($this->cacheDirectory, true)));
+        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
         $server->addFlow('Counter', true);
         $server->addFlow('SecondCounter');
         $server->setEventNameCallback(array($this, 'getEventName'));
@@ -549,7 +549,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
     public function testFlowExecutionExpiredExceptionShouldBeRaisedWhenFlowExecutionHasExpired()
     {
         $flowName = 'FlowExecutionExpired';
-        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), new PageFlowCacheFactory($this->cacheDirectory, true)), new GC(1));
+        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true), new GC(1));
         $server->addFlow($flowName);
         $server->setEventNameCallback(array($this, 'getEventName'));
         $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
@@ -576,7 +576,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
     public function testFlowExecutionExpiredExceptionShouldNotBeRaisedWhenFlowExecutionHasNotExpired()
     {
         $flowName = 'FlowExecutionExpired';
-        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), new PageFlowCacheFactory($this->cacheDirectory, true)), new GC(2));
+        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true), new GC(2));
         $server->addFlow($flowName);
         $server->setEventNameCallback(array($this, 'getEventName'));
         $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
@@ -618,7 +618,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
     {
         $flowName = 'FlowExecutionExpired';
         $this->flowID = $flowName;
-        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), new PageFlowCacheFactory($this->cacheDirectory, true)), new GC(1));
+        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true), new GC(1));
         $server->addFlow($flowName);
         $server->setEventNameCallback(array($this, 'getEventName'));
         $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
@@ -659,7 +659,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
     public function testCheckLastEventShouldReturnTrueIfContinuationHasJustStarted()
     {
         $flowName = 'CheckLastEvent';
-        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), new PageFlowCacheFactory($this->cacheDirectory, true)));
+        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
         $server->addFlow($flowName);
         $server->setEventNameCallback(array($this, 'getEventName'));
         $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
@@ -681,7 +681,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
     public function testCheckLastEventShouldReturnTrueWhenValidEventIsGivenByUser()
     {
         $flowName = 'CheckLastEvent';
-        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), new PageFlowCacheFactory($this->cacheDirectory, true)));
+        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
         $server->addFlow($flowName);
         $server->setEventNameCallback(array($this, 'getEventName'));
         $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
@@ -719,7 +719,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
     public function testCheckLastEventShouldReturnFalseWhenInvalidEventIsGivenByUser()
     {
         $flowName = 'CheckLastEvent';
-        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), new PageFlowCacheFactory($this->cacheDirectory, true)));
+        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
         $server->addFlow($flowName);
         $server->setEventNameCallback(array($this, 'getEventName'));
         $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
@@ -747,7 +747,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
     public function testCheckLastEventShouldReturnTrueIfContinuationHasNotActivatedYet()
     {
         $flowName = 'CheckLastEvent';
-        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), new PageFlowCacheFactory($this->cacheDirectory, true)));
+        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
         $server->addFlow($flowName);
         $server->setEventNameCallback(array($this, 'getEventName'));
         $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
@@ -767,7 +767,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
     public function testCurrentStateNameShouldBeAbleToGetIfContinuationHasActivated()
     {
         $flowName = 'CheckLastEvent';
-        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), new PageFlowCacheFactory($this->cacheDirectory, true)));
+        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
         $server->addFlow($flowName);
         $server->setEventNameCallback(array($this, 'getEventName'));
         $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
@@ -810,7 +810,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
     public function testGetCurrentStateNameShouldRaiseExceptionIfContinuationHasNotActivated()
     {
         $flowName = 'CheckLastEvent';
-        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), new PageFlowCacheFactory($this->cacheDirectory, true)));
+        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
         $server->addFlow($flowName);
         $server->setEventNameCallback(array($this, 'getEventName'));
         $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
@@ -829,7 +829,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
     public function testFlowExecutionExpiredExceptionShouldRaiseAfterSweepingIt()
     {
         $flowName = 'FlowExecutionExpired';
-        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), new PageFlowCacheFactory($this->cacheDirectory, true)), new GC(1));
+        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true), new GC(1));
         $server->addFlow($flowName);
         $server->setEventNameCallback(array($this, 'getEventName'));
         $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
