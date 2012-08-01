@@ -39,7 +39,6 @@ namespace Piece\Flow\Continuation;
 
 use Piece\Flow\Core\MethodInvocationException;
 use Piece\Flow\PageFlow\ActionInvoker;
-use Piece\Flow\PageFlow\PageFlowRepository;
 
 /**
  * The continuation server.
@@ -68,23 +67,16 @@ class ContinuationServer
      */
     protected $actionInvoker;
 
-    /**
-     * @var \Piece\Flow\PageFlow\PageFlowRepository
-     * @since Property available since Release 2.0.0
-     */
-    protected $pageFlowRepository;
-
     private static $activeInstances = array();
     private static $shutdownRegistered = false;
 
     /**
-     * @param \Piece\Flow\PageFlow\PageFlowRepository $pageFlowRepository
+     * @param \Piece\Flow\Continuation\FlowExecution $pageFlowInstanceRepository
      * @param \Piece\Flow\Continuation\GC $gc
      */
-    public function __construct(PageFlowRepository $pageFlowRepository, GC $gc = null)
+    public function __construct(FlowExecution $pageFlowInstanceRepository, GC $gc = null)
     {
-        $this->flowExecution = new FlowExecution();
-        $this->pageFlowRepository = $pageFlowRepository;
+        $this->flowExecution = $pageFlowInstanceRepository;
         $this->gc = $gc;
     }
 
@@ -96,7 +88,7 @@ class ContinuationServer
      */
     public function addFlow($flowID, $isExclusive = false)
     {
-        $this->pageFlowRepository->add($flowID);
+        $this->flowExecution->getPageFlowRepository()->add($flowID);
         if ($isExclusive) {
             $this->exclusivePageFlows[] = $flowID;
         }
@@ -313,7 +305,7 @@ class ContinuationServer
      */
     protected function startFlowExecution($payload)
     {
-        $flow = $this->pageFlowRepository->findByID($this->activeFlowID);
+        $flow = $this->flowExecution->getPageFlowRepository()->findByID($this->activeFlowID);
         if (is_null($flow)) {
             throw new FlowNotFoundException(sprintf('The page flow for ID [ %s ] is not found in the repository.', $this->activeFlowID));
         }

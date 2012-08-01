@@ -37,6 +37,8 @@
 
 namespace Piece\Flow\Continuation;
 
+use Piece\Flow\PageFlow\PageFlowRepository;
+
 /**
  * The container class for all flow executions in the continuation server.
  *
@@ -51,6 +53,21 @@ class FlowExecution
     protected $flowExecutions = array();
     protected $exclusiveFlowExecutionTicketsByFlowID = array();
     protected $exclusiveFlowIDsByFlowExecutionTicket = array();
+
+    /**
+     * @var \Piece\Flow\PageFlow\PageFlowRepository
+     * @since Property available since Release 2.0.0
+     */
+    protected $pageFlowRepository;
+
+    /**
+     * @param \Piece\Flow\PageFlow\PageFlowRepository $pageFlowRepository
+     * @since Method available since Release 2.0.0
+     */
+    public function __construct(PageFlowRepository $pageFlowRepository)
+    {
+        $this->pageFlowRepository = $pageFlowRepository;
+    }
 
     /**
      * Disables the flow execution for the given flow execution ticket.
@@ -144,6 +161,15 @@ class FlowExecution
         } else {
             return null;
         }
+    }
+
+    /**
+     * @return \Piece\Flow\PageFlow\PageFlowRepository
+     * @since Method available since Release 2.0.0
+     */
+    public function getPageFlowRepository()
+    {
+        return $this->pageFlowRepository;
     }
 }
 
