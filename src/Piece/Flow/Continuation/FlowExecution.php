@@ -61,12 +61,32 @@ class FlowExecution
     protected $pageFlowRepository;
 
     /**
+     * @var array
+     * @since Property available since Release 2.0.0
+     */
+    protected $exclusivePageFlows = array();
+
+    /**
      * @param \Piece\Flow\PageFlow\PageFlowRepository $pageFlowRepository
      * @since Method available since Release 2.0.0
      */
     public function __construct(PageFlowRepository $pageFlowRepository)
     {
         $this->pageFlowRepository = $pageFlowRepository;
+    }
+
+    /**
+     * Adds a page flow definition.
+     *
+     * @param string $pageFlowID
+     * @param boolean $exclusive
+     */
+    public function addPageFlow($pageFlowID, $exclusive)
+    {
+        $this->pageFlowRepository->add($pageFlowID);
+        if ($exclusive) {
+            $this->exclusivePageFlows[] = $pageFlowID;
+        }
     }
 
     /**
@@ -170,6 +190,18 @@ class FlowExecution
     public function getPageFlowRepository()
     {
         return $this->pageFlowRepository;
+    }
+
+    /**
+     * Checks whether the specified page flow is exclusive or not.
+     *
+     * @param string $pageFlowID
+     * @return boolean
+     * @since Method available since Release 2.0.0
+     */
+    public function isExclusive($pageFlowID)
+    {
+        return in_array($pageFlowID, $this->exclusivePageFlows);
     }
 }
 

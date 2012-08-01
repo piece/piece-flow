@@ -51,7 +51,6 @@ use Piece\Flow\PageFlow\ActionInvoker;
  */
 class ContinuationServer
 {
-    protected $exclusivePageFlows = array();
     protected $flowExecutionTicketCallback;
     protected $flowIDCallback;
     protected $eventNameCallback;
@@ -88,10 +87,7 @@ class ContinuationServer
      */
     public function addFlow($flowID, $isExclusive = false)
     {
-        $this->flowExecution->getPageFlowRepository()->add($flowID);
-        if ($isExclusive) {
-            $this->exclusivePageFlows[] = $flowID;
-        }
+        $this->flowExecution->addPageFlow($flowID, $isExclusive);
     }
 
     /**
@@ -115,7 +111,7 @@ class ContinuationServer
             $this->startFlowExecution($payload);
         }
 
-        if (!is_null($this->gc) && !$this->isExclusive()) {
+        if (!is_null($this->gc) && !$this->flowExecution->isExclusive($this->activeFlowID)) {
             $this->gc->update($this->activeFlowExecutionTicket);
         }
 
@@ -317,7 +313,7 @@ class ContinuationServer
             $pageFlowInstance = $this->flowExecution->findByID($flowExecutionTicket);
             if (is_null($pageFlowInstance)) {
                 $this->flowExecution->addFlowExecution(new PageFlowInstance($flowExecutionTicket, $flow));
-                if ($this->isExclusive()) {
+                if ($this->flowExecution->isExclusive($this->activeFlowID)) {
                     $this->flowExecution->markFlowExecutionAsExclusive($flowExecutionTicket, $this->activeFlowID);
                 }
 
@@ -340,16 +336,6 @@ class ContinuationServer
     protected function getFlowID()
     {
         return call_user_func($this->flowIDCallback);
-    }
-
-    /**
-     * Checks whether the curent flow execution is exclusive or not.
-     *
-     * @return boolean
-     */
-    protected function isExclusive()
-    {
-        return in_array($this->activeFlowID, $this->exclusivePageFlows);
     }
 }
 
