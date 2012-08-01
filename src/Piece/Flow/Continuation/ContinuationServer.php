@@ -252,6 +252,29 @@ class ContinuationServer
     }
 
     /**
+     * @return \Piece\Flow\Continuation\PageFlowInstance
+     * @throws \Piece\Flow\Core\MethodInvocationException
+     * @since Method available since Release 2.0.0
+     */
+    public function getActivePageFlowInstance()
+    {
+        if (!$this->flowExecution->activated()) {
+            throw new MethodInvocationException(__FUNCTION__ . ' method must be called after starting/continuing flows.');
+        }
+
+        return $this->flowExecution->findByID($this->activeFlowExecutionTicket);
+    }
+
+    /**
+     * @return \Piece\Flow\Continuation\FlowExecution
+     * @since Method available since Release 2.0.0
+     */
+    public function getPageFlowInstanceRepository()
+    {
+        return $this->flowExecution;
+    }
+
+    /**
      * Generates a flow execution ticket.
      */
     protected function generateFlowExecutionTicket()
@@ -344,7 +367,7 @@ class ContinuationServer
         while (true) {
             $flowExecutionTicket = $this->generateFlowExecutionTicket();
             if (!$this->flowExecution->hasFlowExecution($flowExecutionTicket)) {
-                $this->flowExecution->addFlowExecution($flowExecutionTicket, $flow, $this->activeFlowID);
+                $this->flowExecution->addFlowExecution(new PageFlowInstance($flowExecutionTicket, $flow));
                 if ($this->isExclusive()) {
                     $this->flowExecution->markFlowExecutionAsExclusive($flowExecutionTicket, $this->activeFlowID);
                 }

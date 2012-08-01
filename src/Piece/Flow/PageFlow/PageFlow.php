@@ -68,7 +68,7 @@ use Piece\Flow\Core\MethodInvocationException;
  * @link       http://www-06.ibm.com/jp/developerworks/java/060412/j_j-cb03216.shtml
  * @since      Class available since Release 0.1.0
  */
-class PageFlow
+class PageFlow implements IPageFlow
 {
     /**
      * @since Constant available since Release 2.0.0
@@ -104,6 +104,7 @@ class PageFlow
     public function __sleep()
     {
         return array(
+            'id',
             'fsm',
             'views',
             'attributes',
@@ -175,11 +176,6 @@ class PageFlow
         return $this->views[$viewIndex];
     }
 
-    /**
-     * Gets the ID of the flow.
-     *
-     * @return string
-     */
     public function getID()
     {
         return $this->id;
@@ -242,12 +238,6 @@ class PageFlow
         return $state->getID();
     }
 
-    /**
-     * Gets the current state name.
-     *
-     * @return string
-     * @throws \Piece\Flow\Core\MethodInvocationException
-     */
     public function getCurrentStateName()
     {
         if (!$this->started()) {
@@ -258,13 +248,6 @@ class PageFlow
         return $state->getID();
     }
 
-    /**
-     * Sets an attribute for the flow execution.
-     *
-     * @param string $name
-     * @param mixed  $value
-     * @throws \Piece\Flow\Core\MethodInvocationException
-     */
     public function setAttribute($name, $value)
     {
         if (!$this->started()) {
@@ -274,13 +257,6 @@ class PageFlow
         $this->attributes[$name] = $value;
     }
 
-    /**
-     * Returns whether the flow execution has an attribute with a given name.
-     *
-     * @param string $name
-     * @return boolean
-     * @throws \Piece\Flow\Core\MethodInvocationException
-     */
     public function hasAttribute($name)
     {
         if (!$this->started()) {
@@ -290,13 +266,6 @@ class PageFlow
         return array_key_exists($name, $this->attributes);
     }
 
-    /**
-     * Gets an attribute for the flow execution.
-     *
-     * @param string $name
-     * @return mixed
-     * @throws \Piece\Flow\Core\MethodInvocationException
-     */
     public function getAttribute($name)
     {
         if (!$this->started()) {
@@ -382,10 +351,6 @@ class PageFlow
     }
 
     /**
-     * Returns whether the last event which is given by a user is valid or
-     * not.
-     *
-     * @return boolean
      * @since Method available since Release 1.13.0
      */
     public function checkLastEvent()

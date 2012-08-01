@@ -37,8 +37,6 @@
 
 namespace Piece\Flow\Continuation;
 
-use Piece\Flow\PageFlow\PageFlow;
-
 /**
  * The container class for all flow executions in the continuation server.
  *
@@ -65,7 +63,7 @@ class FlowExecution
     public function disableFlowExecution($flowExecutionTicket)
     {
         if ($this->hasFlowExecution($flowExecutionTicket)) {
-            $this->flowExecutions[$flowExecutionTicket]['flow'] = null;
+            $this->flowExecutions[$flowExecutionTicket]->removePageFlow();
         }
     }
 
@@ -81,7 +79,7 @@ class FlowExecution
             return true;
         }
 
-        return $this->flowExecutions[ $this->getActiveFlowExecutionTicket() ]['flow']->checkLastEvent();
+        return $this->flowExecutions[ $this->getActiveFlowExecutionTicket() ]->checkLastEvent();
     }
 
     /**
@@ -127,8 +125,6 @@ class FlowExecution
      */
     public function removeFlowExecution($flowExecutionTicket, $flowID)
     {
-        $this->flowExecutions[$flowExecutionTicket]['flow'] = null;
-        $this->flowExecutions[$flowExecutionTicket]['id'] = null;
         unset($this->flowExecutions[$flowExecutionTicket]);
         if ($this->hasExclusiveFlowExecution($flowID)) {
             unset($this->exclusiveFlowExecutionTicketsByFlowID[$flowID]);
@@ -147,18 +143,13 @@ class FlowExecution
     }
 
     /**
-     * Adds a Flow object with the given flow execution ticket to
-     * the list of flow executions.
+     * Adds a PageFlow object to the list of PageFlowInstance objects.
      *
-     * @param string     $flowExecutionTicket
-     * @param \Piece\Flow\PageFlow\PageFlow $flow
-     * @param string     $flowID
+     * @param \Piece\Flow\Continuation\PageFlowInstance $pageFlowInstance
      */
-    public function addFlowExecution($flowExecutionTicket, PageFlow $flow, $flowID)
+    public function addFlowExecution(PageFlowInstance $pageFlowInstance)
     {
-        $this->flowExecutions[$flowExecutionTicket] = array('flow' => &$flow,
-                                                             'id' => $flowID
-                                                             );
+        $this->flowExecutions[ $pageFlowInstance->getID() ] = $pageFlowInstance;
     }
 
     /**
@@ -193,7 +184,7 @@ class FlowExecution
      */
     public function getActiveFlow()
     {
-        return $this->flowExecutions[ $this->getActiveFlowExecutionTicket() ]['flow'];
+        return $this->flowExecutions[ $this->getActiveFlowExecutionTicket() ]->getPageFlow();
     }
 
     /**
@@ -205,7 +196,11 @@ class FlowExecution
      */
     public function getFlowID($flowExecutionTicket)
     {
-        return $this->flowExecutions[$flowExecutionTicket]['id'];
+        if ($this->hasFlowExecution($flowExecutionTicket) && !is_null($this->flowExecutions[$flowExecutionTicket])) {
+            return $this->flowExecutions[$flowExecutionTicket]->getPageFlow()->getID();
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -243,6 +238,34 @@ class FlowExecution
     public function getActiveFlowExecutionTicket()
     {
         return $this->activeFlowExecutionTicket;
+    }
+
+    /**
+     * @param string $id
+     * @return \Piece\Flow\Continuation\PageFlowInstance
+     * @since Method available since Release 2.0.0
+     */
+    public function findByID($id)
+    {
+        if (array_key_exists($id, $this->flowExecutions)) {
+            return $this->flowExecutions[$id];
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * @param string $pageFlowID
+     * @return \Piece\Flow\Continuation\PageFlowInstance
+     * @since Method available since Release 2.0.0
+     */
+    public function findByPageFlowID($pageFlowID)
+    {
+        if ($this->hasExclusiveFlowExecution($pageFlowID)) {
+            return $this->findByID($this->getFlowExecutionTicketByFlowID($pageFlowID));
+        } else {
+            return null;
+        }
     }
 }
 
