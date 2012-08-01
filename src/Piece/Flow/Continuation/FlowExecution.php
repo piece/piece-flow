@@ -191,17 +191,6 @@ class FlowExecution
     }
 
     /**
-     * Gets the flow ID for the active flow execution.
-     *
-     * @return string
-     * @since Method available since Release 1.15.0
-     */
-    public function getActiveFlowID()
-    {
-        return $this->activeFlowID;
-    }
-
-    /**
      * Gets the flow execution ticket for the active flow execution.
      *
      * @return string
