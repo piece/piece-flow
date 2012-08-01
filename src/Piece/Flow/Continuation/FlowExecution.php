@@ -153,7 +153,7 @@ class FlowExecution
      */
     public function getActiveFlow()
     {
-        return $this->flowExecutions[ $this->getActiveFlowExecutionTicket() ]->getPageFlow();
+        return $this->flowExecutions[ $this->activeFlowExecutionTicket ]->getPageFlow();
     }
 
     /**
@@ -185,17 +185,6 @@ class FlowExecution
     public function getFlowExecutionTicketByFlowID($flowID)
     {
         return @$this->exclusiveFlowExecutionTicketsByFlowID[$flowID];
-    }
-
-    /**
-     * Gets the flow execution ticket for the active flow execution.
-     *
-     * @return string
-     * @since Method available since Release 1.16.0
-     */
-    public function getActiveFlowExecutionTicket()
-    {
-        return $this->activeFlowExecutionTicket;
     }
 
     /**
