@@ -68,21 +68,6 @@ class FlowExecution
     }
 
     /**
-     * Returns whether the last event which is given by a user is valid or
-     * not.
-     *
-     * @return boolean
-     */
-    public function checkLastEvent()
-    {
-        if (!$this->activated()) {
-            return true;
-        }
-
-        return $this->flowExecutions[ $this->getActiveFlowExecutionTicket() ]->checkLastEvent();
-    }
-
-    /**
      * Activates the flow execution which is indicated by the given flow
      * execution ticket.
      *
