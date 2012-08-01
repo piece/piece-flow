@@ -215,17 +215,6 @@ class ContinuationServer
     }
 
     /**
-     * Gets the flow ID for the active flow execution.
-     *
-     * @return mixed
-     * @since Method available since Release 1.15.0
-     */
-    public function getActiveFlowID()
-    {
-        return $this->activeFlowID;
-    }
-
-    /**
      * @return \Piece\Flow\Continuation\PageFlowInstance
      * @since Method available since Release 2.0.0
      */
