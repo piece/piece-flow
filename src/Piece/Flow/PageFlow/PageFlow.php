@@ -141,7 +141,6 @@ class PageFlow implements IPageFlow
     }
 
     /**
-     * @param \Piece\Flow\PageFlow\ActionInvoker $actionInvoker
      * @since Method available since Release 2.0.0
      */
     public function setActionInvoker(ActionInvoker $actionInvoker)
@@ -181,14 +180,6 @@ class PageFlow implements IPageFlow
         $this->fsm->start();
     }
 
-    /**
-     * Triggers the given event.
-     *
-     * @param string $eventName
-     * @param boolean $transitionToHistoryMarker
-     * @return \Stagehand\FSM\State
-     * @throws \Piece\Flow\Core\MethodInvocationException
-     */
     public function triggerEvent($eventName, $transitionToHistoryMarker = false)
     {
         if (!$this->started()) {
@@ -267,12 +258,6 @@ class PageFlow implements IPageFlow
         return $this->attributes[$name];
     }
 
-    /**
-     * Sets a user defined payload to the FSM.
-     *
-     * @param mixed $payload
-     * @throws \Piece\Flow\Core\MethodInvocationException
-     */
     public function setPayload($payload)
     {
         if (is_null($this->fsm)) {
@@ -282,13 +267,6 @@ class PageFlow implements IPageFlow
         $this->fsm->setPayload($payload);
     }
 
-    /**
-     * Returns whether the current state of the flow execution is the final
-     * state.
-     *
-     * @return boolean
-     * @throws \Piece\Flow\Core\MethodInvocationException
-     */
     public function isFinalState()
     {
         if (is_null($this->fsm)) {

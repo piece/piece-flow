@@ -147,16 +147,6 @@ class FlowExecution
     }
 
     /**
-     * Gets the active Flow object.
-     *
-     * @return \Piece\Flow\PageFlow\PageFlow
-     */
-    public function getActiveFlow()
-    {
-        return $this->flowExecutions[ $this->activeFlowExecutionTicket ]->getPageFlow();
-    }
-
-    /**
      * Gets the flow ID by the given flow execution ticket.
      *
      * @param string $flowExecutionTicket

@@ -37,6 +37,7 @@
 
 namespace Piece\Flow\Continuation;
 
+use Piece\Flow\PageFlow\ActionInvoker;
 use Piece\Flow\PageFlow\IPageFlow;
 use Piece\Flow\PageFlow\PageFlow;
 
@@ -141,6 +142,26 @@ class PageFlowInstance implements IPageFlow
     public function getView()
     {
         return $this->pageFlow->getView();
+    }
+
+    public function isFinalState()
+    {
+        return $this->pageFlow->isFinalState();
+    }
+
+    public function setActionInvoker(ActionInvoker $actionInvoker)
+    {
+        $this->pageFlow->setActionInvoker($actionInvoker);
+    }
+
+    public function setPayload($payload)
+    {
+        $this->pageFlow->setPayload($payload);
+    }
+
+    public function triggerEvent($eventName, $transitionToHistoryMarker = false)
+    {
+        return $this->pageFlow->triggerEvent($eventName, $transitionToHistoryMarker);
     }
 }
 

@@ -37,6 +37,7 @@
 
 namespace Piece\Flow\Continuation;
 
+use Piece\Flow\PageFlow\ActionInvoker;
 use Piece\Flow\PageFlow\IPageFlow;
 
 /**
@@ -91,6 +92,24 @@ class NullPageFlow implements IPageFlow
     }
 
     public function getView()
+    {
+        return null;
+    }
+
+    public function isFinalState()
+    {
+        return false;
+    }
+
+    public function setActionInvoker(ActionInvoker $actionInvoker)
+    {
+    }
+
+    public function setPayload($payload)
+    {
+    }
+
+    public function triggerEvent($eventName, $transitionToHistoryMarker = false)
     {
         return null;
     }

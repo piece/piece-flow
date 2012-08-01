@@ -103,6 +103,37 @@ interface IPageFlow
      * @throws \Piece\Flow\PageFlow\InvalidTransitionException
      */
     public function getView();
+
+    /**
+     * Checks whether the current state is the final state or not.
+     *
+     * @return boolean
+     * @throws \Piece\Flow\Core\MethodInvocationException
+     */
+    public function isFinalState();
+
+    /**
+     * @param \Piece\Flow\PageFlow\ActionInvoker $actionInvoker
+     */
+    public function setActionInvoker(ActionInvoker $actionInvoker);
+
+    /**
+     * Sets a user defined payload.
+     *
+     * @param mixed $payload
+     * @throws \Piece\Flow\Core\MethodInvocationException
+     */
+    public function setPayload($payload);
+
+    /**
+     * Triggers an event.
+     *
+     * @param string $eventName
+     * @param boolean $transitionToHistoryMarker
+     * @return \Stagehand\FSM\State
+     * @throws \Piece\Flow\Core\MethodInvocationException
+     */
+    public function triggerEvent($eventName, $transitionToHistoryMarker = false);
 }
 
 /*

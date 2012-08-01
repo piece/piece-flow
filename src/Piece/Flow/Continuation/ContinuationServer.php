@@ -176,9 +176,9 @@ class ContinuationServer
      */
     public function clear()
     {
-        if ($this->flowExecution->hasFlowExecution($this->activeFlowExecutionTicket)) {
-            $flow = $this->flowExecution->getActiveFlow();
-            if ($flow->isFinalState()) {
+        $pageFlowInstance = $this->getActivePageFlowInstance();
+        if (!is_null($pageFlowInstance)) {
+            if ($pageFlowInstance->isFinalState()) {
                 $this->flowExecution->removeFlowExecution($this->activeFlowExecutionTicket, $this->activeFlowID);
             }
         }
@@ -299,11 +299,10 @@ class ContinuationServer
         }
 
         $this->flowExecution->activateFlowExecution($this->activeFlowExecutionTicket, $this->activeFlowID);
-        $flow = $this->flowExecution->getActiveFlow();
-        $flow->setActionInvoker($this->actionInvoker);
-        $flow->setPayload($payload);
+        $this->getActivePageFlowInstance()->setActionInvoker($this->actionInvoker);
+        $this->getActivePageFlowInstance()->setPayload($payload);
 
-        $flow->triggerEvent(call_user_func($this->eventNameCallback));
+        $this->getActivePageFlowInstance()->triggerEvent(call_user_func($this->eventNameCallback));
     }
 
     /**
