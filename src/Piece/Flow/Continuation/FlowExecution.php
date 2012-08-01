@@ -142,21 +142,6 @@ class FlowExecution
     }
 
     /**
-     * Gets a flow execution ticket by the given flow ID.
-     * This method will be used for getting flow execution ticket else than
-     * the active flow execution.
-     * This method is only available if the flow execution is exclusive.
-     *
-     * @param string $flowID
-     * @return string
-     * @since Method available since Release 1.15.0
-     */
-    public function getFlowExecutionTicketByFlowID($flowID)
-    {
-        return @$this->exclusiveFlowExecutionTicketsByFlowID[$flowID];
-    }
-
-    /**
      * @param string $id
      * @return \Piece\Flow\Continuation\PageFlowInstance
      * @since Method available since Release 2.0.0
@@ -178,7 +163,7 @@ class FlowExecution
     public function findByPageFlowID($pageFlowID)
     {
         if ($this->hasExclusiveFlowExecution($pageFlowID)) {
-            return $this->findByID($this->getFlowExecutionTicketByFlowID($pageFlowID));
+            return $this->findByID($this->exclusiveFlowExecutionTicketsByFlowID[$pageFlowID]);
         } else {
             return null;
         }

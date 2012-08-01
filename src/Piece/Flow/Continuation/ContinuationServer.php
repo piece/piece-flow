@@ -274,7 +274,7 @@ class ContinuationServer
                 trigger_error("Another flow execution of the current flow [ $flowID ] already exists in the flow executions. Starting a new flow execution.",
                               E_USER_WARNING
                               );
-                $this->flowExecution->removeFlowExecution($this->flowExecution->getFlowExecutionTicketByFlowID($flowID), $flowID);
+                $this->flowExecution->removeFlowExecution($this->flowExecution->findByPageFlowID($flowID)->getID(), $flowID);
             }
 
             $this->activeFlowID = $flowID;
