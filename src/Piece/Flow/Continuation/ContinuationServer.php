@@ -251,7 +251,7 @@ class ContinuationServer
         $currentFlowExecutionTicket = call_user_func($this->flowExecutionTicketCallback);
         $pageFlowInstance = $this->flowExecution->findByID($currentFlowExecutionTicket);
         if (!is_null($pageFlowInstance)) {
-            $registeredFlowID = $pageFlowInstance->getPageFlow()->getID();
+            $registeredFlowID = $pageFlowInstance->getPageFlowID();
 
             $flowID = $this->getFlowID();
             if (is_null($flowID) || !strlen($flowID)) {

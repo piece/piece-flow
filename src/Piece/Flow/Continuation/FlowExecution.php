@@ -74,8 +74,8 @@ class FlowExecution
     {
         $pageFlowInstance = $this->findByID($flowExecutionTicket);
         if (!is_null($pageFlowInstance)) {
-            if ($this->hasExclusiveFlowExecution($pageFlowInstance->getPageFlow()->getID())) {
-                unset($this->exclusiveFlowExecutionTicketsByFlowID[ $pageFlowInstance->getPageFlow()->getID() ]);
+            if ($this->hasExclusiveFlowExecution($pageFlowInstance->getPageFlowID())) {
+                unset($this->exclusiveFlowExecutionTicketsByFlowID[ $pageFlowInstance->getPageFlowID() ]);
                 unset($this->exclusiveFlowIDsByFlowExecutionTicket[$flowExecutionTicket]);
             }
 

@@ -84,11 +84,11 @@ class PageFlowInstance implements IPageFlow
     }
 
     /**
-     * @return \Piece\Flow\PageFlow\PageFlow
+     * @return string
      */
-    public function getPageFlow()
+    public function getPageFlowID()
     {
-        return $this->pageFlow;
+        return $this->pageFlow->getID();
     }
 
     public function activate()
