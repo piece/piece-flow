@@ -52,7 +52,6 @@ class FlowExecution
     protected $activeFlowExecutionTicket;
     protected $exclusiveFlowExecutionTicketsByFlowID = array();
     protected $exclusiveFlowIDsByFlowExecutionTicket = array();
-    protected $activeFlowID;
 
     /**
      * Disables the flow execution for the given flow execution ticket.
@@ -76,7 +75,6 @@ class FlowExecution
     public function activateFlowExecution($flowExecutionTicket, $flowID)
     {
         $this->activeFlowExecutionTicket = $flowExecutionTicket;
-        $this->activeFlowID = $flowID;
     }
 
     /**
@@ -111,7 +109,6 @@ class FlowExecution
     public function inactivateFlowExecution()
     {
         $this->activeFlowExecutionTicket = null;
-        $this->activeFlowID = null;
     }
 
     /**
