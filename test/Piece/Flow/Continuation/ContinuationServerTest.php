@@ -113,7 +113,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $flowExecutionTicket2 = $server->invoke(new \stdClass());
 
         $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket1);
-        $this->assertEquals('Counter', $server->getView());
+        $this->assertEquals('Counter', $server->getActivePageFlowInstance()->getView());
         $this->assertEquals(1, $server->getActivePageFlowInstance()->getAttribute('counter'));
         $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket2);
     }
@@ -151,7 +151,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(0, $server->getActivePageFlowInstance()->getAttribute('counter'));
         $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket1);
         $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket2);
-        $this->assertEquals('SecondCounter', $server->getView());
+        $this->assertEquals('SecondCounter', $server->getActivePageFlowInstance()->getView());
         $this->assertTrue($flowExecutionTicket1 != $flowExecutionTicket2);
 
         $server->shutdown();
@@ -166,7 +166,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(1, $server->getActivePageFlowInstance()->getAttribute('counter'));
 
-        $this->assertEquals('Counter', $server->getView());
+        $this->assertEquals('Counter', $server->getActivePageFlowInstance()->getView());
         $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket3);
 
         $server->shutdown();
@@ -179,7 +179,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowExecutionTicket = $flowExecutionTicket2;
         $flowExecutionTicket4 = $server->invoke(new \stdClass());
 
-        $this->assertEquals('SecondCounter', $server->getView());
+        $this->assertEquals('SecondCounter', $server->getActivePageFlowInstance()->getView());
         $this->assertEquals(1, $server->getActivePageFlowInstance()->getAttribute('counter'));
         $this->assertEquals($flowExecutionTicket2, $flowExecutionTicket4);
 
@@ -193,7 +193,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowExecutionTicket = null;
         $flowExecutionTicket5 = $server->invoke(new \stdClass());
 
-        $this->assertEquals('SecondCounter', $server->getView());
+        $this->assertEquals('SecondCounter', $server->getActivePageFlowInstance()->getView());
         $this->assertEquals(0, $server->getActivePageFlowInstance()->getAttribute('counter'));
         $this->assertTrue($flowExecutionTicket2 != $flowExecutionTicket5);
     }
@@ -277,7 +277,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket1);
         $this->assertRegexp('/[0-9a-f]{40}/', $flowExecutionTicket3);
-        $this->assertEquals('Counter', $server->getView());
+        $this->assertEquals('Counter', $server->getActivePageFlowInstance()->getView());
         $this->assertEquals($flowExecutionTicket1, $flowExecutionTicket2);
         $this->assertTrue($flowExecutionTicket1 != $flowExecutionTicket3);
     }
@@ -328,32 +328,6 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue(property_exists($baz2, 'foo'));
         $this->assertEquals('bar', $baz2->foo);
-    }
-
-    /**
-     * @expectedException \Piece\Flow\Core\MethodInvocationException
-     */
-    public function testFailureToSetAttributeBeforeStartingContinuation()
-    {
-        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
-        $server->addFlow('Counter');
-        $server->setEventNameCallback(array($this, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array($this, 'getFlowID'));
-        $server->getActivePageFlowInstance()->setAttribute('foo', 'bar');
-    }
-
-    /**
-     * @expectedException \Piece\Flow\Core\MethodInvocationException
-     */
-    public function testFailureToGetAttributeBeforeStartingContinuation()
-    {
-        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
-        $server->addFlow('Counter');
-        $server->setEventNameCallback(array($this, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array($this, 'getFlowID'));
-        $server->getActivePageFlowInstance()->getAttribute('foo');
     }
 
     public function testStartingNewFlowExecutionAfterShuttingDownContinuationInNonExclusiveMode()
@@ -757,25 +731,6 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server->invoke(new \stdClass());
 
         $this->assertEquals('DisplayEditFinish', $server->getActivePageFlowInstance()->getCurrentStateName());
-    }
-
-    /**
-     * @expectedException \Piece\Flow\Core\MethodInvocationException
-     * @since Method available since Release 1.14.0
-     */
-    public function testGetCurrentStateNameShouldRaiseExceptionIfContinuationHasNotActivated()
-    {
-        $flowName = 'CheckLastEvent';
-        $server = new ContinuationServer(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
-        $server->addFlow($flowName);
-        $server->setEventNameCallback(array($this, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array($this, 'getFlowID'));
-
-        $this->flowID = $flowName;
-        $this->eventName = null;
-        $this->flowExecutionTicket = null;
-        $server->getActivePageFlowInstance()->getCurrentStateName();
     }
 
     /**

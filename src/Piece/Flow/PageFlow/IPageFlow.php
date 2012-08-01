@@ -94,6 +94,15 @@ interface IPageFlow
      * @throws \Piece\Flow\Core\MethodInvocationException
      */
     public function getCurrentStateName();
+
+    /**
+     * Gets the appropriate view string corresponding to the current state.
+     *
+     * @return string
+     * @throws \Piece\Flow\Core\MethodInvocationException
+     * @throws \Piece\Flow\PageFlow\InvalidTransitionException
+     */
+    public function getView();
 }
 
 /*

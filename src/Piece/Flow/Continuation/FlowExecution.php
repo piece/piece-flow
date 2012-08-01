@@ -82,16 +82,6 @@ class FlowExecution
     }
 
     /**
-     * Returns whether the flow execution has activated or not.
-     *
-     * @return boolean
-     */
-    public function activated()
-    {
-        return $this->activated;
-    }
-
-    /**
      * Returns whether or not a flow execution exists in the flow executions.
      *
      * @param string $flowExecutionTicket

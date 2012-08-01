@@ -137,23 +137,6 @@ class ContinuationServer
     }
 
     /**
-     * Gets an appropriate view string which corresponding to the current
-     * state.
-     *
-     * @return string
-     * @throws \Piece\Flow\Core\MethodInvocationException
-     */
-    public function getView()
-    {
-        if (!$this->flowExecution->activated()) {
-            throw new MethodInvocationException(__FUNCTION__ . ' method must be called after starting/continuing flows.');
-        }
-
-        $flow = $this->flowExecution->getActiveFlow();
-        return $flow->getView();
-    }
-
-    /**
      * Sets a callback for getting an event name.
      *
      * @param callback $callback
@@ -244,15 +227,10 @@ class ContinuationServer
 
     /**
      * @return \Piece\Flow\Continuation\PageFlowInstance
-     * @throws \Piece\Flow\Core\MethodInvocationException
      * @since Method available since Release 2.0.0
      */
     public function getActivePageFlowInstance()
     {
-        if (!$this->flowExecution->activated()) {
-            throw new MethodInvocationException(__FUNCTION__ . ' method must be called after starting/continuing flows.');
-        }
-
         return $this->flowExecution->findByID($this->activeFlowExecutionTicket);
     }
 

@@ -149,14 +149,6 @@ class PageFlow implements IPageFlow
         $this->actionInvoker = $actionInvoker;
     }
 
-    /**
-     * Gets an appropriate view string which corresponding to the current
-     * state.
-     *
-     * @return string
-     * @throws \Piece\Flow\Core\MethodInvocationException
-     * @throws \Piece\Flow\PageFlow\InvalidTransitionException
-     */
     public function getView()
     {
         if (!$this->started()) {

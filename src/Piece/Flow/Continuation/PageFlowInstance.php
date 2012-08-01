@@ -137,6 +137,11 @@ class PageFlowInstance implements IPageFlow
     {
         return $this->pageFlow->getCurrentStateName();
     }
+
+    public function getView()
+    {
+        return $this->pageFlow->getView();
+    }
 }
 
 /*
