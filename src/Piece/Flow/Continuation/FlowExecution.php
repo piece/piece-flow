@@ -69,14 +69,17 @@ class FlowExecution
      * Removes a flow execution.
      *
      * @param string $flowExecutionTicket
-     * @param string $flowID
      */
-    public function removeFlowExecution($flowExecutionTicket, $flowID)
+    public function removeFlowExecution($flowExecutionTicket)
     {
-        unset($this->flowExecutions[$flowExecutionTicket]);
-        if ($this->hasExclusiveFlowExecution($flowID)) {
-            unset($this->exclusiveFlowExecutionTicketsByFlowID[$flowID]);
-            unset($this->exclusiveFlowIDsByFlowExecutionTicket[$flowExecutionTicket]);
+        $pageFlowInstance = $this->findByID($flowExecutionTicket);
+        if (!is_null($pageFlowInstance)) {
+            if ($this->hasExclusiveFlowExecution($pageFlowInstance->getPageFlow()->getID())) {
+                unset($this->exclusiveFlowExecutionTicketsByFlowID[ $pageFlowInstance->getPageFlow()->getID() ]);
+                unset($this->exclusiveFlowIDsByFlowExecutionTicket[$flowExecutionTicket]);
+            }
+
+            unset($this->flowExecutions[$flowExecutionTicket]);
         }
     }
 
