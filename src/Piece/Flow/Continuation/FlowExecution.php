@@ -50,7 +50,6 @@ class FlowExecution
 {
     protected $flowExecutions = array();
     protected $activeFlowExecutionTicket;
-    protected $activated = false;
     protected $exclusiveFlowExecutionTicketsByFlowID = array();
     protected $exclusiveFlowIDsByFlowExecutionTicket = array();
     protected $activeFlowID;
@@ -78,7 +77,6 @@ class FlowExecution
     {
         $this->activeFlowExecutionTicket = $flowExecutionTicket;
         $this->activeFlowID = $flowID;
-        $this->activated = true;
     }
 
     /**
@@ -112,7 +110,6 @@ class FlowExecution
      */
     public function inactivateFlowExecution()
     {
-        $this->activated = false;
         $this->activeFlowExecutionTicket = null;
         $this->activeFlowID = null;
     }
