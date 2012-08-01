@@ -119,21 +119,6 @@ class FlowExecution
     }
 
     /**
-     * Gets the flow ID by the given flow execution ticket.
-     *
-     * @param string $flowExecutionTicket
-     * @return string
-     * @since Method available since Release 1.15.0
-     */
-    public function getFlowID($flowExecutionTicket)
-    {
-        $pageFlowInstance = $this->findByID($flowExecutionTicket);
-        if (is_null($pageFlowInstance)) return null;
-
-        return $pageFlowInstance->getPageFlow()->getID();
-    }
-
-    /**
      * @param string $id
      * @return \Piece\Flow\Continuation\PageFlowInstance
      * @since Method available since Release 2.0.0
