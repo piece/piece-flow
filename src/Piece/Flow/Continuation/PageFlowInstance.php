@@ -114,6 +114,16 @@ class PageFlowInstance implements IPageFlow
         $this->pageFlow = new NullPageFlow($this->pageFlow->getID());
     }
 
+    /**
+     * Resumes this page flow instance with the specified event.
+     *
+     * @param string $eventID
+     */
+    public function resume($eventID)
+    {
+        $this->pageFlow->triggerEvent($eventID);
+    }
+
     public function setAttribute($name, $value)
     {
         $this->pageFlow->setAttribute($name, $value);

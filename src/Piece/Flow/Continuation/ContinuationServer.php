@@ -301,7 +301,7 @@ class ContinuationServer
         $this->getActivePageFlowInstance()->setActionInvoker($this->actionInvoker);
         $this->getActivePageFlowInstance()->setPayload($payload);
 
-        $this->getActivePageFlowInstance()->triggerEvent(call_user_func($this->eventNameCallback));
+        $this->getActivePageFlowInstance()->resume(call_user_func($this->eventNameCallback));
     }
 
     /**
