@@ -59,20 +59,10 @@ class FlowExecution
      */
     public function disableFlowExecution($flowExecutionTicket)
     {
-        if ($this->hasFlowExecution($flowExecutionTicket)) {
-            $this->flowExecutions[$flowExecutionTicket]->removePageFlow();
+        $pageFlowInstance = $this->findByID($flowExecutionTicket);
+        if (!is_null($pageFlowInstance)) {
+            $pageFlowInstance->removePageFlow();
         }
-    }
-
-    /**
-     * Returns whether or not a flow execution exists in the flow executions.
-     *
-     * @param string $flowExecutionTicket
-     * @return boolean
-     */
-    public function hasFlowExecution($flowExecutionTicket)
-    {
-        return array_key_exists($flowExecutionTicket, $this->flowExecutions);
     }
 
     /**
@@ -134,11 +124,10 @@ class FlowExecution
      */
     public function getFlowID($flowExecutionTicket)
     {
-        if ($this->hasFlowExecution($flowExecutionTicket) && !is_null($this->flowExecutions[$flowExecutionTicket])) {
-            return $this->flowExecutions[$flowExecutionTicket]->getPageFlow()->getID();
-        } else {
-            return null;
-        }
+        $pageFlowInstance = $this->findByID($flowExecutionTicket);
+        if (is_null($pageFlowInstance)) return null;
+
+        return $pageFlowInstance->getPageFlow()->getID();
     }
 
     /**

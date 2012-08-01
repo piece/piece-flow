@@ -249,8 +249,9 @@ class ContinuationServer
     protected function prepare()
     {
         $currentFlowExecutionTicket = call_user_func($this->flowExecutionTicketCallback);
-        if ($this->flowExecution->hasFlowExecution($currentFlowExecutionTicket)) {
-            $registeredFlowID = $this->flowExecution->getFlowID($currentFlowExecutionTicket);
+        $pageFlowInstance = $this->flowExecution->findByID($currentFlowExecutionTicket);
+        if (!is_null($pageFlowInstance)) {
+            $registeredFlowID = $pageFlowInstance->getPageFlow()->getID();
 
             $flowID = $this->getFlowID();
             if (is_null($flowID) || !strlen($flowID)) {
@@ -321,7 +322,8 @@ class ContinuationServer
 
         while (true) {
             $flowExecutionTicket = $this->generateFlowExecutionTicket();
-            if (!$this->flowExecution->hasFlowExecution($flowExecutionTicket)) {
+            $pageFlowInstance = $this->flowExecution->findByID($flowExecutionTicket);
+            if (is_null($pageFlowInstance)) {
                 $this->flowExecution->addFlowExecution(new PageFlowInstance($flowExecutionTicket, $flow));
                 if ($this->isExclusive()) {
                     $this->flowExecution->markFlowExecutionAsExclusive($flowExecutionTicket, $this->activeFlowID);
