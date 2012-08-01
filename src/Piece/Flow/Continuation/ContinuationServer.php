@@ -210,15 +210,6 @@ class ContinuationServer
     }
 
     /**
-     * Creates a new Service object for client use.
-     */
-    public function createService()
-    {
-        $service = new Service($this->flowExecution);
-        return $service;
-    }
-
-    /**
      * Sets the action invoker.
      *
      * @param \Piece\Flow\PageFlow\ActionInvoker $actionInvoker
