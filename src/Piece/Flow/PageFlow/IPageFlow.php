@@ -124,16 +124,6 @@ interface IPageFlow
      * @throws \Piece\Flow\Core\MethodInvocationException
      */
     public function setPayload($payload);
-
-    /**
-     * Triggers an event.
-     *
-     * @param string $eventName
-     * @param boolean $transitionToHistoryMarker
-     * @return \Stagehand\FSM\State
-     * @throws \Piece\Flow\Core\MethodInvocationException
-     */
-    public function triggerEvent($eventName, $transitionToHistoryMarker = false);
 }
 
 /*

@@ -168,11 +168,6 @@ class PageFlowInstance implements IPageFlow
     {
         $this->pageFlow->setPayload($payload);
     }
-
-    public function triggerEvent($eventName, $transitionToHistoryMarker = false)
-    {
-        return $this->pageFlow->triggerEvent($eventName, $transitionToHistoryMarker);
-    }
 }
 
 /*

@@ -108,11 +108,6 @@ class NullPageFlow implements IPageFlow
     public function setPayload($payload)
     {
     }
-
-    public function triggerEvent($eventName, $transitionToHistoryMarker = false)
-    {
-        return null;
-    }
 }
 
 /*
