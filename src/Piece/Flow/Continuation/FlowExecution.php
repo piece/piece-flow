@@ -49,7 +49,6 @@ namespace Piece\Flow\Continuation;
 class FlowExecution
 {
     protected $flowExecutions = array();
-    protected $activeFlowExecutionTicket;
     protected $exclusiveFlowExecutionTicketsByFlowID = array();
     protected $exclusiveFlowIDsByFlowExecutionTicket = array();
 
@@ -63,18 +62,6 @@ class FlowExecution
         if ($this->hasFlowExecution($flowExecutionTicket)) {
             $this->flowExecutions[$flowExecutionTicket]->removePageFlow();
         }
-    }
-
-    /**
-     * Activates the flow execution which is indicated by the given flow
-     * execution ticket.
-     *
-     * @param string $flowExecutionTicket
-     * @param string $flowID
-     */
-    public function activateFlowExecution($flowExecutionTicket, $flowID)
-    {
-        $this->activeFlowExecutionTicket = $flowExecutionTicket;
     }
 
     /**
@@ -101,14 +88,6 @@ class FlowExecution
             unset($this->exclusiveFlowExecutionTicketsByFlowID[$flowID]);
             unset($this->exclusiveFlowIDsByFlowExecutionTicket[$flowExecutionTicket]);
         }
-    }
-
-    /**
-     * Inactivates the flow execution.
-     */
-    public function inactivateFlowExecution()
-    {
-        $this->activeFlowExecutionTicket = null;
     }
 
     /**

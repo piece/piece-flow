@@ -186,7 +186,6 @@ class ContinuationServer
         $this->isFirstTime = null;
         $this->activeFlowID = null;
         $this->activeFlowExecutionTicket = null;
-        $this->flowExecution->inactivateFlowExecution();
         if (!is_null($this->gc)) {
             $this->gc->sweep();
         }
@@ -298,7 +297,6 @@ class ContinuationServer
             }
         }
 
-        $this->flowExecution->activateFlowExecution($this->activeFlowExecutionTicket, $this->activeFlowID);
         $this->getActivePageFlowInstance()->setActionInvoker($this->actionInvoker);
         $this->getActivePageFlowInstance()->setPayload($payload);
 
@@ -333,7 +331,6 @@ class ContinuationServer
             }
         }
 
-        $this->flowExecution->activateFlowExecution($flowExecutionTicket, $this->activeFlowID);
         $this->activeFlowExecutionTicket = $flowExecutionTicket;
         $flow->setPayload($payload);
         $flow->start();
