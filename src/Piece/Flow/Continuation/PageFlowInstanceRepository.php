@@ -50,7 +50,7 @@ use Piece\Flow\PageFlow\PageFlowRepository;
  */
 class PageFlowInstanceRepository
 {
-    protected $flowExecutions = array();
+    protected $pageFlowInstances = array();
     protected $exclusiveFlowExecutionTicketsByFlowID = array();
     protected $exclusiveFlowIDsByFlowExecutionTicket = array();
 
@@ -103,7 +103,7 @@ class PageFlowInstanceRepository
                 unset($this->exclusiveFlowIDsByFlowExecutionTicket[$flowExecutionTicket]);
             }
 
-            unset($this->flowExecutions[$flowExecutionTicket]);
+            unset($this->pageFlowInstances[$flowExecutionTicket]);
         }
     }
 
@@ -114,7 +114,7 @@ class PageFlowInstanceRepository
      */
     public function addFlowExecution(PageFlowInstance $pageFlowInstance)
     {
-        $this->flowExecutions[ $pageFlowInstance->getID() ] = $pageFlowInstance;
+        $this->pageFlowInstances[ $pageFlowInstance->getID() ] = $pageFlowInstance;
     }
 
     /**
@@ -149,8 +149,8 @@ class PageFlowInstanceRepository
      */
     public function findByID($id)
     {
-        if (array_key_exists($id, $this->flowExecutions)) {
-            return $this->flowExecutions[$id];
+        if (array_key_exists($id, $this->pageFlowInstances)) {
+            return $this->pageFlowInstances[$id];
         } else {
             return null;
         }
