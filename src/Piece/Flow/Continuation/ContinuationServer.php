@@ -265,13 +265,6 @@ class ContinuationServer
                 throw new FlowIDRequiredException('A flow ID must be given in this case.');
             }
 
-            if ($this->flowExecution->checkPageFlowHasExclusiveInstance($flowID)) {
-                trigger_error("Another flow execution of the current flow [ $flowID ] already exists in the flow executions. Starting a new flow execution.",
-                              E_USER_WARNING
-                              );
-                $this->flowExecution->remove($this->flowExecution->findByPageFlowID($flowID)->getID());
-            }
-
             $pageFlow = $this->flowExecution->getPageFlowRepository()->findByID($flowID);
             if (is_null($pageFlow)) {
                 throw new FlowNotFoundException(sprintf('The page flow for ID [ %s ] is not found in the repository.', $flowID));

@@ -112,6 +112,11 @@ class PageFlowInstanceRepository
      */
     public function add(PageFlowInstance $pageFlowInstance)
     {
+        if ($this->checkPageFlowHasExclusiveInstance($pageFlowInstance->getPageFlowID())) {
+            trigger_error("Another flow execution of the current flow [ $flowID ] already exists in the flow executions. Starting a new flow execution.", E_USER_WARNING);
+            $this->remove($this->findByPageFlowID($pageFlowInstance->getPageFlowID())->getID());
+        }
+
         $this->pageFlowInstances[ $pageFlowInstance->getID() ] = $pageFlowInstance;
         if ($this->checkPageFlowIsExclusive($pageFlowInstance)) {
             $this->exclusivePageFlowInstances[ $pageFlowInstance->getPageFlowID() ] = $pageFlowInstance->getID();
