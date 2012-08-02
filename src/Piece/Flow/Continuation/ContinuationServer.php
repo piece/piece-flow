@@ -37,7 +37,6 @@
 
 namespace Piece\Flow\Continuation;
 
-use Piece\Flow\Core\MethodInvocationException;
 use Piece\Flow\PageFlow\ActionInvoker;
 
 /**
