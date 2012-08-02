@@ -48,7 +48,7 @@ use Piece\Flow\PageFlow\PageFlowRepository;
  * @version    Release: @package_version@
  * @since      Class available since Release 1.14.0
  */
-class FlowExecution
+class PageFlowInstanceRepository
 {
     protected $flowExecutions = array();
     protected $exclusiveFlowExecutionTicketsByFlowID = array();

@@ -72,10 +72,10 @@ class ContinuationServer
     private static $shutdownRegistered = false;
 
     /**
-     * @param \Piece\Flow\Continuation\FlowExecution $pageFlowInstanceRepository
+     * @param \Piece\Flow\Continuation\PageFlowInstanceRepository $pageFlowInstanceRepository
      * @param \Piece\Flow\Continuation\GC $gc
      */
-    public function __construct(FlowExecution $pageFlowInstanceRepository, GC $gc = null)
+    public function __construct(PageFlowInstanceRepository $pageFlowInstanceRepository, GC $gc = null)
     {
         $this->flowExecution = $pageFlowInstanceRepository;
         $this->gc = $gc;
@@ -210,7 +210,7 @@ class ContinuationServer
     }
 
     /**
-     * @return \Piece\Flow\Continuation\FlowExecution
+     * @return \Piece\Flow\Continuation\PageFlowInstanceRepository
      * @since Method available since Release 2.0.0
      */
     public function getPageFlowInstanceRepository()
