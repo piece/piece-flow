@@ -109,8 +109,9 @@ class PageFlowInstanceRepository
      */
     public function add(PageFlowInstance $pageFlowInstance)
     {
-        if ($this->checkPageFlowHasExclusiveInstance($pageFlowInstance->getPageFlowID())) {
-            $this->remove($this->findByPageFlowID($pageFlowInstance->getPageFlowID()));
+        $exclusivePageFlowInstance = $this->findByPageFlowID($pageFlowInstance->getPageFlowID());
+        if (!is_null($exclusivePageFlowInstance)) {
+            $this->remove($exclusivePageFlowInstance);
         }
 
         $this->pageFlowInstances[ $pageFlowInstance->getID() ] = $pageFlowInstance;
