@@ -51,7 +51,7 @@ use Piece\Flow\PageFlow\PageFlowRepository;
 class PageFlowInstanceRepository
 {
     protected $pageFlowInstances = array();
-    protected $exclusiveFlowExecutionTicketsByFlowID = array();
+    protected $exclusivePageFlowInstances = array();
 
     /**
      * @var \Piece\Flow\PageFlow\PageFlowRepository
@@ -98,7 +98,7 @@ class PageFlowInstanceRepository
         $pageFlowInstance = $this->findByID($flowExecutionTicket);
         if (!is_null($pageFlowInstance)) {
             if ($this->checkPageFlowHasExclusiveInstance($pageFlowInstance->getPageFlowID())) {
-                unset($this->exclusiveFlowExecutionTicketsByFlowID[ $pageFlowInstance->getPageFlowID() ]);
+                unset($this->exclusivePageFlowInstances[ $pageFlowInstance->getPageFlowID() ]);
             }
 
             unset($this->pageFlowInstances[$flowExecutionTicket]);
@@ -114,7 +114,7 @@ class PageFlowInstanceRepository
     {
         $this->pageFlowInstances[ $pageFlowInstance->getID() ] = $pageFlowInstance;
         if ($this->isExclusive($pageFlowInstance->getPageFlowID())) {
-            $this->exclusiveFlowExecutionTicketsByFlowID[ $pageFlowInstance->getPageFlowID() ] = $pageFlowInstance->getID();
+            $this->exclusivePageFlowInstances[ $pageFlowInstance->getPageFlowID() ] = $pageFlowInstance->getID();
         }
     }
 
@@ -127,7 +127,7 @@ class PageFlowInstanceRepository
      */
     public function checkPageFlowHasExclusiveInstance($flowID)
     {
-        return array_key_exists($flowID, $this->exclusiveFlowExecutionTicketsByFlowID);
+        return array_key_exists($flowID, $this->exclusivePageFlowInstances);
     }
 
     /**
@@ -152,7 +152,7 @@ class PageFlowInstanceRepository
     public function findByPageFlowID($pageFlowID)
     {
         if ($this->checkPageFlowHasExclusiveInstance($pageFlowID)) {
-            return $this->findByID($this->exclusiveFlowExecutionTicketsByFlowID[$pageFlowID]);
+            return $this->findByID($this->exclusivePageFlowInstances[$pageFlowID]);
         } else {
             return null;
         }
