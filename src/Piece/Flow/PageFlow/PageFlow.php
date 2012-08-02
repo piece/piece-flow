@@ -46,8 +46,6 @@ use Stagehand\FSM\FSM;
 use Stagehand\FSM\FSMAlreadyShutdownException;
 use Stagehand\FSM\State;
 
-use Piece\Flow\Core\MethodInvocationException;
-
 /**
  * A web flow engine for handling page flows of web applications.
  *
@@ -186,7 +184,7 @@ class PageFlow implements IPageFlow
      * @param string $eventName
      * @param boolean $transitionToHistoryMarker
      * @return \Stagehand\FSM\State
-     * @throws \Piece\Flow\Core\MethodInvocationException
+     * @throws \Piece\Flow\PageFlow\MethodInvocationException
      */
     public function triggerEvent($eventName, $transitionToHistoryMarker = false)
     {
@@ -217,7 +215,7 @@ class PageFlow implements IPageFlow
      * Gets the previous state name.
      *
      * @return string
-     * @throws \Piece\Flow\Core\MethodInvocationException
+     * @throws \Piece\Flow\PageFlow\MethodInvocationException
      */
     public function getPreviousStateName()
     {
@@ -288,7 +286,7 @@ class PageFlow implements IPageFlow
      * Removes an attribute from the flow execution.
      *
      * @param string $name
-     * @throws \Piece\Flow\Core\MethodInvocationException
+     * @throws \Piece\Flow\PageFlow\MethodInvocationException
      */
     public function removeAttribute($name)
     {
@@ -302,7 +300,7 @@ class PageFlow implements IPageFlow
     /**
      * Removes all attributes from the flow execution.
      *
-     * @throws \Piece\Flow\Core\MethodInvocationException
+     * @throws \Piece\Flow\PageFlow\MethodInvocationException
      */
     public function clearAttributes()
     {
@@ -316,7 +314,7 @@ class PageFlow implements IPageFlow
     /**
      * Removes the payload from the FSM.
      *
-     * @throws \Piece\Flow\Core\MethodInvocationException
+     * @throws \Piece\Flow\PageFlow\MethodInvocationException
      * @since Method available since Release 1.11.0
      */
     public function clearPayload()

@@ -35,7 +35,7 @@
  * @since      File available since Release 2.0.0
  */
 
-namespace Piece\Flow\Core;
+namespace Piece\Flow\PageFlow;
 
 /**
  * @package    Piece_Flow

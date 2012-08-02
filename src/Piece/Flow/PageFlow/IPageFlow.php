@@ -58,7 +58,7 @@ interface IPageFlow
      *
      * @param string $name
      * @param mixed $value
-     * @throws \Piece\Flow\Core\MethodInvocationException
+     * @throws \Piece\Flow\PageFlow\MethodInvocationException
      */
     public function setAttribute($name, $value);
 
@@ -67,7 +67,7 @@ interface IPageFlow
      *
      * @param string $name
      * @return mixed|null
-     * @throws \Piece\Flow\Core\MethodInvocationException
+     * @throws \Piece\Flow\PageFlow\MethodInvocationException
      */
     public function getAttribute($name);
 
@@ -76,7 +76,7 @@ interface IPageFlow
      *
      * @param string $name
      * @return boolean
-     * @throws \Piece\Flow\Core\MethodInvocationException
+     * @throws \Piece\Flow\PageFlow\MethodInvocationException
      */
     public function hasAttribute($name);
 
@@ -91,7 +91,7 @@ interface IPageFlow
      * Gets the current state ID.
      *
      * @return string
-     * @throws \Piece\Flow\Core\MethodInvocationException
+     * @throws \Piece\Flow\PageFlow\MethodInvocationException
      */
     public function getCurrentStateName();
 
@@ -99,7 +99,7 @@ interface IPageFlow
      * Gets the appropriate view string corresponding to the current state.
      *
      * @return string
-     * @throws \Piece\Flow\Core\MethodInvocationException
+     * @throws \Piece\Flow\PageFlow\MethodInvocationException
      * @throws \Piece\Flow\PageFlow\InvalidTransitionException
      */
     public function getView();
@@ -108,7 +108,7 @@ interface IPageFlow
      * Checks whether the current state is the final state or not.
      *
      * @return boolean
-     * @throws \Piece\Flow\Core\MethodInvocationException
+     * @throws \Piece\Flow\PageFlow\MethodInvocationException
      */
     public function isFinalState();
 
@@ -121,7 +121,7 @@ interface IPageFlow
      * Sets a user defined payload.
      *
      * @param mixed $payload
-     * @throws \Piece\Flow\Core\MethodInvocationException
+     * @throws \Piece\Flow\PageFlow\MethodInvocationException
      */
     public function setPayload($payload);
 }

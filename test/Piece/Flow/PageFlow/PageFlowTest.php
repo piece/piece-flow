@@ -179,7 +179,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Piece\Flow\Core\MethodInvocationException
+     * @expectedException \Piece\Flow\PageFlow\MethodInvocationException
      */
     public function testFailureToSetAttributeBeforeStartingFlow()
     {
@@ -189,7 +189,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Piece\Flow\Core\MethodInvocationException
+     * @expectedException \Piece\Flow\PageFlow\MethodInvocationException
      */
     public function testFailureToSetPayloadBeforeConfiguringFlow()
     {
@@ -213,7 +213,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Piece\Flow\Core\MethodInvocationException
+     * @expectedException \Piece\Flow\PageFlow\MethodInvocationException
      */
     public function testFailureToGetViewBeforeStartingFlow()
     {
