@@ -115,19 +115,10 @@ class PageFlowInstanceRepository
     public function add(PageFlowInstance $pageFlowInstance)
     {
         $this->pageFlowInstances[ $pageFlowInstance->getID() ] = $pageFlowInstance;
-    }
-
-    /**
-     * Marks a flow execution which is indicated by the given flow execution
-     * ticket and flow ID as exclusive.
-     *
-     * @param string $flowExecutionTicket
-     * @param string $flowID
-     */
-    public function markFlowExecutionAsExclusive($flowExecutionTicket, $flowID)
-    {
-        $this->exclusiveFlowExecutionTicketsByFlowID[$flowID] = $flowExecutionTicket;
-        $this->exclusiveFlowIDsByFlowExecutionTicket[$flowExecutionTicket] = $flowID;
+        if ($this->isExclusive($pageFlowInstance->getPageFlowID())) {
+            $this->exclusiveFlowExecutionTicketsByFlowID[ $pageFlowInstance->getPageFlowID() ] = $pageFlowInstance->getID();
+            $this->exclusiveFlowIDsByFlowExecutionTicket[ $pageFlowInstance->getID() ] = $pageFlowInstance->getPageFlowID();
+        }
     }
 
     /**

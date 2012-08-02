@@ -283,10 +283,6 @@ class ContinuationServer
                 if (is_null($pageFlowInstance)) {
                     $pageFlowInstance = new PageFlowInstance($flowExecutionTicket, $pageFlow);
                     $this->flowExecution->add($pageFlowInstance);
-                    if ($this->flowExecution->isExclusive($pageFlowInstance->getPageFlowID())) {
-                        $this->flowExecution->markFlowExecutionAsExclusive($flowExecutionTicket, $pageFlowInstance->getPageFlowID());
-                    }
-
                     break;
                 }
             }
