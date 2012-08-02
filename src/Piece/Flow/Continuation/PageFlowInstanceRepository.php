@@ -98,7 +98,7 @@ class PageFlowInstanceRepository
     {
         $pageFlowInstance = $this->findByID($flowExecutionTicket);
         if (!is_null($pageFlowInstance)) {
-            if ($this->hasExclusiveFlowExecution($pageFlowInstance->getPageFlowID())) {
+            if ($this->checkPageFlowHasExclusiveInstance($pageFlowInstance->getPageFlowID())) {
                 unset($this->exclusiveFlowExecutionTicketsByFlowID[ $pageFlowInstance->getPageFlowID() ]);
                 unset($this->exclusiveFlowIDsByFlowExecutionTicket[$flowExecutionTicket]);
             }
@@ -128,7 +128,7 @@ class PageFlowInstanceRepository
      * @param string $flowID
      * @return boolean
      */
-    public function hasExclusiveFlowExecution($flowID)
+    public function checkPageFlowHasExclusiveInstance($flowID)
     {
         return array_key_exists($flowID, $this->exclusiveFlowExecutionTicketsByFlowID);
     }
@@ -154,7 +154,7 @@ class PageFlowInstanceRepository
      */
     public function findByPageFlowID($pageFlowID)
     {
-        if ($this->hasExclusiveFlowExecution($pageFlowID)) {
+        if ($this->checkPageFlowHasExclusiveInstance($pageFlowID)) {
             return $this->findByID($this->exclusiveFlowExecutionTicketsByFlowID[$pageFlowID]);
         } else {
             return null;
