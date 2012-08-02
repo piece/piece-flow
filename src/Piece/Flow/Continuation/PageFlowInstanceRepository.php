@@ -124,12 +124,12 @@ class PageFlowInstanceRepository
      * Returns whether the given flow ID has the exclusive flow execution
      * or not.
      *
-     * @param string $flowID
+     * @param string $pageFlowID
      * @return boolean
      */
-    protected function checkPageFlowHasExclusiveInstance($flowID)
+    protected function checkPageFlowHasExclusiveInstance($pageFlowID)
     {
-        return array_key_exists($flowID, $this->exclusivePageFlowInstances);
+        return array_key_exists($pageFlowID, $this->exclusivePageFlowInstances);
     }
 
     /**
