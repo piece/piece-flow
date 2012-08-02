@@ -162,7 +162,7 @@ class ContinuationServer
     {
         if (!is_null($this->pageFlowInstance)) {
             if ($this->pageFlowInstance->isFinalState()) {
-                $this->flowExecution->removeFlowExecution($this->pageFlowInstance->getID());
+                $this->flowExecution->remove($this->pageFlowInstance->getID());
             }
         }
 
@@ -255,7 +255,7 @@ class ContinuationServer
 
             if (!is_null($this->gc)) {
                 if ($this->gc->isMarked($pageFlowInstance->getID())) {
-                    $this->flowExecution->removeFlowExecution($pageFlowInstance->getID());
+                    $this->flowExecution->remove($pageFlowInstance->getID());
                     throw new FlowExecutionExpiredException('The flow execution for the given flow execution ticket has expired.');
                 }
             }
@@ -269,7 +269,7 @@ class ContinuationServer
                 trigger_error("Another flow execution of the current flow [ $flowID ] already exists in the flow executions. Starting a new flow execution.",
                               E_USER_WARNING
                               );
-                $this->flowExecution->removeFlowExecution($this->flowExecution->findByPageFlowID($flowID)->getID());
+                $this->flowExecution->remove($this->flowExecution->findByPageFlowID($flowID)->getID());
             }
 
             $pageFlow = $this->flowExecution->getPageFlowRepository()->findByID($flowID);

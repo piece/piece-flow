@@ -94,7 +94,7 @@ class PageFlowInstanceRepository
      *
      * @param string $flowExecutionTicket
      */
-    public function removeFlowExecution($flowExecutionTicket)
+    public function remove($flowExecutionTicket)
     {
         $pageFlowInstance = $this->findByID($flowExecutionTicket);
         if (!is_null($pageFlowInstance)) {
