@@ -127,7 +127,7 @@ class PageFlowInstanceRepository
      * @param string $flowID
      * @return boolean
      */
-    public function checkPageFlowHasExclusiveInstance($flowID)
+    protected function checkPageFlowHasExclusiveInstance($flowID)
     {
         return array_key_exists($flowID, $this->exclusivePageFlowInstances);
     }
