@@ -52,7 +52,6 @@ class PageFlowInstanceRepository
 {
     protected $pageFlowInstances = array();
     protected $exclusiveFlowExecutionTicketsByFlowID = array();
-    protected $exclusiveFlowIDsByFlowExecutionTicket = array();
 
     /**
      * @var \Piece\Flow\PageFlow\PageFlowRepository
@@ -100,7 +99,6 @@ class PageFlowInstanceRepository
         if (!is_null($pageFlowInstance)) {
             if ($this->checkPageFlowHasExclusiveInstance($pageFlowInstance->getPageFlowID())) {
                 unset($this->exclusiveFlowExecutionTicketsByFlowID[ $pageFlowInstance->getPageFlowID() ]);
-                unset($this->exclusiveFlowIDsByFlowExecutionTicket[$flowExecutionTicket]);
             }
 
             unset($this->pageFlowInstances[$flowExecutionTicket]);
@@ -117,7 +115,6 @@ class PageFlowInstanceRepository
         $this->pageFlowInstances[ $pageFlowInstance->getID() ] = $pageFlowInstance;
         if ($this->isExclusive($pageFlowInstance->getPageFlowID())) {
             $this->exclusiveFlowExecutionTicketsByFlowID[ $pageFlowInstance->getPageFlowID() ] = $pageFlowInstance->getID();
-            $this->exclusiveFlowIDsByFlowExecutionTicket[ $pageFlowInstance->getID() ] = $pageFlowInstance->getPageFlowID();
         }
     }
 
