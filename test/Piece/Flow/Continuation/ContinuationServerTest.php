@@ -441,6 +441,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->eventName = null;
         $this->flowExecutionTicket = null;
         $flowExecutionTicket1 = $server->invoke(new \stdClass());
+        $pageFlowInstance1 = $server->getActivePageFlowInstance();
 
         $this->assertEquals(0, $server->getActivePageFlowInstance()->getAttribute('counter'));
 
@@ -451,7 +452,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowExecutionTicket = null;
         $flowExecutionTicket2 = $server->invoke(new \stdClass());
 
-        \Phake::verify($pageFlowInstanceRepository)->remove($flowExecutionTicket1);
+        \Phake::verify($pageFlowInstanceRepository)->remove($pageFlowInstance1);
         $this->assertEquals(0, $server->getActivePageFlowInstance()->getAttribute('counter'));
         $this->assertTrue($flowExecutionTicket1 != $flowExecutionTicket2);
     }

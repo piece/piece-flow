@@ -162,7 +162,7 @@ class ContinuationServer
     {
         if (!is_null($this->pageFlowInstance)) {
             if ($this->pageFlowInstance->isFinalState()) {
-                $this->flowExecution->remove($this->pageFlowInstance->getID());
+                $this->flowExecution->remove($this->pageFlowInstance);
             }
         }
 
@@ -255,7 +255,7 @@ class ContinuationServer
 
             if (!is_null($this->gc)) {
                 if ($this->gc->isMarked($pageFlowInstance->getID())) {
-                    $this->flowExecution->remove($pageFlowInstance->getID());
+                    $this->flowExecution->remove($pageFlowInstance);
                     throw new FlowExecutionExpiredException('The flow execution for the given flow execution ticket has expired.');
                 }
             }

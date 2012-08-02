@@ -91,18 +91,15 @@ class PageFlowInstanceRepository
     /**
      * Removes a flow execution.
      *
-     * @param string $flowExecutionTicket
+     * @param \Piece\Flow\Continuation\PageFlowInstance $pageFlowInstance
      */
-    public function remove($flowExecutionTicket)
+    public function remove(PageFlowInstance $pageFlowInstance)
     {
-        $pageFlowInstance = $this->findByID($flowExecutionTicket);
-        if (!is_null($pageFlowInstance)) {
-            if ($this->checkPageFlowHasExclusiveInstance($pageFlowInstance->getPageFlowID())) {
-                unset($this->exclusivePageFlowInstances[ $pageFlowInstance->getPageFlowID() ]);
-            }
-
-            unset($this->pageFlowInstances[$flowExecutionTicket]);
+        if ($this->checkPageFlowHasExclusiveInstance($pageFlowInstance->getPageFlowID())) {
+            unset($this->exclusivePageFlowInstances[ $pageFlowInstance->getPageFlowID() ]);
         }
+
+        unset($this->pageFlowInstances[ $pageFlowInstance->getID() ]);
     }
 
     /**
@@ -113,7 +110,7 @@ class PageFlowInstanceRepository
     public function add(PageFlowInstance $pageFlowInstance)
     {
         if ($this->checkPageFlowHasExclusiveInstance($pageFlowInstance->getPageFlowID())) {
-            $this->remove($this->findByPageFlowID($pageFlowInstance->getPageFlowID())->getID());
+            $this->remove($this->findByPageFlowID($pageFlowInstance->getPageFlowID()));
         }
 
         $this->pageFlowInstances[ $pageFlowInstance->getID() ] = $pageFlowInstance;
