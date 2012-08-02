@@ -54,9 +54,6 @@ class ContinuationServer
     protected $flowExecutionTicketCallback;
     protected $flowIDCallback;
     protected $eventNameCallback;
-    protected $isFirstTime;
-    protected $activeFlowID;
-    protected $activeFlowExecutionTicket;
     protected $gc;
     protected $flowExecution;
 
@@ -65,6 +62,12 @@ class ContinuationServer
      * @since Property available since Release 2.0.0
      */
     protected $actionInvoker;
+
+    /**
+     * @var \Piece\Flow\Continuation\PageFlowInstance
+     * @since Property available since Release 2.0.0
+     */
+    protected $pageFlowInstance;
 
     private static $activeInstances = array();
     private static $shutdownRegistered = false;
@@ -102,16 +105,11 @@ class ContinuationServer
             $this->gc->mark();
         }
 
-        $this->prepare();
+        $this->pageFlowInstance = $this->prepare($payload);
+        $this->pageFlowInstance->activate(call_user_func($this->eventNameCallback));
 
-        if (!$this->isFirstTime) {
-            $this->continueFlowExecution($payload);
-        } else {
-            $this->startFlowExecution($payload);
-        }
-
-        if (!is_null($this->gc) && !$this->flowExecution->isExclusive($this->activeFlowID)) {
-            $this->gc->update($this->activeFlowExecutionTicket);
+        if (!is_null($this->gc) && !$this->flowExecution->isExclusive($this->pageFlowInstance->getPageFlowID())) {
+            $this->gc->update($this->pageFlowInstance->getID());
         }
 
         self::$activeInstances[] = $this;
@@ -120,7 +118,7 @@ class ContinuationServer
             register_shutdown_function(array(__CLASS__, 'shutdown'));
         }
 
-        return $this->activeFlowExecutionTicket;
+        return $this->pageFlowInstance->getID();
     }
 
     /**
@@ -163,16 +161,13 @@ class ContinuationServer
      */
     public function clear()
     {
-        $pageFlowInstance = $this->getActivePageFlowInstance();
-        if (!is_null($pageFlowInstance)) {
-            if ($pageFlowInstance->isFinalState()) {
-                $this->flowExecution->removeFlowExecution($this->activeFlowExecutionTicket);
+        if (!is_null($this->pageFlowInstance)) {
+            if ($this->pageFlowInstance->isFinalState()) {
+                $this->flowExecution->removeFlowExecution($this->pageFlowInstance->getID());
             }
         }
 
-        $this->isFirstTime = null;
-        $this->activeFlowID = null;
-        $this->activeFlowExecutionTicket = null;
+        $this->pageFlowInstance = null;
         if (!is_null($this->gc)) {
             $pageFlowInstanceRepository = $this->flowExecution;
             $this->gc->sweep(function ($pageFlowInstanceID) use ($pageFlowInstanceRepository) {
@@ -212,7 +207,7 @@ class ContinuationServer
      */
     public function getActivePageFlowInstance()
     {
-        return $this->flowExecution->findByID($this->activeFlowExecutionTicket);
+        return $this->pageFlowInstance;
     }
 
     /**
@@ -236,10 +231,14 @@ class ContinuationServer
      * Prepares a flow execution ticket, a flow ID, and whether the
      * flow invocation is the first time or not.
      *
+     * @param mixed $payload
+     * @return \Piece\Flow\Continuation\PageFlowInstance
+     * @throws \Piece\Flow\Continuation\FlowExecutionExpiredException
      * @throws \Piece\Flow\Continuation\FlowIDRequiredException
+     * @throws \Piece\Flow\Continuation\FlowNotFoundException
      * @throws \Piece\Flow\Continuation\InvaidFlowIDException
      */
-    protected function prepare()
+    protected function prepare($payload)
     {
         $currentFlowExecutionTicket = call_user_func($this->flowExecutionTicketCallback);
         $pageFlowInstance = $this->flowExecution->findByID($currentFlowExecutionTicket);
@@ -255,9 +254,12 @@ class ContinuationServer
                 throw new InvalidFlowIDException('The given flow ID is different from the registerd flow ID.');
             }
 
-            $this->activeFlowID = $registeredFlowID;
-            $this->isFirstTime = false;
-            $this->activeFlowExecutionTicket = $currentFlowExecutionTicket;
+            if (!is_null($this->gc)) {
+                if ($this->gc->isMarked($pageFlowInstance->getID())) {
+                    $this->flowExecution->removeFlowExecution($pageFlowInstance->getID());
+                    throw new FlowExecutionExpiredException('The flow execution for the given flow execution ticket has expired.');
+                }
+            }
         } else {
             $flowID = $this->getFlowID();
             if (is_null($flowID) || !strlen($flowID)) {
@@ -271,66 +273,30 @@ class ContinuationServer
                 $this->flowExecution->removeFlowExecution($this->flowExecution->findByPageFlowID($flowID)->getID());
             }
 
-            $this->activeFlowID = $flowID;
-            $this->isFirstTime = true;
-        }
-    }
-
-    /**
-     * Continues a flow execution.
-     *
-     * @param mixed   $payload
-     * @throws \Piece\Flow\Continuation\FlowExecutionExpiredException
-     */
-    protected function continueFlowExecution($payload)
-    {
-        if (!is_null($this->gc)) {
-            if ($this->gc->isMarked($this->activeFlowExecutionTicket)) {
-                $this->flowExecution->removeFlowExecution($this->activeFlowExecutionTicket);
-                throw new FlowExecutionExpiredException('The flow execution for the given flow execution ticket has expired.');
+            $pageFlow = $this->flowExecution->getPageFlowRepository()->findByID($flowID);
+            if (is_null($pageFlow)) {
+                throw new FlowNotFoundException(sprintf('The page flow for ID [ %s ] is not found in the repository.', $flowID));
             }
-        }
 
-        $this->getActivePageFlowInstance()->setActionInvoker($this->actionInvoker);
-        $this->getActivePageFlowInstance()->setPayload($payload);
+            while (true) {
+                $flowExecutionTicket = $this->generateFlowExecutionTicket();
+                $pageFlowInstance = $this->flowExecution->findByID($flowExecutionTicket);
+                if (is_null($pageFlowInstance)) {
+                    $pageFlowInstance = new PageFlowInstance($flowExecutionTicket, $pageFlow);
+                    $this->flowExecution->addFlowExecution($pageFlowInstance);
+                    if ($this->flowExecution->isExclusive($pageFlowInstance->getPageFlowID())) {
+                        $this->flowExecution->markFlowExecutionAsExclusive($flowExecutionTicket, $pageFlowInstance->getPageFlowID());
+                    }
 
-        $this->getActivePageFlowInstance()->resume(call_user_func($this->eventNameCallback));
-    }
-
-    /**
-     * Starts a flow execution.
-     *
-     * @param mixed $payload
-     * @return string
-     * @throws \Piece\Flow\Continuation\FlowNotFoundException
-     */
-    protected function startFlowExecution($payload)
-    {
-        $flow = $this->flowExecution->getPageFlowRepository()->findByID($this->activeFlowID);
-        if (is_null($flow)) {
-            throw new FlowNotFoundException(sprintf('The page flow for ID [ %s ] is not found in the repository.', $this->activeFlowID));
-        }
-
-        $flow->setActionInvoker($this->actionInvoker);
-
-        while (true) {
-            $flowExecutionTicket = $this->generateFlowExecutionTicket();
-            $pageFlowInstance = $this->flowExecution->findByID($flowExecutionTicket);
-            if (is_null($pageFlowInstance)) {
-                $this->flowExecution->addFlowExecution(new PageFlowInstance($flowExecutionTicket, $flow));
-                if ($this->flowExecution->isExclusive($this->activeFlowID)) {
-                    $this->flowExecution->markFlowExecutionAsExclusive($flowExecutionTicket, $this->activeFlowID);
+                    break;
                 }
-
-                break;
             }
         }
 
-        $this->activeFlowExecutionTicket = $flowExecutionTicket;
-        $flow->setPayload($payload);
-        $flow->start();
+        $pageFlowInstance->setActionInvoker($this->actionInvoker);
+        $pageFlowInstance->setPayload($payload);
 
-        return $flowExecutionTicket;
+        return $pageFlowInstance;
     }
 
     /**

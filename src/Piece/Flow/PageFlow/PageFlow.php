@@ -363,7 +363,7 @@ class PageFlow implements IPageFlow
      *
      * @return boolean
      */
-    protected function started()
+    public function started()
     {
         return !is_null($this->fsm) && !is_null($this->fsm->getCurrentState());
     }

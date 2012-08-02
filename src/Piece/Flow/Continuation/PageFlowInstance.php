@@ -37,6 +37,8 @@
 
 namespace Piece\Flow\Continuation;
 
+use Stagehand\FSM\State;
+
 use Piece\Flow\PageFlow\ActionInvoker;
 use Piece\Flow\PageFlow\IPageFlow;
 use Piece\Flow\PageFlow\PageFlow;
@@ -92,13 +94,17 @@ class PageFlowInstance implements IPageFlow
     }
 
     /**
-     * Resumes this page flow instance with the specified event.
+     * Activate this page flow instance with the specified event.
      *
      * @param string $eventID
      */
-    public function resume($eventID)
+    public function activate($eventID)
     {
-        $this->pageFlow->triggerEvent($eventID);
+        if ($this->pageFlow->started()) {
+            $this->pageFlow->triggerEvent($eventID);
+        } else {
+            $this->pageFlow->start();
+        }
     }
 
     public function setAttribute($name, $value)
