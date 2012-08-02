@@ -107,7 +107,7 @@ class ContinuationServer
         $this->pageFlowInstance = $this->prepare($payload);
         $this->pageFlowInstance->activate(call_user_func($this->eventNameCallback));
 
-        if (!is_null($this->gc) && !$this->flowExecution->isExclusive($this->pageFlowInstance->getPageFlowID())) {
+        if (!is_null($this->gc) && !$this->flowExecution->checkPageFlowIsExclusive($this->pageFlowInstance->getPageFlowID())) {
             $this->gc->update($this->pageFlowInstance->getID());
         }
 
