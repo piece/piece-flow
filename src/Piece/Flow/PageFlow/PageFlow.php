@@ -148,7 +148,7 @@ class PageFlow implements IPageFlow
 
     public function getView()
     {
-        if (!$this->started()) {
+        if (!$this->isActive()) {
             throw new MethodInvocationException(__FUNCTION__ . ' method must be called after starting flows.');
         }
 
@@ -188,7 +188,7 @@ class PageFlow implements IPageFlow
      */
     public function triggerEvent($eventName, $transitionToHistoryMarker = false)
     {
-        if (!$this->started()) {
+        if (!$this->isActive()) {
             throw new MethodInvocationException(__FUNCTION__ . ' method must be called after starting flows.');
         }
 
@@ -219,7 +219,7 @@ class PageFlow implements IPageFlow
      */
     public function getPreviousStateName()
     {
-        if (!$this->started()) {
+        if (!$this->isActive()) {
             throw new MethodInvocationException(__FUNCTION__ . ' method must be called after starting flows.');
         }
 
@@ -229,7 +229,7 @@ class PageFlow implements IPageFlow
 
     public function getCurrentStateName()
     {
-        if (!$this->started()) {
+        if (!$this->isActive()) {
             throw new MethodInvocationException(__FUNCTION__ . ' method must be called after starting flows.');
         }
 
@@ -239,7 +239,7 @@ class PageFlow implements IPageFlow
 
     public function setAttribute($name, $value)
     {
-        if (!$this->started()) {
+        if (!$this->isActive()) {
             throw new MethodInvocationException(__FUNCTION__ . ' method must be called after starting flows.');
         }
 
@@ -248,7 +248,7 @@ class PageFlow implements IPageFlow
 
     public function hasAttribute($name)
     {
-        if (!$this->started()) {
+        if (!$this->isActive()) {
             throw new MethodInvocationException(__FUNCTION__ . ' method must be called after starting flows.');
         }
 
@@ -257,7 +257,7 @@ class PageFlow implements IPageFlow
 
     public function getAttribute($name)
     {
-        if (!$this->started()) {
+        if (!$this->isActive()) {
             throw new MethodInvocationException(__FUNCTION__ . ' method must be called after starting flows.');
         }
 
@@ -290,7 +290,7 @@ class PageFlow implements IPageFlow
      */
     public function removeAttribute($name)
     {
-        if (!$this->started()) {
+        if (!$this->isActive()) {
             throw new MethodInvocationException(__FUNCTION__ . ' method must be called after starting flows.');
         }
 
@@ -304,7 +304,7 @@ class PageFlow implements IPageFlow
      */
     public function clearAttributes()
     {
-        if (!$this->started()) {
+        if (!$this->isActive()) {
             throw new MethodInvocationException(__FUNCTION__ . ' method must be called after starting flows.');
         }
 
@@ -361,7 +361,7 @@ class PageFlow implements IPageFlow
      *
      * @return boolean
      */
-    public function started()
+    public function isActive()
     {
         return !is_null($this->fsm) && !is_null($this->fsm->getCurrentState());
     }
