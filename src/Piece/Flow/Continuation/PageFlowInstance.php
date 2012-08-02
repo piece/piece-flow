@@ -61,11 +61,6 @@ class PageFlowInstance implements IPageFlow
     protected $pageFlow;
 
     /**
-     * @var boolean
-     */
-    protected $active = false;
-
-    /**
      * @param string $id
      * @param \Piece\Flow\PageFlow\PageFlow $pageFlow
      */
@@ -89,24 +84,6 @@ class PageFlowInstance implements IPageFlow
     public function getPageFlowID()
     {
         return $this->pageFlow->getID();
-    }
-
-    public function activate()
-    {
-        $this->active = true;
-    }
-
-    public function inactivate()
-    {
-        $this->active = false;
-    }
-
-    /**
-     * @return boolean
-     */
-    public function isActive()
-    {
-        return $this->active;
     }
 
     public function removePageFlow()
