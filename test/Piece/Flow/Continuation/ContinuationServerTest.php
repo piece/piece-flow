@@ -429,7 +429,8 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
      */
     public function testShouldBeRequiredFlowExecutionTicketWheneverContinuingFlowExecution()
     {
-        $server = new ContinuationServer(new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true)));
+        $pageFlowInstanceRepository = \Phake::partialMock('Piece\Flow\Continuation\PageFlowInstanceRepository', new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
+        $server = new ContinuationServer($pageFlowInstanceRepository);
         $server->addFlow('Counter', true);
         $server->setEventNameCallback(array($this, 'getEventName'));
         $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
@@ -448,16 +449,9 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = 'Counter';
         $this->eventName = null;
         $this->flowExecutionTicket = null;
-        $hasWarnings = false;
-        set_error_handler(function ($code, $message, $file, $line) use (&$hasWarnings) {
-            if ($code == E_USER_WARNING) {
-                $hasWarnings = true;
-            }
-        });
         $flowExecutionTicket2 = $server->invoke(new \stdClass());
-        restore_error_handler();
 
-        $this->assertTrue($hasWarnings);
+        \Phake::verify($pageFlowInstanceRepository)->remove($flowExecutionTicket1);
         $this->assertEquals(0, $server->getActivePageFlowInstance()->getAttribute('counter'));
         $this->assertTrue($flowExecutionTicket1 != $flowExecutionTicket2);
     }
