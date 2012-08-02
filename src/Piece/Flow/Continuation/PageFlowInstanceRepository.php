@@ -112,7 +112,7 @@ class PageFlowInstanceRepository
      *
      * @param \Piece\Flow\Continuation\PageFlowInstance $pageFlowInstance
      */
-    public function addFlowExecution(PageFlowInstance $pageFlowInstance)
+    public function add(PageFlowInstance $pageFlowInstance)
     {
         $this->pageFlowInstances[ $pageFlowInstance->getID() ] = $pageFlowInstance;
     }
