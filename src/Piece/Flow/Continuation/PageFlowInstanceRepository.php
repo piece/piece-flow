@@ -113,7 +113,7 @@ class PageFlowInstanceRepository
     public function add(PageFlowInstance $pageFlowInstance)
     {
         $this->pageFlowInstances[ $pageFlowInstance->getID() ] = $pageFlowInstance;
-        if ($this->checkPageFlowIsExclusive($pageFlowInstance->getPageFlowID())) {
+        if ($this->checkPageFlowIsExclusive($pageFlowInstance)) {
             $this->exclusivePageFlowInstances[ $pageFlowInstance->getPageFlowID() ] = $pageFlowInstance->getID();
         }
     }
@@ -170,13 +170,13 @@ class PageFlowInstanceRepository
     /**
      * Checks whether the specified page flow is exclusive or not.
      *
-     * @param string $pageFlowID
+     * @param \Piece\Flow\Continuation\PageFlowInstance $pageFlowInstance
      * @return boolean
      * @since Method available since Release 2.0.0
      */
-    public function checkPageFlowIsExclusive($pageFlowID)
+    public function checkPageFlowIsExclusive(PageFlowInstance $pageFlowInstance)
     {
-        return in_array($pageFlowID, $this->exclusivePageFlows);
+        return in_array($pageFlowInstance->getPageFlowID(), $this->exclusivePageFlows);
     }
 }
 
