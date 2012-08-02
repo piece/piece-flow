@@ -50,7 +50,6 @@ class GC
 {
     protected $expirationTime;
     protected $statesByFlowExecutionTicket = array();
-    protected $gcCallback;
 
     /**
      * Sets the expiration time in seconds.
@@ -111,8 +110,10 @@ class GC
 
     /**
      * Sweeps all marked flow execution by the callback for GC.
+     *
+     * @param callback $gcCallback
      */
-    public function sweep()
+    public function sweep($gcCallback)
     {
         reset($this->statesByFlowExecutionTicket);
         while (list($flowExecutionTicket, $state) = each($this->statesByFlowExecutionTicket)) {
@@ -121,22 +122,10 @@ class GC
             }
 
             if ($state['sweep']) {
-                call_user_func($this->gcCallback, $flowExecutionTicket);
+                call_user_func($gcCallback, $flowExecutionTicket);
                 $this->statesByFlowExecutionTicket[$flowExecutionTicket]['isSwept'] = true;
             }
         }
-
-        $this->gcCallback = null;
-    }
-
-    /**
-     * Sets the callback for GC.
-     *
-     * @param callback $gcCallback
-     */
-    public function setGCCallback($gcCallback)
-    {
-        $this->gcCallback = $gcCallback;
     }
 }
 

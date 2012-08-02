@@ -99,7 +99,6 @@ class ContinuationServer
     public function invoke($payload)
     {
         if (!is_null($this->gc)) {
-            $this->gc->setGCCallback(array($this->flowExecution, 'disableFlowExecution'));
             $this->gc->mark();
         }
 
@@ -175,7 +174,13 @@ class ContinuationServer
         $this->activeFlowID = null;
         $this->activeFlowExecutionTicket = null;
         if (!is_null($this->gc)) {
-            $this->gc->sweep();
+            $pageFlowInstanceRepository = $this->flowExecution;
+            $this->gc->sweep(function ($pageFlowInstanceID) use ($pageFlowInstanceRepository) {
+                $pageFlowInstance = $pageFlowInstanceRepository->findByID($pageFlowInstanceID);
+                if (!is_null($pageFlowInstance)) {
+                    $pageFlowInstance->removePageFlow();
+                }
+            });
         }
     }
 

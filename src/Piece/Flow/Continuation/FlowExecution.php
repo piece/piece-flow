@@ -90,19 +90,6 @@ class FlowExecution
     }
 
     /**
-     * Disables the flow execution for the given flow execution ticket.
-     *
-     * @param string $flowExecutionTicket
-     */
-    public function disableFlowExecution($flowExecutionTicket)
-    {
-        $pageFlowInstance = $this->findByID($flowExecutionTicket);
-        if (!is_null($pageFlowInstance)) {
-            $pageFlowInstance->removePageFlow();
-        }
-    }
-
-    /**
      * Removes a flow execution.
      *
      * @param string $flowExecutionTicket
