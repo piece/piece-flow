@@ -51,7 +51,7 @@ use Piece\Flow\PageFlow\ActionInvoker;
 class ContinuationServer
 {
     protected $gc;
-    protected $flowExecution;
+    protected $pageFlowInstanceRepository;
 
     /**
      * @var \Piece\Flow\PageFlow\ActionInvoker
@@ -80,7 +80,7 @@ class ContinuationServer
      */
     public function __construct(PageFlowInstanceRepository $pageFlowInstanceRepository, GC $gc = null)
     {
-        $this->flowExecution = $pageFlowInstanceRepository;
+        $this->pageFlowInstanceRepository = $pageFlowInstanceRepository;
         $this->gc = $gc;
     }
 
@@ -92,7 +92,7 @@ class ContinuationServer
      */
     public function addFlow($flowID, $isExclusive = false)
     {
-        $this->flowExecution->addPageFlow($flowID, $isExclusive);
+        $this->pageFlowInstanceRepository->addPageFlow($flowID, $isExclusive);
     }
 
     /**
@@ -110,7 +110,7 @@ class ContinuationServer
         $this->pageFlowInstance = $this->prepare($payload);
         $this->pageFlowInstance->activate($this->continuationContextProvider->getEventID());
 
-        if (!is_null($this->gc) && !$this->flowExecution->checkPageFlowIsExclusive($this->pageFlowInstance)) {
+        if (!is_null($this->gc) && !$this->pageFlowInstanceRepository->checkPageFlowIsExclusive($this->pageFlowInstance)) {
             $this->gc->update($this->pageFlowInstance->getID());
         }
 
@@ -145,13 +145,13 @@ class ContinuationServer
     {
         if (!is_null($this->pageFlowInstance)) {
             if ($this->pageFlowInstance->isFinalState()) {
-                $this->flowExecution->remove($this->pageFlowInstance);
+                $this->pageFlowInstanceRepository->remove($this->pageFlowInstance);
             }
         }
 
         $this->pageFlowInstance = null;
         if (!is_null($this->gc)) {
-            $pageFlowInstanceRepository = $this->flowExecution;
+            $pageFlowInstanceRepository = $this->pageFlowInstanceRepository;
             $this->gc->sweep(function ($pageFlowInstanceID) use ($pageFlowInstanceRepository) {
                 $pageFlowInstance = $pageFlowInstanceRepository->findByID($pageFlowInstanceID);
                 if (!is_null($pageFlowInstance)) {
@@ -196,7 +196,7 @@ class ContinuationServer
      */
     public function getPageFlowInstanceRepository()
     {
-        return $this->flowExecution;
+        return $this->pageFlowInstanceRepository;
     }
 
     /**
@@ -220,7 +220,7 @@ class ContinuationServer
      */
     protected function prepare($payload)
     {
-        $pageFlowInstance = $this->flowExecution->findByID($this->continuationContextProvider->getPageFlowInstanceID());
+        $pageFlowInstance = $this->pageFlowInstanceRepository->findByID($this->continuationContextProvider->getPageFlowInstanceID());
         if (!is_null($pageFlowInstance)) {
             $registeredFlowID = $pageFlowInstance->getPageFlowID();
 
@@ -235,7 +235,7 @@ class ContinuationServer
 
             if (!is_null($this->gc)) {
                 if ($this->gc->isMarked($pageFlowInstance->getID())) {
-                    $this->flowExecution->remove($pageFlowInstance);
+                    $this->pageFlowInstanceRepository->remove($pageFlowInstance);
                     throw new FlowExecutionExpiredException('The flow execution for the given flow execution ticket has expired.');
                 }
             }
@@ -245,17 +245,17 @@ class ContinuationServer
                 throw new FlowIDRequiredException('A flow ID must be given in this case.');
             }
 
-            $pageFlow = $this->flowExecution->getPageFlowRepository()->findByID($flowID);
+            $pageFlow = $this->pageFlowInstanceRepository->getPageFlowRepository()->findByID($flowID);
             if (is_null($pageFlow)) {
                 throw new FlowNotFoundException(sprintf('The page flow for ID [ %s ] is not found in the repository.', $flowID));
             }
 
             while (true) {
                 $flowExecutionTicket = $this->generateFlowExecutionTicket();
-                $pageFlowInstance = $this->flowExecution->findByID($flowExecutionTicket);
+                $pageFlowInstance = $this->pageFlowInstanceRepository->findByID($flowExecutionTicket);
                 if (is_null($pageFlowInstance)) {
                     $pageFlowInstance = new PageFlowInstance($flowExecutionTicket, $pageFlow);
-                    $this->flowExecution->add($pageFlowInstance);
+                    $this->pageFlowInstanceRepository->add($pageFlowInstance);
                     break;
                 }
             }
