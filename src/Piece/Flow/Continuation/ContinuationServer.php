@@ -88,11 +88,11 @@ class ContinuationServer
      * Adds a flow definition to the Continuation object.
      *
      * @param string  $pageFlowID
-     * @param boolean $isExclusive
+     * @param boolean $exclusive
      */
-    public function addFlow($pageFlowID, $isExclusive = false)
+    public function addFlow($pageFlowID, $exclusive = false)
     {
-        $this->pageFlowInstanceRepository->addPageFlow($pageFlowID, $isExclusive);
+        $this->pageFlowInstanceRepository->addPageFlow($pageFlowID, $exclusive);
     }
 
     /**
