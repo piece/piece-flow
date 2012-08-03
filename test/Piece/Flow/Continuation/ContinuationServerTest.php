@@ -124,7 +124,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server->activate(new \stdClass());
         $pageFlowInstance2 = $server->getPageFlowInstance();
 
-        $this->assertRegexp('/[0-9a-f]{40}/', $pageFlowInstance1->getID());
+        $this->assertThat(strlen($pageFlowInstance1->getID()), $this->greaterThan(0));
         $this->assertEquals('Counter', $pageFlowInstance2->getView());
         $this->assertEquals(1, $pageFlowInstance2->getAttribute('counter'));
         $this->assertEquals($pageFlowInstance1->getID(), $pageFlowInstance2->getID());
@@ -162,8 +162,8 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $pageFlowInstance2 = $server->getPageFlowInstance();
 
         $this->assertEquals(0, $pageFlowInstance2->getAttribute('counter'));
-        $this->assertRegexp('/[0-9a-f]{40}/', $pageFlowInstance1->getID());
-        $this->assertRegexp('/[0-9a-f]{40}/', $pageFlowInstance2->getID());
+        $this->assertThat(strlen($pageFlowInstance1->getID()), $this->greaterThan(0));
+        $this->assertThat(strlen($pageFlowInstance2->getID()), $this->greaterThan(0));
         $this->assertEquals('SecondCounter', $pageFlowInstance2->getView());
         $this->assertTrue($pageFlowInstance1->getID() != $pageFlowInstance2->getID());
 
@@ -275,8 +275,8 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(1, $pageFlowInstance2->getAttribute('counter'));
 
-        $this->assertRegexp('/[0-9a-f]{40}/', $pageFlowInstance1->getID());
-        $this->assertRegexp('/[0-9a-f]{40}/', $pageFlowInstance3->getID());
+        $this->assertThat(strlen($pageFlowInstance1->getID()), $this->greaterThan(0));
+        $this->assertThat(strlen($pageFlowInstance3->getID()), $this->greaterThan(0));
         $this->assertEquals('Counter', $pageFlowInstance2->getView());
         $this->assertEquals($pageFlowInstance1->getID(), $pageFlowInstance2->getID());
         $this->assertTrue($pageFlowInstance1->getID() != $pageFlowInstance3->getID());
@@ -413,7 +413,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(1, $shutdownCount);
         $this->assertEquals($pageFlowInstance1->getID(), $pageFlowInstance2->getID());
-        $this->assertRegexp('/[0-9a-f]{40}/', $pageFlowInstance1->getID());
+        $this->assertThat(strlen($pageFlowInstance1->getID()), $this->greaterThan(0));
 
         /*
          * Failure to continue the 'Shutdown' from the previous flow
@@ -426,7 +426,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $pageFlowInstance3 = $server->getPageFlowInstance();
 
         $this->assertTrue($pageFlowInstance1->getID() != $pageFlowInstance3->getID());
-        $this->assertRegexp('/[0-9a-f]{40}/', $pageFlowInstance3->getID());
+        $this->assertThat(strlen($pageFlowInstance3->getID()), $this->greaterThan(0));
     }
 
     /**

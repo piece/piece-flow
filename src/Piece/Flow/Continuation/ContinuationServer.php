@@ -187,10 +187,25 @@ class ContinuationServer
 
     /**
      * Generates a flow execution ticket.
+     *
+     * @throws \Piece\Flow\Continuation\SecurityException
      */
     protected function generatePageFlowInstanceID()
     {
-        return sha1(uniqid(mt_rand(), true));
+        $bytes = openssl_random_pseudo_bytes(24, $cryptographicallyStrong);
+        if ($bytes === false) {
+            throw new SecurityException('Generating a pseudo-random string of bytes is failed.');
+        }
+        if ($cryptographicallyStrong === false) {
+            throw new SecurityException('Any cryptographically strong algorithm is not used to generate the pseudo-random string of bytes.');
+        }
+
+        $pageFlowInstanceID = base64_encode($bytes);
+        if ($pageFlowInstanceID === false) {
+            throw new SecurityException('Encoding the pseudo-random string of bytes with Base64 is failed.');
+        }
+
+        return $pageFlowInstanceID;
     }
 
     /**
