@@ -50,9 +50,6 @@ use Piece\Flow\PageFlow\ActionInvoker;
  */
 class ContinuationServer
 {
-    protected $flowExecutionTicketCallback;
-    protected $flowIDCallback;
-    protected $eventNameCallback;
     protected $gc;
     protected $flowExecution;
 
@@ -61,6 +58,12 @@ class ContinuationServer
      * @since Property available since Release 2.0.0
      */
     protected $actionInvoker;
+
+    /**
+     * @var \Piece\Flow\Continuation\ContinuationContextProvider
+     * @since Property available since Release 2.0.0
+     */
+    protected $continuationContextProvider;
 
     /**
      * @var \Piece\Flow\Continuation\PageFlowInstance
@@ -105,7 +108,7 @@ class ContinuationServer
         }
 
         $this->pageFlowInstance = $this->prepare($payload);
-        $this->pageFlowInstance->activate(call_user_func($this->eventNameCallback));
+        $this->pageFlowInstance->activate($this->continuationContextProvider->getEventID());
 
         if (!is_null($this->gc) && !$this->flowExecution->checkPageFlowIsExclusive($this->pageFlowInstance)) {
             $this->gc->update($this->pageFlowInstance->getID());
@@ -118,26 +121,6 @@ class ContinuationServer
         }
 
         return $this->pageFlowInstance->getID();
-    }
-
-    /**
-     * Sets a callback for getting an event name.
-     *
-     * @param callback $callback
-     */
-    public function setEventNameCallback($callback)
-    {
-        $this->eventNameCallback = $callback;
-    }
-
-    /**
-     * Sets a callback for getting a flow execution ticket.
-     *
-     * @param callback $callback
-     */
-    public function setFlowExecutionTicketCallback($callback)
-    {
-        $this->flowExecutionTicketCallback = $callback;
     }
 
     /**
@@ -190,14 +173,12 @@ class ContinuationServer
     }
 
     /**
-     * Sets a callback for getting a flow ID.
-     *
-     * @param callback $callback
-     * @since Method available since Release 1.15.0
+     * @param \Piece\Flow\Continuation\ContinuationContextProvider $continuationContextProvider
+     * @since Method available since Release 2.0.0
      */
-    public function setFlowIDCallback($callback)
+    public function setContinuationContextProvider(ContinuationContextProvider $continuationContextProvider)
     {
-        $this->flowIDCallback = $callback;
+        $this->continuationContextProvider = $continuationContextProvider;
     }
 
     /**
@@ -239,12 +220,11 @@ class ContinuationServer
      */
     protected function prepare($payload)
     {
-        $currentFlowExecutionTicket = call_user_func($this->flowExecutionTicketCallback);
-        $pageFlowInstance = $this->flowExecution->findByID($currentFlowExecutionTicket);
+        $pageFlowInstance = $this->flowExecution->findByID($this->continuationContextProvider->getPageFlowInstanceID());
         if (!is_null($pageFlowInstance)) {
             $registeredFlowID = $pageFlowInstance->getPageFlowID();
 
-            $flowID = $this->getFlowID();
+            $flowID = $this->continuationContextProvider->getPageFlowID();
             if (is_null($flowID) || !strlen($flowID)) {
                 throw new FlowIDRequiredException('A flow ID must be given in this case.');
             }
@@ -260,7 +240,7 @@ class ContinuationServer
                 }
             }
         } else {
-            $flowID = $this->getFlowID();
+            $flowID = $this->continuationContextProvider->getPageFlowID();
             if (is_null($flowID) || !strlen($flowID)) {
                 throw new FlowIDRequiredException('A flow ID must be given in this case.');
             }
@@ -285,16 +265,6 @@ class ContinuationServer
         $pageFlowInstance->setPayload($payload);
 
         return $pageFlowInstance;
-    }
-
-    /**
-     * Gets a flow ID which will be started or continued.
-     *
-     * @return string
-     */
-    protected function getFlowID()
-    {
-        return call_user_func($this->flowIDCallback);
     }
 }
 

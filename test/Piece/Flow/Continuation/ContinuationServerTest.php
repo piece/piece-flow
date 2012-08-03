@@ -71,6 +71,12 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
      */
     protected $eventName;
 
+    /**
+     * @var \Piece\Flow\Continuation\ContinuationContextProvider
+     * @since Property available since Release 2.0.0
+     */
+    protected $continuationContextProvider;
+
     public function getFlowExecutionTicket()
     {
         return $this->flowExecutionTicket;
@@ -89,17 +95,20 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->cacheDirectory = dirname(__FILE__) . '/' . basename(__FILE__, '.php');
+        $this->continuationContextProvider = \Phake::mock('Piece\Flow\Continuation\ContinuationContextProvider');
+        $self = $this;
+        \Phake::when($this->continuationContextProvider)->getEventID()->thenGetReturnByLambda(function () use ($self) { return $self->getEventName(); });
+        \Phake::when($this->continuationContextProvider)->getPageFlowID()->thenGetReturnByLambda(function () use ($self) { return $self->getFlowID(); });
+        \Phake::when($this->continuationContextProvider)->getPageFlowInstanceID()->thenGetReturnByLambda(function () use ($self) { return $self->getFlowExecutionTicket(); });
     }
 
     public function testInvocationInMultipleFlowModeAndFlowInNonExclusiveMode()
     {
         $server = new ContinuationServer(new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true)));
         $server->addFlow('Counter');
-        $server->setEventNameCallback(array($this, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array($this, 'getFlowID'));
         $actionInvoker = $this->createCounterActionInvoker();
         $server->setActionInvoker($actionInvoker);
+        $server->setContinuationContextProvider($this->continuationContextProvider);
 
         $this->flowID = 'Counter';
         $this->eventName = null;
@@ -123,10 +132,8 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server = new ContinuationServer(new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true)));
         $server->addFlow('Counter');
         $server->addFlow('SecondCounter');
-        $server->setEventNameCallback(array($this, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array($this, 'getFlowID'));
         $server->setActionInvoker($this->createCounterActionInvoker());
+        $server->setContinuationContextProvider($this->continuationContextProvider);
 
         /*
          * Starting a new 'Counter'.
@@ -205,10 +212,8 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
     {
         $server = new ContinuationServer(new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true)));
         $server->addFlow('Counter');
-        $server->setEventNameCallback(array($this, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array($this, 'getFlowID'));
         $server->setActionInvoker($this->createCounterActionInvoker());
+        $server->setContinuationContextProvider($this->continuationContextProvider);
 
         $this->flowID = 'Counter';
         $this->eventName = null;
@@ -245,10 +250,8 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server = new ContinuationServer(new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true)));
         $server->addFlow('Counter');
         $server->addFlow('SecondCounter');
-        $server->setEventNameCallback(array($this, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array($this, 'getFlowID'));
         $server->setActionInvoker($this->createCounterActionInvoker());
+        $server->setContinuationContextProvider($this->continuationContextProvider);
 
         $this->flowID = 'Counter';
         $this->eventName = null;
@@ -286,10 +289,8 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
     {
         $server = new ContinuationServer(new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true)));
         $server->addFlow('Counter');
-        $server->setEventNameCallback(array($this, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array($this, 'getFlowID'));
         $server->setActionInvoker($this->createCounterActionInvoker());
+        $server->setContinuationContextProvider($this->continuationContextProvider);
 
         $this->flowID = 'Counter';
         $this->eventName = null;
@@ -339,10 +340,8 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         });
         $server = new ContinuationServer(new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true)));
         $server->addFlow('Shutdown');
-        $server->setEventNameCallback(array($this, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array($this, 'getFlowID'));
         $server->setActionInvoker($actionInvoker);
+        $server->setContinuationContextProvider($this->continuationContextProvider);
 
         /*
          * Starting a new 'Shutdown'.
@@ -387,10 +386,8 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         });
         $server = new ContinuationServer(new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true)));
         $server->addFlow('Shutdown');
-        $server->setEventNameCallback(array($this, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array($this, 'getFlowID'));
         $server->setActionInvoker($actionInvoker);
+        $server->setContinuationContextProvider($this->continuationContextProvider);
 
         /*
          * Starting a new 'Shutdown'.
@@ -432,10 +429,8 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $pageFlowInstanceRepository = \Phake::partialMock('Piece\Flow\Continuation\PageFlowInstanceRepository', new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
         $server = new ContinuationServer($pageFlowInstanceRepository);
         $server->addFlow('Counter', true);
-        $server->setEventNameCallback(array($this, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array($this, 'getFlowID'));
         $server->setActionInvoker($this->createCounterActionInvoker());
+        $server->setContinuationContextProvider($this->continuationContextProvider);
 
         $this->flowID = 'Counter';
         $this->eventName = null;
@@ -465,10 +460,8 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server = new ContinuationServer(new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true)));
         $server->addFlow('Counter', true);
         $server->addFlow('SecondCounter');
-        $server->setEventNameCallback(array($this, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array($this, 'getFlowID'));
         $server->setActionInvoker($this->createCounterActionInvoker());
+        $server->setContinuationContextProvider($this->continuationContextProvider);
 
         $this->flowID = 'Counter';
         $this->eventName = null;
@@ -503,10 +496,8 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $flowName = 'FlowExecutionExpired';
         $server = new ContinuationServer(new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true)), new GC(1));
         $server->addFlow($flowName);
-        $server->setEventNameCallback(array($this, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array($this, 'getFlowID'));
         $server->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
+        $server->setContinuationContextProvider($this->continuationContextProvider);
 
         $this->flowID = $flowName;
         $this->eventName = null;
@@ -530,10 +521,8 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $flowName = 'FlowExecutionExpired';
         $server = new ContinuationServer(new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true)), new GC(2));
         $server->addFlow($flowName);
-        $server->setEventNameCallback(array($this, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array($this, 'getFlowID'));
         $server->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
+        $server->setContinuationContextProvider($this->continuationContextProvider);
 
         $this->flowID = $flowName;
         $this->eventName = null;
@@ -572,10 +561,8 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = $flowName;
         $server = new ContinuationServer(new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true)), new GC(1));
         $server->addFlow($flowName);
-        $server->setEventNameCallback(array($this, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array($this, 'getFlowID'));
         $server->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
+        $server->setContinuationContextProvider($this->continuationContextProvider);
 
         $this->flowID = $flowName;
         $this->eventName = null;
@@ -613,10 +600,8 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $flowName = 'CheckLastEvent';
         $server = new ContinuationServer(new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true)));
         $server->addFlow($flowName);
-        $server->setEventNameCallback(array($this, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array($this, 'getFlowID'));
         $server->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
+        $server->setContinuationContextProvider($this->continuationContextProvider);
 
         $this->flowID = $flowName;
         $this->eventName = 'foo';
@@ -634,10 +619,8 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $flowName = 'CheckLastEvent';
         $server = new ContinuationServer(new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true)));
         $server->addFlow($flowName);
-        $server->setEventNameCallback(array($this, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array($this, 'getFlowID'));
         $server->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
+        $server->setContinuationContextProvider($this->continuationContextProvider);
 
         $this->flowID = $flowName;
         $this->eventName = null;
@@ -670,10 +653,8 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $flowName = 'CheckLastEvent';
         $server = new ContinuationServer(new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true)));
         $server->addFlow($flowName);
-        $server->setEventNameCallback(array($this, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array($this, 'getFlowID'));
         $server->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
+        $server->setContinuationContextProvider($this->continuationContextProvider);
 
         $this->flowID = $flowName;
         $this->eventName = null;
@@ -697,10 +678,8 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $flowName = 'CheckLastEvent';
         $server = new ContinuationServer(new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true)));
         $server->addFlow($flowName);
-        $server->setEventNameCallback(array($this, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array($this, 'getFlowID'));
         $server->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
+        $server->setContinuationContextProvider($this->continuationContextProvider);
 
         $this->flowID = $flowName;
         $this->eventName = null;
@@ -736,10 +715,8 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $flowName = 'FlowExecutionExpired';
         $server = new ContinuationServer(new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true)), new GC(1));
         $server->addFlow($flowName);
-        $server->setEventNameCallback(array($this, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array($this, 'getFlowID'));
         $server->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
+        $server->setContinuationContextProvider($this->continuationContextProvider);
 
         $this->flowID = $flowName;
         $this->eventName = null;
