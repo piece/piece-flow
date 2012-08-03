@@ -171,7 +171,7 @@ class ContinuationServer
      * @return \Piece\Flow\Continuation\PageFlowInstance
      * @since Method available since Release 2.0.0
      */
-    public function getActivePageFlowInstance()
+    public function getPageFlowInstance()
     {
         return $this->pageFlowInstance;
     }
