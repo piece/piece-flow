@@ -202,7 +202,7 @@ class ContinuationServer
     /**
      * Generates a flow execution ticket.
      */
-    protected function generateFlowExecutionTicket()
+    protected function generatePageFlowInstanceID()
     {
         return sha1(uniqid(mt_rand(), true));
     }
@@ -251,7 +251,7 @@ class ContinuationServer
             }
 
             while (true) {
-                $flowExecutionTicket = $this->generateFlowExecutionTicket();
+                $flowExecutionTicket = $this->generatePageFlowInstanceID();
                 $pageFlowInstance = $this->pageFlowInstanceRepository->findByID($flowExecutionTicket);
                 if (is_null($pageFlowInstance)) {
                     $pageFlowInstance = new PageFlowInstance($flowExecutionTicket, $pageFlow);
