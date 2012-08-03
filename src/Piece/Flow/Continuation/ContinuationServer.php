@@ -88,7 +88,6 @@ class ContinuationServer
      * Invokes a flow and returns a flow execution ticket.
      *
      * @param mixed   $payload
-     * @return string
      */
     public function invoke($payload)
     {
@@ -108,8 +107,6 @@ class ContinuationServer
             self::$shutdownRegistered = true;
             register_shutdown_function(array(__CLASS__, 'shutdown'));
         }
-
-        return $this->pageFlowInstance->getID();
     }
 
     /**
