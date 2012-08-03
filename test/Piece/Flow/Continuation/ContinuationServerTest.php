@@ -227,24 +227,6 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server->invoke(new \stdClass());
     }
 
-    /**
-     * @expectedException \Piece\Flow\PageFlow\FileNotFoundException
-     */
-    public function testFailureToInvokeByNonExistingFlowConfiguration()
-    {
-        $server = new ContinuationServer(new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true)));
-        $server->addFlow('NonExistingFile');
-        $server->setEventNameCallback(array($this, 'getEventName'));
-        $server->setFlowExecutionTicketCallback(array($this, 'getFlowExecutionTicket'));
-        $server->setFlowIDCallback(array($this, 'getFlowID'));
-        $server->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
-
-        $this->flowID = 'NonExistingFile';
-        $this->eventName = null;
-        $this->flowExecutionTicket = null;
-        $server->invoke(new \stdClass());
-    }
-
     public function testInvocationInMultipleFlowModeAndFlowInExclusiveMode()
     {
         $server = new ContinuationServer(new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true)));
