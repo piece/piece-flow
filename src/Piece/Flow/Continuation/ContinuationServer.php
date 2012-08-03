@@ -213,7 +213,7 @@ class ContinuationServer
      *
      * @param mixed $payload
      * @return \Piece\Flow\Continuation\PageFlowInstance
-     * @throws \Piece\Flow\Continuation\FlowExecutionExpiredException
+     * @throws \Piece\Flow\Continuation\PageFlowInstanceExpiredException
      * @throws \Piece\Flow\Continuation\FlowIDRequiredException
      * @throws \Piece\Flow\Continuation\FlowNotFoundException
      * @throws \Piece\Flow\Continuation\InvaidFlowIDException
@@ -236,7 +236,7 @@ class ContinuationServer
             if (!is_null($this->gc)) {
                 if ($this->gc->isMarked($pageFlowInstance->getID())) {
                     $this->pageFlowInstanceRepository->remove($pageFlowInstance);
-                    throw new FlowExecutionExpiredException('The flow execution for the given flow execution ticket has expired.');
+                    throw new PageFlowInstanceExpiredException('The flow execution for the given flow execution ticket has expired.');
                 }
             }
         } else {

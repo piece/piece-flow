@@ -488,10 +488,10 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Piece\Flow\Continuation\FlowExecutionExpiredException
+     * @expectedException \Piece\Flow\Continuation\PageFlowInstanceExpiredException
      * @since Method available since Release 1.11.0
      */
-    public function testFlowExecutionExpiredExceptionShouldBeRaisedWhenFlowExecutionHasExpired()
+    public function testPageFlowInstanceExpiredExceptionShouldBeRaisedWhenFlowExecutionHasExpired()
     {
         $flowName = 'FlowExecutionExpired';
         $server = new ContinuationServer(new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true)), new GC(1));
@@ -516,7 +516,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
     /**
      * @since Method available since Release 1.11.0
      */
-    public function testFlowExecutionExpiredExceptionShouldNotBeRaisedWhenFlowExecutionHasNotExpired()
+    public function testPageFlowInstanceExpiredExceptionShouldNotBeRaisedWhenFlowExecutionHasNotExpired()
     {
         $flowName = 'FlowExecutionExpired';
         $server = new ContinuationServer(new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true)), new GC(2));
@@ -579,7 +579,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         try {
             $server->invoke(new \stdClass());
             $this->fail('An expected exception has not been raised.');
-        } catch (FlowExecutionExpiredException $e) {
+        } catch (PageFlowInstanceExpiredException $e) {
         }
 
         $server->shutdown();
@@ -710,7 +710,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
     /**
      * @since Method available since Release 1.15.1
      */
-    public function testFlowExecutionExpiredExceptionShouldRaiseAfterSweepingIt()
+    public function testPageFlowInstanceExpiredExceptionShouldRaiseAfterSweepingIt()
     {
         $flowName = 'FlowExecutionExpired';
         $server = new ContinuationServer(new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true)), new GC(1));
@@ -741,7 +741,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         try {
             $server->invoke(new \stdClass());
             $this->fail('An expected exception has not been raised.');
-        } catch (FlowExecutionExpiredException $e) {
+        } catch (PageFlowInstanceExpiredException $e) {
         }
     }
 
