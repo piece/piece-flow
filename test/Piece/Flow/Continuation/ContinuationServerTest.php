@@ -206,7 +206,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Piece\Flow\Continuation\InvalidFlowIDException
+     * @expectedException \Piece\Flow\Continuation\UnexpectedPageFlowIDException
      */
     public function testFailureOfContinuationByInvalidFlowNameInMultipleFlowMode()
     {

@@ -216,7 +216,7 @@ class ContinuationServer
      * @throws \Piece\Flow\Continuation\PageFlowInstanceExpiredException
      * @throws \Piece\Flow\Continuation\PageFlowIDRequiredException
      * @throws \Piece\Flow\Continuation\FlowNotFoundException
-     * @throws \Piece\Flow\Continuation\InvaidFlowIDException
+     * @throws \Piece\Flow\Continuation\InvaidPageFlowIDException
      */
     protected function prepare($payload)
     {
@@ -230,7 +230,7 @@ class ContinuationServer
             }
 
             if ($flowID != $registeredFlowID) {
-                throw new InvalidFlowIDException('The given flow ID is different from the registerd flow ID.');
+                throw new UnexpectedPageFlowIDException('The given flow ID is different from the registerd flow ID.');
             }
 
             if (!is_null($this->gc)) {
