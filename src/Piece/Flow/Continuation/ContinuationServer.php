@@ -95,7 +95,7 @@ class ContinuationServer
             $this->gc->mark();
         }
 
-        $this->pageFlowInstance = $this->prepare($payload);
+        $this->pageFlowInstance = $this->createPageFlowInstance($payload);
         $this->pageFlowInstance->activate($this->continuationContextProvider->getEventID());
 
         if (!is_null($this->gc) && !$this->pageFlowInstanceRepository->checkPageFlowIsExclusive($this->pageFlowInstance)) {
@@ -204,7 +204,7 @@ class ContinuationServer
      * @throws \Piece\Flow\Continuation\FlowNotFoundException
      * @throws \Piece\Flow\Continuation\InvaidPageFlowIDException
      */
-    protected function prepare($payload)
+    protected function createPageFlowInstance($payload)
     {
         $pageFlowInstance = $this->pageFlowInstanceRepository->findByID($this->continuationContextProvider->getPageFlowInstanceID());
         if (!is_null($pageFlowInstance)) {
