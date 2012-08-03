@@ -114,14 +114,14 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = 'Counter';
         $this->eventName = null;
         $this->flowExecutionTicket = null;
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance1 = $server->getPageFlowInstance();
         $server->shutdown();
 
         $this->flowID = 'Counter';
         $this->eventName = 'increase';
         $this->flowExecutionTicket = $pageFlowInstance1->getID();
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance2 = $server->getPageFlowInstance();
 
         $this->assertRegexp('/[0-9a-f]{40}/', $pageFlowInstance1->getID());
@@ -145,7 +145,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = 'Counter';
         $this->eventName = null;
         $this->flowExecutionTicket = null;
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance1 = $server->getPageFlowInstance();
 
         $this->assertEquals(0, $pageFlowInstance1->getAttribute('counter'));
@@ -158,7 +158,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = 'SecondCounter';
         $this->eventName = null;
         $this->flowExecutionTicket = null;
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance2 = $server->getPageFlowInstance();
 
         $this->assertEquals(0, $pageFlowInstance2->getAttribute('counter'));
@@ -175,7 +175,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = 'Counter';
         $this->eventName = 'increase';
         $this->flowExecutionTicket = $pageFlowInstance1->getID();
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance3 = $server->getPageFlowInstance();
 
         $this->assertEquals(1, $pageFlowInstance3->getAttribute('counter'));
@@ -191,7 +191,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = 'SecondCounter';
         $this->eventName = 'increase';
         $this->flowExecutionTicket = $pageFlowInstance2->getID();
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance4 = $server->getPageFlowInstance();
 
         $this->assertEquals('SecondCounter', $pageFlowInstance4->getView());
@@ -206,7 +206,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = 'SecondCounter';
         $this->eventName = null;
         $this->flowExecutionTicket = null;
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance5 = $server->getPageFlowInstance();
 
         $this->assertEquals('SecondCounter', $pageFlowInstance5->getView());
@@ -228,14 +228,14 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = 'Counter';
         $this->eventName = null;
         $this->flowExecutionTicket = null;
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance = $server->getPageFlowInstance();
         $server->shutdown();
 
         $this->flowID = 'InvalidFlowName';
         $this->eventName = 'increase';
         $this->flowExecutionTicket = $pageFlowInstance->getID();
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
     }
 
     public function testInvocationInMultipleFlowModeAndFlowInExclusiveMode()
@@ -250,7 +250,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = 'Counter';
         $this->eventName = null;
         $this->flowExecutionTicket = null;
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance1 = $server->getPageFlowInstance();
 
         $this->assertEquals(0, $pageFlowInstance1->getAttribute('counter'));
@@ -260,7 +260,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = 'SecondCounter';
         $this->eventName = null;
         $this->flowExecutionTicket = null;
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance3 = $server->getPageFlowInstance();
 
         $this->assertEquals(0, $pageFlowInstance3->getAttribute('counter'));
@@ -270,7 +270,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = 'Counter';
         $this->eventName = 'increase';
         $this->flowExecutionTicket = $pageFlowInstance1->getID();
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance2 = $server->getPageFlowInstance();
 
         $this->assertEquals(1, $pageFlowInstance2->getAttribute('counter'));
@@ -293,7 +293,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = 'Counter';
         $this->eventName = null;
         $this->flowExecutionTicket = null;
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance = $server->getPageFlowInstance();
         $pageFlowInstance->setAttribute('foo', 'bar');
         $server->shutdown();
@@ -301,7 +301,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = 'Counter';
         $this->eventName = 'increase';
         $this->flowExecutionTicket = $pageFlowInstance->getID();
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance = $server->getPageFlowInstance();
         $pageFlowInstance->setAttribute('bar', 'baz');
         $baz1 = new \stdClass();
@@ -311,7 +311,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = 'Counter';
         $this->eventName = 'increase';
         $this->flowExecutionTicket = $pageFlowInstance->getID();
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance = $server->getPageFlowInstance();
 
         $this->assertTrue($pageFlowInstance->hasAttribute('foo'));
@@ -351,14 +351,14 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = 'Shutdown';
         $this->eventName = null;
         $this->flowExecutionTicket = null;
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance1 = $server->getPageFlowInstance();
         $server->shutdown();
 
         $this->flowID = 'Shutdown';
         $this->eventName = 'go';
         $this->flowExecutionTicket = $pageFlowInstance1->getID();
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance2 = $server->getPageFlowInstance();
 
         $this->assertEquals(1, $shutdownCount);
@@ -375,7 +375,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowExecutionTicket = $pageFlowInstance1->getID();
 
         try {
-            $server->invoke(new \stdClass());
+            $server->activate(new \stdClass());
             $this->fail('An expected exception has not been raised.');
         } catch (PageFlowIDRequiredException $e) {
         }
@@ -400,14 +400,14 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = 'Shutdown';
         $this->eventName = null;
         $this->flowExecutionTicket = null;
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance1 = $server->getPageFlowInstance();
         $server->shutdown();
 
         $this->flowID = 'Shutdown';
         $this->eventName = 'go';
         $this->flowExecutionTicket = $pageFlowInstance1->getID();
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance2 = $server->getPageFlowInstance();
         $server->shutdown();
 
@@ -422,7 +422,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = 'Shutdown';
         $this->eventName = 'go';
         $this->flowExecutionTicket = $pageFlowInstance1->getID();
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance3 = $server->getPageFlowInstance();
 
         $this->assertTrue($pageFlowInstance1->getID() != $pageFlowInstance3->getID());
@@ -443,7 +443,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = 'Counter';
         $this->eventName = null;
         $this->flowExecutionTicket = null;
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance1 = $server->getPageFlowInstance();
 
         $this->assertEquals(0, $pageFlowInstance1->getAttribute('counter'));
@@ -453,7 +453,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = 'Counter';
         $this->eventName = null;
         $this->flowExecutionTicket = null;
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance2 = $server->getPageFlowInstance();
 
         \Phake::verify($pageFlowInstanceRepository)->remove($pageFlowInstance1);
@@ -476,20 +476,20 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = 'Counter';
         $this->eventName = null;
         $this->flowExecutionTicket = null;
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance1 = $server->getPageFlowInstance();
 
         $this->flowID = 'Counter';
         $this->eventName = 'increase';
         $this->flowExecutionTicket = $pageFlowInstance1->getID();
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
 
         $this->assertEquals(1, $pageFlowInstance1->getAttribute('counter'));
 
         $this->flowID = 'SecondCounter';
         $this->eventName = null;
         $this->flowExecutionTicket = null;
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance2 = $server->getPageFlowInstance();
 
         $this->assertEquals(0, $pageFlowInstance2->getAttribute('counter'));
@@ -515,7 +515,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = $flowName;
         $this->eventName = null;
         $this->flowExecutionTicket = null;
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance = $server->getPageFlowInstance();
         $server->shutdown();
 
@@ -524,7 +524,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = $flowName;
         $this->eventName = null;
         $this->flowExecutionTicket = $pageFlowInstance->getID();
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
     }
 
     /**
@@ -542,7 +542,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = $flowName;
         $this->eventName = null;
         $this->flowExecutionTicket = null;
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance = $server->getPageFlowInstance();
         $server->shutdown();
 
@@ -551,21 +551,21 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = $flowName;
         $this->eventName = null;
         $this->flowExecutionTicket = $pageFlowInstance->getID();
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
 
         sleep(1);
 
         $this->flowID = $flowName;
         $this->eventName = null;
         $this->flowExecutionTicket = $pageFlowInstance->getID();
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
 
         sleep(1);
 
         $this->flowID = $flowName;
         $this->eventName = null;
         $this->flowExecutionTicket = $pageFlowInstance->getID();
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
     }
 
     /**
@@ -584,7 +584,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = $flowName;
         $this->eventName = null;
         $this->flowExecutionTicket = null;
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance = $server->getPageFlowInstance();
         $server->shutdown();
 
@@ -595,7 +595,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowExecutionTicket = $pageFlowInstance->getID();
 
         try {
-            $server->invoke(new \stdClass());
+            $server->activate(new \stdClass());
             $this->fail('An expected exception has not been raised.');
         } catch (PageFlowInstanceExpiredException $e) {
         }
@@ -605,7 +605,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = $flowName;
         $this->eventName = null;
         $this->flowExecutionTicket = $pageFlowInstance->getID();
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $newPageFlowInstance = $server->getPageFlowInstance();
 
         $this->assertTrue($newPageFlowInstance->getID() != $this->flowExecutionTicket);
@@ -626,7 +626,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = $flowName;
         $this->eventName = 'foo';
         $this->flowExecutionTicket = null;
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
 
         $this->assertTrue($server->getPageFlowInstance()->checkLastEvent());
     }
@@ -646,14 +646,14 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = $flowName;
         $this->eventName = null;
         $this->flowExecutionTicket = null;
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance = $server->getPageFlowInstance();
         $server->shutdown();
 
         $this->flowID = $flowName;
         $this->eventName = 'DisplayEditConfirmFromDisplayEdit';
         $this->flowExecutionTicket = $pageFlowInstance->getID();
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance = $server->getPageFlowInstance();
 
         $this->assertTrue($pageFlowInstance->checkLastEvent());
@@ -663,7 +663,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = $flowName;
         $this->eventName = 'DisplayEditFinishFromDisplayEditConfirm';
         $this->flowExecutionTicket = $pageFlowInstance->getID();
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance = $server->getPageFlowInstance();
 
         $this->assertTrue($pageFlowInstance->checkLastEvent());
@@ -684,14 +684,14 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = $flowName;
         $this->eventName = null;
         $this->flowExecutionTicket = null;
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance = $server->getPageFlowInstance();
         $server->shutdown();
 
         $this->flowID = $flowName;
         $this->eventName = 'foo';
         $this->flowExecutionTicket = $pageFlowInstance->getID();
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance = $server->getPageFlowInstance();
 
         $this->assertFalse($pageFlowInstance->checkLastEvent());
@@ -712,7 +712,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = $flowName;
         $this->eventName = null;
         $this->flowExecutionTicket = null;
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance = $server->getPageFlowInstance();
 
         $this->assertEquals('DisplayEdit', $pageFlowInstance->getCurrentStateName());
@@ -722,7 +722,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = $flowName;
         $this->eventName = 'DisplayEditConfirmFromDisplayEdit';
         $this->flowExecutionTicket = $pageFlowInstance->getID();
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance = $server->getPageFlowInstance();
 
         $this->assertEquals('DisplayEditConfirm', $pageFlowInstance->getCurrentStateName());
@@ -732,7 +732,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = $flowName;
         $this->eventName = 'DisplayEditFinishFromDisplayEditConfirm';
         $this->flowExecutionTicket = $pageFlowInstance->getID();
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance = $server->getPageFlowInstance();
 
         $this->assertEquals('DisplayEditFinish', $pageFlowInstance->getCurrentStateName());
@@ -753,7 +753,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = $flowName;
         $this->eventName = null;
         $this->flowExecutionTicket = null;
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance1 = $server->getPageFlowInstance();
         $server->shutdown();
 
@@ -762,7 +762,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowID = $flowName;
         $this->eventName = null;
         $this->flowExecutionTicket = null;
-        $server->invoke(new \stdClass());
+        $server->activate(new \stdClass());
         $pageFlowInstance2 = $server->getPageFlowInstance();
         $server->shutdown();
 
@@ -773,7 +773,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowExecutionTicket = $pageFlowInstance1->getID();
 
         try {
-            $server->invoke(new \stdClass());
+            $server->activate(new \stdClass());
             $this->fail('An expected exception has not been raised.');
         } catch (PageFlowInstanceExpiredException $e) {
         }

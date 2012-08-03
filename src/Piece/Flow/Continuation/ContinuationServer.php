@@ -89,7 +89,7 @@ class ContinuationServer
      *
      * @param mixed   $payload
      */
-    public function invoke($payload)
+    public function activate($payload)
     {
         if (!is_null($this->gc)) {
             $this->gc->mark();
