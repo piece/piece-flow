@@ -87,12 +87,12 @@ class ContinuationServer
     /**
      * Adds a flow definition to the Continuation object.
      *
-     * @param string  $flowID
+     * @param string  $pageFlowID
      * @param boolean $isExclusive
      */
-    public function addFlow($flowID, $isExclusive = false)
+    public function addFlow($pageFlowID, $isExclusive = false)
     {
-        $this->pageFlowInstanceRepository->addPageFlow($flowID, $isExclusive);
+        $this->pageFlowInstanceRepository->addPageFlow($pageFlowID, $isExclusive);
     }
 
     /**
@@ -224,12 +224,12 @@ class ContinuationServer
         if (!is_null($pageFlowInstance)) {
             $registeredFlowID = $pageFlowInstance->getPageFlowID();
 
-            $flowID = $this->continuationContextProvider->getPageFlowID();
-            if (is_null($flowID) || !strlen($flowID)) {
+            $pageFlowID = $this->continuationContextProvider->getPageFlowID();
+            if (is_null($pageFlowID) || !strlen($pageFlowID)) {
                 throw new PageFlowIDRequiredException('A flow ID must be given in this case.');
             }
 
-            if ($flowID != $registeredFlowID) {
+            if ($pageFlowID != $registeredFlowID) {
                 throw new UnexpectedPageFlowIDException('The given flow ID is different from the registerd flow ID.');
             }
 
@@ -240,14 +240,14 @@ class ContinuationServer
                 }
             }
         } else {
-            $flowID = $this->continuationContextProvider->getPageFlowID();
-            if (is_null($flowID) || !strlen($flowID)) {
+            $pageFlowID = $this->continuationContextProvider->getPageFlowID();
+            if (is_null($pageFlowID) || !strlen($pageFlowID)) {
                 throw new PageFlowIDRequiredException('A flow ID must be given in this case.');
             }
 
-            $pageFlow = $this->pageFlowInstanceRepository->getPageFlowRepository()->findByID($flowID);
+            $pageFlow = $this->pageFlowInstanceRepository->getPageFlowRepository()->findByID($pageFlowID);
             if (is_null($pageFlow)) {
-                throw new FlowNotFoundException(sprintf('The page flow for ID [ %s ] is not found in the repository.', $flowID));
+                throw new FlowNotFoundException(sprintf('The page flow for ID [ %s ] is not found in the repository.', $pageFlowID));
             }
 
             while (true) {
