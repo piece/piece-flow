@@ -251,10 +251,10 @@ class ContinuationServer
             }
 
             while (true) {
-                $flowExecutionTicket = $this->generatePageFlowInstanceID();
-                $pageFlowInstance = $this->pageFlowInstanceRepository->findByID($flowExecutionTicket);
+                $pageFlowInstanceID = $this->generatePageFlowInstanceID();
+                $pageFlowInstance = $this->pageFlowInstanceRepository->findByID($pageFlowInstanceID);
                 if (is_null($pageFlowInstance)) {
-                    $pageFlowInstance = new PageFlowInstance($flowExecutionTicket, $pageFlow);
+                    $pageFlowInstance = new PageFlowInstance($pageFlowInstanceID, $pageFlow);
                     $this->pageFlowInstanceRepository->add($pageFlowInstance);
                     break;
                 }
