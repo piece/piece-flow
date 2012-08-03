@@ -373,7 +373,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         try {
             $server->invoke(new \stdClass());
             $this->fail('An expected exception has not been raised.');
-        } catch (FlowIDRequiredException $e) {
+        } catch (PageFlowIDRequiredException $e) {
         }
     }
 

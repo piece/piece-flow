@@ -214,7 +214,7 @@ class ContinuationServer
      * @param mixed $payload
      * @return \Piece\Flow\Continuation\PageFlowInstance
      * @throws \Piece\Flow\Continuation\PageFlowInstanceExpiredException
-     * @throws \Piece\Flow\Continuation\FlowIDRequiredException
+     * @throws \Piece\Flow\Continuation\PageFlowIDRequiredException
      * @throws \Piece\Flow\Continuation\FlowNotFoundException
      * @throws \Piece\Flow\Continuation\InvaidFlowIDException
      */
@@ -226,7 +226,7 @@ class ContinuationServer
 
             $flowID = $this->continuationContextProvider->getPageFlowID();
             if (is_null($flowID) || !strlen($flowID)) {
-                throw new FlowIDRequiredException('A flow ID must be given in this case.');
+                throw new PageFlowIDRequiredException('A flow ID must be given in this case.');
             }
 
             if ($flowID != $registeredFlowID) {
@@ -242,7 +242,7 @@ class ContinuationServer
         } else {
             $flowID = $this->continuationContextProvider->getPageFlowID();
             if (is_null($flowID) || !strlen($flowID)) {
-                throw new FlowIDRequiredException('A flow ID must be given in this case.');
+                throw new PageFlowIDRequiredException('A flow ID must be given in this case.');
             }
 
             $pageFlow = $this->pageFlowInstanceRepository->getPageFlowRepository()->findByID($flowID);
