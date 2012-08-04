@@ -182,12 +182,12 @@ class PageFlow implements IPageFlow
      *
      * @param string $eventID
      * @return \Stagehand\FSM\State
-     * @throws \Piece\Flow\PageFlow\MethodInvocationException
+     * @throws \Piece\Flow\PageFlow\PageFlowNotActivatedException
      */
     public function triggerEvent($eventID)
     {
         if (!$this->isActive()) {
-            throw new MethodInvocationException(__FUNCTION__ . ' method must be called after starting flows.');
+            throw new PageFlowNotActivatedException('The page flow must be activated to trigger any event.');
         }
 
         if ($this->fsm->isProtectedEvent($eventID)) {
