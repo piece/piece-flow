@@ -194,16 +194,6 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Piece\Flow\PageFlow\MethodInvocationException
-     */
-    public function testFailureToGetViewBeforeStartingFlow()
-    {
-        $flow = $this->pageFlowFactory->create($this->source);
-        $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
-        $flow->getView();
-    }
-
-    /**
      * @expectedException \Piece\Flow\PageFlow\InvalidTransitionException
      */
     public function testInvalidTransition()

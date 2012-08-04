@@ -148,9 +148,7 @@ class PageFlow implements IPageFlow
 
     public function getView()
     {
-        if (!$this->isActive()) {
-            throw new MethodInvocationException(__FUNCTION__ . ' method must be called after starting flows.');
-        }
+        if (!$this->isActive()) return null;
 
         if (!$this->isFinalState()) {
             $viewIndex = $this->getCurrentState()->getID();
