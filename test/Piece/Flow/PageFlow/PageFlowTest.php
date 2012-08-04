@@ -188,15 +188,6 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
         $flow->setAttribute('foo', 'bar');
     }
 
-    /**
-     * @expectedException \Piece\Flow\PageFlow\MethodInvocationException
-     */
-    public function testFailureToSetPayloadBeforeConfiguringFlow()
-    {
-        $flow = new PageFlow('foo');
-        $flow->setPayload(new \stdClass());
-    }
-
     public function testOptionalElements()
     {
         $flow = $this->pageFlowFactory->create('optional');

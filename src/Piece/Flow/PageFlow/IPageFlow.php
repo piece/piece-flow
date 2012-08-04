@@ -129,7 +129,6 @@ interface IPageFlow
      * Sets a user defined payload.
      *
      * @param mixed $payload
-     * @throws \Piece\Flow\PageFlow\MethodInvocationException
      */
     public function setPayload($payload);
 }

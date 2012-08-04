@@ -258,11 +258,9 @@ class PageFlow implements IPageFlow
 
     public function setPayload($payload)
     {
-        if (is_null($this->fsm)) {
-            throw new MethodInvocationException(__FUNCTION__ . ' method must be called after configuring flows.');
+        if (!is_null($this->fsm)) {
+            $this->fsm->setPayload($payload);
         }
-
-        $this->fsm->setPayload($payload);
     }
 
     public function isFinalState()
