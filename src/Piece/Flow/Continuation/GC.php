@@ -49,7 +49,7 @@ namespace Piece\Flow\Continuation;
 class GC
 {
     protected $expirationTime;
-    protected $statesByFlowExecutionTicket = array();
+    protected $markers = array();
 
     /**
      * Sets the expiration time in seconds.
@@ -70,7 +70,7 @@ class GC
     public function update($flowExecutionTicket)
     {
         if (!$this->isMarked($flowExecutionTicket)) {
-            $this->statesByFlowExecutionTicket[$flowExecutionTicket] = array('mtime'   => time(),
+            $this->markers[$flowExecutionTicket] = array('mtime'   => time(),
                                                                               'sweep'   => false,
                                                                               'isSwept' => false
                                                                               );
@@ -85,8 +85,8 @@ class GC
      */
     public function isMarked($flowExecutionTicket)
     {
-        if (array_key_exists($flowExecutionTicket, $this->statesByFlowExecutionTicket)) {
-            return $this->statesByFlowExecutionTicket[$flowExecutionTicket]['sweep'];
+        if (array_key_exists($flowExecutionTicket, $this->markers)) {
+            return $this->markers[$flowExecutionTicket]['sweep'];
         } else {
             return false;
         }
@@ -98,13 +98,13 @@ class GC
     public function mark()
     {
         $thresholdTime = time();
-        reset($this->statesByFlowExecutionTicket);
-        while (list($flowExecutionTicket, $state) = each($this->statesByFlowExecutionTicket)) {
+        reset($this->markers);
+        while (list($flowExecutionTicket, $state) = each($this->markers)) {
             if ($state['isSwept']) {
                 continue;
             }
 
-            $this->statesByFlowExecutionTicket[$flowExecutionTicket]['sweep'] = $thresholdTime - $state['mtime'] > $this->expirationTime;
+            $this->markers[$flowExecutionTicket]['sweep'] = $thresholdTime - $state['mtime'] > $this->expirationTime;
         }
     }
 
@@ -115,15 +115,15 @@ class GC
      */
     public function sweep($gcCallback)
     {
-        reset($this->statesByFlowExecutionTicket);
-        while (list($flowExecutionTicket, $state) = each($this->statesByFlowExecutionTicket)) {
+        reset($this->markers);
+        while (list($flowExecutionTicket, $state) = each($this->markers)) {
             if ($state['isSwept']) {
                 continue;
             }
 
             if ($state['sweep']) {
                 call_user_func($gcCallback, $flowExecutionTicket);
-                $this->statesByFlowExecutionTicket[$flowExecutionTicket]['isSwept'] = true;
+                $this->markers[$flowExecutionTicket]['isSwept'] = true;
             }
         }
     }
