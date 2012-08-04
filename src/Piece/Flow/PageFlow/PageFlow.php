@@ -191,7 +191,7 @@ class PageFlow implements IPageFlow
             throw new MethodInvocationException(__FUNCTION__ . ' method must be called after starting flows.');
         }
 
-        if ($eventID == self::EVENT_PROTECTED || $this->fsm->isProtectedEvent($eventID)) {
+        if ($this->fsm->isProtectedEvent($eventID)) {
             $eventID = self::EVENT_PROTECTED;
         }
 
