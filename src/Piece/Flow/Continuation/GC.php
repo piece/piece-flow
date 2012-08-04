@@ -65,12 +65,12 @@ class GC
      * Updates the state for the flow execution by the given flow execution
      * ticket.
      *
-     * @param string $flowExecutionTicket
+     * @param string $pageFlowInstanceID
      */
-    public function update($flowExecutionTicket)
+    public function update($pageFlowInstanceID)
     {
-        if (!$this->isMarked($flowExecutionTicket)) {
-            $this->markers[$flowExecutionTicket] = array('mtime'   => time(),
+        if (!$this->isMarked($pageFlowInstanceID)) {
+            $this->markers[$pageFlowInstanceID] = array('mtime'   => time(),
                                                                               'sweep'   => false,
                                                                               'isSwept' => false
                                                                               );
@@ -80,13 +80,13 @@ class GC
     /**
      * Returns whether the given flow execution ticket is marked as a target for sweeping or not.
      *
-     * @param string $flowExecutionTicket
+     * @param string $pageFlowInstanceID
      * @return boolean
      */
-    public function isMarked($flowExecutionTicket)
+    public function isMarked($pageFlowInstanceID)
     {
-        if (array_key_exists($flowExecutionTicket, $this->markers)) {
-            return $this->markers[$flowExecutionTicket]['sweep'];
+        if (array_key_exists($pageFlowInstanceID, $this->markers)) {
+            return $this->markers[$pageFlowInstanceID]['sweep'];
         } else {
             return false;
         }
@@ -99,12 +99,12 @@ class GC
     {
         $thresholdTime = time();
         reset($this->markers);
-        while (list($flowExecutionTicket, $state) = each($this->markers)) {
-            if ($state['isSwept']) {
+        while (list($pageFlowInstanceID, $marker) = each($this->markers)) {
+            if ($marker['isSwept']) {
                 continue;
             }
 
-            $this->markers[$flowExecutionTicket]['sweep'] = $thresholdTime - $state['mtime'] > $this->expirationTime;
+            $this->markers[$pageFlowInstanceID]['sweep'] = $thresholdTime - $marker['mtime'] > $this->expirationTime;
         }
     }
 
@@ -116,14 +116,14 @@ class GC
     public function sweep($gcCallback)
     {
         reset($this->markers);
-        while (list($flowExecutionTicket, $state) = each($this->markers)) {
-            if ($state['isSwept']) {
+        while (list($pageFlowInstanceID, $marker) = each($this->markers)) {
+            if ($marker['isSwept']) {
                 continue;
             }
 
-            if ($state['sweep']) {
-                call_user_func($gcCallback, $flowExecutionTicket);
-                $this->markers[$flowExecutionTicket]['isSwept'] = true;
+            if ($marker['sweep']) {
+                call_user_func($gcCallback, $pageFlowInstanceID);
+                $this->markers[$pageFlowInstanceID]['isSwept'] = true;
             }
         }
     }
