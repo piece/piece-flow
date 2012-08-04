@@ -133,7 +133,7 @@ class PageFlow implements IPageFlow
      * @param string $stateID
      * @since Method available since Release 2.0.0
      */
-    public function setLastState($stateID)
+    public function setEndState($stateID)
     {
         $this->endState = $stateID;
     }
