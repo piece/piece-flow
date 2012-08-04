@@ -126,7 +126,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertThat(strlen($pageFlowInstance1->getID()), $this->greaterThan(0));
         $this->assertEquals('Counter', $pageFlowInstance2->getView());
-        $this->assertEquals(1, $pageFlowInstance2->getAttribute('counter'));
+        $this->assertEquals(1, $pageFlowInstance2->getAttributes()->get('counter'));
         $this->assertEquals($pageFlowInstance1->getID(), $pageFlowInstance2->getID());
     }
 
@@ -148,7 +148,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server->activate(new \stdClass());
         $pageFlowInstance1 = $server->getPageFlowInstance();
 
-        $this->assertEquals(0, $pageFlowInstance1->getAttribute('counter'));
+        $this->assertEquals(0, $pageFlowInstance1->getAttributes()->get('counter'));
 
         $server->shutdown();
 
@@ -161,7 +161,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server->activate(new \stdClass());
         $pageFlowInstance2 = $server->getPageFlowInstance();
 
-        $this->assertEquals(0, $pageFlowInstance2->getAttribute('counter'));
+        $this->assertEquals(0, $pageFlowInstance2->getAttributes()->get('counter'));
         $this->assertThat(strlen($pageFlowInstance1->getID()), $this->greaterThan(0));
         $this->assertThat(strlen($pageFlowInstance2->getID()), $this->greaterThan(0));
         $this->assertEquals('SecondCounter', $pageFlowInstance2->getView());
@@ -178,7 +178,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server->activate(new \stdClass());
         $pageFlowInstance3 = $server->getPageFlowInstance();
 
-        $this->assertEquals(1, $pageFlowInstance3->getAttribute('counter'));
+        $this->assertEquals(1, $pageFlowInstance3->getAttributes()->get('counter'));
 
         $this->assertEquals('Counter', $pageFlowInstance3->getView());
         $this->assertEquals($pageFlowInstance1->getID(), $pageFlowInstance3->getID());
@@ -195,7 +195,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $pageFlowInstance4 = $server->getPageFlowInstance();
 
         $this->assertEquals('SecondCounter', $pageFlowInstance4->getView());
-        $this->assertEquals(1, $pageFlowInstance4->getAttribute('counter'));
+        $this->assertEquals(1, $pageFlowInstance4->getAttributes()->get('counter'));
         $this->assertEquals($pageFlowInstance2->getID(), $pageFlowInstance4->getID());
 
         $server->shutdown();
@@ -210,7 +210,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $pageFlowInstance5 = $server->getPageFlowInstance();
 
         $this->assertEquals('SecondCounter', $pageFlowInstance5->getView());
-        $this->assertEquals(0, $pageFlowInstance5->getAttribute('counter'));
+        $this->assertEquals(0, $pageFlowInstance5->getAttributes()->get('counter'));
         $this->assertTrue($pageFlowInstance2->getID() != $pageFlowInstance5->getID());
     }
 
@@ -253,7 +253,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server->activate(new \stdClass());
         $pageFlowInstance1 = $server->getPageFlowInstance();
 
-        $this->assertEquals(0, $pageFlowInstance1->getAttribute('counter'));
+        $this->assertEquals(0, $pageFlowInstance1->getAttributes()->get('counter'));
 
         $server->shutdown();
 
@@ -263,7 +263,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server->activate(new \stdClass());
         $pageFlowInstance3 = $server->getPageFlowInstance();
 
-        $this->assertEquals(0, $pageFlowInstance3->getAttribute('counter'));
+        $this->assertEquals(0, $pageFlowInstance3->getAttributes()->get('counter'));
 
         $server->shutdown();
 
@@ -273,7 +273,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server->activate(new \stdClass());
         $pageFlowInstance2 = $server->getPageFlowInstance();
 
-        $this->assertEquals(1, $pageFlowInstance2->getAttribute('counter'));
+        $this->assertEquals(1, $pageFlowInstance2->getAttributes()->get('counter'));
 
         $this->assertThat(strlen($pageFlowInstance1->getID()), $this->greaterThan(0));
         $this->assertThat(strlen($pageFlowInstance3->getID()), $this->greaterThan(0));
@@ -295,7 +295,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowExecutionTicket = null;
         $server->activate(new \stdClass());
         $pageFlowInstance = $server->getPageFlowInstance();
-        $pageFlowInstance->setAttribute('foo', 'bar');
+        $pageFlowInstance->getAttributes()->set('foo', 'bar');
         $server->shutdown();
 
         $this->flowID = 'Counter';
@@ -303,9 +303,9 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowExecutionTicket = $pageFlowInstance->getID();
         $server->activate(new \stdClass());
         $pageFlowInstance = $server->getPageFlowInstance();
-        $pageFlowInstance->setAttribute('bar', 'baz');
+        $pageFlowInstance->getAttributes()->set('bar', 'baz');
         $baz1 = new \stdClass();
-        $pageFlowInstance->setAttribute('baz', $baz1);
+        $pageFlowInstance->getAttributes()->set('baz', $baz1);
         $server->shutdown();
 
         $this->flowID = 'Counter';
@@ -314,17 +314,17 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server->activate(new \stdClass());
         $pageFlowInstance = $server->getPageFlowInstance();
 
-        $this->assertTrue($pageFlowInstance->hasAttribute('foo'));
-        $this->assertEquals('bar', $pageFlowInstance->getAttribute('foo'));
-        $this->assertTrue($pageFlowInstance->hasAttribute('bar'));
-        $this->assertEquals('baz', $pageFlowInstance->getAttribute('bar'));
+        $this->assertTrue($pageFlowInstance->getAttributes()->has('foo'));
+        $this->assertEquals('bar', $pageFlowInstance->getAttributes()->get('foo'));
+        $this->assertTrue($pageFlowInstance->getAttributes()->has('bar'));
+        $this->assertEquals('baz', $pageFlowInstance->getAttributes()->get('bar'));
 
         $baz1->foo = 'bar';
 
         $this->assertTrue(property_exists($baz1, 'foo'));
         $this->assertEquals('bar', $baz1->foo);
 
-        $baz2 = $pageFlowInstance->getAttribute('baz');
+        $baz2 = $pageFlowInstance->getAttributes()->get('baz');
 
         $this->assertEquals(strtolower('stdClass'), strtolower(get_class($baz2)));
 
@@ -446,7 +446,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server->activate(new \stdClass());
         $pageFlowInstance1 = $server->getPageFlowInstance();
 
-        $this->assertEquals(0, $pageFlowInstance1->getAttribute('counter'));
+        $this->assertEquals(0, $pageFlowInstance1->getAttributes()->get('counter'));
 
         $server->shutdown();
 
@@ -457,7 +457,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $pageFlowInstance2 = $server->getPageFlowInstance();
 
         \Phake::verify($pageFlowInstanceRepository)->remove($pageFlowInstance1);
-        $this->assertEquals(0, $pageFlowInstance2->getAttribute('counter'));
+        $this->assertEquals(0, $pageFlowInstance2->getAttributes()->get('counter'));
         $this->assertTrue($pageFlowInstance1->getID() != $pageFlowInstance2->getID());
     }
 
@@ -484,7 +484,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowExecutionTicket = $pageFlowInstance1->getID();
         $server->activate(new \stdClass());
 
-        $this->assertEquals(1, $pageFlowInstance1->getAttribute('counter'));
+        $this->assertEquals(1, $pageFlowInstance1->getAttributes()->get('counter'));
 
         $this->flowID = 'SecondCounter';
         $this->eventName = null;
@@ -492,7 +492,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server->activate(new \stdClass());
         $pageFlowInstance2 = $server->getPageFlowInstance();
 
-        $this->assertEquals(0, $pageFlowInstance2->getAttribute('counter'));
+        $this->assertEquals(0, $pageFlowInstance2->getAttributes()->get('counter'));
         $this->assertFalse($pageFlowInstance1->getID() == $pageFlowInstance2->getID());
         $this->assertThat($server->getPageFlowInstanceRepository()->findByPageFlowID('Counter'), $this->logicalNot($this->equalTo(null)));
         $this->assertEquals($pageFlowInstance1->getID(), $server->getPageFlowInstanceRepository()->findByPageFlowID('Counter')->getID());
@@ -786,12 +786,12 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
     {
         $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
         \Phake::when($actionInvoker)->invoke('setup', $this->anything())->thenGetReturnByLambda(function ($actionID, EventContext $eventContext) {
-            if (!$eventContext->getPageFlow()->hasAttribute('counter')) {
-                $eventContext->getPageFlow()->setAttribute('counter', 0);
+            if (!$eventContext->getPageFlow()->getAttributes()->has('counter')) {
+                $eventContext->getPageFlow()->getAttributes()->set('counter', 0);
             }
         });
         \Phake::when($actionInvoker)->invoke('increase', $this->anything())->thenGetReturnByLambda(function ($actionID, EventContext $eventContext) {
-            $eventContext->getPageFlow()->setAttribute('counter', $eventContext->getPageFlow()->getAttribute('counter') + 1);
+            $eventContext->getPageFlow()->getAttributes()->set('counter', $eventContext->getPageFlow()->getAttributes()->get('counter') + 1);
 
             return 'succeed';
         });

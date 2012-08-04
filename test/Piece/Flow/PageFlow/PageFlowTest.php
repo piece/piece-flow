@@ -172,10 +172,10 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
         $flow = $this->pageFlowFactory->create($this->source);
         $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
         $flow->start();
-        $flow->setAttribute('foo', 'bar');
+        $flow->getAttributes()->set('foo', 'bar');
 
-        $this->assertTrue($flow->hasAttribute('foo'));
-        $this->assertEquals('bar', $flow->getAttribute('foo'));
+        $this->assertTrue($flow->getAttributes()->has('foo'));
+        $this->assertEquals('bar', $flow->getAttributes()->get('foo'));
     }
 
     public function testOptionalElements()
@@ -228,14 +228,14 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
         $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
         \Phake::when($actionInvoker)->invoke($this->anything(), $this->anything())
             ->thenGetReturnByLambda(function ($actionID, EventContext $eventContext) {
-                if ($eventContext->getPageFlow()->hasAttribute('numberOfUpdate')) {
-                    $numberOfUpdate = $eventContext->getPageFlow()->getAttribute('numberOfUpdate');
+                if ($eventContext->getPageFlow()->getAttributes()->has('numberOfUpdate')) {
+                    $numberOfUpdate = $eventContext->getPageFlow()->getAttributes()->get('numberOfUpdate');
                 } else {
                     $numberOfUpdate = 0;
                 }
 
                 ++$numberOfUpdate;
-                $eventContext->getPageFlow()->setAttribute('numberOfUpdate', $numberOfUpdate);
+                $eventContext->getPageFlow()->getAttributes()->set('numberOfUpdate', $numberOfUpdate);
             });
 
         $flow = $this->pageFlowFactory->create('CDPlayer');
@@ -244,42 +244,42 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
         $flow->start();
 
         $this->assertEquals('Stop', $flow->getCurrentState()->getID());
-        $this->assertEquals(1, $flow->getAttribute('numberOfUpdate'));
+        $this->assertEquals(1, $flow->getAttributes()->get('numberOfUpdate'));
 
         $flow->triggerEvent('foo');
 
         $this->assertEquals('Stop', $flow->getCurrentState()->getID());
-        $this->assertEquals(2, $flow->getAttribute('numberOfUpdate'));
+        $this->assertEquals(2, $flow->getAttributes()->get('numberOfUpdate'));
 
         $flow->triggerEvent(Event::EVENT_ENTRY);
 
         $this->assertEquals('Stop', $flow->getCurrentState()->getID());
-        $this->assertEquals(3, $flow->getAttribute('numberOfUpdate'));
+        $this->assertEquals(3, $flow->getAttributes()->get('numberOfUpdate'));
 
         $flow->triggerEvent(Event::EVENT_EXIT);
 
         $this->assertEquals('Stop', $flow->getCurrentState()->getID());
-        $this->assertEquals(4, $flow->getAttribute('numberOfUpdate'));
+        $this->assertEquals(4, $flow->getAttributes()->get('numberOfUpdate'));
 
         $flow->triggerEvent(Event::EVENT_START);
 
         $this->assertEquals('Stop', $flow->getCurrentState()->getID());
-        $this->assertEquals(5, $flow->getAttribute('numberOfUpdate'));
+        $this->assertEquals(5, $flow->getAttributes()->get('numberOfUpdate'));
 
         $flow->triggerEvent(Event::EVENT_END);
 
         $this->assertEquals('Stop', $flow->getCurrentState()->getID());
-        $this->assertEquals(6, $flow->getAttribute('numberOfUpdate'));
+        $this->assertEquals(6, $flow->getAttributes()->get('numberOfUpdate'));
 
         $flow->triggerEvent(Event::EVENT_DO);
 
         $this->assertEquals('Stop', $flow->getCurrentState()->getID());
-        $this->assertEquals(7, $flow->getAttribute('numberOfUpdate'));
+        $this->assertEquals(7, $flow->getAttributes()->get('numberOfUpdate'));
 
         $flow->triggerEvent('play');
 
         $this->assertEquals('Playing', $flow->getCurrentState()->getID());
-        $this->assertEquals(7, $flow->getAttribute('numberOfUpdate'));
+        $this->assertEquals(7, $flow->getAttributes()->get('numberOfUpdate'));
     }
 
     /**

@@ -67,18 +67,9 @@ class NullPageFlow implements IPageFlow
         return $this->id;
     }
 
-    public function setAttribute($name, $value)
-    {
-    }
-
-    public function getAttribute($name)
+    public function getAttributes()
     {
         return null;
-    }
-
-    public function hasAttribute($name)
-    {
-        return false;
     }
 
     public function validateReceivedEvent()

@@ -44,6 +44,7 @@ namespace Piece\Flow\PageFlow;
 use Stagehand\FSM\Event;
 use Stagehand\FSM\FSM;
 use Stagehand\FSM\State;
+use Symfony\Component\HttpFoundation\ParameterBag;
 
 /**
  * A web flow engine for handling page flows of web applications.
@@ -75,7 +76,11 @@ class PageFlow implements IPageFlow
     protected $fsm;
     protected $id;
     protected $views = array();
-    protected $attributes = array();
+
+    /**
+     * @var \Symfony\Component\HttpFoundation\ParameterBag
+     */
+    protected $attributes;
 
     /**
      * @var array
@@ -97,6 +102,7 @@ class PageFlow implements IPageFlow
     public function __construct($id)
     {
         $this->id = $id;
+        $this->attributes = new ParameterBag();
     }
 
     /**
@@ -216,19 +222,9 @@ class PageFlow implements IPageFlow
         return $this->fsm->getCurrentState();
     }
 
-    public function setAttribute($name, $value)
+    public function getAttributes()
     {
-        $this->attributes[$name] = $value;
-    }
-
-    public function hasAttribute($name)
-    {
-        return array_key_exists($name, $this->attributes);
-    }
-
-    public function getAttribute($name)
-    {
-        return $this->attributes[$name];
+        return $this->attributes;
     }
 
     public function setPayload($payload)

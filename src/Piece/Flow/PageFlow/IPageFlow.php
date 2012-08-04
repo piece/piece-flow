@@ -54,28 +54,9 @@ interface IPageFlow
     public function getID();
 
     /**
-     * Sets an attribute with the specified name.
-     *
-     * @param string $name
-     * @param mixed $value
+     * @return \Symfony\Component\HttpFoundation\ParameterBag
      */
-    public function setAttribute($name, $value);
-
-    /**
-     * Gets the attribute bound with the specified name.
-     *
-     * @param string $name
-     * @return mixed|null
-     */
-    public function getAttribute($name);
-
-    /**
-     * Checks whether this page flow has the attribute bound with the specified name.
-     *
-     * @param string $name
-     * @return boolean
-     */
-    public function hasAttribute($name);
+    public function getAttributes();
 
     /**
      * Validates whether the last event given by a user is valid or not.

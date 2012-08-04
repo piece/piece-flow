@@ -107,19 +107,9 @@ class PageFlowInstance implements IPageFlow
         }
     }
 
-    public function setAttribute($name, $value)
+    public function getAttributes()
     {
-        $this->pageFlow->setAttribute($name, $value);
-    }
-
-    public function getAttribute($name)
-    {
-        return $this->pageFlow->getAttribute($name);
-    }
-
-    public function hasAttribute($name)
-    {
-        return $this->pageFlow->hasAttribute($name);
+        return $this->pageFlow->getAttributes();
     }
 
     public function validateReceivedEvent()
