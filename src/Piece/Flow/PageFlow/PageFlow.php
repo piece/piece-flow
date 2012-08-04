@@ -77,7 +77,12 @@ class PageFlow implements IPageFlow
     protected $id;
     protected $views = array();
     protected $attributes = array();
-    protected $endState;
+
+    /**
+     * @var array
+     */
+    protected $endStates = array();
+
     protected $receivedValidEvent;
 
     /**
@@ -106,7 +111,7 @@ class PageFlow implements IPageFlow
             'fsm',
             'views',
             'attributes',
-            'endState',
+            'endStates',
         );
     }
 
@@ -133,9 +138,9 @@ class PageFlow implements IPageFlow
      * @param string $stateID
      * @since Method available since Release 2.0.0
      */
-    public function setEndState($stateID)
+    public function addEndState($stateID)
     {
-        $this->endState = $stateID;
+        $this->endStates[] = $stateID;
     }
 
     /**
@@ -198,9 +203,7 @@ class PageFlow implements IPageFlow
 
         $state = $this->fsm->triggerEvent($eventID, false);
 
-        if (!is_null($this->endState)
-            && $state->getID() == $this->endState
-            ) {
+        if (in_array($state->getID(), $this->endStates)) {
             $state = $this->fsm->triggerEvent(Event::EVENT_END);
         }
 

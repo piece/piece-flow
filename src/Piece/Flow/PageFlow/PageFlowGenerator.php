@@ -103,7 +103,7 @@ class PageFlowGenerator
 
             $this->fsmBuilder->addTransition($definition['lastState']['name'], Event::EVENT_END, State::STATE_FINAL);
             $this->configureViewState($definition['lastState']);
-            $this->pageFlow->setEndState($definition['lastState']['name']);
+            $this->pageFlow->addEndState($definition['lastState']['name']);
             $this->pageFlow->addView($definition['lastState']['name'], $definition['lastState']['view']);
         }
 
