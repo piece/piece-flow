@@ -77,7 +77,7 @@ class PageFlow implements IPageFlow
     protected $id;
     protected $views;
     protected $attributes = array();
-    protected $lastState;
+    protected $endState;
     protected $lastEventIsValid = true;
 
     /**
@@ -106,7 +106,7 @@ class PageFlow implements IPageFlow
             'fsm',
             'views',
             'attributes',
-            'lastState',
+            'endState',
         );
     }
 
@@ -135,7 +135,7 @@ class PageFlow implements IPageFlow
      */
     public function setLastState($stateID)
     {
-        $this->lastState = $stateID;
+        $this->endState = $stateID;
     }
 
     /**
@@ -202,8 +202,8 @@ class PageFlow implements IPageFlow
                                             $transitionToHistoryMarker
                                             );
 
-        if (!is_null($this->lastState)
-            && $state->getID() == $this->lastState
+        if (!is_null($this->endState)
+            && $state->getID() == $this->endState
             ) {
             $state = $this->fsm->triggerEvent(Event::EVENT_END);
         }
