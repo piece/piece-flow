@@ -78,7 +78,7 @@ class PageFlow implements IPageFlow
     protected $views;
     protected $attributes = array();
     protected $endState;
-    protected $receivedValidEvent = true;
+    protected $receivedValidEvent;
 
     /**
      * @var \Piece\Flow\PageFlow\ActionInvoker
@@ -175,6 +175,7 @@ class PageFlow implements IPageFlow
      */
     public function start()
     {
+        $this->receivedValidEvent = true;
         $this->fsm->start();
     }
 
