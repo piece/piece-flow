@@ -78,7 +78,7 @@ class PageFlow implements IPageFlow
     protected $views;
     protected $attributes = array();
     protected $endState;
-    protected $lastEventIsValid = true;
+    protected $receivedValidEvent = true;
 
     /**
      * @var \Piece\Flow\PageFlow\ActionInvoker
@@ -195,7 +195,7 @@ class PageFlow implements IPageFlow
             $eventID = self::EVENT_PROTECTED;
         }
 
-        $this->lastEventIsValid = $this->fsm->hasEvent($eventID);
+        $this->receivedValidEvent = $this->fsm->hasEvent($eventID);
 
         $state = $this->fsm->triggerEvent($eventID, false);
 
@@ -322,7 +322,7 @@ class PageFlow implements IPageFlow
      */
     public function checkLastEvent()
     {
-        return $this->lastEventIsValid;
+        return $this->receivedValidEvent;
     }
 
     /**
