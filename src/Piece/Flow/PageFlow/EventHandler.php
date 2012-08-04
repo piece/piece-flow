@@ -63,12 +63,12 @@ class EventHandler
      * Wraps a action up with an EventHandler object.
      *
      * @param string $actionID
-     * @param \Piece\Flow\PageFlow\PageFlow $flow
+     * @param \Piece\Flow\PageFlow\PageFlow $pageFlow
      */
-    public function __construct($actionID, PageFlow $flow)
+    public function __construct($actionID, PageFlow $pageFlow)
     {
         $this->actionID = $actionID;
-        $this->pageFlow = $flow;
+        $this->pageFlow = $pageFlow;
     }
 
     /**
@@ -95,14 +95,14 @@ class EventHandler
      */
     public function invokeActionAndTriggerEvent(Event $event, $payload, FSM $fsm)
     {
-        $result = $this->invokeAction($event, $payload, $fsm);
-        if (!is_null($result)) {
-            if ($fsm->hasEvent($result)) {
-                $fsm->queueEvent($result);
+        $eventID = $this->invokeAction($event, $payload, $fsm);
+        if (!is_null($eventID)) {
+            if ($fsm->hasEvent($eventID)) {
+                $fsm->queueEvent($eventID);
             } else {
                 throw new EventNotFoundException(sprintf(
                     'The event [ %s ] returned from the action [ %s ] is not found on the current state [ %s ].',
-                    $result,
+                    $eventID,
                     $this->actionID,
                     $this->pageFlow->getCurrentStateName()
                 ));
