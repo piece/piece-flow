@@ -221,31 +221,13 @@ class ContinuationServer
      */
     protected function createPageFlowInstance($payload)
     {
+        $pageFlowID = $this->continuationContextProvider->getPageFlowID();
+        if (empty($pageFlowID)) {
+            throw new PageFlowIDRequiredException('A flow ID must be given in this case.');
+        }
+
         $pageFlowInstance = $this->pageFlowInstanceRepository->findByID($this->continuationContextProvider->getPageFlowInstanceID());
-        if (!is_null($pageFlowInstance)) {
-            $registeredFlowID = $pageFlowInstance->getPageFlowID();
-
-            $pageFlowID = $this->continuationContextProvider->getPageFlowID();
-            if (is_null($pageFlowID) || !strlen($pageFlowID)) {
-                throw new PageFlowIDRequiredException('A flow ID must be given in this case.');
-            }
-
-            if ($pageFlowID != $registeredFlowID) {
-                throw new UnexpectedPageFlowIDException('The given flow ID is different from the registerd flow ID.');
-            }
-
-            if (!is_null($this->gc)) {
-                if ($this->gc->isMarked($pageFlowInstance->getID())) {
-                    $this->pageFlowInstanceRepository->remove($pageFlowInstance);
-                    throw new PageFlowInstanceExpiredException('The flow execution for the given flow execution ticket has expired.');
-                }
-            }
-        } else {
-            $pageFlowID = $this->continuationContextProvider->getPageFlowID();
-            if (is_null($pageFlowID) || !strlen($pageFlowID)) {
-                throw new PageFlowIDRequiredException('A flow ID must be given in this case.');
-            }
-
+        if (is_null($pageFlowInstance)) {
             $pageFlow = $this->pageFlowInstanceRepository->getPageFlowRepository()->findByID($pageFlowID);
             if (is_null($pageFlow)) {
                 throw new PageFlowNotFoundException(sprintf('The page flow for ID [ %s ] is not found in the repository.', $pageFlowID));
@@ -258,6 +240,17 @@ class ContinuationServer
                     $pageFlowInstance = new PageFlowInstance($pageFlowInstanceID, $pageFlow);
                     $this->pageFlowInstanceRepository->add($pageFlowInstance);
                     break;
+                }
+            }
+        } else {
+            if ($pageFlowID != $pageFlowInstance->getPageFlowID()) {
+                throw new UnexpectedPageFlowIDException('The given flow ID is different from the registerd flow ID.');
+            }
+
+            if (!is_null($this->gc)) {
+                if ($this->gc->isMarked($pageFlowInstance->getID())) {
+                    $this->pageFlowInstanceRepository->remove($pageFlowInstance);
+                    throw new PageFlowInstanceExpiredException('The flow execution for the given flow execution ticket has expired.');
                 }
             }
         }
