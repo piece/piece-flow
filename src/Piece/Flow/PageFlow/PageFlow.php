@@ -75,7 +75,7 @@ class PageFlow implements IPageFlow
 
     protected $fsm;
     protected $id;
-    protected $views;
+    protected $views = array();
     protected $attributes = array();
     protected $endState;
     protected $receivedValidEvent;
