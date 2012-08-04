@@ -39,6 +39,7 @@ namespace Piece\Flow\PageFlow;
 
 use Stagehand\FSM\Event;
 use Stagehand\FSM\FSM;
+use Stagehand\FSM\State;
 
 /**
  * @package    Piece_Flow
@@ -102,6 +103,7 @@ class EventHandlerTest extends \PHPUnit_Framework_TestCase
     {
         $fsm = \Phake::mock('Stagehand\FSM\FSM');
         \Phake::when($fsm)->hasEvent($this->anything())->thenReturn(false);
+        \Phake::when($fsm)->getCurrentState()->thenReturn(new State('foo'));
         $pageFlow = \Phake::mock('Piece\Flow\PageFlow\PageFlow');
         \Phake::when($pageFlow)->invokeAction($this->anything(), $this->anything())->thenReturn('foo');
         $event = new Event('bar');

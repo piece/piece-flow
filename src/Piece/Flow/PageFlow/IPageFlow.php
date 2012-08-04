@@ -85,12 +85,12 @@ interface IPageFlow
     public function validateReceivedEvent();
 
     /**
-     * Gets the current state ID.
+     * Gets the current state.
      *
-     * @return string
+     * @return \Stagehand\FSM\IState
      * @throws \Piece\Flow\PageFlow\MethodInvocationException
      */
-    public function getCurrentStateID();
+    public function getCurrentState();
 
     /**
      * Gets the previous state ID.

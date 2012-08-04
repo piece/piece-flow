@@ -98,7 +98,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
         $flow->start();
         $flow->triggerEvent('submit');
 
-        $this->assertEquals('ConfirmForm', $flow->getCurrentStateID());
+        $this->assertEquals('ConfirmForm', $flow->getCurrentState()->getID());
     }
 
     public function testTriggeringEventAndInvokingTransitionAction()
@@ -113,11 +113,11 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
         $flow->start();
         $flow->triggerEvent('submit');
 
-        $this->assertThat($flow->getCurrentStateID(), $this->equalTo('ConfirmForm'));
+        $this->assertThat($flow->getCurrentState()->getID(), $this->equalTo('ConfirmForm'));
 
         $flow->triggerEvent('submit');
 
-        $this->assertThat($flow->getCurrentStateID(), $this->equalTo(State::STATE_FINAL));
+        $this->assertThat($flow->getCurrentState()->getID(), $this->equalTo(State::STATE_FINAL));
     }
 
     public function testTriggeringRaiseErrorEvent()
@@ -130,7 +130,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
         $flow->start();
         $flow->triggerEvent('submit');
 
-        $this->assertThat($flow->getCurrentStateID(), $this->equalTo('DisplayForm'));
+        $this->assertThat($flow->getCurrentState()->getID(), $this->equalTo('DisplayForm'));
         $this->assertThat($flow->getPreviousStateID(), $this->equalTo('processSubmitDisplayForm'));
     }
 
@@ -253,42 +253,42 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
         $flow->setPayload(new \stdClass());
         $flow->start();
 
-        $this->assertEquals('Stop', $flow->getCurrentStateID());
+        $this->assertEquals('Stop', $flow->getCurrentState()->getID());
         $this->assertEquals(1, $flow->getAttribute('numberOfUpdate'));
 
         $flow->triggerEvent('foo');
 
-        $this->assertEquals('Stop', $flow->getCurrentStateID());
+        $this->assertEquals('Stop', $flow->getCurrentState()->getID());
         $this->assertEquals(2, $flow->getAttribute('numberOfUpdate'));
 
         $flow->triggerEvent(Event::EVENT_ENTRY);
 
-        $this->assertEquals('Stop', $flow->getCurrentStateID());
+        $this->assertEquals('Stop', $flow->getCurrentState()->getID());
         $this->assertEquals(3, $flow->getAttribute('numberOfUpdate'));
 
         $flow->triggerEvent(Event::EVENT_EXIT);
 
-        $this->assertEquals('Stop', $flow->getCurrentStateID());
+        $this->assertEquals('Stop', $flow->getCurrentState()->getID());
         $this->assertEquals(4, $flow->getAttribute('numberOfUpdate'));
 
         $flow->triggerEvent(Event::EVENT_START);
 
-        $this->assertEquals('Stop', $flow->getCurrentStateID());
+        $this->assertEquals('Stop', $flow->getCurrentState()->getID());
         $this->assertEquals(5, $flow->getAttribute('numberOfUpdate'));
 
         $flow->triggerEvent(Event::EVENT_END);
 
-        $this->assertEquals('Stop', $flow->getCurrentStateID());
+        $this->assertEquals('Stop', $flow->getCurrentState()->getID());
         $this->assertEquals(6, $flow->getAttribute('numberOfUpdate'));
 
         $flow->triggerEvent(Event::EVENT_DO);
 
-        $this->assertEquals('Stop', $flow->getCurrentStateID());
+        $this->assertEquals('Stop', $flow->getCurrentState()->getID());
         $this->assertEquals(7, $flow->getAttribute('numberOfUpdate'));
 
         $flow->triggerEvent('play');
 
-        $this->assertEquals('Playing', $flow->getCurrentStateID());
+        $this->assertEquals('Playing', $flow->getCurrentState()->getID());
         $this->assertEquals(7, $flow->getAttribute('numberOfUpdate'));
     }
 
@@ -322,11 +322,11 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
         $flow1->setPayload(new \stdClass());
         $flow1->start();
 
-        $this->assertEquals('DisplayForm', $flow1->getCurrentStateID());
+        $this->assertEquals('DisplayForm', $flow1->getCurrentState()->getID());
 
         $flow1->triggerEvent('foo');
 
-        $this->assertEquals('DisplayForm', $flow1->getCurrentStateID());
+        $this->assertEquals('DisplayForm', $flow1->getCurrentState()->getID());
 
         try {
             $flow1->triggerEvent('register');
@@ -334,7 +334,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
         } catch (EventNotFoundException $e) {
         }
 
-        $this->assertEquals('ProcessRegister', $flow1->getCurrentStateID());
+        $this->assertEquals('ProcessRegister', $flow1->getCurrentState()->getID());
 
         $actionInvoker2 = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
         \Phake::when($actionInvoker2)->invoke('register', $this->anything())->thenReturn('goDisplayFinish');
@@ -344,11 +344,11 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
         $flow2->setPayload(new \stdClass());
         $flow2->start();
 
-        $this->assertEquals('DisplayForm', $flow2->getCurrentStateID());
+        $this->assertEquals('DisplayForm', $flow2->getCurrentState()->getID());
 
         $flow2->triggerEvent('foo');
 
-        $this->assertEquals('DisplayForm', $flow2->getCurrentStateID());
+        $this->assertEquals('DisplayForm', $flow2->getCurrentState()->getID());
 
         try {
             $flow2->triggerEvent('register');
@@ -356,7 +356,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
         } catch (EventNotFoundException $e) {
         }
 
-        $this->assertEquals('DisplayFinish', $flow2->getCurrentStateID());
+        $this->assertEquals('DisplayFinish', $flow2->getCurrentState()->getID());
     }
 
     /**

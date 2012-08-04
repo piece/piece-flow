@@ -127,9 +127,9 @@ class PageFlowInstance implements IPageFlow
         return $this->pageFlow->validateReceivedEvent();
     }
 
-    public function getCurrentStateID()
+    public function getCurrentState()
     {
-        return $this->pageFlow->getCurrentStateID();
+        return $this->pageFlow->getCurrentState();
     }
 
     public function getPreviousStateID()
