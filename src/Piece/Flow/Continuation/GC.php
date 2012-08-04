@@ -70,10 +70,11 @@ class GC
     public function update($pageFlowInstanceID)
     {
         if (!$this->isMarked($pageFlowInstanceID)) {
-            $this->markers[$pageFlowInstanceID] = array('mtime'   => time(),
-                                                                              'sweep'   => false,
-                                                                              'isSwept' => false
-                                                                              );
+            $this->markers[$pageFlowInstanceID] = array(
+                'mtime' => time(),
+                'shouldSweep' => false,
+                'swept' => false
+            );
         }
     }
 
@@ -86,7 +87,7 @@ class GC
     public function isMarked($pageFlowInstanceID)
     {
         if (array_key_exists($pageFlowInstanceID, $this->markers)) {
-            return $this->markers[$pageFlowInstanceID]['sweep'];
+            return $this->markers[$pageFlowInstanceID]['shouldSweep'];
         } else {
             return false;
         }
@@ -100,11 +101,11 @@ class GC
         $thresholdTime = time();
         reset($this->markers);
         while (list($pageFlowInstanceID, $marker) = each($this->markers)) {
-            if ($marker['isSwept']) {
+            if ($marker['swept']) {
                 continue;
             }
 
-            $this->markers[$pageFlowInstanceID]['sweep'] = $thresholdTime - $marker['mtime'] > $this->expirationTime;
+            $this->markers[$pageFlowInstanceID]['shouldSweep'] = $thresholdTime - $marker['mtime'] > $this->expirationTime;
         }
     }
 
@@ -117,13 +118,13 @@ class GC
     {
         reset($this->markers);
         while (list($pageFlowInstanceID, $marker) = each($this->markers)) {
-            if ($marker['isSwept']) {
+            if ($marker['swept']) {
                 continue;
             }
 
-            if ($marker['sweep']) {
+            if ($marker['shouldSweep']) {
                 call_user_func($gcCallback, $pageFlowInstanceID);
-                $this->markers[$pageFlowInstanceID]['isSwept'] = true;
+                $this->markers[$pageFlowInstanceID]['swept'] = true;
             }
         }
     }
