@@ -321,7 +321,7 @@ class PageFlow implements IPageFlow
     /**
      * @since Method available since Release 1.13.0
      */
-    public function checkLastEvent()
+    public function validateReceivedEvent()
     {
         return $this->receivedValidEvent;
     }

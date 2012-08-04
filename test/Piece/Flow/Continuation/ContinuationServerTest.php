@@ -628,7 +628,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->flowExecutionTicket = null;
         $server->activate(new \stdClass());
 
-        $this->assertTrue($server->getPageFlowInstance()->checkLastEvent());
+        $this->assertTrue($server->getPageFlowInstance()->validateReceivedEvent());
     }
 
     /**
@@ -656,7 +656,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server->activate(new \stdClass());
         $pageFlowInstance = $server->getPageFlowInstance();
 
-        $this->assertTrue($pageFlowInstance->checkLastEvent());
+        $this->assertTrue($pageFlowInstance->validateReceivedEvent());
 
         $server->shutdown();
 
@@ -666,7 +666,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server->activate(new \stdClass());
         $pageFlowInstance = $server->getPageFlowInstance();
 
-        $this->assertTrue($pageFlowInstance->checkLastEvent());
+        $this->assertTrue($pageFlowInstance->validateReceivedEvent());
     }
 
     /**
@@ -694,7 +694,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server->activate(new \stdClass());
         $pageFlowInstance = $server->getPageFlowInstance();
 
-        $this->assertFalse($pageFlowInstance->checkLastEvent());
+        $this->assertFalse($pageFlowInstance->validateReceivedEvent());
     }
 
     /**

@@ -85,7 +85,7 @@ interface IPageFlow
      *
      * @return boolean
      */
-    public function checkLastEvent();
+    public function validateReceivedEvent();
 
     /**
      * Gets the current state ID.

@@ -81,7 +81,7 @@ class NullPageFlow implements IPageFlow
         return false;
     }
 
-    public function checkLastEvent()
+    public function validateReceivedEvent()
     {
         return false;
     }

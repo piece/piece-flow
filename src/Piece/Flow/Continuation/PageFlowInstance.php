@@ -122,9 +122,9 @@ class PageFlowInstance implements IPageFlow
         return $this->pageFlow->hasAttribute($name);
     }
 
-    public function checkLastEvent()
+    public function validateReceivedEvent()
     {
-        return $this->pageFlow->checkLastEvent();
+        return $this->pageFlow->validateReceivedEvent();
     }
 
     public function getCurrentStateID()
