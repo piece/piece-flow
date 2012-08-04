@@ -94,7 +94,7 @@ class PageFlowGenerator
             throw new ProtectedStateException("The state [ {$definition['firstState']} ] cannot be used in flow definitions.");
         }
 
-        $this->fsmBuilder->setFirstState($definition['firstState']);
+        $this->fsmBuilder->setStartState($definition['firstState']);
 
         if (!empty($definition['lastState'])) {
             if ($this->fsmBuilder->getFSM()->isProtectedState($definition['lastState']['name'])) {
