@@ -57,7 +57,7 @@ class EventHandler
      */
     protected $actionID;
 
-    protected $flow;
+    protected $pageFlow;
 
     /**
      * Wraps a action up with an EventHandler object.
@@ -68,7 +68,7 @@ class EventHandler
     public function __construct($actionID, PageFlow $flow)
     {
         $this->actionID = $actionID;
-        $this->flow = $flow;
+        $this->pageFlow = $flow;
     }
 
     /**
@@ -81,7 +81,7 @@ class EventHandler
      */
     public function invokeAction(Event $event, $payload, FSM $fsm)
     {
-        return $this->flow->invokeAction($this->actionID, new EventContext($event, $payload, $this->flow));
+        return $this->pageFlow->invokeAction($this->actionID, new EventContext($event, $payload, $this->pageFlow));
     }
 
     /**
@@ -104,7 +104,7 @@ class EventHandler
                     'The event [ %s ] returned from the action [ %s ] is not found on the current state [ %s ].',
                     $result,
                     $this->actionID,
-                    $this->flow->getCurrentStateName()
+                    $this->pageFlow->getCurrentStateName()
                 ));
             }
         }
