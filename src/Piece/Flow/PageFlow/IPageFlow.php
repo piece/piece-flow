@@ -58,7 +58,6 @@ interface IPageFlow
      *
      * @param string $name
      * @param mixed $value
-     * @throws \Piece\Flow\PageFlow\MethodInvocationException
      */
     public function setAttribute($name, $value);
 
@@ -67,7 +66,6 @@ interface IPageFlow
      *
      * @param string $name
      * @return mixed|null
-     * @throws \Piece\Flow\PageFlow\MethodInvocationException
      */
     public function getAttribute($name);
 
@@ -76,7 +74,6 @@ interface IPageFlow
      *
      * @param string $name
      * @return boolean
-     * @throws \Piece\Flow\PageFlow\MethodInvocationException
      */
     public function hasAttribute($name);
 

@@ -178,16 +178,6 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('bar', $flow->getAttribute('foo'));
     }
 
-    /**
-     * @expectedException \Piece\Flow\PageFlow\MethodInvocationException
-     */
-    public function testFailureToSetAttributeBeforeStartingFlow()
-    {
-        $flow = $this->pageFlowFactory->create($this->source);
-        $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
-        $flow->setAttribute('foo', 'bar');
-    }
-
     public function testOptionalElements()
     {
         $flow = $this->pageFlowFactory->create('optional');

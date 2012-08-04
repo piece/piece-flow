@@ -231,28 +231,16 @@ class PageFlow implements IPageFlow
 
     public function setAttribute($name, $value)
     {
-        if (!$this->isActive()) {
-            throw new MethodInvocationException(__FUNCTION__ . ' method must be called after starting flows.');
-        }
-
         $this->attributes[$name] = $value;
     }
 
     public function hasAttribute($name)
     {
-        if (!$this->isActive()) {
-            throw new MethodInvocationException(__FUNCTION__ . ' method must be called after starting flows.');
-        }
-
         return array_key_exists($name, $this->attributes);
     }
 
     public function getAttribute($name)
     {
-        if (!$this->isActive()) {
-            throw new MethodInvocationException(__FUNCTION__ . ' method must be called after starting flows.');
-        }
-
         return $this->attributes[$name];
     }
 
