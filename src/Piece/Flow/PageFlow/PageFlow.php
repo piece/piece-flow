@@ -43,7 +43,6 @@ namespace Piece\Flow\PageFlow;
 
 use Stagehand\FSM\Event;
 use Stagehand\FSM\FSM;
-use Stagehand\FSM\FSMAlreadyShutdownException;
 use Stagehand\FSM\State;
 
 /**
