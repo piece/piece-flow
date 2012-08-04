@@ -211,19 +211,13 @@ class PageFlow implements IPageFlow
 
     public function getPreviousState()
     {
-        if (!$this->isActive()) {
-            throw new MethodInvocationException(__FUNCTION__ . ' method must be called after starting flows.');
-        }
-
+        if (is_null($this->fsm)) return null;
         return $this->fsm->getPreviousState();
     }
 
     public function getCurrentState()
     {
-        if (!$this->isActive()) {
-            throw new MethodInvocationException(__FUNCTION__ . ' method must be called after starting flows.');
-        }
-
+        if (is_null($this->fsm)) return null;
         return $this->fsm->getCurrentState();
     }
 

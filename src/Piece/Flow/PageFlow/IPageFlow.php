@@ -88,7 +88,6 @@ interface IPageFlow
      * Gets the current state.
      *
      * @return \Stagehand\FSM\IState
-     * @throws \Piece\Flow\PageFlow\MethodInvocationException
      */
     public function getCurrentState();
 
@@ -96,7 +95,6 @@ interface IPageFlow
      * Gets the previous state.
      *
      * @return \Stagehand\FSM\IState
-     * @throws \Piece\Flow\PageFlow\MethodInvocationException
      */
     public function getPreviousState();
 
