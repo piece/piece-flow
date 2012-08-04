@@ -181,23 +181,23 @@ class PageFlow implements IPageFlow
     /**
      * Triggers an event.
      *
-     * @param string $eventName
+     * @param string $eventID
      * @return \Stagehand\FSM\State
      * @throws \Piece\Flow\PageFlow\MethodInvocationException
      */
-    public function triggerEvent($eventName)
+    public function triggerEvent($eventID)
     {
         if (!$this->isActive()) {
             throw new MethodInvocationException(__FUNCTION__ . ' method must be called after starting flows.');
         }
 
-        if ($eventName == self::EVENT_PROTECTED || $this->fsm->isProtectedEvent($eventName)) {
-            $eventName = self::EVENT_PROTECTED;
+        if ($eventID == self::EVENT_PROTECTED || $this->fsm->isProtectedEvent($eventID)) {
+            $eventID = self::EVENT_PROTECTED;
         }
 
-        $this->lastEventIsValid = $this->fsm->hasEvent($eventName);
+        $this->lastEventIsValid = $this->fsm->hasEvent($eventID);
 
-        $state = $this->fsm->triggerEvent($eventName, false);
+        $state = $this->fsm->triggerEvent($eventID, false);
 
         if (!is_null($this->endState)
             && $state->getID() == $this->endState
