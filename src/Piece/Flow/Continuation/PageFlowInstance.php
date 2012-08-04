@@ -132,9 +132,9 @@ class PageFlowInstance implements IPageFlow
         return $this->pageFlow->getCurrentState();
     }
 
-    public function getPreviousStateID()
+    public function getPreviousState()
     {
-        return $this->pageFlow->getPreviousStateID();
+        return $this->pageFlow->getPreviousState();
     }
 
     public function getView()

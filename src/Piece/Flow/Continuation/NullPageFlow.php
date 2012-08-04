@@ -91,7 +91,7 @@ class NullPageFlow implements IPageFlow
         return null;
     }
 
-    public function getPreviousStateID()
+    public function getPreviousState()
     {
         return null;
     }
