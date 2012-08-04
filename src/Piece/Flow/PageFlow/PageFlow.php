@@ -182,11 +182,10 @@ class PageFlow implements IPageFlow
      * Triggers an event.
      *
      * @param string $eventName
-     * @param boolean $transitionToHistoryMarker
      * @return \Stagehand\FSM\State
      * @throws \Piece\Flow\PageFlow\MethodInvocationException
      */
-    public function triggerEvent($eventName, $transitionToHistoryMarker = false)
+    public function triggerEvent($eventName)
     {
         if (!$this->isActive()) {
             throw new MethodInvocationException(__FUNCTION__ . ' method must be called after starting flows.');
@@ -198,9 +197,7 @@ class PageFlow implements IPageFlow
 
         $this->lastEventIsValid = $this->fsm->hasEvent($eventName);
 
-        $state = $this->fsm->triggerEvent($eventName,
-                                            $transitionToHistoryMarker
-                                            );
+        $state = $this->fsm->triggerEvent($eventName, false);
 
         if (!is_null($this->endState)
             && $state->getID() == $this->endState
