@@ -261,21 +261,6 @@ class PageFlow implements IPageFlow
     }
 
     /**
-     * Removes the payload from the FSM.
-     *
-     * @throws \Piece\Flow\PageFlow\MethodInvocationException
-     * @since Method available since Release 1.11.0
-     */
-    public function clearPayload()
-    {
-        if (is_null($this->fsm)) {
-            throw new MethodInvocationException(__FUNCTION__ . ' method must be called after configuring flows.');
-        }
-
-        $this->fsm->clearPayload();
-    }
-
-    /**
      * @since Method available since Release 1.13.0
      */
     public function validateReceivedEvent()
