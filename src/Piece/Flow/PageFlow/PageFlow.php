@@ -261,20 +261,6 @@ class PageFlow implements IPageFlow
     }
 
     /**
-     * Removes all attributes from the flow execution.
-     *
-     * @throws \Piece\Flow\PageFlow\MethodInvocationException
-     */
-    public function clearAttributes()
-    {
-        if (!$this->isActive()) {
-            throw new MethodInvocationException(__FUNCTION__ . ' method must be called after starting flows.');
-        }
-
-        $this->attributes = array();
-    }
-
-    /**
      * Removes the payload from the FSM.
      *
      * @throws \Piece\Flow\PageFlow\MethodInvocationException

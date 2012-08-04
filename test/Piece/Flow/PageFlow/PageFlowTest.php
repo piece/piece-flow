@@ -230,23 +230,6 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($flow->isFinalState());
     }
 
-    public function testClearingAttributes()
-    {
-        $flow = $this->pageFlowFactory->create($this->source);
-        $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
-        $flow->start();
-        $flow->setAttribute('foo', 'bar');
-        $flow->setAttribute('bar', 'baz');
-
-        $this->assertTrue($flow->hasAttribute('foo'));
-        $this->assertTrue($flow->hasAttribute('bar'));
-
-        $flow->clearAttributes();
-
-        $this->assertFalse($flow->hasAttribute('foo'));
-        $this->assertFalse($flow->hasAttribute('bar'));
-    }
-
     /**
      * @since Method available since Release 1.2.0
      */
