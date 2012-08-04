@@ -85,7 +85,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
         $flow->start();
         $flow->triggerEvent('submit');
 
-        $this->assertEquals('processSubmitDisplayForm', $flow->getPreviousStateName());
+        $this->assertEquals('processSubmitDisplayForm', $flow->getPreviousStateID());
     }
 
     public function testGettingCurrentStateName()
@@ -131,7 +131,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
         $flow->triggerEvent('submit');
 
         $this->assertThat($flow->getCurrentStateID(), $this->equalTo('DisplayForm'));
-        $this->assertThat($flow->getPreviousStateName(), $this->equalTo('processSubmitDisplayForm'));
+        $this->assertThat($flow->getPreviousStateID(), $this->equalTo('processSubmitDisplayForm'));
     }
 
     public function testActivity()

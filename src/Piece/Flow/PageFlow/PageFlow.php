@@ -155,7 +155,7 @@ class PageFlow implements IPageFlow
         if (!$this->isFinalState()) {
             $viewIndex = $this->getCurrentStateID();
         } else {
-            $viewIndex = $this->getPreviousStateName();
+            $viewIndex = $this->getPreviousStateID();
         }
 
         if (!array_key_exists($viewIndex, $this->views)) {
@@ -217,7 +217,7 @@ class PageFlow implements IPageFlow
      * @return string
      * @throws \Piece\Flow\PageFlow\MethodInvocationException
      */
-    public function getPreviousStateName()
+    public function getPreviousStateID()
     {
         if (!$this->isActive()) {
             throw new MethodInvocationException(__FUNCTION__ . ' method must be called after starting flows.');
@@ -375,7 +375,7 @@ class PageFlow implements IPageFlow
     protected function _getViewIndex()
     {
         return !$this->isFinalState() ? $this->getCurrentStateID()
-                                      : $this->getPreviousStateName();
+                                      : $this->getPreviousStateID();
     }
 }
 
