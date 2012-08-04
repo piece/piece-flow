@@ -153,7 +153,7 @@ class PageFlow implements IPageFlow
         }
 
         if (!$this->isFinalState()) {
-            $viewIndex = $this->getCurrentStateName();
+            $viewIndex = $this->getCurrentStateID();
         } else {
             $viewIndex = $this->getPreviousStateName();
         }
@@ -227,7 +227,7 @@ class PageFlow implements IPageFlow
         return $state->getID();
     }
 
-    public function getCurrentStateName()
+    public function getCurrentStateID()
     {
         if (!$this->isActive()) {
             throw new MethodInvocationException(__FUNCTION__ . ' method must be called after starting flows.');
@@ -279,7 +279,7 @@ class PageFlow implements IPageFlow
             throw new MethodInvocationException(__FUNCTION__ . ' method must be called after configuring flows.');
         }
 
-        return $this->getCurrentStateName() == State::STATE_FINAL;
+        return $this->getCurrentStateID() == State::STATE_FINAL;
     }
 
     /**
@@ -374,7 +374,7 @@ class PageFlow implements IPageFlow
      */
     protected function _getViewIndex()
     {
-        return !$this->isFinalState() ? $this->getCurrentStateName()
+        return !$this->isFinalState() ? $this->getCurrentStateID()
                                       : $this->getPreviousStateName();
     }
 }

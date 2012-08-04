@@ -93,7 +93,7 @@ interface IPageFlow
      * @return string
      * @throws \Piece\Flow\PageFlow\MethodInvocationException
      */
-    public function getCurrentStateName();
+    public function getCurrentStateID();
 
     /**
      * Gets the appropriate view string corresponding to the current state.

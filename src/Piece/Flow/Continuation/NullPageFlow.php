@@ -86,7 +86,7 @@ class NullPageFlow implements IPageFlow
         return false;
     }
 
-    public function getCurrentStateName()
+    public function getCurrentStateID()
     {
         return null;
     }

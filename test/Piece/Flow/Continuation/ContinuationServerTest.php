@@ -715,7 +715,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server->activate(new \stdClass());
         $pageFlowInstance = $server->getPageFlowInstance();
 
-        $this->assertEquals('DisplayEdit', $pageFlowInstance->getCurrentStateName());
+        $this->assertEquals('DisplayEdit', $pageFlowInstance->getCurrentStateID());
 
         $server->shutdown();
 
@@ -725,7 +725,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server->activate(new \stdClass());
         $pageFlowInstance = $server->getPageFlowInstance();
 
-        $this->assertEquals('DisplayEditConfirm', $pageFlowInstance->getCurrentStateName());
+        $this->assertEquals('DisplayEditConfirm', $pageFlowInstance->getCurrentStateID());
 
         $server->shutdown();
 
@@ -735,7 +735,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $server->activate(new \stdClass());
         $pageFlowInstance = $server->getPageFlowInstance();
 
-        $this->assertEquals('DisplayEditFinish', $pageFlowInstance->getCurrentStateName());
+        $this->assertEquals('DisplayEditFinish', $pageFlowInstance->getCurrentStateID());
     }
 
     /**

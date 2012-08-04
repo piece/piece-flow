@@ -104,7 +104,7 @@ class EventHandler
                     'The event [ %s ] returned from the action [ %s ] is not found on the current state [ %s ].',
                     $eventID,
                     $this->actionID,
-                    $this->pageFlow->getCurrentStateName()
+                    $this->pageFlow->getCurrentStateID()
                 ));
             }
         }
