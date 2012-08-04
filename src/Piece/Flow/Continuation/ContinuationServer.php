@@ -216,7 +216,7 @@ class ContinuationServer
      * @return \Piece\Flow\Continuation\PageFlowInstance
      * @throws \Piece\Flow\Continuation\PageFlowInstanceExpiredException
      * @throws \Piece\Flow\Continuation\PageFlowIDRequiredException
-     * @throws \Piece\Flow\Continuation\FlowNotFoundException
+     * @throws \Piece\Flow\Continuation\PageFlowNotFoundException
      * @throws \Piece\Flow\Continuation\InvaidPageFlowIDException
      */
     protected function createPageFlowInstance($payload)
@@ -248,7 +248,7 @@ class ContinuationServer
 
             $pageFlow = $this->pageFlowInstanceRepository->getPageFlowRepository()->findByID($pageFlowID);
             if (is_null($pageFlow)) {
-                throw new FlowNotFoundException(sprintf('The page flow for ID [ %s ] is not found in the repository.', $pageFlowID));
+                throw new PageFlowNotFoundException(sprintf('The page flow for ID [ %s ] is not found in the repository.', $pageFlowID));
             }
 
             while (true) {
