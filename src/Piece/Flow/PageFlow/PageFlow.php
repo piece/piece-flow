@@ -211,12 +211,6 @@ class PageFlow implements IPageFlow
         return $state;
     }
 
-    /**
-     * Gets the previous state name.
-     *
-     * @return string
-     * @throws \Piece\Flow\PageFlow\MethodInvocationException
-     */
     public function getPreviousStateID()
     {
         if (!$this->isActive()) {

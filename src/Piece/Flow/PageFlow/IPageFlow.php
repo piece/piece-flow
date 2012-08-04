@@ -96,6 +96,14 @@ interface IPageFlow
     public function getCurrentStateID();
 
     /**
+     * Gets the previous state ID.
+     *
+     * @return string
+     * @throws \Piece\Flow\PageFlow\MethodInvocationException
+     */
+    public function getPreviousStateID();
+
+    /**
      * Gets the appropriate view string corresponding to the current state.
      *
      * @return string
