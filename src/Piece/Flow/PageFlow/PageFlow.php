@@ -245,11 +245,9 @@ class PageFlow implements IPageFlow
 
     public function isFinalState()
     {
-        if (is_null($this->fsm)) {
-            throw new MethodInvocationException(__FUNCTION__ . ' method must be called after configuring flows.');
-        }
-
-        return $this->getCurrentState()->getID() == State::STATE_FINAL;
+        $currentState = $this->getCurrentState();
+        if (is_null($currentState)) return false;
+        return $currentState->getID() == State::STATE_FINAL;
     }
 
     /**

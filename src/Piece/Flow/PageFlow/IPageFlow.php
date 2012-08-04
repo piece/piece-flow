@@ -111,7 +111,6 @@ interface IPageFlow
      * Checks whether the current state is the final state or not.
      *
      * @return boolean
-     * @throws \Piece\Flow\PageFlow\MethodInvocationException
      */
     public function isFinalState();
 
