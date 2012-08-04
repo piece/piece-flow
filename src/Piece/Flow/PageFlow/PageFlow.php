@@ -261,17 +261,6 @@ class PageFlow implements IPageFlow
     }
 
     /**
-     * Tells whether the current state of a flow execution is a view state or not.
-     *
-     * @return boolean
-     * @since Method available since Release 1.16.0
-     */
-    public function isViewState()
-    {
-        return array_key_exists($this->_getViewIndex(), $this->views);
-    }
-
-    /**
      * @param string $actionID
      * @param \Piece\Flow\PageFlow\EventContext $eventContext
      * @return string
@@ -290,18 +279,6 @@ class PageFlow implements IPageFlow
     public function isActive()
     {
         return !is_null($this->fsm) && !is_null($this->fsm->getCurrentState());
-    }
-
-    /**
-     * Gets an appropriate view index which corresponding to the current state.
-     *
-     * @return string
-     * @since Method available since Release 1.16.0
-     */
-    protected function _getViewIndex()
-    {
-        return !$this->isFinalState() ? $this->getCurrentState()->getID()
-                                      : $this->getPreviousState()->getID();
     }
 }
 
