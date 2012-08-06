@@ -83,7 +83,7 @@ interface IPageFlow
      * Gets the appropriate view string corresponding to the current state.
      *
      * @return string
-     * @throws \Piece\Flow\PageFlow\InvalidTransitionException
+     * @throws \Piece\Flow\PageFlow\IncompleteTransitionException
      */
     public function getView();
 

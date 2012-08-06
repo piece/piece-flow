@@ -44,7 +44,7 @@ namespace Piece\Flow\PageFlow;
  * @version    Release: @package_version@
  * @since      Class available since Release 2.0.0
  */
-class InvalidTransitionException extends \UnexpectedValueException
+class IncompleteTransitionException extends \UnexpectedValueException
 {
 }
 

@@ -194,7 +194,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Piece\Flow\PageFlow\InvalidTransitionException
+     * @expectedException \Piece\Flow\PageFlow\IncompleteTransitionException
      */
     public function testInvalidTransition()
     {

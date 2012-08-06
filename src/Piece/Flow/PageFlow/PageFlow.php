@@ -162,7 +162,7 @@ class PageFlow implements IPageFlow
 
         $state = $this->isInFinalState() ? $this->getPreviousState() : $this->getCurrentState();
         if (!array_key_exists($state->getID(), $this->views)) {
-            throw new InvalidTransitionException(sprintf('An invalid transition detected. The state [ %s ] does not have a view. Maybe the state [ %s ] is an action state. Check the definition for [ %s ].', $state->getID(), $state->getID(), $this->getID()));
+            throw new IncompleteTransitionException(sprintf('An invalid transition detected. The state [ %s ] does not have a view. Maybe the state [ %s ] is an action state. Check the definition for [ %s ].', $state->getID(), $state->getID(), $this->getID()));
         }
 
         return $this->views[ $state->getID() ];
