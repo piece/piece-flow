@@ -90,6 +90,8 @@ class PageFlowRepository
      */
     public function add($id)
     {
+        if (array_key_exists($id, $this->pageFlows)) return;
+
         if (!file_exists($this->pageFlowRegistry->getFileName($id))) {
             throw new FileNotFoundException(sprintf('The page flow definition file [ %s ] is not found.', $this->pageFlowRegistry->getFileName($id)));
         }
