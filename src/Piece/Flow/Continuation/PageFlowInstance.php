@@ -132,9 +132,9 @@ class PageFlowInstance implements IPageFlow
         return $this->pageFlow->getView();
     }
 
-    public function isFinalState()
+    public function isInFinalState()
     {
-        return $this->pageFlow->isFinalState();
+        return $this->pageFlow->isInFinalState();
     }
 
     public function setActionInvoker(ActionInvoker $actionInvoker)

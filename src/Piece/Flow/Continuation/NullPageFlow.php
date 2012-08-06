@@ -92,7 +92,7 @@ class NullPageFlow implements IPageFlow
         return null;
     }
 
-    public function isFinalState()
+    public function isInFinalState()
     {
         return false;
     }

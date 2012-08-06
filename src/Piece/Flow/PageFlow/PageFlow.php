@@ -160,7 +160,7 @@ class PageFlow implements IPageFlow
     {
         if (!$this->isActive()) return null;
 
-        $state = $this->isFinalState() ? $this->getPreviousState() : $this->getCurrentState();
+        $state = $this->isInFinalState() ? $this->getPreviousState() : $this->getCurrentState();
         if (!array_key_exists($state->getID(), $this->views)) {
             throw new InvalidTransitionException(sprintf('An invalid transition detected. The state [ %s ] does not have a view. Maybe the state [ %s ] is an action state. Check the definition for [ %s ].', $state->getID(), $state->getID(), $this->getID()));
         }
@@ -234,7 +234,7 @@ class PageFlow implements IPageFlow
         }
     }
 
-    public function isFinalState()
+    public function isInFinalState()
     {
         $currentState = $this->getCurrentState();
         if (is_null($currentState)) return false;

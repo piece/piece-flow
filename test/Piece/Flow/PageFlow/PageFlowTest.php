@@ -213,11 +213,11 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
         $flow->setPayload(new \stdClass());
         $flow->start();
 
-        $this->assertFalse($flow->isFinalState());
+        $this->assertFalse($flow->isInFinalState());
 
         $flow->triggerEvent('go');
 
-        $this->assertTrue($flow->isFinalState());
+        $this->assertTrue($flow->isInFinalState());
     }
 
     /**

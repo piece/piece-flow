@@ -92,7 +92,7 @@ interface IPageFlow
      *
      * @return boolean
      */
-    public function isFinalState();
+    public function isInFinalState();
 
     /**
      * @param \Piece\Flow\PageFlow\ActionInvoker $actionInvoker

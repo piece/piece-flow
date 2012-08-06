@@ -130,7 +130,7 @@ class ContinuationServer
     public function clear()
     {
         if (!is_null($this->pageFlowInstance)) {
-            if ($this->pageFlowInstance->isFinalState()) {
+            if ($this->pageFlowInstance->isInFinalState()) {
                 $this->pageFlowInstanceRepository->remove($this->pageFlowInstance);
             }
         }
