@@ -1,17 +1,8 @@
 firstState: DisplayForm
-lastState: { name: Finish, view: Finish }
 viewState:
   - name: DisplayForm
     view: Counter
-    entry:
-      method: setup
-    transition:
-      - event: increase
-        nextState: increased
-        action:
-          method: increase
-actionState:
-  - name: increased
-    transition:
-      - event: succeed
-        nextState: DisplayForm
+    activity:
+      method: increase
+initial:
+  method: setup
