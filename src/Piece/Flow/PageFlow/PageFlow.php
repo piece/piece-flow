@@ -195,7 +195,7 @@ class PageFlow implements IPageFlow
             throw new PageFlowNotActivatedException('The page flow must be activated to trigger any event.');
         }
 
-        if ($this->fsm->isProtectedEvent($eventID)) {
+        if (Event::isProtectedEvent($eventID)) {
             $eventID = self::EVENT_PROTECTED;
         }
 

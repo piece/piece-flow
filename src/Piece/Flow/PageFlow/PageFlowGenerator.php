@@ -90,14 +90,14 @@ class PageFlowGenerator
     public function generate()
     {
         $definition = $this->readDefinition();
-        if ($this->fsmBuilder->getFSM()->isProtectedState($definition['firstState'])) {
+        if (State::isProtectedState($definition['firstState'])) {
             throw new ProtectedStateException("The state [ {$definition['firstState']} ] cannot be used in flow definitions.");
         }
 
         $this->fsmBuilder->setStartState($definition['firstState']);
 
         if (!empty($definition['lastState'])) {
-            if ($this->fsmBuilder->getFSM()->isProtectedState($definition['lastState']['name'])) {
+            if (State::isProtectedState($definition['lastState']['name'])) {
                 throw new ProtectedStateException("The state [ {$definition['lastState']['name']} ] cannot be used in flow definitions.");
             }
 
@@ -132,7 +132,7 @@ class PageFlowGenerator
     protected function configureViewStates(array $states)
     {
         foreach ($states as $key => $state) {
-            if ($this->fsmBuilder->getFSM()->isProtectedState($state['name'])) {
+            if (State::isProtectedState($state['name'])) {
                 throw new ProtectedStateException("The state [ {$state['name']} ] cannot be used in flow definitions.");
             }
 
@@ -150,7 +150,7 @@ class PageFlowGenerator
     protected function configureActionStates(array $states)
     {
         foreach ($states as $key => $state) {
-            if ($this->fsmBuilder->getFSM()->isProtectedState($state['name'])) {
+            if (State::isProtectedState($state['name'])) {
                 throw new ProtectedStateException("The state [ {$state['name']} ] cannot be used in flow definitions.");
             }
 
@@ -168,7 +168,7 @@ class PageFlowGenerator
     {
         for ($i = 0, $count = count(@$state['transition']); $i < $count; ++$i) {
             if ($state['transition'][$i]['event'] == PageFlow::EVENT_PROTECTED
-                || $this->fsmBuilder->getFSM()->isProtectedEvent($state['transition'][$i]['event'])
+                || Event::isProtectedEvent($state['transition'][$i]['event'])
                 ) {
                 throw new ProtectedEventException("The event [ {$state['transition'][$i]['event']} ] cannot be used in flow definitions.");
             }
