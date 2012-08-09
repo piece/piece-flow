@@ -49,16 +49,25 @@ namespace Piece\Flow\Continuation;
 class GC
 {
     protected $expirationTime;
+
+    /**
+     * @var \Piece\Flow\Continuation\Clock
+     * @since Property available since Release 2.0.0
+     */
+    protected $clock;
+
     protected $markers = array();
 
     /**
      * Sets the expiration time in seconds.
      *
      * @param integer $expirationTime
+     * @param \Piece\Flow\Continuation\Clock $clock
      */
-    public function __construct($expirationTime)
+    public function __construct($expirationTime, Clock $clock)
     {
         $this->expirationTime = $expirationTime;
+        $this->clock = $clock;
     }
 
     /**
@@ -71,7 +80,7 @@ class GC
     {
         if (!$this->isMarked($pageFlowInstanceID)) {
             $this->markers[$pageFlowInstanceID] = array(
-                'mtime' => time(),
+                'mtime' => $this->clock->now()->getTimestamp(),
                 'shouldSweep' => false,
                 'swept' => false
             );
@@ -104,7 +113,7 @@ class GC
                 continue;
             }
 
-            $this->markers[$pageFlowInstanceID]['shouldSweep'] = time() - $marker['mtime'] > $this->expirationTime;
+            $this->markers[$pageFlowInstanceID]['shouldSweep'] = $this->clock->now()->getTimestamp() - $marker['mtime'] > $this->expirationTime;
         }
     }
 

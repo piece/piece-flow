@@ -455,7 +455,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $flowName = 'FlowExecutionExpired';
         $pageFlowInstanceRepository = new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
         $pageFlowInstanceRepository->addPageFlow($flowName, false);
-        $server = new ContinuationServer($pageFlowInstanceRepository, new GC(1));
+        $server = new ContinuationServer($pageFlowInstanceRepository, new GC(1, new Clock()));
         $server->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
         $server->setContinuationContextProvider($this->continuationContextProvider);
 
@@ -482,7 +482,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $flowName = 'FlowExecutionExpired';
         $pageFlowInstanceRepository = new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
         $pageFlowInstanceRepository->addPageFlow($flowName, false);
-        $server = new ContinuationServer($pageFlowInstanceRepository, new GC(2));
+        $server = new ContinuationServer($pageFlowInstanceRepository, new GC(2, new Clock()));
         $server->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
         $server->setContinuationContextProvider($this->continuationContextProvider);
 
@@ -524,7 +524,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $this->pageFlowID = $flowName;
         $pageFlowInstanceRepository = new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
         $pageFlowInstanceRepository->addPageFlow($flowName, false);
-        $server = new ContinuationServer($pageFlowInstanceRepository, new GC(1));
+        $server = new ContinuationServer($pageFlowInstanceRepository, new GC(1, new Clock()));
         $server->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
         $server->setContinuationContextProvider($this->continuationContextProvider);
 
@@ -693,7 +693,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $flowName = 'FlowExecutionExpired';
         $pageFlowInstanceRepository = new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
         $pageFlowInstanceRepository->addPageFlow($flowName, false);
-        $server = new ContinuationServer($pageFlowInstanceRepository, new GC(1));
+        $server = new ContinuationServer($pageFlowInstanceRepository, new GC(1, new Clock()));
         $server->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
         $server->setContinuationContextProvider($this->continuationContextProvider);
 
