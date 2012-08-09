@@ -98,14 +98,13 @@ class GC
      */
     public function mark()
     {
-        $thresholdTime = time();
         reset($this->markers);
         while (list($pageFlowInstanceID, $marker) = each($this->markers)) {
             if ($marker['swept']) {
                 continue;
             }
 
-            $this->markers[$pageFlowInstanceID]['shouldSweep'] = $thresholdTime - $marker['mtime'] > $this->expirationTime;
+            $this->markers[$pageFlowInstanceID]['shouldSweep'] = time() - $marker['mtime'] > $this->expirationTime;
         }
     }
 
