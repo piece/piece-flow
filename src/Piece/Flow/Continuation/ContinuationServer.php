@@ -217,7 +217,7 @@ class ContinuationServer
      * @throws \Piece\Flow\Continuation\PageFlowInstanceExpiredException
      * @throws \Piece\Flow\Continuation\PageFlowIDRequiredException
      * @throws \Piece\Flow\Continuation\PageFlowNotFoundException
-     * @throws \Piece\Flow\Continuation\InvaidPageFlowIDException
+     * @throws \Piece\Flow\Continuation\UnexpectedPageFlowIDException
      */
     protected function createPageFlowInstance($payload)
     {
