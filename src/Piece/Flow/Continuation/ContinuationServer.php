@@ -85,6 +85,18 @@ class ContinuationServer
     }
 
     /**
+     * @return array
+     * @since Method available since Release 2.0.0
+     */
+    public function __sleep()
+    {
+        return array(
+            'gc',
+            'pageFlowInstanceRepository',
+        );
+    }
+
+    /**
      * Invokes a flow and returns a flow execution ticket.
      *
      * @param mixed   $payload
@@ -135,7 +147,6 @@ class ContinuationServer
             }
         }
 
-        $this->pageFlowInstance = null;
         if (!is_null($this->gc)) {
             $pageFlowInstanceRepository = $this->pageFlowInstanceRepository;
             $this->gc->sweep(function ($pageFlowInstanceID) use ($pageFlowInstanceRepository) {
