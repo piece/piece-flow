@@ -109,7 +109,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
      */
     public function startsPageFlowInstancesForAnExclusivePageFlow()
     {
-        $pageFlowInstanceRepository = new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
+        $pageFlowInstanceRepository = $this->createPageFlowInstanceRepository();
         $pageFlowInstanceRepository->addPageFlow('Counter', true);
         $continuationServer = new ContinuationServer($pageFlowInstanceRepository);
         $continuationServer->setActionInvoker($this->createCounterActionInvoker());
@@ -141,7 +141,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
      */
     public function startsPageFlowInstancesForANonExclusivePageFlow()
     {
-        $pageFlowInstanceRepository = new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
+        $pageFlowInstanceRepository = $this->createPageFlowInstanceRepository();
         $pageFlowInstanceRepository->addPageFlow('Counter', false);
         $continuationServer = new ContinuationServer($pageFlowInstanceRepository);
         $continuationServer->setActionInvoker($this->createCounterActionInvoker());
@@ -173,7 +173,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
      */
     public function startsPageFlowInstancesForMultiplePageFlows()
     {
-        $pageFlowInstanceRepository = new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
+        $pageFlowInstanceRepository = $this->createPageFlowInstanceRepository();
         $pageFlowInstanceRepository->addPageFlow('Counter', false);
         $pageFlowInstanceRepository->addPageFlow('SecondCounter', false);
         $continuationServer = new ContinuationServer($pageFlowInstanceRepository);
@@ -206,7 +206,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
      */
     public function continuesAPageFlowInstance()
     {
-        $pageFlowInstanceRepository = new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
+        $pageFlowInstanceRepository = $this->createPageFlowInstanceRepository();
         $pageFlowInstanceRepository->addPageFlow('Counter', false);
         $continuationServer = new ContinuationServer($pageFlowInstanceRepository);
         $continuationServer->setActionInvoker($this->createCounterActionInvoker());
@@ -236,7 +236,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
      */
     public function raisesAnExceptionWhenAnUnexpectedPageFlowIdIsSpecifiedForTheSecondTimeOrLater()
     {
-        $pageFlowInstanceRepository = new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
+        $pageFlowInstanceRepository = $this->createPageFlowInstanceRepository();
         $pageFlowInstanceRepository->addPageFlow('Counter', false);
         $pageFlowInstanceRepository->addPageFlow('SecondCounter', false);
         $continuationServer = new ContinuationServer($pageFlowInstanceRepository);
@@ -265,7 +265,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
      */
     public function findsThePageFlowInstanceByAPageFlowId($exclusive)
     {
-        $pageFlowInstanceRepository = new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
+        $pageFlowInstanceRepository = $this->createPageFlowInstanceRepository();
         $pageFlowInstanceRepository->addPageFlow('Counter', $exclusive);
         $continuationServer = new ContinuationServer($pageFlowInstanceRepository);
         $continuationServer->setActionInvoker($this->createCounterActionInvoker());
@@ -305,7 +305,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         \Phake::when($clock)->now()
             ->thenReturn(new \DateTime($firstTime))
             ->thenReturn(new \DateTime($secondTime));
-        $pageFlowInstanceRepository = new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
+        $pageFlowInstanceRepository = $this->createPageFlowInstanceRepository();
         $pageFlowInstanceRepository->addPageFlow('Counter', false);
         $continuationServer = new ContinuationServer($pageFlowInstanceRepository, new GC($expirationTime, $clock));
         $continuationServer->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
@@ -353,7 +353,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
      */
     public function validatesTheLastReceivedEvent()
     {
-        $pageFlowInstanceRepository = new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
+        $pageFlowInstanceRepository = $this->createPageFlowInstanceRepository();
         $pageFlowInstanceRepository->addPageFlow('CheckLastEvent', false);
         $continuationServer = new ContinuationServer($pageFlowInstanceRepository);
         $continuationServer->setActionInvoker($this->createCounterActionInvoker());
@@ -401,6 +401,16 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         });
 
         return $actionInvoker;
+    }
+
+    /**
+     * @since Method available since Release 2.0.0
+     *
+     * @return \Piece\Flow\Continuation\PageFlowInstanceRepository
+     */
+    protected function createPageFlowInstanceRepository()
+    {
+        return new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
     }
 }
 
