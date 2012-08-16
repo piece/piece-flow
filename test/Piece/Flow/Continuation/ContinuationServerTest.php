@@ -111,27 +111,27 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
     {
         $pageFlowInstanceRepository = new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
         $pageFlowInstanceRepository->addPageFlow('Counter', true);
-        $server = new ContinuationServer($pageFlowInstanceRepository);
-        $server->setActionInvoker($this->createCounterActionInvoker());
-        $server->setContinuationContextProvider($this->continuationContextProvider);
+        $continuationServer = new ContinuationServer($pageFlowInstanceRepository);
+        $continuationServer->setActionInvoker($this->createCounterActionInvoker());
+        $continuationServer->setContinuationContextProvider($this->continuationContextProvider);
 
         $this->pageFlowID = 'Counter';
         $this->eventID = null;
         $this->pageFlowInstanceID = null;
-        $server->activate(new \stdClass());
-        $pageFlowInstance1 = $server->getPageFlowInstance();
-        $server->shutdown();
+        $continuationServer->activate(new \stdClass());
+        $pageFlowInstance1 = $continuationServer->getPageFlowInstance();
+        $continuationServer->shutdown();
 
         $this->pageFlowID = 'Counter';
         $this->eventID = null;
         $this->pageFlowInstanceID = null;
-        $server->activate(new \stdClass());
-        $pageFlowInstance2 = $server->getPageFlowInstance();
-        $server->shutdown();
+        $continuationServer->activate(new \stdClass());
+        $pageFlowInstance2 = $continuationServer->getPageFlowInstance();
+        $continuationServer->shutdown();
 
         $this->assertThat($pageFlowInstance2->getID(), $this->logicalNot($this->equalTo($pageFlowInstance1->getID())));
-        $this->assertThat($server->getPageFlowInstanceRepository()->findByID($pageFlowInstance1->getID()), $this->isNull());
-        $this->assertThat($server->getPageFlowInstanceRepository()->findByID($pageFlowInstance2->getID()), $this->logicalNot($this->isNull()));
+        $this->assertThat($continuationServer->getPageFlowInstanceRepository()->findByID($pageFlowInstance1->getID()), $this->isNull());
+        $this->assertThat($continuationServer->getPageFlowInstanceRepository()->findByID($pageFlowInstance2->getID()), $this->logicalNot($this->isNull()));
     }
 
     /**
@@ -143,27 +143,27 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
     {
         $pageFlowInstanceRepository = new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
         $pageFlowInstanceRepository->addPageFlow('Counter', false);
-        $server = new ContinuationServer($pageFlowInstanceRepository);
-        $server->setActionInvoker($this->createCounterActionInvoker());
-        $server->setContinuationContextProvider($this->continuationContextProvider);
+        $continuationServer = new ContinuationServer($pageFlowInstanceRepository);
+        $continuationServer->setActionInvoker($this->createCounterActionInvoker());
+        $continuationServer->setContinuationContextProvider($this->continuationContextProvider);
 
         $this->pageFlowID = 'Counter';
         $this->eventID = null;
         $this->pageFlowInstanceID = null;
-        $server->activate(new \stdClass());
-        $pageFlowInstance1 = $server->getPageFlowInstance();
-        $server->shutdown();
+        $continuationServer->activate(new \stdClass());
+        $pageFlowInstance1 = $continuationServer->getPageFlowInstance();
+        $continuationServer->shutdown();
 
         $this->pageFlowID = 'Counter';
         $this->eventID = null;
         $this->pageFlowInstanceID = null;
-        $server->activate(new \stdClass());
-        $pageFlowInstance2 = $server->getPageFlowInstance();
-        $server->shutdown();
+        $continuationServer->activate(new \stdClass());
+        $pageFlowInstance2 = $continuationServer->getPageFlowInstance();
+        $continuationServer->shutdown();
 
         $this->assertThat($pageFlowInstance2->getID(), $this->logicalNot($this->equalTo($pageFlowInstance1->getID())));
-        $this->assertThat($server->getPageFlowInstanceRepository()->findByID($pageFlowInstance1->getID()), $this->logicalNot($this->isNull()));
-        $this->assertThat($server->getPageFlowInstanceRepository()->findByID($pageFlowInstance2->getID()), $this->logicalNot($this->isNull()));
+        $this->assertThat($continuationServer->getPageFlowInstanceRepository()->findByID($pageFlowInstance1->getID()), $this->logicalNot($this->isNull()));
+        $this->assertThat($continuationServer->getPageFlowInstanceRepository()->findByID($pageFlowInstance2->getID()), $this->logicalNot($this->isNull()));
     }
 
     /**
@@ -176,27 +176,27 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $pageFlowInstanceRepository = new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
         $pageFlowInstanceRepository->addPageFlow('Counter', false);
         $pageFlowInstanceRepository->addPageFlow('SecondCounter', false);
-        $server = new ContinuationServer($pageFlowInstanceRepository);
-        $server->setActionInvoker($this->createCounterActionInvoker());
-        $server->setContinuationContextProvider($this->continuationContextProvider);
+        $continuationServer = new ContinuationServer($pageFlowInstanceRepository);
+        $continuationServer->setActionInvoker($this->createCounterActionInvoker());
+        $continuationServer->setContinuationContextProvider($this->continuationContextProvider);
 
         $this->pageFlowID = 'Counter';
         $this->eventID = null;
         $this->pageFlowInstanceID = null;
-        $server->activate(new \stdClass());
-        $pageFlowInstance1 = $server->getPageFlowInstance();
-        $server->shutdown();
+        $continuationServer->activate(new \stdClass());
+        $pageFlowInstance1 = $continuationServer->getPageFlowInstance();
+        $continuationServer->shutdown();
 
         $this->pageFlowID = 'SecondCounter';
         $this->eventID = null;
         $this->pageFlowInstanceID = null;
-        $server->activate(new \stdClass());
-        $pageFlowInstance2 = $server->getPageFlowInstance();
-        $server->shutdown();
+        $continuationServer->activate(new \stdClass());
+        $pageFlowInstance2 = $continuationServer->getPageFlowInstance();
+        $continuationServer->shutdown();
 
         $this->assertThat($pageFlowInstance2->getID(), $this->logicalNot($this->equalTo($pageFlowInstance1->getID())));
-        $this->assertThat($server->getPageFlowInstanceRepository()->findByID($pageFlowInstance1->getID()), $this->logicalNot($this->isNull()));
-        $this->assertThat($server->getPageFlowInstanceRepository()->findByID($pageFlowInstance2->getID()), $this->logicalNot($this->isNull()));
+        $this->assertThat($continuationServer->getPageFlowInstanceRepository()->findByID($pageFlowInstance1->getID()), $this->logicalNot($this->isNull()));
+        $this->assertThat($continuationServer->getPageFlowInstanceRepository()->findByID($pageFlowInstance2->getID()), $this->logicalNot($this->isNull()));
     }
 
     /**
@@ -208,23 +208,23 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
     {
         $pageFlowInstanceRepository = new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
         $pageFlowInstanceRepository->addPageFlow('Counter', false);
-        $server = new ContinuationServer($pageFlowInstanceRepository);
-        $server->setActionInvoker($this->createCounterActionInvoker());
-        $server->setContinuationContextProvider($this->continuationContextProvider);
+        $continuationServer = new ContinuationServer($pageFlowInstanceRepository);
+        $continuationServer->setActionInvoker($this->createCounterActionInvoker());
+        $continuationServer->setContinuationContextProvider($this->continuationContextProvider);
 
         $this->pageFlowID = 'Counter';
         $this->eventID = null;
         $this->pageFlowInstanceID = null;
-        $server->activate(new \stdClass());
-        $pageFlowInstance1 = $server->getPageFlowInstance();
-        $server->shutdown();
+        $continuationServer->activate(new \stdClass());
+        $pageFlowInstance1 = $continuationServer->getPageFlowInstance();
+        $continuationServer->shutdown();
 
         $this->pageFlowID = 'Counter';
         $this->eventID = null;
         $this->pageFlowInstanceID = $pageFlowInstance1->getID();
-        $server->activate(new \stdClass());
-        $pageFlowInstance2 = $server->getPageFlowInstance();
-        $server->shutdown();
+        $continuationServer->activate(new \stdClass());
+        $pageFlowInstance2 = $continuationServer->getPageFlowInstance();
+        $continuationServer->shutdown();
 
         $this->assertThat($pageFlowInstance2->getID(), ($this->equalTo($pageFlowInstance1->getID())));
         $this->assertThat($pageFlowInstance2->getAttributes()->get('counter'), $this->equalTo(2));
@@ -239,21 +239,21 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $pageFlowInstanceRepository = new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
         $pageFlowInstanceRepository->addPageFlow('Counter', false);
         $pageFlowInstanceRepository->addPageFlow('SecondCounter', false);
-        $server = new ContinuationServer($pageFlowInstanceRepository);
-        $server->setActionInvoker($this->createCounterActionInvoker());
-        $server->setContinuationContextProvider($this->continuationContextProvider);
+        $continuationServer = new ContinuationServer($pageFlowInstanceRepository);
+        $continuationServer->setActionInvoker($this->createCounterActionInvoker());
+        $continuationServer->setContinuationContextProvider($this->continuationContextProvider);
 
         $this->pageFlowID = 'Counter';
         $this->eventID = null;
         $this->pageFlowInstanceID = null;
-        $server->activate(new \stdClass());
-        $pageFlowInstance = $server->getPageFlowInstance();
-        $server->shutdown();
+        $continuationServer->activate(new \stdClass());
+        $pageFlowInstance = $continuationServer->getPageFlowInstance();
+        $continuationServer->shutdown();
 
         $this->pageFlowID = 'SecondCounter';
         $this->eventID = null;
         $this->pageFlowInstanceID = $pageFlowInstance->getID();
-        $server->activate(new \stdClass());
+        $continuationServer->activate(new \stdClass());
     }
 
     /**
@@ -267,17 +267,17 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
     {
         $pageFlowInstanceRepository = new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
         $pageFlowInstanceRepository->addPageFlow('Counter', $exclusive);
-        $server = new ContinuationServer($pageFlowInstanceRepository);
-        $server->setActionInvoker($this->createCounterActionInvoker());
-        $server->setContinuationContextProvider($this->continuationContextProvider);
+        $continuationServer = new ContinuationServer($pageFlowInstanceRepository);
+        $continuationServer->setActionInvoker($this->createCounterActionInvoker());
+        $continuationServer->setContinuationContextProvider($this->continuationContextProvider);
 
         $this->pageFlowID = 'Counter';
         $this->eventID = null;
         $this->pageFlowInstanceID = null;
-        $server->activate(new \stdClass());
-        $server->shutdown();
+        $continuationServer->activate(new \stdClass());
+        $continuationServer->shutdown();
 
-        $this->assertThat($server->getPageFlowInstanceRepository()->findByPageFlowID('Counter'), $exclusive ? $this->identicalTo($server->getPageFlowInstance()) : $this->isNull());
+        $this->assertThat($continuationServer->getPageFlowInstanceRepository()->findByPageFlowID('Counter'), $exclusive ? $this->identicalTo($continuationServer->getPageFlowInstance()) : $this->isNull());
     }
 
     /**
@@ -307,16 +307,16 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
             ->thenReturn(new \DateTime($secondTime));
         $pageFlowInstanceRepository = new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
         $pageFlowInstanceRepository->addPageFlow('Counter', false);
-        $server = new ContinuationServer($pageFlowInstanceRepository, new GC($expirationTime, $clock));
-        $server->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
-        $server->setContinuationContextProvider($this->continuationContextProvider);
+        $continuationServer = new ContinuationServer($pageFlowInstanceRepository, new GC($expirationTime, $clock));
+        $continuationServer->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
+        $continuationServer->setContinuationContextProvider($this->continuationContextProvider);
 
         $this->pageFlowID = 'Counter';
         $this->eventID = null;
         $this->pageFlowInstanceID = null;
-        $server->activate(new \stdClass());
-        $pageFlowInstance = $server->getPageFlowInstance();
-        $server->shutdown();
+        $continuationServer->activate(new \stdClass());
+        $pageFlowInstance = $continuationServer->getPageFlowInstance();
+        $continuationServer->shutdown();
 
         $this->pageFlowID = 'Counter';
         $this->eventID = null;
@@ -324,14 +324,14 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
 
         if ($shouldRaiseException) {
             try {
-                $server->activate(new \stdClass());
-                $server->shutdown();
+                $continuationServer->activate(new \stdClass());
+                $continuationServer->shutdown();
                 $this->fail('An expected exception has not been raised.');
             } catch (PageFlowInstanceExpiredException $e) {
             }
         } else {
-            $server->activate(new \stdClass());
-            $server->shutdown();
+            $continuationServer->activate(new \stdClass());
+            $continuationServer->shutdown();
         }
     }
 
@@ -355,34 +355,34 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
     {
         $pageFlowInstanceRepository = new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
         $pageFlowInstanceRepository->addPageFlow('CheckLastEvent', false);
-        $server = new ContinuationServer($pageFlowInstanceRepository);
-        $server->setActionInvoker($this->createCounterActionInvoker());
-        $server->setContinuationContextProvider($this->continuationContextProvider);
+        $continuationServer = new ContinuationServer($pageFlowInstanceRepository);
+        $continuationServer->setActionInvoker($this->createCounterActionInvoker());
+        $continuationServer->setContinuationContextProvider($this->continuationContextProvider);
 
         $this->pageFlowID = 'CheckLastEvent';
         $this->eventID = 'nonExistingEvent';
         $this->pageFlowInstanceID = null;
-        $server->activate(new \stdClass());
-        $pageFlowInstance = $server->getPageFlowInstance();
-        $server->shutdown();
+        $continuationServer->activate(new \stdClass());
+        $pageFlowInstance = $continuationServer->getPageFlowInstance();
+        $continuationServer->shutdown();
 
         $this->assertThat($pageFlowInstance->validateReceivedEvent(), $this->isTrue());
 
         $this->pageFlowID = 'CheckLastEvent';
         $this->eventID = 'DisplayEditConfirmFromDisplayEdit';
         $this->pageFlowInstanceID = $pageFlowInstance->getID();
-        $server->activate(new \stdClass());
-        $pageFlowInstance = $server->getPageFlowInstance();
-        $server->shutdown();
+        $continuationServer->activate(new \stdClass());
+        $pageFlowInstance = $continuationServer->getPageFlowInstance();
+        $continuationServer->shutdown();
 
         $this->assertThat($pageFlowInstance->validateReceivedEvent(), $this->isTrue());
 
         $this->pageFlowID = 'CheckLastEvent';
         $this->eventID = 'nonExistingEvent';
         $this->pageFlowInstanceID = $pageFlowInstance->getID();
-        $server->activate(new \stdClass());
-        $pageFlowInstance = $server->getPageFlowInstance();
-        $server->shutdown();
+        $continuationServer->activate(new \stdClass());
+        $pageFlowInstance = $continuationServer->getPageFlowInstance();
+        $continuationServer->shutdown();
 
         $this->assertThat($pageFlowInstance->validateReceivedEvent(), $this->isFalse());
     }
