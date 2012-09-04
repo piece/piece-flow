@@ -63,11 +63,11 @@ class EventHandlerTest extends \PHPUnit_Framework_TestCase
         $eventHandler = new EventHandler('my_controller:onRegister', $pageFlow);
         $nextEvent = $eventHandler->invokeAction($event, $payload, new FSM());
 
-        $this->assertEquals($nextEvent, 'foo');
+        $this->assertThat($nextEvent, $this->equalTo('foo'));
         \Phake::verify($pageFlow)->invokeAction('my_controller:onRegister', \Phake::capture($eventContext)); /* @var $eventContext \Piece\Flow\PageFlow\EventContext */
-        $this->assertSame($event, $eventContext->getEvent());
-        $this->assertSame($pageFlow, $eventContext->getPageFlow());
-        $this->assertSame($payload, $eventContext->getPayload());
+        $this->assertThat($eventContext->getEvent(), $this->identicalTo($event));
+        $this->assertThat($eventContext->getPageFlow(), $this->identicalTo($pageFlow));
+        $this->assertThat($eventContext->getPayload(), $this->identicalTo($payload));
     }
 
     /**
@@ -86,9 +86,9 @@ class EventHandlerTest extends \PHPUnit_Framework_TestCase
         $eventHandler->invokeActionAndTriggerEvent($event, $payload, $fsm);
 
         \Phake::verify($pageFlow)->invokeAction('my_controller:onRegister', \Phake::capture($eventContext)); /* @var $eventContext \Piece\Flow\PageFlow\EventContext */
-        $this->assertSame($event, $eventContext->getEvent());
-        $this->assertSame($pageFlow, $eventContext->getPageFlow());
-        $this->assertSame($payload, $eventContext->getPayload());
+        $this->assertThat($eventContext->getEvent(), $this->identicalTo($event));
+        $this->assertThat($eventContext->getPageFlow(), $this->identicalTo($pageFlow));
+        $this->assertThat($eventContext->getPayload(), $this->identicalTo($payload));
 
         \Phake::verify($fsm)->hasEvent('foo');
         \Phake::verify($fsm)->queueEvent('foo');
