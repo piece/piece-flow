@@ -1,9 +1,0 @@
-# $Id$
-firstState: Stop
-viewState:
-  - name: Stop
-    view: Stop
-  - name: Playingd
-    view: Playing
-  - name: __initial
-    view: __initial
