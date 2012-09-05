@@ -72,7 +72,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
         $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
         $flow->start();
 
-        $this->assertEquals('Form', $flow->getView());
+        $this->assertEquals('Form', $flow->getCurrentView());
     }
 
     public function testGettingPreviousStateName()
@@ -185,7 +185,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
         $flow->setPayload(new \stdClass());
         $flow->start();
 
-        $this->assertEquals('foo', $flow->getView());
+        $this->assertEquals('foo', $flow->getCurrentView());
     }
 
     public function testInitialAndFinalActionsWithYAML()
@@ -203,7 +203,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
         $flow->setPayload(new \stdClass());
         $flow->start();
         $flow->triggerEvent('go');
-        $flow->getView();
+        $flow->getCurrentView();
     }
 
     public function testCheckingWhetherCurrentStateIsFinalState()
@@ -377,13 +377,13 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
         $flow->setPayload(new \stdClass());
         $flow->start();
 
-        $this->assertEquals('start', $flow->getView());
+        $this->assertEquals('start', $flow->getCurrentView());
         \Phake::verify($actionInvoker)->invoke('initialize', $this->anything());
         \Phake::verify($actionInvoker, \Phake::times(0))->invoke('finalize', $this->anything());
 
         $flow->triggerEvent('go');
 
-        $this->assertEquals('end', $flow->getView());
+        $this->assertEquals('end', $flow->getCurrentView());
         \Phake::verify($actionInvoker)->invoke('finalize', $this->anything());
 
         try {

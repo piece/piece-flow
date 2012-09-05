@@ -156,7 +156,7 @@ class PageFlow implements IPageFlow
         $this->actionInvoker = $actionInvoker;
     }
 
-    public function getView()
+    public function getCurrentView()
     {
         if (!$this->isActive()) return null;
 

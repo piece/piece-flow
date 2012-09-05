@@ -85,7 +85,7 @@ interface IPageFlow
      * @return string
      * @throws \Piece\Flow\PageFlow\IncompleteTransitionException
      */
-    public function getView();
+    public function getCurrentView();
 
     /**
      * Checks whether the current state is the final state or not.

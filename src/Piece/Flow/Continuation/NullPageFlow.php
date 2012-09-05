@@ -87,7 +87,7 @@ class NullPageFlow implements IPageFlow
         return null;
     }
 
-    public function getView()
+    public function getCurrentView()
     {
         return null;
     }
