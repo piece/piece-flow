@@ -201,13 +201,12 @@ class PageFlow implements IPageFlow
 
         $this->receivedValidEvent = $this->fsm->hasEvent($eventID);
 
-        $state = $this->fsm->triggerEvent($eventID, false);
-
-        if (in_array($state->getID(), $this->endStates)) {
-            $state = $this->fsm->triggerEvent(Event::EVENT_END);
+        $this->fsm->triggerEvent($eventID, false);
+        if (in_array($this->fsm->getCurrentState()->getID(), $this->endStates)) {
+            $this->fsm->triggerEvent(Event::EVENT_END);
         }
 
-        return $state;
+        return $this->fsm->getCurrentState();
     }
 
     public function getPreviousState()
