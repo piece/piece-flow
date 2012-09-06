@@ -233,7 +233,7 @@ class ContinuationServer
     {
         $pageFlowID = $this->continuationContextProvider->getPageFlowID();
         if (empty($pageFlowID)) {
-            throw new PageFlowIDRequiredException('A flow ID must be given in this case.');
+            throw new PageFlowIDRequiredException('A page flow ID must be specified.');
         }
 
         $pageFlowInstance = $this->pageFlowInstanceRepository->findByID($this->continuationContextProvider->getPageFlowInstanceID());
@@ -254,13 +254,13 @@ class ContinuationServer
             }
         } else {
             if ($pageFlowID != $pageFlowInstance->getPageFlowID()) {
-                throw new UnexpectedPageFlowIDException('The given flow ID is different from the registerd flow ID.');
+                throw new UnexpectedPageFlowIDException(sprintf('The specified page flow ID [ %s ] is different from the expected page flow ID [ %s ].', $pageFlowID, $pageFlowInstance->getPageFlowID()));
             }
 
             if (!is_null($this->gc)) {
                 if ($this->gc->isMarked($pageFlowInstance->getID())) {
                     $this->pageFlowInstanceRepository->remove($pageFlowInstance);
-                    throw new PageFlowInstanceExpiredException('The flow execution for the given flow execution ticket has expired.');
+                    throw new PageFlowInstanceExpiredException('The page flow instance has been expired.');
                 }
             }
         }
