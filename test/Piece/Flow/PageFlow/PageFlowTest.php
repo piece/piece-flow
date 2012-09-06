@@ -50,9 +50,6 @@ use Stagehand\FSM\State;
  */
 class PageFlowTest extends \PHPUnit_Framework_TestCase
 {
-    protected $source;
-    protected $cacheDirectory;
-
     /**
      * @var \Piece\Flow\PageFlow\PageFlowFactory
      * @since Property available since Release 2.0.0
@@ -61,336 +58,112 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->cacheDirectory = dirname(__FILE__) . '/' . basename(__FILE__, '.php');
-        $this->source = 'Registration';
-        $this->pageFlowFactory = new PageFlowFactory(new PageFlowRegistry($this->cacheDirectory, '.yaml'));
-    }
-
-    public function testGettingView()
-    {
-        $flow = $this->pageFlowFactory->create($this->source);
-        $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
-        $flow->start();
-
-        $this->assertEquals('Form', $flow->getCurrentView());
-    }
-
-    public function testGettingPreviousStateName()
-    {
-        $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
-        \Phake::when($actionInvoker)->invoke('isPermitted', $this->anything())->thenReturn(true);
-        \Phake::when($actionInvoker)->invoke('validateInput', $this->anything())->thenReturn('succeed');
-        $flow = $this->pageFlowFactory->create($this->source);
-        $flow->setActionInvoker($actionInvoker);
-        $flow->start();
-        $flow->triggerEvent('submit');
-
-        $this->assertEquals('processSubmitDisplayForm', $flow->getPreviousState()->getID());
-    }
-
-    public function testGettingCurrentStateName()
-    {
-        $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
-        \Phake::when($actionInvoker)->invoke('isPermitted', $this->anything())->thenReturn(true);
-        \Phake::when($actionInvoker)->invoke('validateInput', $this->anything())->thenReturn('succeed');
-        $flow = $this->pageFlowFactory->create($this->source);
-        $flow->setActionInvoker($actionInvoker);
-        $flow->start();
-        $flow->triggerEvent('submit');
-
-        $this->assertEquals('ConfirmForm', $flow->getCurrentState()->getID());
-    }
-
-    public function testTriggeringEventAndInvokingTransitionAction()
-    {
-        $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
-        \Phake::when($actionInvoker)->invoke('isPermitted', $this->anything())->thenReturn(true);
-        \Phake::when($actionInvoker)->invoke('validateInput', $this->anything())->thenReturn('succeed');
-        \Phake::when($actionInvoker)->invoke('validateConfirmation', $this->anything())->thenReturn('succeed');
-        \Phake::when($actionInvoker)->invoke('register', $this->anything())->thenReturn('succeed');
-        $flow = $this->pageFlowFactory->create($this->source);
-        $flow->setActionInvoker($actionInvoker);
-        $flow->start();
-        $flow->triggerEvent('submit');
-
-        $this->assertThat($flow->getCurrentState()->getID(), $this->equalTo('ConfirmForm'));
-
-        $flow->triggerEvent('submit');
-
-        $this->assertThat($flow->getCurrentState()->getID(), $this->equalTo(State::STATE_FINAL));
-    }
-
-    public function testTriggeringRaiseErrorEvent()
-    {
-        $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
-        \Phake::when($actionInvoker)->invoke('isPermitted', $this->anything())->thenReturn(true);
-        \Phake::when($actionInvoker)->invoke('validateInput', $this->anything())->thenReturn('raiseError');
-        $flow = $this->pageFlowFactory->create($this->source);
-        $flow->setActionInvoker($actionInvoker);
-        $flow->start();
-        $flow->triggerEvent('submit');
-
-        $this->assertThat($flow->getCurrentState()->getID(), $this->equalTo('DisplayForm'));
-        $this->assertThat($flow->getPreviousState()->getID(), $this->equalTo('processSubmitDisplayForm'));
-    }
-
-    public function testActivity()
-    {
-        $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
-        $flow = $this->pageFlowFactory->create($this->source);
-        $flow->setActionInvoker($actionInvoker);
-        $flow->start();
-
-        \Phake::verify($actionInvoker)->invoke('countDisplay', $this->anything());
-
-        $flow->triggerEvent('foo');
-        $flow->triggerEvent('bar');
-
-        \Phake::verify($actionInvoker, \Phake::times(3))->invoke('countDisplay', $this->anything());
-    }
-
-    public function testExitAndEntryActions()
-    {
-        $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
-        \Phake::when($actionInvoker)->invoke('validateInput', $this->anything())
-            ->thenReturn('succeed');
-        \Phake::when($actionInvoker)->invoke('isPermitted', $this->anything())
-            ->thenReturn(true);
-        $flow = $this->pageFlowFactory->create($this->source);
-        $flow->setActionInvoker($actionInvoker);
-        $flow->start();
-
-        \Phake::verify($actionInvoker)->invoke('setupForm', $this->anything());
-
-        $flow->triggerEvent('submit');
-
-        \Phake::verify($actionInvoker)->invoke('teardownForm', $this->anything());
-    }
-
-    public function testSettingAttribute()
-    {
-        $flow = $this->pageFlowFactory->create($this->source);
-        $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
-        $flow->start();
-        $flow->getAttributes()->set('foo', 'bar');
-
-        $this->assertTrue($flow->getAttributes()->has('foo'));
-        $this->assertEquals('bar', $flow->getAttributes()->get('foo'));
-    }
-
-    public function testOptionalElements()
-    {
-        $flow = $this->pageFlowFactory->create('optional');
-        $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
-        $flow->setPayload(new \stdClass());
-        $flow->start();
-
-        $this->assertEquals('foo', $flow->getCurrentView());
-    }
-
-    public function testInitialAndFinalActionsWithYAML()
-    {
-        $this->assertInitialAndFinalActions('initial');
+        $this->pageFlowFactory = new PageFlowFactory(new PageFlowRegistry(__DIR__ . '/' . basename(__FILE__, '.php'), '.flow'));
     }
 
     /**
-     * @expectedException \Piece\Flow\PageFlow\IncompleteTransitionException
+     * @test
      */
-    public function testInvalidTransition()
+    public function getsTheViewOfTheCurrentState()
     {
-        $flow = $this->pageFlowFactory->create('invalid');
-        $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
-        $flow->setPayload(new \stdClass());
-        $flow->start();
-        $flow->triggerEvent('go');
-        $flow->getCurrentView();
-    }
+        $pageFlow = $this->pageFlowFactory->create('Registration');
+        $pageFlow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
 
-    public function testCheckingWhetherCurrentStateIsFinalState()
-    {
-        $flow = $this->pageFlowFactory->create('initial');
-        $flow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
-        $flow->setPayload(new \stdClass());
-        $flow->start();
+        $this->assertThat($pageFlow->getCurrentView(), $this->isNull());
 
-        $this->assertFalse($flow->isInFinalState());
+        $pageFlow->start();
 
-        $flow->triggerEvent('go');
-
-        $this->assertTrue($flow->isInFinalState());
+        $this->assertThat($pageFlow->getCurrentView(), $this->equalTo('Input'));
     }
 
     /**
-     * @since Method available since Release 1.2.0
+     * @test
      */
-    public function testToPreventTriggeringProtectedEvents()
+    public function triggersAnEvent()
     {
         $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
-        \Phake::when($actionInvoker)->invoke($this->anything(), $this->anything())
-            ->thenGetReturnByLambda(function ($actionID, EventContext $eventContext) {
-                if ($eventContext->getPageFlow()->getAttributes()->has('numberOfUpdate')) {
-                    $numberOfUpdate = $eventContext->getPageFlow()->getAttributes()->get('numberOfUpdate');
-                } else {
-                    $numberOfUpdate = 0;
-                }
+        \Phake::when($actionInvoker)->invoke('onValidation', $this->anything())->thenReturn('valid');
+        \Phake::when($actionInvoker)->invoke('onRegistration', $this->anything())->thenReturn('done');
+        $pageFlow = $this->pageFlowFactory->create('Registration');
+        $pageFlow->setActionInvoker($actionInvoker);
 
-                ++$numberOfUpdate;
-                $eventContext->getPageFlow()->getAttributes()->set('numberOfUpdate', $numberOfUpdate);
-            });
+        $this->assertThat($pageFlow->isInFinalState(), $this->isFalse());
 
-        $flow = $this->pageFlowFactory->create('CDPlayer');
-        $flow->setActionInvoker($actionInvoker);
-        $flow->setPayload(new \stdClass());
-        $flow->start();
+        $pageFlow->start();
+        $pageFlow->triggerEvent('next');
+        $pageFlow->triggerEvent('next');
 
-        $this->assertEquals('Stop', $flow->getCurrentState()->getID());
-        $this->assertEquals(1, $flow->getAttributes()->get('numberOfUpdate'));
+        $this->assertThat($pageFlow->getCurrentState()->getID(), $this->equalTo(State::STATE_FINAL));
+        $this->assertThat($pageFlow->getPreviousState()->getID(), $this->equalTo('Finish'));
+        $this->assertThat($pageFlow->isInFinalState(), $this->isTrue());
+        \Phake::verify($actionInvoker)->invoke('onValidation', $this->anything());
+        \Phake::verify($actionInvoker)->invoke('onRegistration', $this->anything());
+    }
 
-        $flow->triggerEvent('foo');
+    /**
+     * @expectedException \Piece\Flow\PageFlow\PageFlowNotActivatedException
+     * @since Method available since Release 2.0.0
+     *
+     * @test
+     */
+    public function raisesAnExceptionWhenAnEventIsTriggeredIfThePageFlowIsNotActive()
+    {
+        $pageFlow = \Phake::partialMock('Piece\Flow\PageFlow\PageFlow', 'foo');
+        \Phake::when($pageFlow)->isActive()->thenReturn(false);
+        $pageFlow->triggerEvent('bar');
+    }
 
-        $this->assertEquals('Stop', $flow->getCurrentState()->getID());
-        $this->assertEquals(2, $flow->getAttributes()->get('numberOfUpdate'));
+    /**
+     * @since Method available since Release 2.0.0
+     *
+     * @test
+     */
+    public function replacesATriggeredEventWithTheBuiltinEventForProtectedEventsIfTheEventIsProtected()
+    {
+        $fsm = \Phake::mock('Stagehand\FSM\FSM');
+        \Phake::when($fsm)->getCurrentState()->thenReturn(\Phake::mock('Stagehand\FSM\IState'));
+        \Phake::when($fsm)->triggerEvent($this->anything(), $this->anything())->thenReturn(\Phake::mock('Stagehand\FSM\IState'));
+        $pageFlow = new PageFlow('foo');
+        $pageFlow->setFSM($fsm);
+        $pageFlow->triggerEvent(EVENT::EVENT_EXIT);
 
-        $flow->triggerEvent(Event::EVENT_ENTRY);
+        \Phake::verify($fsm)->triggerEvent($this->equalTo(PageFlow::EVENT_PROTECTED), $this->anything());
+    }
 
-        $this->assertEquals('Stop', $flow->getCurrentState()->getID());
-        $this->assertEquals(3, $flow->getAttributes()->get('numberOfUpdate'));
+    /**
+     * @test
+     */
+    public function accessesTheAttributes()
+    {
+        $pageFlow = $this->pageFlowFactory->create('Registration');
+        $pageFlow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
+        $pageFlow->start();
+        $pageFlow->getAttributes()->set('foo', 'bar');
 
-        $flow->triggerEvent(Event::EVENT_EXIT);
-
-        $this->assertEquals('Stop', $flow->getCurrentState()->getID());
-        $this->assertEquals(4, $flow->getAttributes()->get('numberOfUpdate'));
-
-        $flow->triggerEvent(Event::EVENT_START);
-
-        $this->assertEquals('Stop', $flow->getCurrentState()->getID());
-        $this->assertEquals(5, $flow->getAttributes()->get('numberOfUpdate'));
-
-        $flow->triggerEvent(Event::EVENT_END);
-
-        $this->assertEquals('Stop', $flow->getCurrentState()->getID());
-        $this->assertEquals(6, $flow->getAttributes()->get('numberOfUpdate'));
-
-        $flow->triggerEvent(Event::EVENT_DO);
-
-        $this->assertEquals('Stop', $flow->getCurrentState()->getID());
-        $this->assertEquals(7, $flow->getAttributes()->get('numberOfUpdate'));
-
-        $flow->triggerEvent('play');
-
-        $this->assertEquals('Playing', $flow->getCurrentState()->getID());
-        $this->assertEquals(7, $flow->getAttributes()->get('numberOfUpdate'));
+        $this->assertThat($pageFlow->getAttributes()->has('foo'), $this->isTrue());
+        $this->assertThat($pageFlow->getAttributes()->get('foo'), $this->equalTo('bar'));
     }
 
     /**
      * @expectedException \Piece\Flow\PageFlow\ProtectedEventException
      * @since Method available since Release 1.2.0
+     *
+     * @test
      */
-    public function testProtectedEvents()
+    public function raisesAnExceptionWhenThePageFlowDefinitionHasAProtectedEvent()
     {
-        $this->pageFlowFactory->create('ProtectedEvents', \Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
+        $this->pageFlowFactory->create('ProtectedEvent', \Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
     }
 
     /**
      * @expectedException \Piece\Flow\PageFlow\ProtectedStateException
      * @since Method available since Release 1.2.0
+     *
+     * @test
      */
-    public function testProtectedStates()
+    public function raisesAnExceptionWhenThePageFlowDefinitionHasAProtectedState()
     {
-        $this->pageFlowFactory->create('ProtectedStates', \Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
-    }
-
-    /**
-     * @since Method available since Release 1.3.0
-     */
-    public function testInvalidEventFromATransitionActionsOrActivities()
-    {
-        $actionInvoker1 = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
-        \Phake::when($actionInvoker1)->invoke('register', $this->anything())->thenReturn('invalidEventFromRegister');
-        $flow1 = $this->pageFlowFactory->create('InvalidEventFromTransitionActionsOrActivities');
-        $flow1->setActionInvoker($actionInvoker1);
-        $flow1->setPayload(new \stdClass());
-        $flow1->start();
-
-        $this->assertEquals('DisplayForm', $flow1->getCurrentState()->getID());
-
-        $flow1->triggerEvent('foo');
-
-        $this->assertEquals('DisplayForm', $flow1->getCurrentState()->getID());
-
-        try {
-            $flow1->triggerEvent('register');
-            $this->fail('An expected exception has not been raised.');
-        } catch (EventNotFoundException $e) {
-        }
-
-        $this->assertEquals('ProcessRegister', $flow1->getCurrentState()->getID());
-
-        $actionInvoker2 = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
-        \Phake::when($actionInvoker2)->invoke('register', $this->anything())->thenReturn('goDisplayFinish');
-        \Phake::when($actionInvoker2)->invoke('setupFinish', $this->anything())->thenReturn('invalidEventFromSetupFinish');
-        $flow2 = $this->pageFlowFactory->create('InvalidEventFromTransitionActionsOrActivities');
-        $flow2->setActionInvoker($actionInvoker2);
-        $flow2->setPayload(new \stdClass());
-        $flow2->start();
-
-        $this->assertEquals('DisplayForm', $flow2->getCurrentState()->getID());
-
-        $flow2->triggerEvent('foo');
-
-        $this->assertEquals('DisplayForm', $flow2->getCurrentState()->getID());
-
-        try {
-            $flow2->triggerEvent('register');
-            $this->fail('An expected exception has not been raised.');
-        } catch (EventNotFoundException $e) {
-        }
-
-        $this->assertEquals('DisplayFinish', $flow2->getCurrentState()->getID());
-    }
-
-    /**
-     * @since Method available since Release 1.4.0
-     */
-    public function testProblemThatActivityIsInvokedTwiceUnexpectedly()
-    {
-        $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
-        \Phake::when($actionInvoker)->invoke('validate', $this->anything())->thenReturn('goDisplayConfirmation');
-        $flow = $this->pageFlowFactory->create('ProblemThatActivityIsInvokedTwiceUnexpectedly');
-        $flow->setActionInvoker($actionInvoker);
-        $flow->setPayload(new \stdClass());
-        $flow->start();
-
-        \Phake::verify($actionInvoker)->invoke('setupForm', $this->anything());
-
-        $flow->triggerEvent('confirmForm');
-
-        \Phake::verify($actionInvoker)->invoke('validate', $this->anything());
-        \Phake::verify($actionInvoker)->invoke('setupConfirmation', $this->anything());
-    }
-
-    protected function assertInitialAndFinalActions($source)
-    {
-        $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
-        $flow = $this->pageFlowFactory->create($source);
-        $flow->setActionInvoker($actionInvoker);
-        $flow->setPayload(new \stdClass());
-        $flow->start();
-
-        $this->assertEquals('start', $flow->getCurrentView());
-        \Phake::verify($actionInvoker)->invoke('initialize', $this->anything());
-        \Phake::verify($actionInvoker, \Phake::times(0))->invoke('finalize', $this->anything());
-
-        $flow->triggerEvent('go');
-
-        $this->assertEquals('end', $flow->getCurrentView());
-        \Phake::verify($actionInvoker)->invoke('finalize', $this->anything());
-
-        try {
-            $flow->triggerEvent('go');
-            $this->fail('An expected exception has not been raised.');
-        } catch (FSMAlreadyShutdownException $e) {
-        }
+        $this->pageFlowFactory->create('ProtectedState', \Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
     }
 }
 
