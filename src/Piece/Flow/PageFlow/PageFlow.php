@@ -50,11 +50,10 @@ use Symfony\Component\HttpFoundation\ParameterBag;
  * A web flow engine for handling page flows of web applications.
  *
  * Piece_Flow provides a web flow engine based on Finite State Machine (FSM).
- * Piece_Flow can handle two different states. The view state is a state
- * which is associated with a view string. The action state is a simple
- * state, which has no association with all views.
- * If the engine once started, the application will be put under control of
- * it.
+ * Piece_Flow can handle two different states. The view state is a state which
+ * is associated with a view string. The action state is a simple state, which
+ * has no association with all views. If the engine once started,
+ * the application will be put under control of it.
  *
  * @package    Piece_Flow
  * @copyright  2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
@@ -174,7 +173,7 @@ class PageFlow implements IPageFlow
     }
 
     /**
-     * Starts the Finite State Machine.
+     * Starts the page flow.
      */
     public function start()
     {
@@ -260,7 +259,7 @@ class PageFlow implements IPageFlow
     }
 
     /**
-     * Returns whether the flow execution has started or not.
+     * Returns whether the page flow has started or not.
      *
      * @return boolean
      */

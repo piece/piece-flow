@@ -38,7 +38,7 @@
 namespace Piece\Flow\Continuation;
 
 /**
- * The garbage collector for expired flow executions.
+ * The garbage collector for expired page flow instances.
  *
  * @package    Piece_Flow
  * @copyright  2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
@@ -71,8 +71,7 @@ class GC
     }
 
     /**
-     * Updates the state for the flow execution by the given flow execution
-     * ticket.
+     * Updates the state of the specified page flow instance.
      *
      * @param string $pageFlowInstanceID
      */
@@ -88,7 +87,8 @@ class GC
     }
 
     /**
-     * Returns whether the given flow execution ticket is marked as a target for sweeping or not.
+     * Returns whether or not the specified page flow instance is marked as
+     * a target for sweeping.
      *
      * @param string $pageFlowInstanceID
      * @return boolean
@@ -103,7 +103,7 @@ class GC
     }
 
     /**
-     * Marks expired flow executions for sweeping.
+     * Marks expired page flow instances as a target for sweeping.
      */
     public function mark()
     {
@@ -118,7 +118,7 @@ class GC
     }
 
     /**
-     * Sweeps all marked flow execution by the callback for GC.
+     * Sweeps all marked page flow instance with the specified callback.
      *
      * @param callback $gcCallback
      */

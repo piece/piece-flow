@@ -97,9 +97,9 @@ class ContinuationServer
     }
 
     /**
-     * Invokes a flow and returns a flow execution ticket.
+     * Activates a page flow instance.
      *
-     * @param mixed   $payload
+     * @param mixed $payload
      */
     public function activate($payload)
     {
@@ -197,7 +197,7 @@ class ContinuationServer
     }
 
     /**
-     * Generates a flow execution ticket.
+     * Generates the ID for a page flow instance.
      *
      * @throws \Piece\Flow\Continuation\SecurityException
      */
@@ -220,8 +220,7 @@ class ContinuationServer
     }
 
     /**
-     * Prepares a flow execution ticket, a flow ID, and whether the
-     * flow invocation is the first time or not.
+     * Creates a page flow instance.
      *
      * @param mixed $payload
      * @return \Piece\Flow\Continuation\PageFlowInstance

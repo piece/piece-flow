@@ -40,7 +40,7 @@ namespace Piece\Flow\Continuation;
 use Piece\Flow\PageFlow\PageFlowRepository;
 
 /**
- * The container class for all flow executions in the continuation server.
+ * The repository for the page flow instances.
  *
  * @package    Piece_Flow
  * @copyright  2007-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
@@ -75,7 +75,7 @@ class PageFlowInstanceRepository
     }
 
     /**
-     * Adds a page flow definition.
+     * Adds a page flow into the page flow repository.
      *
      * @param string $pageFlowID
      * @param boolean $exclusive
@@ -89,7 +89,7 @@ class PageFlowInstanceRepository
     }
 
     /**
-     * Removes a flow execution.
+     * Removes a page flow instance.
      *
      * @param \Piece\Flow\Continuation\PageFlowInstance $pageFlowInstance
      */
@@ -103,7 +103,7 @@ class PageFlowInstanceRepository
     }
 
     /**
-     * Adds a PageFlow object to the list of PageFlowInstance objects.
+     * Adds a page flow instance to this repository.
      *
      * @param \Piece\Flow\Continuation\PageFlowInstance $pageFlowInstance
      */
@@ -121,8 +121,8 @@ class PageFlowInstanceRepository
     }
 
     /**
-     * Returns whether the given flow ID has the exclusive flow execution
-     * or not.
+     * Returns whether or not the specified page flow has one or more exclusive
+     * instances.
      *
      * @param string $pageFlowID
      * @return boolean
@@ -170,7 +170,8 @@ class PageFlowInstanceRepository
     }
 
     /**
-     * Checks whether the specified page flow is exclusive or not.
+     * Checks whether or not the page flow of the specified page flow instance
+     * is exclusive.
      *
      * @param \Piece\Flow\Continuation\PageFlowInstance $pageFlowInstance
      * @return boolean
