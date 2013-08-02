@@ -37,8 +37,6 @@
 
 namespace Piece\Flow\Continuation;
 
-use Stagehand\FSM\State;
-
 use Piece\Flow\PageFlow\ActionInvoker;
 use Piece\Flow\PageFlow\IPageFlow;
 use Piece\Flow\PageFlow\PageFlow;
