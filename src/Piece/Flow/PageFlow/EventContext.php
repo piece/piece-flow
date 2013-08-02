@@ -4,7 +4,7 @@
 /**
  * PHP version 5.3
  *
- * Copyright (c) 2012 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2012-2013 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2012 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2012-2013 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      File available since Release 2.0.0
@@ -37,11 +37,11 @@
 
 namespace Piece\Flow\PageFlow;
 
-use Stagehand\FSM\Event;
+use Stagehand\FSM\Event\EventInterface;
 
 /**
  * @package    Piece_Flow
- * @copyright  2012 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2012-2013 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      Class available since Release 2.0.0
@@ -49,7 +49,7 @@ use Stagehand\FSM\Event;
 class EventContext
 {
     /**
-     * @var \Stagehand\FSM\Event
+     * @var \Stagehand\FSM\Event\EventInterface
      */
     protected $event;
 
@@ -64,11 +64,11 @@ class EventContext
     protected $pageFlow;
 
     /**
-     * @param \Stagehand\FSM\Event $event
+     * @param \Stagehand\FSM\Event\EventInterface $event
      * @param mixed $payload
      * @param \Piece\Flow\PageFlow\PageFlow $pageFlow
      */
-    public function __construct(Event $event, $payload, PageFlow $pageFlow)
+    public function __construct(EventInterface $event, $payload, PageFlow $pageFlow)
     {
         $this->event = $event;
         $this->payload = $payload;
@@ -76,7 +76,7 @@ class EventContext
     }
 
     /**
-     * @return \Stagehand\FSM\Event
+     * @return \Stagehand\FSM\Event\EventInterface
      */
     public function getEvent()
     {

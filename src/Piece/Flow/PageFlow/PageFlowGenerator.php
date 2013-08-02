@@ -4,7 +4,7 @@
 /**
  * PHP version 5.3
  *
- * Copyright (c) 2007-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2007-2008, 2012-2013 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2007-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2007-2008, 2012-2013 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      File available since Release 1.14.0
@@ -37,17 +37,15 @@
 
 namespace Piece\Flow\PageFlow;
 
-use Stagehand\FSM\Event;
-use Stagehand\FSM\FSMBuilder;
-use Stagehand\FSM\State;
+use Stagehand\FSM\Event\EventInterface;
+use Stagehand\FSM\StateMachine\StateMachineBuilder;
+use Stagehand\FSM\State\StateInterface;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Yaml\Yaml;
 
 /**
- * The configuration generator for PageFlow objects.
- *
  * @package    Piece_Flow
- * @copyright  2007-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2007-2008, 2012-2013 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      Class available since Release 1.14.0
@@ -66,7 +64,7 @@ class PageFlowGenerator
     protected $pageFlowRegistry;
 
     /**
-     * @var \Stagehand\FSM\FSMBuilder
+     * @var \Stagehand\FSM\StateMachine\StateMachineBuilder
      * @since Property available since Release 2.0.0
      */
     protected $fsmBuilder;
@@ -79,7 +77,7 @@ class PageFlowGenerator
     {
         $this->pageFlow = new PageFlow($id);
         $this->pageFlowRegistry = $pageFlowRegistry;
-        $this->fsmBuilder = new FSMBuilder($this->pageFlow->getID());
+        $this->fsmBuilder = new StateMachineBuilder($this->pageFlow->getID());
     }
 
     /**
@@ -90,18 +88,39 @@ class PageFlowGenerator
     public function generate()
     {
         $definition = $this->readDefinition();
-        if (State::isProtectedState($definition['firstState'])) {
+        if (in_array($definition['firstState'], array(StateInterface::STATE_INITIAL, StateInterface::STATE_FINAL))) {
             throw new ProtectedStateException("The state [ {$definition['firstState']} ] cannot be used in flow definitions.");
         }
 
-        $this->fsmBuilder->setStartState($definition['firstState']);
+        $states = array_merge(
+            $definition['viewState'],
+            $definition['actionState'],
+            empty($definition['lastState']) ? array() : array($definition['lastState'])
+        );
+        foreach ($states as $state) {
+            if (in_array($state['name'], array(StateInterface::STATE_INITIAL, StateInterface::STATE_FINAL))) {
+                throw new ProtectedStateException("The state [ {$state['name']} ] cannot be used in flow definitions.");
+            }
+
+            $this->fsmBuilder->addState($state['name']);
+        }
+
+        if (empty($definition['initial'])) {
+            $this->fsmBuilder->setStartState($definition['firstState']);
+        } else {
+            $this->fsmBuilder->setStartState($definition['firstState'], $this->wrapAction($definition['initial']));
+        }
 
         if (!empty($definition['lastState'])) {
-            if (State::isProtectedState($definition['lastState']['name'])) {
+            if (in_array($definition['lastState']['name'], array(StateInterface::STATE_INITIAL, StateInterface::STATE_FINAL))) {
                 throw new ProtectedStateException("The state [ {$definition['lastState']['name']} ] cannot be used in flow definitions.");
             }
 
-            $this->fsmBuilder->addTransition($definition['lastState']['name'], Event::EVENT_END, State::STATE_FINAL);
+            if (empty($definition['final'])) {
+                $this->fsmBuilder->setEndState($definition['lastState']['name'], IPageFlow::EVENT_END);
+            } else {
+                $this->fsmBuilder->setEndState($definition['lastState']['name'], IPageFlow::EVENT_END, $this->wrapAction($definition['final']));
+            }
             $this->configureViewState($definition['lastState']);
             $this->pageFlow->addEndState($definition['lastState']['name']);
             $this->pageFlow->addView($definition['lastState']['name'], $definition['lastState']['view']);
@@ -110,15 +129,7 @@ class PageFlowGenerator
         $this->configureViewStates($definition['viewState']);
         $this->configureActionStates($definition['actionState']);
 
-        if (!empty($definition['initial'])) {
-            $this->fsmBuilder->setExitAction(State::STATE_INITIAL, $this->wrapAction($definition['initial']));
-        }
-
-        if (!empty($definition['final'])) {
-            $this->fsmBuilder->setEntryAction(State::STATE_FINAL, $this->wrapAction($definition['final']));
-        }
-
-        $this->pageFlow->setFSM($this->fsmBuilder->getFSM());
+        $this->pageFlow->setFSM($this->fsmBuilder->getStateMachine());
 
         return $this->pageFlow;
     }
@@ -131,11 +142,7 @@ class PageFlowGenerator
      */
     protected function configureViewStates(array $states)
     {
-        foreach ($states as $key => $state) {
-            if (State::isProtectedState($state['name'])) {
-                throw new ProtectedStateException("The state [ {$state['name']} ] cannot be used in flow definitions.");
-            }
-
+        foreach ($states as $state) {
             $this->configureViewState($state);
             $this->pageFlow->addView($state['name'], $state['view']);
         }
@@ -149,11 +156,7 @@ class PageFlowGenerator
      */
     protected function configureActionStates(array $states)
     {
-        foreach ($states as $key => $state) {
-            if (State::isProtectedState($state['name'])) {
-                throw new ProtectedStateException("The state [ {$state['name']} ] cannot be used in flow definitions.");
-            }
-
+        foreach ($states as $state) {
             $this->configureState($state);
         }
     }
@@ -168,7 +171,7 @@ class PageFlowGenerator
     {
         for ($i = 0, $count = count(@$state['transition']); $i < $count; ++$i) {
             if ($state['transition'][$i]['event'] == PageFlow::EVENT_PROTECTED
-                || Event::isProtectedEvent($state['transition'][$i]['event'])
+                || in_array($state['transition'][$i]['event'], array(EventInterface::EVENT_ENTRY, EventInterface::EVENT_EXIT, EventInterface::EVENT_START, EventInterface::EVENT_DO))
                 ) {
                 throw new ProtectedEventException("The event [ {$state['transition'][$i]['event']} ] cannot be used in flow definitions.");
             }

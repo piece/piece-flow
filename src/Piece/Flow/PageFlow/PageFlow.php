@@ -4,7 +4,7 @@
 /**
  * PHP version 5.3
  *
- * Copyright (c) 2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2006-2008, 2012-2013 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2008, 2012-2013 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @link       http://www.martinfowler.com/eaaCatalog/applicationController.html
@@ -41,9 +41,9 @@
 
 namespace Piece\Flow\PageFlow;
 
-use Stagehand\FSM\Event;
-use Stagehand\FSM\FSM;
-use Stagehand\FSM\State;
+use Stagehand\FSM\Event\EventInterface;
+use Stagehand\FSM\StateMachine\StateMachine;
+use Stagehand\FSM\State\StateInterface;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 /**
@@ -56,7 +56,7 @@ use Symfony\Component\HttpFoundation\ParameterBag;
  * the application will be put under control of it.
  *
  * @package    Piece_Flow
- * @copyright  2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2008, 2012-2013 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @link       http://www.martinfowler.com/eaaCatalog/applicationController.html
@@ -130,10 +130,10 @@ class PageFlow implements IPageFlow
     }
 
     /**
-     * @param \Stagehand\FSM\FSM $fsm
+     * @param \Stagehand\FSM\StateMachine\StateMachine $fsm
      * @since Method available since Release 2.0.0
      */
-    public function setFSM(FSM $fsm)
+    public function setFSM(StateMachine $fsm)
     {
         $this->fsm = $fsm;
     }
@@ -160,11 +160,11 @@ class PageFlow implements IPageFlow
         if (!$this->isActive()) return null;
 
         $state = $this->isInFinalState() ? $this->getPreviousState() : $this->getCurrentState();
-        if (!array_key_exists($state->getID(), $this->views)) {
+        if (!array_key_exists($state->getStateID(), $this->views)) {
             throw new IncompleteTransitionException(sprintf('An invalid transition detected. The state [ %s ] does not have a view. Maybe the state [ %s ] is an action state. Check the definition for [ %s ].', $state->getID(), $state->getID(), $this->getID()));
         }
 
-        return $this->views[ $state->getID() ];
+        return $this->views[ $state->getStateID() ];
     }
 
     public function getID()
@@ -194,15 +194,15 @@ class PageFlow implements IPageFlow
             throw new PageFlowNotActivatedException('The page flow must be activated to trigger any event.');
         }
 
-        if (Event::isProtectedEvent($eventID)) {
+        if (in_array($eventID, array(EventInterface::EVENT_ENTRY, EventInterface::EVENT_EXIT, EventInterface::EVENT_START, EventInterface::EVENT_DO))) {
             $eventID = self::EVENT_PROTECTED;
         }
 
-        $this->receivedValidEvent = $this->fsm->hasEvent($eventID);
+        $this->receivedValidEvent = !is_null($this->fsm->getCurrentState()->getEvent($eventID));
 
         $this->fsm->triggerEvent($eventID, false);
-        if (in_array($this->fsm->getCurrentState()->getID(), $this->endStates)) {
-            $this->fsm->triggerEvent(Event::EVENT_END);
+        if (in_array($this->fsm->getCurrentState()->getStateID(), $this->endStates)) {
+            $this->fsm->triggerEvent(IPageFlow::EVENT_END);
         }
 
         return $this->fsm->getCurrentState();
@@ -236,7 +236,7 @@ class PageFlow implements IPageFlow
     {
         $currentState = $this->getCurrentState();
         if (is_null($currentState)) return false;
-        return $currentState->getID() == State::STATE_FINAL;
+        return $currentState->getStateID() == StateInterface::STATE_FINAL;
     }
 
     /**

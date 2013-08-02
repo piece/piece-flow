@@ -4,7 +4,7 @@
 /**
  * PHP version 5.3
  *
- * Copyright (c) 2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2006-2008, 2012-2013 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2008, 2012-2013 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      File available since Release 0.1.0
@@ -37,13 +37,12 @@
 
 namespace Piece\Flow\PageFlow;
 
-use Stagehand\FSM\Event;
-use Stagehand\FSM\FSMAlreadyShutdownException;
-use Stagehand\FSM\State;
+use Stagehand\FSM\Event\EventInterface;
+use Stagehand\FSM\State\StateInterface;
 
 /**
  * @package    Piece_Flow
- * @copyright  2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2008, 2012-2013 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
@@ -93,8 +92,8 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
         $pageFlow->triggerEvent('next');
         $pageFlow->triggerEvent('next');
 
-        $this->assertThat($pageFlow->getCurrentState()->getID(), $this->equalTo(State::STATE_FINAL));
-        $this->assertThat($pageFlow->getPreviousState()->getID(), $this->equalTo('Finish'));
+        $this->assertThat($pageFlow->getCurrentState()->getStateID(), $this->equalTo(StateInterface::STATE_FINAL));
+        $this->assertThat($pageFlow->getPreviousState()->getStateID(), $this->equalTo('Finish'));
         $this->assertThat($pageFlow->isInFinalState(), $this->isTrue());
         \Phake::verify($actionInvoker)->invoke('onValidation', $this->anything());
         \Phake::verify($actionInvoker)->invoke('onRegistration', $this->anything());
@@ -120,12 +119,12 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
      */
     public function replacesATriggeredEventWithTheBuiltinEventForProtectedEventsIfTheEventIsProtected()
     {
-        $fsm = \Phake::mock('Stagehand\FSM\FSM');
-        \Phake::when($fsm)->getCurrentState()->thenReturn(\Phake::mock('Stagehand\FSM\IState'));
-        \Phake::when($fsm)->triggerEvent($this->anything(), $this->anything())->thenReturn(\Phake::mock('Stagehand\FSM\IState'));
+        $fsm = \Phake::mock('Stagehand\FSM\StateMachine\StateMachine');
+        \Phake::when($fsm)->getCurrentState()->thenReturn(\Phake::mock('Stagehand\FSM\State\StateInterface'));
+        \Phake::when($fsm)->triggerEvent($this->anything(), $this->anything())->thenReturn(\Phake::mock('Stagehand\FSM\State\StateInterface'));
         $pageFlow = new PageFlow('foo');
         $pageFlow->setFSM($fsm);
-        $pageFlow->triggerEvent(EVENT::EVENT_EXIT);
+        $pageFlow->triggerEvent(EventInterface::EVENT_EXIT);
 
         \Phake::verify($fsm)->triggerEvent($this->equalTo(PageFlow::EVENT_PROTECTED), $this->anything());
     }

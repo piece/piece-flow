@@ -4,7 +4,7 @@
 /**
  * PHP version 5.3
  *
- * Copyright (c) 2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2006-2008, 2012-2013 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2008, 2012-2013 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      File available since Release 0.1.0
@@ -37,13 +37,11 @@
 
 namespace Piece\Flow\PageFlow;
 
-use Stagehand\FSM\Event;
-use Stagehand\FSM\FSM;
-use Stagehand\FSM\State;
+use Stagehand\FSM\StateMachine\StateMachine;
 
 /**
  * @package    Piece_Flow
- * @copyright  2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2008, 2012-2013 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
@@ -58,10 +56,10 @@ class EventHandlerTest extends \PHPUnit_Framework_TestCase
     {
         $pageFlow = \Phake::mock('Piece\Flow\PageFlow\PageFlow');
         \Phake::when($pageFlow)->invokeAction($this->anything(), $this->anything())->thenReturn('foo');
-        $event = new Event('bar');
+        $event = \Phake::mock('Stagehand\FSM\Event\EventInterface');
         $payload = new \stdClass();
         $eventHandler = new EventHandler('my_controller:onRegister', $pageFlow);
-        $nextEvent = $eventHandler->invokeAction($event, $payload, new FSM());
+        $nextEvent = $eventHandler->invokeAction($event, $payload, new StateMachine());
 
         $this->assertThat($nextEvent, $this->equalTo('foo'));
         \Phake::verify($pageFlow)->invokeAction('my_controller:onRegister', \Phake::capture($eventContext)); /* @var $eventContext \Piece\Flow\PageFlow\EventContext */
@@ -76,11 +74,13 @@ class EventHandlerTest extends \PHPUnit_Framework_TestCase
      */
     public function invokesTheActionAndTriggersTheNextEvent()
     {
-        $fsm = \Phake::mock('Stagehand\FSM\FSM');
-        \Phake::when($fsm)->hasEvent($this->anything())->thenReturn(true);
+        $event = \Phake::mock('Stagehand\FSM\Event\EventInterface');
+        $state = \Phake::mock('Stagehand\FSM\State\StateInterface');
+        \Phake::when($state)->getEvent($this->anything())->thenReturn($event);
+        $fsm = \Phake::mock('Stagehand\FSM\StateMachine\StateMachine');
+        \Phake::when($fsm)->getCurrentState()->thenReturn($state);
         $pageFlow = \Phake::mock('Piece\Flow\PageFlow\PageFlow');
         \Phake::when($pageFlow)->invokeAction($this->anything(), $this->anything())->thenReturn('foo');
-        $event = new Event('bar');
         $payload = new \stdClass();
         $eventHandler = new EventHandler('my_controller:onRegister', $pageFlow);
         $eventHandler->invokeActionAndTriggerEvent($event, $payload, $fsm);
@@ -90,7 +90,8 @@ class EventHandlerTest extends \PHPUnit_Framework_TestCase
         $this->assertThat($eventContext->getPageFlow(), $this->identicalTo($pageFlow));
         $this->assertThat($eventContext->getPayload(), $this->identicalTo($payload));
 
-        \Phake::verify($fsm)->hasEvent('foo');
+        \Phake::verify($fsm)->getCurrentState();
+        \Phake::verify($state)->getEvent($this->equalTo('foo'));
         \Phake::verify($fsm)->queueEvent('foo');
     }
 
@@ -101,12 +102,13 @@ class EventHandlerTest extends \PHPUnit_Framework_TestCase
      */
     public function raisesAnExceptionWhenTheNextEventIsNotFound()
     {
-        $fsm = \Phake::mock('Stagehand\FSM\FSM');
-        \Phake::when($fsm)->hasEvent($this->anything())->thenReturn(false);
-        \Phake::when($fsm)->getCurrentState()->thenReturn(new State('foo'));
+        $event = \Phake::mock('Stagehand\FSM\Event\EventInterface');
+        $state = \Phake::mock('Stagehand\FSM\State\StateInterface');
+        \Phake::when($state)->getEvent($this->anything())->thenReturn(null);
+        $fsm = \Phake::mock('Stagehand\FSM\StateMachine\StateMachine');
+        \Phake::when($fsm)->getCurrentState()->thenReturn($state);
         $pageFlow = \Phake::mock('Piece\Flow\PageFlow\PageFlow');
         \Phake::when($pageFlow)->invokeAction($this->anything(), $this->anything())->thenReturn('foo');
-        $event = new Event('bar');
         $payload = new \stdClass();
         $eventHandler = new EventHandler('my_controller:onRegister', $pageFlow);
         $eventHandler->invokeActionAndTriggerEvent($event, $payload, $fsm);

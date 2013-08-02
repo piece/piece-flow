@@ -4,7 +4,7 @@
 /**
  * PHP version 5.3
  *
- * Copyright (c) 2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2006-2008, 2012-2013 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2008, 2012-2013 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      File available since Release 0.1.0
@@ -37,14 +37,14 @@
 
 namespace Piece\Flow\PageFlow;
 
-use Stagehand\FSM\Event;
-use Stagehand\FSM\FSM;
+use Stagehand\FSM\Event\EventInterface;
+use Stagehand\FSM\StateMachine\StateMachine;
 
 /**
  * The event handler to handle all events raised on the specified PageFlow object.
  *
  * @package    Piece_Flow
- * @copyright  2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2008, 2012-2013 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      Class available since Release 0.1.0
@@ -74,12 +74,12 @@ class EventHandler
     /**
      * Invokes the action with the event context.
      *
-     * @param \Stagehand\FSM\Event $event
+     * @param \Stagehand\FSM\Event\EventInterface $event
      * @param mixed $payload
-     * @param \Stagehand\FSM\FSM $fsm
+     * @param \Stagehand\FSM\StateMachine\StateMachine $fsm
      * @return string
      */
-    public function invokeAction(Event $event, $payload, FSM $fsm)
+    public function invokeAction(EventInterface $event, $payload, StateMachine $fsm)
     {
         return $this->pageFlow->invokeAction($this->actionID, new EventContext($event, $payload, $this->pageFlow));
     }
@@ -88,23 +88,23 @@ class EventHandler
      * Invokes the action with the event context and triggers an event returned
      * from the action.
      *
-     * @param \Stagehand\FSM\Event $event
+     * @param \Stagehand\FSM\Event\EventInterface $event
      * @param mixed $payload
-     * @param \Stagehand\FSM\FSM $fsm
+     * @param \Stagehand\FSM\StateMachine\StateMachine $fsm
      * @throws \Piece\Flow\PageFlow\EventNotFoundException
      */
-    public function invokeActionAndTriggerEvent(Event $event, $payload, FSM $fsm)
+    public function invokeActionAndTriggerEvent(EventInterface $event, $payload, StateMachine $fsm)
     {
         $eventID = $this->invokeAction($event, $payload, $fsm);
         if (!is_null($eventID)) {
-            if ($fsm->hasEvent($eventID)) {
+            if (!is_null($fsm->getCurrentState()->getEvent($eventID))) {
                 $fsm->queueEvent($eventID);
             } else {
                 throw new EventNotFoundException(sprintf(
                     'The event [ %s ] returned from the action [ %s ] is not found on the current state [ %s ].',
                     $eventID,
                     $this->actionID,
-                    $fsm->getCurrentState()->getID()
+                    $fsm->getCurrentState()->getStateID()
                 ));
             }
         }
