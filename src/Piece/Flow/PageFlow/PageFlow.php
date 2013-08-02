@@ -65,7 +65,7 @@ use Symfony\Component\HttpFoundation\ParameterBag;
  * @link       http://www-06.ibm.com/jp/developerworks/java/060412/j_j-cb03216.shtml
  * @since      Class available since Release 0.1.0
  */
-class PageFlow implements IPageFlow
+class PageFlow implements PageFlowInterface
 {
     /**
      * @since Constant available since Release 2.0.0
@@ -202,7 +202,7 @@ class PageFlow implements IPageFlow
 
         $this->fsm->triggerEvent($eventID, false);
         if (in_array($this->fsm->getCurrentState()->getStateID(), $this->endStates)) {
-            $this->fsm->triggerEvent(IPageFlow::EVENT_END);
+            $this->fsm->triggerEvent(PageFlowInterface::EVENT_END);
         }
 
         return $this->fsm->getCurrentState();

@@ -117,9 +117,9 @@ class PageFlowGenerator
             }
 
             if (empty($definition['final'])) {
-                $this->fsmBuilder->setEndState($definition['lastState']['name'], IPageFlow::EVENT_END);
+                $this->fsmBuilder->setEndState($definition['lastState']['name'], PageFlowInterface::EVENT_END);
             } else {
-                $this->fsmBuilder->setEndState($definition['lastState']['name'], IPageFlow::EVENT_END, $this->wrapAction($definition['final']));
+                $this->fsmBuilder->setEndState($definition['lastState']['name'], PageFlowInterface::EVENT_END, $this->wrapAction($definition['final']));
             }
             $this->configureViewState($definition['lastState']);
             $this->pageFlow->addEndState($definition['lastState']['name']);

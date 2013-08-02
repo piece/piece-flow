@@ -38,8 +38,8 @@
 namespace Piece\Flow\Continuation;
 
 use Piece\Flow\PageFlow\ActionInvoker;
-use Piece\Flow\PageFlow\IPageFlow;
 use Piece\Flow\PageFlow\PageFlow;
+use Piece\Flow\PageFlow\PageFlowInterface;
 
 /**
  * @package    Piece_Flow
@@ -48,7 +48,7 @@ use Piece\Flow\PageFlow\PageFlow;
  * @version    Release: @package_version@
  * @since      Class available since Release 2.0.0
  */
-class PageFlowInstance implements IPageFlow
+class PageFlowInstance implements PageFlowInterface
 {
     /**
      * @var string
