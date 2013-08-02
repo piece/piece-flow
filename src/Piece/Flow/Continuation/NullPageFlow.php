@@ -37,7 +37,7 @@
 
 namespace Piece\Flow\Continuation;
 
-use Piece\Flow\PageFlow\ActionInvoker;
+use Piece\Flow\PageFlow\ActionInvokerInterface;
 use Piece\Flow\PageFlow\PageFlowInterface;
 
 /**
@@ -97,7 +97,7 @@ class NullPageFlow implements PageFlowInterface
         return false;
     }
 
-    public function setActionInvoker(ActionInvoker $actionInvoker)
+    public function setActionInvoker(ActionInvokerInterface $actionInvoker)
     {
     }
 

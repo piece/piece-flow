@@ -308,7 +308,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $pageFlowInstanceRepository = $this->createPageFlowInstanceRepository();
         $pageFlowInstanceRepository->addPageFlow('Counter', false);
         $continuationServer = new ContinuationServer($pageFlowInstanceRepository, new GC($expirationTime, $clock));
-        $continuationServer->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
+        $continuationServer->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvokerInterface'));
         $continuationServer->setContinuationContextProvider($this->continuationContextProvider);
 
         $this->pageFlowID = 'Counter';
@@ -388,11 +388,11 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return \Piece\Flow\PageFlow\ActionInvoker
+     * @return \Piece\Flow\PageFlow\ActionInvokerInterface
      */
     protected function createCounterActionInvoker()
     {
-        $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
+        $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvokerInterface');
         \Phake::when($actionInvoker)->invoke('setup', $this->anything())->thenGetReturnByLambda(function ($actionID, EventContext $eventContext) {
             $eventContext->getPageFlow()->getAttributes()->set('counter', 0);
         });

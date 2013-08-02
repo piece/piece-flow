@@ -89,7 +89,7 @@ class PageFlow implements PageFlowInterface
     protected $receivedValidEvent;
 
     /**
-     * @var \Piece\Flow\PageFlow\ActionInvoker
+     * @var \Piece\Flow\PageFlow\ActionInvokerInterface
      * @since Property available since Release 2.0.0
      */
     protected $actionInvoker;
@@ -150,7 +150,7 @@ class PageFlow implements PageFlowInterface
     /**
      * @since Method available since Release 2.0.0
      */
-    public function setActionInvoker(ActionInvoker $actionInvoker)
+    public function setActionInvoker(ActionInvokerInterface $actionInvoker)
     {
         $this->actionInvoker = $actionInvoker;
     }

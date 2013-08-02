@@ -66,7 +66,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
     public function getsTheViewOfTheCurrentState()
     {
         $pageFlow = $this->pageFlowFactory->create('Registration');
-        $pageFlow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
+        $pageFlow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvokerInterface'));
 
         $this->assertThat($pageFlow->getCurrentView(), $this->isNull());
 
@@ -80,7 +80,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
      */
     public function triggersAnEvent()
     {
-        $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvoker');
+        $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvokerInterface');
         \Phake::when($actionInvoker)->invoke('onValidation', $this->anything())->thenReturn('valid');
         \Phake::when($actionInvoker)->invoke('onRegistration', $this->anything())->thenReturn('done');
         $pageFlow = $this->pageFlowFactory->create('Registration');
@@ -135,7 +135,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
     public function accessesTheAttributes()
     {
         $pageFlow = $this->pageFlowFactory->create('Registration');
-        $pageFlow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
+        $pageFlow->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvokerInterface'));
         $pageFlow->start();
         $pageFlow->getAttributes()->set('foo', 'bar');
 
@@ -151,7 +151,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
      */
     public function raisesAnExceptionWhenThePageFlowDefinitionHasAProtectedEvent()
     {
-        $this->pageFlowFactory->create('ProtectedEvent', \Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
+        $this->pageFlowFactory->create('ProtectedEvent', \Phake::mock('Piece\Flow\PageFlow\ActionInvokerInterface'));
     }
 
     /**
@@ -162,7 +162,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
      */
     public function raisesAnExceptionWhenThePageFlowDefinitionHasAProtectedState()
     {
-        $this->pageFlowFactory->create('ProtectedState', \Phake::mock('Piece\Flow\PageFlow\ActionInvoker'));
+        $this->pageFlowFactory->create('ProtectedState', \Phake::mock('Piece\Flow\PageFlow\ActionInvokerInterface'));
     }
 }
 

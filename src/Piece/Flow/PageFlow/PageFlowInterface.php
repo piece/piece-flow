@@ -97,9 +97,9 @@ interface PageFlowInterface
     public function isInFinalState();
 
     /**
-     * @param \Piece\Flow\PageFlow\ActionInvoker $actionInvoker
+     * @param \Piece\Flow\PageFlow\ActionInvokerInterface $actionInvoker
      */
-    public function setActionInvoker(ActionInvoker $actionInvoker);
+    public function setActionInvoker(ActionInvokerInterface $actionInvoker);
 
     /**
      * Sets a user defined payload.

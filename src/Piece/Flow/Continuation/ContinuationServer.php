@@ -37,7 +37,7 @@
 
 namespace Piece\Flow\Continuation;
 
-use Piece\Flow\PageFlow\ActionInvoker;
+use Piece\Flow\PageFlow\ActionInvokerInterface;
 
 /**
  * The continuation server.
@@ -54,7 +54,7 @@ class ContinuationServer
     protected $pageFlowInstanceRepository;
 
     /**
-     * @var \Piece\Flow\PageFlow\ActionInvoker
+     * @var \Piece\Flow\PageFlow\ActionInvokerInterface
      * @since Property available since Release 2.0.0
      */
     protected $actionInvoker;
@@ -161,10 +161,10 @@ class ContinuationServer
     /**
      * Sets the action invoker.
      *
-     * @param \Piece\Flow\PageFlow\ActionInvoker $actionInvoker
+     * @param \Piece\Flow\PageFlow\ActionInvokerInterface $actionInvoker
      * @since Method available since Release 2.0.0
      */
-    public function setActionInvoker(ActionInvoker $actionInvoker)
+    public function setActionInvoker(ActionInvokerInterface $actionInvoker)
     {
         $this->actionInvoker = $actionInvoker;
     }
