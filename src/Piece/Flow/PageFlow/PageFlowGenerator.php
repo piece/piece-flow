@@ -37,11 +37,17 @@
 
 namespace Piece\Flow\PageFlow;
 
+use Stagehand\FSM\Event\DoEvent;
+use Stagehand\FSM\Event\EntryEvent;
 use Stagehand\FSM\Event\EventInterface;
+use Stagehand\FSM\Event\ExitEvent;
 use Stagehand\FSM\StateMachine\StateMachineBuilder;
 use Stagehand\FSM\State\StateInterface;
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Yaml\Yaml;
+
+use Piece\Flow\PageFlow\State\ActionState;
+use Piece\Flow\PageFlow\State\ViewState;
 
 /**
  * @package    Piece_Flow
@@ -92,17 +98,26 @@ class PageFlowGenerator
             throw new ProtectedStateException("The state [ {$definition['firstState']} ] cannot be used in flow definitions.");
         }
 
-        $states = array_merge(
-            $definition['viewState'],
-            $definition['actionState'],
-            empty($definition['lastState']) ? array() : array($definition['lastState'])
-        );
-        foreach ($states as $state) {
+        foreach ($definition['viewState'] as $state) {
             if (in_array($state['name'], array(StateInterface::STATE_INITIAL, StateInterface::STATE_FINAL))) {
                 throw new ProtectedStateException("The state [ {$state['name']} ] cannot be used in flow definitions.");
             }
 
-            $this->fsmBuilder->addState($state['name']);
+            $this->addState(new ViewState($state['name']));
+        }
+        foreach ($definition['actionState'] as $state) {
+            if (in_array($state['name'], array(StateInterface::STATE_INITIAL, StateInterface::STATE_FINAL))) {
+                throw new ProtectedStateException("The state [ {$state['name']} ] cannot be used in flow definitions.");
+            }
+
+            $this->addState(new ActionState($state['name']));
+        }
+        if (!empty($definition['lastState'])) {
+            if (in_array($definition['lastState']['name'], array(StateInterface::STATE_INITIAL, StateInterface::STATE_FINAL))) {
+                throw new ProtectedStateException("The state [ {$definition['lastState']['name']} ] cannot be used in flow definitions.");
+            }
+
+            $this->addState(new ViewState($definition['lastState']['name']));
         }
 
         if (empty($definition['initial'])) {
@@ -118,7 +133,7 @@ class PageFlowGenerator
                 $this->fsmBuilder->setEndState($definition['lastState']['name'], PageFlowInterface::EVENT_END, $this->wrapAction($definition['final']));
             }
             $this->configureViewState($definition['lastState']);
-            $this->pageFlow->addView($definition['lastState']['name'], $definition['lastState']['view']);
+            $this->fsmBuilder->getStateMachine()->getState($definition['lastState']['name'])->setView($definition['lastState']['view']);
         }
 
         $this->configureViewStates($definition['viewState']);
@@ -139,7 +154,6 @@ class PageFlowGenerator
     {
         foreach ($states as $state) {
             $this->configureViewState($state);
-            $this->pageFlow->addView($state['name'], $state['view']);
         }
     }
 
@@ -229,6 +243,7 @@ class PageFlowGenerator
      */
     protected function configureViewState(array $state)
     {
+        $this->fsmBuilder->getStateMachine()->getState($state['name'])->setView($state['view']);
         $this->configureState($state);
     }
 
@@ -267,6 +282,18 @@ class PageFlowGenerator
             new Definition17Configuration(),
             array('definition17' => Yaml::parse($this->pageFlowRegistry->getFileName($this->pageFlow->getID())))
         );
+    }
+
+    /**
+     * @param \Stagehand\FSM\State\StateInterface $state
+     * @since Method available since Release 2.0.0
+     */
+    protected function addState(StateInterface $state)
+    {
+        $state->setEntryEvent(new EntryEvent());
+        $state->setExitEvent(new ExitEvent());
+        $state->setDoEvent(new DoEvent());
+        $this->fsmBuilder->getStateMachine()->addState($state);
     }
 }
 

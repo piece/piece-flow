@@ -46,6 +46,8 @@ use Stagehand\FSM\StateMachine\StateMachine;
 use Stagehand\FSM\State\StateInterface;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
+use Piece\Flow\PageFlow\State\ViewStateInterface;
+
 /**
  * A web flow engine for handling page flows of web applications.
  *
@@ -74,7 +76,6 @@ class PageFlow implements PageFlowInterface
 
     protected $fsm;
     protected $id;
-    protected $views = array();
 
     /**
      * @var \Symfony\Component\HttpFoundation\ParameterBag
@@ -108,19 +109,8 @@ class PageFlow implements PageFlowInterface
         return array(
             'id',
             'fsm',
-            'views',
             'attributes',
         );
-    }
-
-    /**
-     * @param string $stateID
-     * @param string $view
-     * @since Method available since Release 2.0.0
-     */
-    public function addView($stateID, $view)
-    {
-        $this->views[$stateID] = $view;
     }
 
     /**
@@ -145,11 +135,11 @@ class PageFlow implements PageFlowInterface
         if (!$this->isActive()) return null;
 
         $state = $this->isInFinalState() ? $this->getPreviousState() : $this->getCurrentState();
-        if (!array_key_exists($state->getStateID(), $this->views)) {
-            throw new IncompleteTransitionException(sprintf('An invalid transition detected. The state [ %s ] does not have a view. Maybe the state [ %s ] is an action state. Check the definition for [ %s ].', $state->getID(), $state->getID(), $this->getID()));
+        if ($state instanceof ViewStateInterface) {
+            return $state->getView();
+        } else {
+            throw new IncompleteTransitionException(sprintf('An invalid transition detected. The state [ %s ] does not have a view. Maybe the state [ %s ] is an action state. Check the definition for [ %s ].', $state->getStateID(), $state->getStateID(), $this->getID()));
         }
-
-        return $this->views[ $state->getStateID() ];
     }
 
     public function getID()
