@@ -273,7 +273,7 @@ class PageFlowGenerator
 
     /**
      * @return array
-     * @since Property available since Release 2.0.0
+     * @since Method available since Release 2.0.0
      */
     protected function readDefinition()
     {
