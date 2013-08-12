@@ -54,15 +54,17 @@ class EventHandlerTest extends \PHPUnit_Framework_TestCase
      */
     public function invokesTheAction()
     {
+        $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvokerInterface');
+        \Phake::when($actionInvoker)->invoke($this->anything(), $this->anything())->thenReturn('foo');
         $pageFlow = \Phake::mock('Piece\Flow\PageFlow\PageFlow');
-        \Phake::when($pageFlow)->invokeAction($this->anything(), $this->anything())->thenReturn('foo');
+        \Phake::when($pageFlow)->getActionInvoker()->thenReturn($actionInvoker);
         $event = \Phake::mock('Stagehand\FSM\Event\EventInterface');
         $payload = new \stdClass();
         $eventHandler = new EventHandler('my_controller:onRegister', $pageFlow);
         $nextEvent = $eventHandler->invokeAction($event, $payload, new StateMachine());
 
         $this->assertThat($nextEvent, $this->equalTo('foo'));
-        \Phake::verify($pageFlow)->invokeAction('my_controller:onRegister', \Phake::capture($eventContext)); /* @var $eventContext \Piece\Flow\PageFlow\EventContext */
+        \Phake::verify($actionInvoker)->invoke($this->equalTo('my_controller:onRegister'), \Phake::capture($eventContext)); /* @var $eventContext \Piece\Flow\PageFlow\EventContext */
         $this->assertThat($eventContext->getEvent(), $this->identicalTo($event));
         $this->assertThat($eventContext->getPageFlow(), $this->identicalTo($pageFlow));
         $this->assertThat($eventContext->getPayload(), $this->identicalTo($payload));
@@ -74,18 +76,20 @@ class EventHandlerTest extends \PHPUnit_Framework_TestCase
      */
     public function invokesTheActionAndTriggersTheNextEvent()
     {
+        $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvokerInterface');
+        \Phake::when($actionInvoker)->invoke($this->anything(), $this->anything())->thenReturn('foo');
         $event = \Phake::mock('Stagehand\FSM\Event\EventInterface');
         $state = \Phake::mock('Stagehand\FSM\State\StateInterface');
         \Phake::when($state)->getEvent($this->anything())->thenReturn($event);
         $fsm = \Phake::mock('Stagehand\FSM\StateMachine\StateMachine');
         \Phake::when($fsm)->getCurrentState()->thenReturn($state);
         $pageFlow = \Phake::mock('Piece\Flow\PageFlow\PageFlow');
-        \Phake::when($pageFlow)->invokeAction($this->anything(), $this->anything())->thenReturn('foo');
+        \Phake::when($pageFlow)->getActionInvoker()->thenReturn($actionInvoker);
         $payload = new \stdClass();
         $eventHandler = new EventHandler('my_controller:onRegister', $pageFlow);
         $eventHandler->invokeActionAndTriggerEvent($event, $payload, $fsm);
 
-        \Phake::verify($pageFlow)->invokeAction('my_controller:onRegister', \Phake::capture($eventContext)); /* @var $eventContext \Piece\Flow\PageFlow\EventContext */
+        \Phake::verify($actionInvoker)->invoke($this->equalTo('my_controller:onRegister'), \Phake::capture($eventContext)); /* @var $eventContext \Piece\Flow\PageFlow\EventContext */
         $this->assertThat($eventContext->getEvent(), $this->identicalTo($event));
         $this->assertThat($eventContext->getPageFlow(), $this->identicalTo($pageFlow));
         $this->assertThat($eventContext->getPayload(), $this->identicalTo($payload));
@@ -102,13 +106,14 @@ class EventHandlerTest extends \PHPUnit_Framework_TestCase
      */
     public function raisesAnExceptionWhenTheNextEventIsNotFound()
     {
+        $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvokerInterface');
+        \Phake::when($actionInvoker)->invoke($this->anything(), $this->anything())->thenReturn('NonExistingEventID');
         $event = \Phake::mock('Stagehand\FSM\Event\EventInterface');
         $state = \Phake::mock('Stagehand\FSM\State\StateInterface');
-        \Phake::when($state)->getEvent($this->anything())->thenReturn(null);
         $fsm = \Phake::mock('Stagehand\FSM\StateMachine\StateMachine');
         \Phake::when($fsm)->getCurrentState()->thenReturn($state);
         $pageFlow = \Phake::mock('Piece\Flow\PageFlow\PageFlow');
-        \Phake::when($pageFlow)->invokeAction($this->anything(), $this->anything())->thenReturn('foo');
+        \Phake::when($pageFlow)->getActionInvoker()->thenReturn($actionInvoker);
         $payload = new \stdClass();
         $eventHandler = new EventHandler('my_controller:onRegister', $pageFlow);
         $eventHandler->invokeActionAndTriggerEvent($event, $payload, $fsm);

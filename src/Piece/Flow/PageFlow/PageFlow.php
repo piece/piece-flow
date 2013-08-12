@@ -123,11 +123,23 @@ class PageFlow implements PageFlowInterface
     }
 
     /**
+     * {@inheritDoc}
+     *
      * @since Method available since Release 2.0.0
      */
     public function setActionInvoker(ActionInvokerInterface $actionInvoker)
     {
         $this->actionInvoker = $actionInvoker;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since Method available since Release 2.0.0
+     */
+    public function getActionInvoker()
+    {
+        return $this->actionInvoker;
     }
 
     public function getCurrentView()
@@ -221,17 +233,6 @@ class PageFlow implements PageFlowInterface
     public function validateReceivedEvent()
     {
         return $this->receivedValidEvent;
-    }
-
-    /**
-     * @param string $actionID
-     * @param \Piece\Flow\PageFlow\EventContext $eventContext
-     * @return string
-     * @since Method available since Release 2.0.0
-     */
-    public function invokeAction($actionID, EventContext $eventContext)
-    {
-        return $this->actionInvoker->invoke($actionID, $eventContext);
     }
 
     /**

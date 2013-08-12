@@ -81,7 +81,7 @@ class EventHandler
      */
     public function invokeAction(EventInterface $event, $payload, StateMachine $fsm)
     {
-        return $this->pageFlow->invokeAction($this->actionID, new EventContext($event, $payload, $this->pageFlow));
+        return $this->pageFlow->getActionInvoker()->invoke($this->actionID, new EventContext($event, $payload, $this->pageFlow));
     }
 
     /**

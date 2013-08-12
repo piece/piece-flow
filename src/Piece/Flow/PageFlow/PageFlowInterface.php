@@ -102,6 +102,11 @@ interface PageFlowInterface
     public function setActionInvoker(ActionInvokerInterface $actionInvoker);
 
     /**
+     * @return \Piece\Flow\PageFlow\ActionInvokerInterface
+     */
+    public function getActionInvoker();
+
+    /**
      * Sets a user defined payload.
      *
      * @param mixed $payload
