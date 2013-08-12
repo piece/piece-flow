@@ -122,7 +122,6 @@ class PageFlowGenerator
                 $this->fsmBuilder->setEndState($definition['lastState']['name'], PageFlowInterface::EVENT_END, $this->wrapAction($definition['final']));
             }
             $this->configureViewState($definition['lastState']);
-            $this->pageFlow->addEndState($definition['lastState']['name']);
             $this->pageFlow->addView($definition['lastState']['name'], $definition['lastState']['view']);
         }
 

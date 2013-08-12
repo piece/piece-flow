@@ -81,11 +81,6 @@ class PageFlow implements PageFlowInterface
      */
     protected $attributes;
 
-    /**
-     * @var array
-     */
-    protected $endStates = array();
-
     protected $receivedValidEvent;
 
     /**
@@ -115,7 +110,6 @@ class PageFlow implements PageFlowInterface
             'fsm',
             'views',
             'attributes',
-            'endStates',
         );
     }
 
@@ -136,15 +130,6 @@ class PageFlow implements PageFlowInterface
     public function setFSM(StateMachine $fsm)
     {
         $this->fsm = $fsm;
-    }
-
-    /**
-     * @param string $stateID
-     * @since Method available since Release 2.0.0
-     */
-    public function addEndState($stateID)
-    {
-        $this->endStates[] = $stateID;
     }
 
     /**
@@ -201,7 +186,8 @@ class PageFlow implements PageFlowInterface
         $this->receivedValidEvent = !is_null($this->fsm->getCurrentState()->getEvent($eventID));
 
         $this->fsm->triggerEvent($eventID, false);
-        if (in_array($this->fsm->getCurrentState()->getStateID(), $this->endStates)) {
+
+        if ($this->fsm->getCurrentState()->isEndState()) {
             $this->fsm->triggerEvent(PageFlowInterface::EVENT_END);
         }
 
