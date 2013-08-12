@@ -112,10 +112,6 @@ class PageFlowGenerator
         }
 
         if (!empty($definition['lastState'])) {
-            if (in_array($definition['lastState']['name'], array(StateInterface::STATE_INITIAL, StateInterface::STATE_FINAL))) {
-                throw new ProtectedStateException("The state [ {$definition['lastState']['name']} ] cannot be used in flow definitions.");
-            }
-
             if (empty($definition['final'])) {
                 $this->fsmBuilder->setEndState($definition['lastState']['name'], PageFlowInterface::EVENT_END);
             } else {
