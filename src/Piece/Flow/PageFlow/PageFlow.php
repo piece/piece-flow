@@ -70,11 +70,8 @@ use Piece\Flow\PageFlow\State\ViewStateInterface;
  * @link       http://www-06.ibm.com/jp/developerworks/java/060412/j_j-cb03216.shtml
  * @since      Class available since Release 0.1.0
  */
-class PageFlow implements PageFlowInterface
+class PageFlow extends StateMachine implements PageFlowInterface
 {
-    protected $fsm;
-    protected $id;
-
     /**
      * @var \Symfony\Component\HttpFoundation\ParameterBag
      */
@@ -98,7 +95,8 @@ class PageFlow implements PageFlowInterface
      */
     public function __construct($id)
     {
-        $this->id = $id;
+        parent::__construct($id);
+
         $this->attributes = new ParameterBag();
     }
 
@@ -108,20 +106,7 @@ class PageFlow implements PageFlowInterface
      */
     public function __sleep()
     {
-        return array(
-            'id',
-            'fsm',
-            'attributes',
-        );
-    }
-
-    /**
-     * @param \Stagehand\FSM\StateMachine\StateMachine $fsm
-     * @since Method available since Release 2.0.0
-     */
-    public function setFSM(StateMachine $fsm)
-    {
-        $this->fsm = $fsm;
+        return array_merge(parent::__sleep(), array('attributes'));
     }
 
     /**
@@ -145,16 +130,17 @@ class PageFlow implements PageFlowInterface
     }
 
     /**
-     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher
+     * {@inheritDoc}
+     *
      * @since Method available since Release 2.0.0
      */
-    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher)
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher = null)
     {
         $self = $this;
         $eventDispatcher->addListener(
             StateMachineEvents::EVENT_PROCESS,
             function (StateMachineEvent $event) use ($self) {
-                if ($event->getStateMachine() === $self->fsm) {
+                if ($event->getStateMachine() === $self) {
                     if ($event->getEvent() instanceof TransitionEventInterface) {
                         $self->lastTransitionEvent = $event->getEvent();
                     } else {
@@ -163,7 +149,8 @@ class PageFlow implements PageFlowInterface
                 }
             }
         );
-        $this->fsm->setEventDispatcher($eventDispatcher);
+
+        parent::setEventDispatcher($eventDispatcher);
     }
 
     public function getCurrentView()
@@ -180,15 +167,7 @@ class PageFlow implements PageFlowInterface
 
     public function getID()
     {
-        return $this->id;
-    }
-
-    /**
-     * Starts the page flow.
-     */
-    public function start()
-    {
-        $this->fsm->start();
+        return $this->getStateMachineID();
     }
 
     /**
@@ -204,37 +183,18 @@ class PageFlow implements PageFlowInterface
             throw new PageFlowNotActivatedException('The page flow must be activated to trigger any event.');
         }
 
-        $this->fsm->triggerEvent($eventID, false);
+        parent::triggerEvent($eventID);
 
-        if ($this->fsm->getCurrentState()->isEndState()) {
-            $this->fsm->triggerEvent(PageFlowInterface::EVENT_END);
+        if ($this->getCurrentState()->isEndState()) {
+            $this->triggerEvent(PageFlowInterface::EVENT_END);
         }
 
-        return $this->fsm->getCurrentState();
-    }
-
-    public function getPreviousState()
-    {
-        if (is_null($this->fsm)) return null;
-        return $this->fsm->getPreviousState();
-    }
-
-    public function getCurrentState()
-    {
-        if (is_null($this->fsm)) return null;
-        return $this->fsm->getCurrentState();
+        return $this->getCurrentState();
     }
 
     public function getAttributes()
     {
         return $this->attributes;
-    }
-
-    public function setPayload($payload)
-    {
-        if (!is_null($this->fsm)) {
-            $this->fsm->setPayload($payload);
-        }
     }
 
     public function isInFinalState()
@@ -259,7 +219,7 @@ class PageFlow implements PageFlowInterface
      */
     public function isActive()
     {
-        return !is_null($this->fsm) && !is_null($this->fsm->getCurrentState());
+        return !is_null($this->getCurrentState());
     }
 }
 

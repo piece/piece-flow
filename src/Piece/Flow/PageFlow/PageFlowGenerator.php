@@ -59,11 +59,6 @@ use Piece\Flow\PageFlow\State\ViewState;
 class PageFlowGenerator
 {
     /**
-     * @var \Piece\Flow\PageFlow\PageFlow
-     */
-    protected $pageFlow;
-
-    /**
      * @var \Piece\Flow\PageFlow\PageFlowRegistry
      * @since Property available since Release 2.0.0
      */
@@ -81,9 +76,8 @@ class PageFlowGenerator
      */
     public function __construct($id, PageFlowRegistry $pageFlowRegistry)
     {
-        $this->pageFlow = new PageFlow($id);
         $this->pageFlowRegistry = $pageFlowRegistry;
-        $this->fsmBuilder = new StateMachineBuilder($this->pageFlow->getID());
+        $this->fsmBuilder = new StateMachineBuilder(new PageFlow($id));
     }
 
     /**
@@ -139,9 +133,7 @@ class PageFlowGenerator
         $this->configureViewStates($definition['viewState']);
         $this->configureActionStates($definition['actionState']);
 
-        $this->pageFlow->setFSM($this->fsmBuilder->getStateMachine());
-
-        return $this->pageFlow;
+        return $this->getPageFlow();
     }
 
     /**
@@ -230,8 +222,7 @@ class PageFlowGenerator
             $actionID = $action['class'] . ':' . $action['method'];
         }
 
-        $eventHandler = new EventHandler($actionID, $this->pageFlow);
-        return array($eventHandler, 'invokeAction');
+        return array(new EventHandler($actionID, $this->getPageFlow()), 'invokeAction');
     }
 
     /**
@@ -265,8 +256,7 @@ class PageFlowGenerator
             $actionID = $action['class'] . ':' . $action['method'];
         }
 
-        $eventHandler = new EventHandler($actionID, $this->pageFlow);
-        return array($eventHandler, 'invokeActionAndTriggerEvent');
+        return array(new EventHandler($actionID, $this->getPageFlow()), 'invokeActionAndTriggerEvent');
     }
 
     /**
@@ -278,7 +268,7 @@ class PageFlowGenerator
         $processor = new Processor();
         return $processor->processConfiguration(
             new Definition17Configuration(),
-            array('definition17' => Yaml::parse($this->pageFlowRegistry->getFileName($this->pageFlow->getID())))
+            array('definition17' => Yaml::parse($this->pageFlowRegistry->getFileName($this->getPageFlow()->getID())))
         );
     }
 
@@ -292,6 +282,15 @@ class PageFlowGenerator
         $state->setExitEvent(new ExitEvent());
         $state->setDoEvent(new DoEvent());
         $this->fsmBuilder->getStateMachine()->addState($state);
+    }
+
+    /**
+     * @return \Piece\Flow\PageFlow\PageFlowInterface
+     * @since Method available since Release 2.0.0
+     */
+    protected function getPageFlow()
+    {
+        return $this->fsmBuilder->getStateMachine();
     }
 }
 
