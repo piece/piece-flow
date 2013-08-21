@@ -59,6 +59,12 @@ use Piece\Flow\PageFlow\State\ViewState;
 class PageFlowGenerator
 {
     /**
+     * @var \Piece\Flow\PageFlow\PageFlowInterface
+     * @since Property available since Release 2.0.0
+     */
+    protected $pageFlow;
+
+    /**
      * @var \Piece\Flow\PageFlow\PageFlowRegistry
      * @since Property available since Release 2.0.0
      */
@@ -71,13 +77,14 @@ class PageFlowGenerator
     protected $stateMachineBuilder;
 
     /**
-     * @param string                                $id
-     * @param \Piece\Flow\PageFlow\PageFlowRegistry $pageFlowRegistry
+     * @param \Piece\Flow\PageFlow\PageFlowInterface $pageFlow
+     * @param \Piece\Flow\PageFlow\PageFlowRegistry  $pageFlowRegistry
      */
-    public function __construct($id, PageFlowRegistry $pageFlowRegistry)
+    public function __construct(PageFlowInterface $pageFlow, PageFlowRegistry $pageFlowRegistry)
     {
+        $this->pageFlow = $pageFlow;
         $this->pageFlowRegistry = $pageFlowRegistry;
-        $this->stateMachineBuilder = new StateMachineBuilder(new PageFlow($id));
+        $this->stateMachineBuilder = new StateMachineBuilder($this->pageFlow);
     }
 
     /**
@@ -134,7 +141,7 @@ class PageFlowGenerator
         $this->configureViewStates($definition['viewState']);
         $this->configureActionStates($definition['actionState']);
 
-        return $this->getPageFlow();
+        return $this->pageFlow;
     }
 
     /**
@@ -223,7 +230,7 @@ class PageFlowGenerator
             $actionID = $action['class'] . ':' . $action['method'];
         }
 
-        return array(new EventHandler($actionID, $this->getPageFlow()), 'invokeAction');
+        return array(new EventHandler($actionID, $this->pageFlow), 'invokeAction');
     }
 
     /**
@@ -257,7 +264,7 @@ class PageFlowGenerator
             $actionID = $action['class'] . ':' . $action['method'];
         }
 
-        return array(new EventHandler($actionID, $this->getPageFlow()), 'invokeActionAndTriggerEvent');
+        return array(new EventHandler($actionID, $this->pageFlow), 'invokeActionAndTriggerEvent');
     }
 
     /**
@@ -270,7 +277,7 @@ class PageFlowGenerator
 
         return $processor->processConfiguration(
             new Definition17Configuration(),
-            array('definition17' => Yaml::parse($this->pageFlowRegistry->getFileName($this->getPageFlow()->getID())))
+            array('definition17' => Yaml::parse($this->pageFlowRegistry->getFileName($this->pageFlow->getID())))
         );
     }
 
@@ -284,15 +291,6 @@ class PageFlowGenerator
         $state->setExitEvent(new ExitEvent());
         $state->setDoEvent(new DoEvent());
         $this->stateMachineBuilder->getStateMachine()->addState($state);
-    }
-
-    /**
-     * @return \Piece\Flow\PageFlow\PageFlowInterface
-     * @since Method available since Release 2.0.0
-     */
-    protected function getPageFlow()
-    {
-        return $this->stateMachineBuilder->getStateMachine();
     }
 }
 

@@ -4,7 +4,7 @@
 /**
  * PHP version 5.3
  *
- * Copyright (c) 2012 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2012-2013 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2012 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2012-2013 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      File available since Release 2.0.0
@@ -39,7 +39,7 @@ namespace Piece\Flow\PageFlow;
 
 /**
  * @package    Piece_Flow
- * @copyright  2012 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2012-2013 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      Class available since Release 2.0.0
@@ -60,12 +60,12 @@ class PageFlowFactory
     }
 
     /**
-     * @param  string                        $id
-     * @return \Piece\Flow\PageFlow\PageFlow
+     * @param  string                                 $id
+     * @return \Piece\Flow\PageFlow\PageFlowInterface
      */
     public function create($id)
     {
-        $pageFlowGenerator = new PageFlowGenerator($id, $this->pageFlowRegistry);
+        $pageFlowGenerator = new PageFlowGenerator(new PageFlow($id), $this->pageFlowRegistry);
 
         return $pageFlowGenerator->generate();
     }
