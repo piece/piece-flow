@@ -83,6 +83,7 @@ class PageFlowGenerator
     /**
      * Configures a PageFlow object from the specified definition.
      *
+     * @return \Piece\Flow\PageFlow\PageFlowInterface
      * @throws \Piece\Flow\PageFlow\ProtectedStateException
      */
     public function generate()
