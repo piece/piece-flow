@@ -99,7 +99,7 @@ class PageFlowCache
     }
 
     /**
-     * @return \Piece\Flow\PageFlow\PageFlow
+     * @return \Piece\Flow\PageFlow\PageFlowInterface
      */
     public function read()
     {
