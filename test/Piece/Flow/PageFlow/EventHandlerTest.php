@@ -56,7 +56,7 @@ class EventHandlerTest extends \PHPUnit_Framework_TestCase
     {
         $actionInvoker = \Phake::mock('Piece\Flow\PageFlow\ActionInvokerInterface');
         \Phake::when($actionInvoker)->invoke($this->anything(), $this->anything())->thenReturn('foo');
-        $pageFlow = \Phake::mock('Piece\Flow\PageFlow\PageFlow');
+        $pageFlow = \Phake::mock('Piece\Flow\PageFlow\PageFlowInterface');
         \Phake::when($pageFlow)->getActionInvoker()->thenReturn($actionInvoker);
         $event = \Phake::mock('Stagehand\FSM\Event\EventInterface');
         $payload = new \stdClass();
@@ -83,7 +83,7 @@ class EventHandlerTest extends \PHPUnit_Framework_TestCase
         \Phake::when($state)->getEvent($this->anything())->thenReturn($event);
         $fsm = \Phake::mock('Stagehand\FSM\StateMachine\StateMachine');
         \Phake::when($fsm)->getCurrentState()->thenReturn($state);
-        $pageFlow = \Phake::mock('Piece\Flow\PageFlow\PageFlow');
+        $pageFlow = \Phake::mock('Piece\Flow\PageFlow\PageFlowInterface');
         \Phake::when($pageFlow)->getActionInvoker()->thenReturn($actionInvoker);
         $payload = new \stdClass();
         $eventHandler = new EventHandler('my_controller:onRegister', $pageFlow);
@@ -112,7 +112,7 @@ class EventHandlerTest extends \PHPUnit_Framework_TestCase
         $state = \Phake::mock('Stagehand\FSM\State\StateInterface');
         $fsm = \Phake::mock('Stagehand\FSM\StateMachine\StateMachine');
         \Phake::when($fsm)->getCurrentState()->thenReturn($state);
-        $pageFlow = \Phake::mock('Piece\Flow\PageFlow\PageFlow');
+        $pageFlow = \Phake::mock('Piece\Flow\PageFlow\PageFlowInterface');
         \Phake::when($pageFlow)->getActionInvoker()->thenReturn($actionInvoker);
         $payload = new \stdClass();
         $eventHandler = new EventHandler('my_controller:onRegister', $pageFlow);
