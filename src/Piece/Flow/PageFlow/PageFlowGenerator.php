@@ -68,7 +68,7 @@ class PageFlowGenerator
      * @var \Stagehand\FSM\StateMachine\StateMachineBuilder
      * @since Property available since Release 2.0.0
      */
-    protected $fsmBuilder;
+    protected $stateMachineBuilder;
 
     /**
      * @param string $id
@@ -77,7 +77,7 @@ class PageFlowGenerator
     public function __construct($id, PageFlowRegistry $pageFlowRegistry)
     {
         $this->pageFlowRegistry = $pageFlowRegistry;
-        $this->fsmBuilder = new StateMachineBuilder(new PageFlow($id));
+        $this->stateMachineBuilder = new StateMachineBuilder(new PageFlow($id));
     }
 
     /**
@@ -116,19 +116,19 @@ class PageFlowGenerator
         }
 
         if (empty($definition['initial'])) {
-            $this->fsmBuilder->setStartState($definition['firstState']);
+            $this->stateMachineBuilder->setStartState($definition['firstState']);
         } else {
-            $this->fsmBuilder->setStartState($definition['firstState'], $this->wrapAction($definition['initial']));
+            $this->stateMachineBuilder->setStartState($definition['firstState'], $this->wrapAction($definition['initial']));
         }
 
         if (!empty($definition['lastState'])) {
             if (empty($definition['final'])) {
-                $this->fsmBuilder->setEndState($definition['lastState']['name'], PageFlowInterface::EVENT_END);
+                $this->stateMachineBuilder->setEndState($definition['lastState']['name'], PageFlowInterface::EVENT_END);
             } else {
-                $this->fsmBuilder->setEndState($definition['lastState']['name'], PageFlowInterface::EVENT_END, $this->wrapAction($definition['final']));
+                $this->stateMachineBuilder->setEndState($definition['lastState']['name'], PageFlowInterface::EVENT_END, $this->wrapAction($definition['final']));
             }
             $this->configureViewState($definition['lastState']);
-            $this->fsmBuilder->getStateMachine()->getState($definition['lastState']['name'])->setView($definition['lastState']['view']);
+            $this->stateMachineBuilder->getStateMachine()->getState($definition['lastState']['name'])->setView($definition['lastState']['view']);
         }
 
         $this->configureViewStates($definition['viewState']);
@@ -176,7 +176,7 @@ class PageFlowGenerator
                 throw new ProtectedEventException("The event [ {$state['transition'][$i]['event']} ] cannot be used in flow definitions.");
             }
 
-            $this->fsmBuilder->addTransition($state['name'],
+            $this->stateMachineBuilder->addTransition($state['name'],
                                        $state['transition'][$i]['event'],
                                        $state['transition'][$i]['nextState'],
                                        $this->wrapEventTriggerAction(@$state['transition'][$i]['action']),
@@ -185,19 +185,19 @@ class PageFlowGenerator
         }
 
         if (!empty($state['entry'])) {
-            $this->fsmBuilder->setEntryAction($state['name'],
+            $this->stateMachineBuilder->setEntryAction($state['name'],
                                         $this->wrapAction(@$state['entry'])
                                         );
         }
 
         if (!empty($state['exit'])) {
-            $this->fsmBuilder->setExitAction($state['name'],
+            $this->stateMachineBuilder->setExitAction($state['name'],
                                        $this->wrapAction(@$state['exit'])
                                        );
         }
 
         if (!empty($state['activity'])) {
-            $this->fsmBuilder->setActivity($state['name'],
+            $this->stateMachineBuilder->setActivity($state['name'],
                                      $this->wrapEventTriggerAction(@$state['activity'])
                                      );
         }
@@ -233,7 +233,7 @@ class PageFlowGenerator
      */
     protected function configureViewState(array $state)
     {
-        $this->fsmBuilder->getStateMachine()->getState($state['name'])->setView($state['view']);
+        $this->stateMachineBuilder->getStateMachine()->getState($state['name'])->setView($state['view']);
         $this->configureState($state);
     }
 
@@ -282,7 +282,7 @@ class PageFlowGenerator
         $state->setEntryEvent(new EntryEvent());
         $state->setExitEvent(new ExitEvent());
         $state->setDoEvent(new DoEvent());
-        $this->fsmBuilder->getStateMachine()->addState($state);
+        $this->stateMachineBuilder->getStateMachine()->addState($state);
     }
 
     /**
@@ -291,7 +291,7 @@ class PageFlowGenerator
      */
     protected function getPageFlow()
     {
-        return $this->fsmBuilder->getStateMachine();
+        return $this->stateMachineBuilder->getStateMachine();
     }
 }
 
