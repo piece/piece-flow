@@ -40,7 +40,6 @@ namespace Piece\Flow\Continuation;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 use Piece\Flow\PageFlow\ActionInvokerInterface;
-use Piece\Flow\PageFlow\PageFlow;
 use Piece\Flow\PageFlow\PageFlowInterface;
 
 /**
@@ -58,15 +57,15 @@ class PageFlowInstance implements PageFlowInterface
     protected $id;
 
     /**
-     * @var \Piece\Flow\PageFlow\PageFlow
+     * @var \Piece\Flow\PageFlow\PageFlowInterface
      */
     protected $pageFlow;
 
     /**
-     * @param string                        $id
-     * @param \Piece\Flow\PageFlow\PageFlow $pageFlow
+     * @param string                                 $id
+     * @param \Piece\Flow\PageFlow\PageFlowInterface $pageFlow
      */
-    public function __construct($id, PageFlow $pageFlow)
+    public function __construct($id, PageFlowInterface $pageFlow)
     {
         $this->id = $id;
         $this->pageFlow = $pageFlow;
