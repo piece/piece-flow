@@ -63,9 +63,9 @@ class EventHandler
      * Wraps a action up with an EventHandler object.
      *
      * @param string                        $actionID
-     * @param \Piece\Flow\PageFlow\PageFlow $pageFlow
+     * @param \Piece\Flow\PageFlow\PageFlowInterface $pageFlow
      */
-    public function __construct($actionID, PageFlow $pageFlow)
+    public function __construct($actionID, PageFlowInterface $pageFlow)
     {
         $this->actionID = $actionID;
         $this->pageFlow = $pageFlow;
