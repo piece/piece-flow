@@ -113,23 +113,6 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @since Method available since Release 2.0.0
-     *
-     * @test
-     */
-    public function replacesATriggeredEventWithTheBuiltinEventForProtectedEventsIfTheEventIsProtected()
-    {
-        $fsm = \Phake::mock('Stagehand\FSM\StateMachine\StateMachine');
-        \Phake::when($fsm)->getCurrentState()->thenReturn(\Phake::mock('Stagehand\FSM\State\StateInterface'));
-        \Phake::when($fsm)->triggerEvent($this->anything(), $this->anything())->thenReturn(\Phake::mock('Stagehand\FSM\State\StateInterface'));
-        $pageFlow = new PageFlow('foo');
-        $pageFlow->setFSM($fsm);
-        $pageFlow->triggerEvent(EventInterface::EVENT_EXIT);
-
-        \Phake::verify($fsm)->triggerEvent($this->equalTo(PageFlow::EVENT_PROTECTED), $this->anything());
-    }
-
-    /**
      * @test
      */
     public function accessesTheAttributes()

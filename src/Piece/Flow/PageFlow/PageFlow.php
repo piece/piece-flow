@@ -41,7 +41,6 @@
 
 namespace Piece\Flow\PageFlow;
 
-use Stagehand\FSM\Event\EventInterface;
 use Stagehand\FSM\Event\TransitionEventInterface;
 use Stagehand\FSM\StateMachine\StateMachine;
 use Stagehand\FSM\StateMachine\StateMachineEvent;
@@ -73,11 +72,6 @@ use Piece\Flow\PageFlow\State\ViewStateInterface;
  */
 class PageFlow implements PageFlowInterface
 {
-    /**
-     * @since Constant available since Release 2.0.0
-     */
-    const EVENT_PROTECTED = '__protected';
-
     protected $fsm;
     protected $id;
 
@@ -208,10 +202,6 @@ class PageFlow implements PageFlowInterface
     {
         if (!$this->isActive()) {
             throw new PageFlowNotActivatedException('The page flow must be activated to trigger any event.');
-        }
-
-        if (in_array($eventID, array(EventInterface::EVENT_ENTRY, EventInterface::EVENT_EXIT, EventInterface::EVENT_START, EventInterface::EVENT_DO))) {
-            $eventID = self::EVENT_PROTECTED;
         }
 
         $this->fsm->triggerEvent($eventID, false);

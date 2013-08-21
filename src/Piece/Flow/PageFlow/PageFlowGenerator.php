@@ -179,9 +179,7 @@ class PageFlowGenerator
     protected function configureState(array $state)
     {
         for ($i = 0, $count = count(@$state['transition']); $i < $count; ++$i) {
-            if ($state['transition'][$i]['event'] == PageFlow::EVENT_PROTECTED
-                || in_array($state['transition'][$i]['event'], array(EventInterface::EVENT_ENTRY, EventInterface::EVENT_EXIT, EventInterface::EVENT_START, EventInterface::EVENT_DO))
-                ) {
+            if (in_array($state['transition'][$i]['event'], array(EventInterface::EVENT_ENTRY, EventInterface::EVENT_EXIT, EventInterface::EVENT_START, EventInterface::EVENT_DO))) {
                 throw new ProtectedEventException("The event [ {$state['transition'][$i]['event']} ] cannot be used in flow definitions.");
             }
 
