@@ -57,12 +57,15 @@ class EventHandler
      */
     protected $actionID;
 
+    /**
+     * @var \Piece\Flow\PageFlow\PageFlowInterface
+     */
     protected $pageFlow;
 
     /**
      * Wraps a action up with an EventHandler object.
      *
-     * @param string                        $actionID
+     * @param string                                 $actionID
      * @param \Piece\Flow\PageFlow\PageFlowInterface $pageFlow
      */
     public function __construct($actionID, PageFlowInterface $pageFlow)
