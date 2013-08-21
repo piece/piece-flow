@@ -59,16 +59,16 @@ class EventContext
     protected $payload;
 
     /**
-     * @var \Piece\Flow\PageFlow\PageFlow
+     * @var \Piece\Flow\PageFlow\PageFlowInterface
      */
     protected $pageFlow;
 
     /**
-     * @param \Stagehand\FSM\Event\EventInterface $event
-     * @param mixed                               $payload
-     * @param \Piece\Flow\PageFlow\PageFlow       $pageFlow
+     * @param \Stagehand\FSM\Event\EventInterface    $event
+     * @param mixed                                  $payload
+     * @param \Piece\Flow\PageFlow\PageFlowInterface $pageFlow
      */
-    public function __construct(EventInterface $event, $payload, PageFlow $pageFlow)
+    public function __construct(EventInterface $event, $payload, PageFlowInterface $pageFlow)
     {
         $this->event = $event;
         $this->payload = $payload;
@@ -92,7 +92,7 @@ class EventContext
     }
 
     /**
-     * @return \Piece\Flow\PageFlow\PageFlow
+     * @return \Piece\Flow\PageFlow\PageFlowInterface
      */
     public function getPageFlow()
     {
