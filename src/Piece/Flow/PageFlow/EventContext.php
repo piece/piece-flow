@@ -65,8 +65,8 @@ class EventContext
 
     /**
      * @param \Stagehand\FSM\Event\EventInterface $event
-     * @param mixed $payload
-     * @param \Piece\Flow\PageFlow\PageFlow $pageFlow
+     * @param mixed                               $payload
+     * @param \Piece\Flow\PageFlow\PageFlow       $pageFlow
      */
     public function __construct(EventInterface $event, $payload, PageFlow $pageFlow)
     {

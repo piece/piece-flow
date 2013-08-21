@@ -189,6 +189,7 @@ class Definition17Configuration implements ConfigurationInterface
                 ->end()
             ->end()
         ;
+
         return $treeBuilder;
     }
 }

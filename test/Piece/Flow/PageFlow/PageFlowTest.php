@@ -37,7 +37,6 @@
 
 namespace Piece\Flow\PageFlow;
 
-use Stagehand\FSM\Event\EventInterface;
 use Stagehand\FSM\State\StateInterface;
 
 /**

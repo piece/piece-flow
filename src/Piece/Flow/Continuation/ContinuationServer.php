@@ -84,7 +84,7 @@ class ContinuationServer
 
     /**
      * @param \Piece\Flow\Continuation\PageFlowInstanceRepository $pageFlowInstanceRepository
-     * @param \Piece\Flow\Continuation\GC $gc
+     * @param \Piece\Flow\Continuation\GC                         $gc
      */
     public function __construct(PageFlowInstanceRepository $pageFlowInstanceRepository, GC $gc = null)
     {
@@ -239,7 +239,7 @@ class ContinuationServer
     /**
      * Creates a page flow instance.
      *
-     * @param mixed $payload
+     * @param  mixed                                                     $payload
      * @return \Piece\Flow\Continuation\PageFlowInstance
      * @throws \Piece\Flow\Continuation\PageFlowInstanceExpiredException
      * @throws \Piece\Flow\Continuation\PageFlowIDRequiredException

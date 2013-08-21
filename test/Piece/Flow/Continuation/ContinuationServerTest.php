@@ -40,7 +40,6 @@ namespace Piece\Flow\Continuation;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 use Piece\Flow\PageFlow\EventContext;
-use Piece\Flow\PageFlow\PageFlowCacheFactory;
 use Piece\Flow\PageFlow\PageFlowRegistry;
 use Piece\Flow\PageFlow\PageFlowRepository;
 
@@ -299,8 +298,8 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @param integer $expirationTime
-     * @param string $firstTime
-     * @param string $secondTime
+     * @param string  $firstTime
+     * @param string  $secondTime
      * @param boolean $shouldRaiseException
      * @since Method available since Release 2.0.0
      *

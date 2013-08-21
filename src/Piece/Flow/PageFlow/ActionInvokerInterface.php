@@ -47,8 +47,8 @@ namespace Piece\Flow\PageFlow;
 interface ActionInvokerInterface
 {
     /**
-     * @param string $actionID
-     * @param \Piece\Flow\PageFlow\EventContext $eventContext
+     * @param  string                            $actionID
+     * @param  \Piece\Flow\PageFlow\EventContext $eventContext
      * @return string
      */
     public function invoke($actionID, EventContext $eventContext);

@@ -62,7 +62,7 @@ class EventHandler
     /**
      * Wraps a action up with an EventHandler object.
      *
-     * @param string $actionID
+     * @param string                        $actionID
      * @param \Piece\Flow\PageFlow\PageFlow $pageFlow
      */
     public function __construct($actionID, PageFlow $pageFlow)
@@ -74,9 +74,9 @@ class EventHandler
     /**
      * Invokes the action with the event context.
      *
-     * @param \Stagehand\FSM\Event\EventInterface $event
-     * @param mixed $payload
-     * @param \Stagehand\FSM\StateMachine\StateMachine $fsm
+     * @param  \Stagehand\FSM\Event\EventInterface      $event
+     * @param  mixed                                    $payload
+     * @param  \Stagehand\FSM\StateMachine\StateMachine $fsm
      * @return string
      */
     public function invokeAction(EventInterface $event, $payload, StateMachine $fsm)
@@ -88,9 +88,9 @@ class EventHandler
      * Invokes the action with the event context and triggers an event returned
      * from the action.
      *
-     * @param \Stagehand\FSM\Event\EventInterface $event
-     * @param mixed $payload
-     * @param \Stagehand\FSM\StateMachine\StateMachine $fsm
+     * @param  \Stagehand\FSM\Event\EventInterface         $event
+     * @param  mixed                                       $payload
+     * @param  \Stagehand\FSM\StateMachine\StateMachine    $fsm
      * @throws \Piece\Flow\PageFlow\EventNotFoundException
      */
     public function invokeActionAndTriggerEvent(EventInterface $event, $payload, StateMachine $fsm)

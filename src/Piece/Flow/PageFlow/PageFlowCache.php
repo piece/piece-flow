@@ -70,8 +70,8 @@ class PageFlowCache
     protected $definitionFile;
 
     /**
-     * @param string $definitionFile
-     * @param string $cacheDir
+     * @param string  $definitionFile
+     * @param string  $cacheDir
      * @param boolean $clearCacheOnDestruction
      */
     public function __construct($definitionFile, $cacheDir, $clearCacheOnDestruction)
@@ -119,7 +119,7 @@ class PageFlowCache
     }
 
     /**
-     * @param string $data
+     * @param  string $data
      * @return string
      */
     protected function createContents($data)

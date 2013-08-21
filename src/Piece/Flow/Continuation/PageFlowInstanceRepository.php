@@ -77,7 +77,7 @@ class PageFlowInstanceRepository
     /**
      * Adds a page flow into the page flow repository.
      *
-     * @param string $pageFlowID
+     * @param string  $pageFlowID
      * @param boolean $exclusive
      */
     public function addPageFlow($pageFlowID, $exclusive)
@@ -124,7 +124,7 @@ class PageFlowInstanceRepository
      * Returns whether or not the specified page flow has one or more exclusive
      * instances.
      *
-     * @param string $pageFlowID
+     * @param  string  $pageFlowID
      * @return boolean
      */
     protected function checkPageFlowHasExclusiveInstance($pageFlowID)
@@ -133,7 +133,7 @@ class PageFlowInstanceRepository
     }
 
     /**
-     * @param string $id
+     * @param  string                                    $id
      * @return \Piece\Flow\Continuation\PageFlowInstance
      * @since Method available since Release 2.0.0
      */
@@ -147,7 +147,7 @@ class PageFlowInstanceRepository
     }
 
     /**
-     * @param string $pageFlowID
+     * @param  string                                    $pageFlowID
      * @return \Piece\Flow\Continuation\PageFlowInstance
      * @since Method available since Release 2.0.0
      */
@@ -173,7 +173,7 @@ class PageFlowInstanceRepository
      * Checks whether or not the page flow of the specified page flow instance
      * is exclusive.
      *
-     * @param \Piece\Flow\Continuation\PageFlowInstance $pageFlowInstance
+     * @param  \Piece\Flow\Continuation\PageFlowInstance $pageFlowInstance
      * @return boolean
      * @since Method available since Release 2.0.0
      */

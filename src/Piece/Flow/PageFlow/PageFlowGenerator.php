@@ -71,7 +71,7 @@ class PageFlowGenerator
     protected $stateMachineBuilder;
 
     /**
-     * @param string $id
+     * @param string                                $id
      * @param \Piece\Flow\PageFlow\PageFlowRegistry $pageFlowRegistry
      */
     public function __construct($id, PageFlowRegistry $pageFlowRegistry)
@@ -140,7 +140,7 @@ class PageFlowGenerator
     /**
      * Configures view states.
      *
-     * @param array $states
+     * @param  array                                        $states
      * @throws \Piece\Flow\PageFlow\ProtectedStateException
      */
     protected function configureViewStates(array $states)
@@ -153,7 +153,7 @@ class PageFlowGenerator
     /**
      * Configures action states.
      *
-     * @param array $states
+     * @param  array                                        $states
      * @throws \Piece\Flow\PageFlow\ProtectedStateException
      */
     protected function configureActionStates(array $states)
@@ -166,7 +166,7 @@ class PageFlowGenerator
     /**
      * Configures a state.
      *
-     * @param array $state
+     * @param  array                                        $state
      * @throws \Piece\Flow\PageFlow\ProtectedEventException
      */
     protected function configureState(array $state)
@@ -208,7 +208,7 @@ class PageFlowGenerator
      * a callback. The simple action means that the action is entry action or
      * exit action or guard.
      *
-     * @param array $action
+     * @param  array $action
      * @return array
      */
     protected function wrapAction(array $action = null)
@@ -242,7 +242,7 @@ class PageFlowGenerator
      * returns a callback. The event trigger action means that the action is
      * transition action or activity.
      *
-     * @param array $action
+     * @param  array $action
      * @return array
      */
     protected function wrapEventTriggerAction(array $action = null)
@@ -267,6 +267,7 @@ class PageFlowGenerator
     protected function readDefinition()
     {
         $processor = new Processor();
+
         return $processor->processConfiguration(
             new Definition17Configuration(),
             array('definition17' => Yaml::parse($this->pageFlowRegistry->getFileName($this->getPageFlow()->getID())))

@@ -73,8 +73,8 @@ class PageFlowRepository
 
     /**
      * @param \Piece\Flow\PageFlow\PageFlowRegistry $pageFlowRegistry
-     * @param string $cacheDir
-     * @param boolean $clearCacheOnDestruction
+     * @param string                                $cacheDir
+     * @param boolean                               $clearCacheOnDestruction
      */
     public function __construct(PageFlowRegistry $pageFlowRegistry, $cacheDir, $clearCacheOnDestruction = false)
     {
@@ -85,7 +85,7 @@ class PageFlowRepository
     }
 
     /**
-     * @param string $id
+     * @param  string                                     $id
      * @throws \Piece\Flow\PageFlow\FileNotFoundException
      */
     public function add($id)
@@ -105,7 +105,7 @@ class PageFlowRepository
     }
 
     /**
-     * @param string $id
+     * @param  string                        $id
      * @return \Piece\Flow\PageFlow\PageFlow
      */
     public function findByID($id)

@@ -173,7 +173,7 @@ class PageFlow extends StateMachine implements PageFlowInterface
     /**
      * Triggers an event.
      *
-     * @param string $eventID
+     * @param  string                                             $eventID
      * @return \Stagehand\FSM\State
      * @throws \Piece\Flow\PageFlow\PageFlowNotActivatedException
      */

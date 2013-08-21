@@ -61,7 +61,7 @@ class GC
     /**
      * Sets the expiration time in seconds.
      *
-     * @param integer $expirationTime
+     * @param integer                        $expirationTime
      * @param \Piece\Flow\Continuation\Clock $clock
      */
     public function __construct($expirationTime, Clock $clock)
@@ -90,7 +90,7 @@ class GC
      * Returns whether or not the specified page flow instance is marked as
      * a target for sweeping.
      *
-     * @param string $pageFlowInstanceID
+     * @param  string  $pageFlowInstanceID
      * @return boolean
      */
     public function isMarked($pageFlowInstanceID)

@@ -60,12 +60,13 @@ class PageFlowFactory
     }
 
     /**
-     * @param string $id
+     * @param  string                        $id
      * @return \Piece\Flow\PageFlow\PageFlow
      */
     public function create($id)
     {
         $pageFlowGenerator = new PageFlowGenerator($id, $this->pageFlowRegistry);
+
         return $pageFlowGenerator->generate();
     }
 }

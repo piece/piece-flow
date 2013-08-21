@@ -63,7 +63,7 @@ class PageFlowInstance implements PageFlowInterface
     protected $pageFlow;
 
     /**
-     * @param string $id
+     * @param string                        $id
      * @param \Piece\Flow\PageFlow\PageFlow $pageFlow
      */
     public function __construct($id, PageFlow $pageFlow)

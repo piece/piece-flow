@@ -67,7 +67,7 @@ class PageFlowRegistry
     }
 
     /**
-     * @param string $id
+     * @param  string $id
      * @return string
      */
     public function getFileName($id)
