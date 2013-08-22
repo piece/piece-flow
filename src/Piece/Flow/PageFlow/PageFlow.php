@@ -221,6 +221,16 @@ class PageFlow extends StateMachine implements PageFlowInterface
     {
         return !is_null($this->getCurrentState());
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since Method available since Release 2.0.0
+     */
+    public function getLastTransitionEvent()
+    {
+        return $this->lastTransitionEvent;
+    }
 }
 
 /*

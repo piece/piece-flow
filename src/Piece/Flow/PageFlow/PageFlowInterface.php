@@ -112,6 +112,11 @@ interface PageFlowInterface
      * @param mixed $payload
      */
     public function setPayload($payload);
+
+    /**
+     * @return \Stagehand\FSM\Event\TransitionEventInterface
+     */
+    public function getLastTransitionEvent();
 }
 
 /*

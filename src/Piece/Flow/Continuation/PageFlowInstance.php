@@ -162,6 +162,16 @@ class PageFlowInstance implements PageFlowInterface
     {
         $this->pageFlow->setEventDispatcher($eventDispatcher);
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since Method available since Release 2.0.0
+     */
+    public function getLastTransitionEvent()
+    {
+        return $this->pageFlow->getLastTransitionEvent();
+    }
 }
 
 /*

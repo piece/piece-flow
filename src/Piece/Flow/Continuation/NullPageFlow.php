@@ -112,6 +112,14 @@ class NullPageFlow implements PageFlowInterface
     public function setPayload($payload)
     {
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getLastTransitionEvent()
+    {
+        return null;
+    }
 }
 
 /*
