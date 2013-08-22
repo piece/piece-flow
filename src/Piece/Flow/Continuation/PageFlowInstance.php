@@ -111,11 +111,6 @@ class PageFlowInstance implements PageFlowInterface
         return $this->pageFlow->getAttributes();
     }
 
-    public function validateReceivedEvent()
-    {
-        return $this->pageFlow->validateReceivedEvent();
-    }
-
     public function getCurrentState()
     {
         return $this->pageFlow->getCurrentState();

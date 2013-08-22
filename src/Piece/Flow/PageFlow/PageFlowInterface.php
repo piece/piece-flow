@@ -61,13 +61,6 @@ interface PageFlowInterface
     public function getAttributes();
 
     /**
-     * Validates whether the last event given by a user is valid or not.
-     *
-     * @return boolean
-     */
-    public function validateReceivedEvent();
-
-    /**
      * Gets the current state.
      *
      * @return \Stagehand\FSM\State\StateInterface

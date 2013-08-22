@@ -72,11 +72,6 @@ class NullPageFlow implements PageFlowInterface
         return null;
     }
 
-    public function validateReceivedEvent()
-    {
-        return false;
-    }
-
     public function getCurrentState()
     {
         return null;

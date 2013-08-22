@@ -37,6 +37,7 @@
 
 namespace Piece\Flow\Continuation;
 
+use Stagehand\FSM\Event\EventInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 use Piece\Flow\PageFlow\EventContext;
@@ -375,7 +376,8 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $pageFlowInstance = $continuationServer->getPageFlowInstance();
         $continuationServer->shutdown();
 
-        $this->assertThat($pageFlowInstance->validateReceivedEvent(), $this->isTrue());
+        $this->assertThat($pageFlowInstance->getLastTransitionEvent(), $this->logicalNot($this->isNull()));
+        $this->assertThat($pageFlowInstance->getLastTransitionEvent()->getEventID(), $this->equalTo(EventInterface::EVENT_START));
 
         $this->pageFlowID = 'CheckLastEvent';
         $this->eventID = 'DisplayEditConfirmFromDisplayEdit';
@@ -384,7 +386,8 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $pageFlowInstance = $continuationServer->getPageFlowInstance();
         $continuationServer->shutdown();
 
-        $this->assertThat($pageFlowInstance->validateReceivedEvent(), $this->isTrue());
+        $this->assertThat($pageFlowInstance->getLastTransitionEvent(), $this->logicalNot($this->isNull()));
+        $this->assertThat($pageFlowInstance->getLastTransitionEvent()->getEventID(), $this->equalTo('DisplayEditConfirmFromDisplayEdit'));
 
         $this->pageFlowID = 'CheckLastEvent';
         $this->eventID = 'nonExistingEvent';
@@ -393,7 +396,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $pageFlowInstance = $continuationServer->getPageFlowInstance();
         $continuationServer->shutdown();
 
-        $this->assertThat($pageFlowInstance->validateReceivedEvent(), $this->isFalse());
+        $this->assertThat($pageFlowInstance->getLastTransitionEvent(), $this->isNull());
     }
 
     /**

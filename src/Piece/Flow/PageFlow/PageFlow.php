@@ -205,14 +205,6 @@ class PageFlow extends StateMachine implements PageFlowInterface
     }
 
     /**
-     * @since Method available since Release 1.13.0
-     */
-    public function validateReceivedEvent()
-    {
-        return !is_null($this->lastTransitionEvent);
-    }
-
-    /**
      * Returns whether the page flow has started or not.
      *
      * @return boolean
