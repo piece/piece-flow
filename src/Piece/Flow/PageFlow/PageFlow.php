@@ -42,8 +42,12 @@
 namespace Piece\Flow\PageFlow;
 
 use Stagehand\FSM\Event\EventInterface;
+use Stagehand\FSM\Event\TransitionEventInterface;
 use Stagehand\FSM\StateMachine\StateMachine;
+use Stagehand\FSM\StateMachine\StateMachineEvent;
+use Stagehand\FSM\StateMachine\StateMachineEvents;
 use Stagehand\FSM\State\StateInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\ParameterBag;
 
 use Piece\Flow\PageFlow\State\ViewStateInterface;
@@ -82,13 +86,17 @@ class PageFlow implements PageFlowInterface
      */
     protected $attributes;
 
-    protected $receivedValidEvent;
-
     /**
      * @var \Piece\Flow\PageFlow\ActionInvokerInterface
      * @since Property available since Release 2.0.0
      */
     protected $actionInvoker;
+
+    /**
+     * @var \Stagehand\FSM\Event\TransitionEventInterface
+     * @since Property available since Release 2.0.0
+     */
+    protected $lastTransitionEvent;
 
     /**
      * @param string $id
@@ -142,6 +150,28 @@ class PageFlow implements PageFlowInterface
         return $this->actionInvoker;
     }
 
+    /**
+     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher
+     * @since Method available since Release 2.0.0
+     */
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher)
+    {
+        $self = $this;
+        $eventDispatcher->addListener(
+            StateMachineEvents::EVENT_PROCESS,
+            function (StateMachineEvent $event) use ($self) {
+                if ($event->getStateMachine() === $self->fsm) {
+                    if ($event->getEvent() instanceof TransitionEventInterface) {
+                        $self->lastTransitionEvent = $event->getEvent();
+                    } else {
+                        $self->lastTransitionEvent = null;
+                    }
+                }
+            }
+        );
+        $this->fsm->setEventDispatcher($eventDispatcher);
+    }
+
     public function getCurrentView()
     {
         if (!$this->isActive()) return null;
@@ -164,7 +194,6 @@ class PageFlow implements PageFlowInterface
      */
     public function start()
     {
-        $this->receivedValidEvent = true;
         $this->fsm->start();
     }
 
@@ -184,8 +213,6 @@ class PageFlow implements PageFlowInterface
         if (in_array($eventID, array(EventInterface::EVENT_ENTRY, EventInterface::EVENT_EXIT, EventInterface::EVENT_START, EventInterface::EVENT_DO))) {
             $eventID = self::EVENT_PROTECTED;
         }
-
-        $this->receivedValidEvent = !is_null($this->fsm->getCurrentState()->getEvent($eventID));
 
         $this->fsm->triggerEvent($eventID, false);
 
@@ -232,7 +259,7 @@ class PageFlow implements PageFlowInterface
      */
     public function validateReceivedEvent()
     {
-        return $this->receivedValidEvent;
+        return !is_null($this->lastTransitionEvent);
     }
 
     /**

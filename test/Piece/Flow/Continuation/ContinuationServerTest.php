@@ -4,7 +4,7 @@
 /**
  * PHP version 5.3
  *
- * Copyright (c) 2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2006-2008, 2012-2013 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,13 +29,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2008, 2012-2013 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      File available since Release 1.14.0
  */
 
 namespace Piece\Flow\Continuation;
+
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 use Piece\Flow\PageFlow\EventContext;
 use Piece\Flow\PageFlow\PageFlowCacheFactory;
@@ -44,7 +46,7 @@ use Piece\Flow\PageFlow\PageFlowRepository;
 
 /**
  * @package    Piece_Flow
- * @copyright  2006-2008, 2012 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2006-2008, 2012-2013 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      Class available since Release 1.14.0
@@ -114,6 +116,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $continuationServer = new ContinuationServer($pageFlowInstanceRepository);
         $continuationServer->setActionInvoker($this->createCounterActionInvoker());
         $continuationServer->setContinuationContextProvider($this->continuationContextProvider);
+        $continuationServer->setEventDispatcher(new EventDispatcher());
 
         $this->pageFlowID = 'Counter';
         $this->eventID = null;
@@ -146,6 +149,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $continuationServer = new ContinuationServer($pageFlowInstanceRepository);
         $continuationServer->setActionInvoker($this->createCounterActionInvoker());
         $continuationServer->setContinuationContextProvider($this->continuationContextProvider);
+        $continuationServer->setEventDispatcher(new EventDispatcher());
 
         $this->pageFlowID = 'Counter';
         $this->eventID = null;
@@ -179,6 +183,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $continuationServer = new ContinuationServer($pageFlowInstanceRepository);
         $continuationServer->setActionInvoker($this->createCounterActionInvoker());
         $continuationServer->setContinuationContextProvider($this->continuationContextProvider);
+        $continuationServer->setEventDispatcher(new EventDispatcher());
 
         $this->pageFlowID = 'Counter';
         $this->eventID = null;
@@ -211,6 +216,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $continuationServer = new ContinuationServer($pageFlowInstanceRepository);
         $continuationServer->setActionInvoker($this->createCounterActionInvoker());
         $continuationServer->setContinuationContextProvider($this->continuationContextProvider);
+        $continuationServer->setEventDispatcher(new EventDispatcher());
 
         $this->pageFlowID = 'Counter';
         $this->eventID = null;
@@ -242,6 +248,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $continuationServer = new ContinuationServer($pageFlowInstanceRepository);
         $continuationServer->setActionInvoker($this->createCounterActionInvoker());
         $continuationServer->setContinuationContextProvider($this->continuationContextProvider);
+        $continuationServer->setEventDispatcher(new EventDispatcher());
 
         $this->pageFlowID = 'Counter';
         $this->eventID = null;
@@ -270,6 +277,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $continuationServer = new ContinuationServer($pageFlowInstanceRepository);
         $continuationServer->setActionInvoker($this->createCounterActionInvoker());
         $continuationServer->setContinuationContextProvider($this->continuationContextProvider);
+        $continuationServer->setEventDispatcher(new EventDispatcher());
 
         $this->pageFlowID = 'Counter';
         $this->eventID = null;
@@ -310,6 +318,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $continuationServer = new ContinuationServer($pageFlowInstanceRepository, new GC($expirationTime, $clock));
         $continuationServer->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvokerInterface'));
         $continuationServer->setContinuationContextProvider($this->continuationContextProvider);
+        $continuationServer->setEventDispatcher(new EventDispatcher());
 
         $this->pageFlowID = 'Counter';
         $this->eventID = null;
@@ -358,6 +367,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
         $continuationServer = new ContinuationServer($pageFlowInstanceRepository);
         $continuationServer->setActionInvoker($this->createCounterActionInvoker());
         $continuationServer->setContinuationContextProvider($this->continuationContextProvider);
+        $continuationServer->setEventDispatcher(new EventDispatcher());
 
         $this->pageFlowID = 'CheckLastEvent';
         $this->eventID = 'nonExistingEvent';

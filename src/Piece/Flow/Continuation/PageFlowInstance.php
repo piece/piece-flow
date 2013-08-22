@@ -37,6 +37,8 @@
 
 namespace Piece\Flow\Continuation;
 
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+
 use Piece\Flow\PageFlow\ActionInvokerInterface;
 use Piece\Flow\PageFlow\PageFlow;
 use Piece\Flow\PageFlow\PageFlowInterface;
@@ -151,6 +153,15 @@ class PageFlowInstance implements PageFlowInterface
     public function setPayload($payload)
     {
         $this->pageFlow->setPayload($payload);
+    }
+
+    /**
+     * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher
+     * @since Method available since Release 2.0.0
+     */
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher)
+    {
+        $this->pageFlow->setEventDispatcher($eventDispatcher);
     }
 }
 
