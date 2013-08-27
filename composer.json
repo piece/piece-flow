@@ -4,7 +4,7 @@
     "description": "A page flow engine",
     "keywords": ["page flow", "stateful"],
     "homepage": "http://piece-framework.com/projects/piece-flow",
-    "license": "BSD-2",
+    "license": "BSD-2-Clause",
     "authors": [
         {
             "name": "KUBO Atsuhiro",
