@@ -15,12 +15,12 @@
     "require": {
         "php": ">=5.3.3",
         "piece/stagehand-fsm": "~2.1",
-        "symfony/config": ">=2.0.0",
-        "symfony/dependency-injection": ">=2.0.0",
+        "symfony/config": "~2.1",
+        "symfony/dependency-injection": "~2.1",
         "symfony/event-dispatcher": "~2.1",
-        "symfony/http-foundation": ">=2.0.0",
-        "symfony/http-kernel": ">=2.0.0",
-        "symfony/yaml": ">=2.0.0"
+        "symfony/http-foundation": "~2.1",
+        "symfony/http-kernel": "~2.1",
+        "symfony/yaml": "~2.1"
     },
     "autoload": {
         "psr-0": { "Piece\\Flow": "src/" }
