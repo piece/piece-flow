@@ -14,7 +14,7 @@
     "minimum-stability": "dev",
     "require": {
         "php": ">=5.3.3",
-        "piece/stagehand-fsm": ">=2.0.0",
+        "piece/stagehand-fsm": "~2.1",
         "symfony/config": ">=2.0.0",
         "symfony/dependency-injection": ">=2.0.0",
         "symfony/event-dispatcher": "~2.1",
