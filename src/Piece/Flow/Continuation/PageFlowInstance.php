@@ -99,10 +99,10 @@ class PageFlowInstance implements PageFlowInterface
      */
     public function activate($eventID)
     {
-        if ($this->pageFlow->isActive()) {
-            $this->pageFlow->triggerEvent($eventID);
-        } else {
+        if (is_null($this->pageFlow->getCurrentState())) {
             $this->pageFlow->start();
+        } else {
+            $this->pageFlow->triggerEvent($eventID);
         }
     }
 

@@ -155,7 +155,7 @@ class PageFlow extends StateMachine implements PageFlowInterface
 
     public function getCurrentView()
     {
-        if (!$this->isActive()) return null;
+        if (is_null($this->getCurrentState())) return null;
 
         $state = $this->isInFinalState() ? $this->getPreviousState() : $this->getCurrentState();
         if ($state instanceof ViewStateInterface) {
@@ -179,7 +179,7 @@ class PageFlow extends StateMachine implements PageFlowInterface
      */
     public function triggerEvent($eventID)
     {
-        if (!$this->isActive()) {
+        if (is_null($this->getCurrentState())) {
             throw new PageFlowNotActivatedException('The page flow must be activated to trigger any event.');
         }
 
@@ -202,16 +202,6 @@ class PageFlow extends StateMachine implements PageFlowInterface
         $currentState = $this->getCurrentState();
         if (is_null($currentState)) return false;
         return $currentState->getStateID() == StateInterface::STATE_FINAL;
-    }
-
-    /**
-     * Returns whether the page flow has started or not.
-     *
-     * @return boolean
-     */
-    public function isActive()
-    {
-        return !is_null($this->getCurrentState());
     }
 
     /**

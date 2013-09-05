@@ -107,7 +107,6 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
     public function raisesAnExceptionWhenAnEventIsTriggeredIfThePageFlowIsNotActive()
     {
         $pageFlow = \Phake::partialMock('Piece\Flow\PageFlow\PageFlow', 'foo');
-        \Phake::when($pageFlow)->isActive()->thenReturn(false);
         $pageFlow->triggerEvent('bar');
     }
 
