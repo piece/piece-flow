@@ -100,9 +100,7 @@ class EventHandler
     {
         $eventID = $this->invokeAction($event, $payload, $fsm);
         if (!is_null($eventID)) {
-            if (!is_null($fsm->getCurrentState()->getEvent($eventID))) {
-                $fsm->queueEvent($eventID);
-            } else {
+            if (is_null($fsm->getCurrentState()->getEvent($eventID))) {
                 throw new EventNotFoundException(sprintf(
                     'The event [ %s ] returned from the action [ %s ] is not found on the current state [ %s ].',
                     $eventID,
@@ -110,6 +108,8 @@ class EventHandler
                     $fsm->getCurrentState()->getStateID()
                 ));
             }
+
+            $fsm->queueEvent($eventID);
         }
     }
 }
