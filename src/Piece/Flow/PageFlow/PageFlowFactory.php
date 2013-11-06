@@ -47,16 +47,16 @@ namespace Piece\Flow\PageFlow;
 class PageFlowFactory
 {
     /**
-     * @var \Piece\Flow\PageFlow\PageFlowRegistry
+     * @var \Piece\Flow\PageFlow\PageFlowRegistries
      */
-    protected $pageFlowRegistry;
+    protected $pageFlowRegistries;
 
     /**
-     * @param \Piece\Flow\PageFlow\PageFlowRegistry $pageFlowRegistry
+     * @param \Piece\Flow\PageFlow\PageFlowRegistries $pageFlowRegistries
      */
-    public function __construct(PageFlowRegistry $pageFlowRegistry)
+    public function __construct(PageFlowRegistries $pageFlowRegistries)
     {
-        $this->pageFlowRegistry = $pageFlowRegistry;
+        $this->pageFlowRegistries = $pageFlowRegistries;
     }
 
     /**
@@ -65,7 +65,7 @@ class PageFlowFactory
      */
     public function create($id)
     {
-        $pageFlowGenerator = new PageFlowGenerator(new PageFlow($id), $this->pageFlowRegistry);
+        $pageFlowGenerator = new PageFlowGenerator(new PageFlow($id), $this->pageFlowRegistries);
 
         return $pageFlowGenerator->generate();
     }

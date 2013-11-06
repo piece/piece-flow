@@ -41,6 +41,7 @@ use Stagehand\FSM\Event\EventInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 use Piece\Flow\PageFlow\EventContext;
+use Piece\Flow\PageFlow\PageFlowRegistries;
 use Piece\Flow\PageFlow\PageFlowRegistry;
 use Piece\Flow\PageFlow\PageFlowRepository;
 
@@ -422,7 +423,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
      */
     protected function createPageFlowInstanceRepository()
     {
-        return new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistry($this->cacheDirectory, '.yaml'), $this->cacheDirectory, true));
+        return new PageFlowInstanceRepository(new PageFlowRepository(new PageFlowRegistries(array(new PageFlowRegistry($this->cacheDirectory, '.yaml'))), $this->cacheDirectory, true));
     }
 }
 

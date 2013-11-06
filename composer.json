@@ -13,6 +13,7 @@
     ],
     "require": {
         "php": ">=5.3.3",
+        "doctrine/collections": "~1.1",
         "piece/stagehand-fsm": ">=2.1.0@dev",
         "symfony/config": "~2.1",
         "symfony/dependency-injection": "~2.1",

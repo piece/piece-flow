@@ -62,24 +62,24 @@ class PageFlowRepository
     protected $pageFlowFactory;
 
     /**
-     * @var \Piece\Flow\PageFlow\PageFlowRegistry
+     * @var \Piece\Flow\PageFlow\PageFlowRegistries
      */
-    protected $pageFlowRegistry;
+    protected $pageFlowRegistries;
 
     /**
-     * @var array
+     * @var \Piece\Flow\PageFlow\PageFlowInterface[]
      */
     protected $pageFlows = array();
 
     /**
-     * @param \Piece\Flow\PageFlow\PageFlowRegistry $pageFlowRegistry
-     * @param string                                $cacheDir
-     * @param boolean                               $clearCacheOnDestruction
+     * @param \Piece\Flow\PageFlow\PageFlowRegistries $pageFlowRegistries
+     * @param string                                  $cacheDir
+     * @param boolean                                 $clearCacheOnDestruction
      */
-    public function __construct(PageFlowRegistry $pageFlowRegistry, $cacheDir, $clearCacheOnDestruction = false)
+    public function __construct(PageFlowRegistries $pageFlowRegistries, $cacheDir, $clearCacheOnDestruction = false)
     {
-        $this->pageFlowRegistry = $pageFlowRegistry;
-        $this->pageFlowFactory = new PageFlowFactory($this->pageFlowRegistry);
+        $this->pageFlowRegistries = $pageFlowRegistries;
+        $this->pageFlowFactory = new PageFlowFactory($this->pageFlowRegistries);
         $this->cacheDir = $cacheDir;
         $this->clearCacheOnDestruction = $clearCacheOnDestruction;
     }
@@ -92,11 +92,12 @@ class PageFlowRepository
     {
         if (array_key_exists($id, $this->pageFlows)) return;
 
-        if (!file_exists($this->pageFlowRegistry->getFileName($id))) {
-            throw new FileNotFoundException(sprintf('The page flow definition file [ %s ] is not found.', $this->pageFlowRegistry->getFileName($id)));
+        $definitionFile = $this->pageFlowRegistries->getFileName($id);
+        if (is_null($definitionFile)) {
+            throw new FileNotFoundException(sprintf('The page flow definition file for the page flow ID "%s" is not found.', $id));
         }
 
-        $pageFlowCache = new PageFlowCache($this->pageFlowRegistry->getFileName($id), $this->cacheDir, $this->clearCacheOnDestruction);
+        $pageFlowCache = new PageFlowCache($definitionFile, $this->cacheDir, $this->clearCacheOnDestruction);
         if (!$pageFlowCache->isFresh()) {
             $pageFlowCache->write($this->pageFlowFactory->create($id));
         }

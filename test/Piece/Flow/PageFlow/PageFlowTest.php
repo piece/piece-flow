@@ -56,7 +56,7 @@ class PageFlowTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->pageFlowFactory = new PageFlowFactory(new PageFlowRegistry(__DIR__ . '/' . basename(__FILE__, '.php'), '.flow'));
+        $this->pageFlowFactory = new PageFlowFactory(new PageFlowRegistries(array(new PageFlowRegistry(__DIR__ . '/' . basename(__FILE__, '.php'), '.flow'))));
     }
 
     /**

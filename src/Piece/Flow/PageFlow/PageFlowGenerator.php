@@ -65,10 +65,10 @@ class PageFlowGenerator
     protected $pageFlow;
 
     /**
-     * @var \Piece\Flow\PageFlow\PageFlowRegistry
+     * @var \Piece\Flow\PageFlow\PageFlowRegistries
      * @since Property available since Release 2.0.0
      */
-    protected $pageFlowRegistry;
+    protected $pageFlowRegistries;
 
     /**
      * @var \Stagehand\FSM\StateMachine\StateMachineBuilder
@@ -77,13 +77,13 @@ class PageFlowGenerator
     protected $stateMachineBuilder;
 
     /**
-     * @param \Piece\Flow\PageFlow\PageFlowInterface $pageFlow
-     * @param \Piece\Flow\PageFlow\PageFlowRegistry  $pageFlowRegistry
+     * @param \Piece\Flow\PageFlow\PageFlowInterface  $pageFlow
+     * @param \Piece\Flow\PageFlow\PageFlowRegistries $pageFlowRegistries
      */
-    public function __construct(PageFlowInterface $pageFlow, PageFlowRegistry $pageFlowRegistry)
+    public function __construct(PageFlowInterface $pageFlow, PageFlowRegistries $pageFlowRegistries)
     {
         $this->pageFlow = $pageFlow;
-        $this->pageFlowRegistry = $pageFlowRegistry;
+        $this->pageFlowRegistries = $pageFlowRegistries;
         $this->stateMachineBuilder = new StateMachineBuilder($this->pageFlow);
     }
 
@@ -277,7 +277,7 @@ class PageFlowGenerator
 
         return $processor->processConfiguration(
             new Definition17Configuration(),
-            array('definition17' => Yaml::parse($this->pageFlowRegistry->getFileName($this->pageFlow->getID())))
+            array('definition17' => Yaml::parse($this->pageFlowRegistries->getFileName($this->pageFlow->getID())))
         );
     }
 
