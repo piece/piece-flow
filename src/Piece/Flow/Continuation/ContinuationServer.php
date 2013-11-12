@@ -52,7 +52,14 @@ use Piece\Flow\PageFlow\ActionInvokerInterface;
  */
 class ContinuationServer
 {
+    /**
+     * @var \Piece\Flow\Continuation\GarbageCollector
+     */
     protected $garbageCollector;
+
+    /**
+     * @var \Piece\Flow\Continuation\PageFlowInstanceRepository
+     */
     protected $pageFlowInstanceRepository;
 
     /**
