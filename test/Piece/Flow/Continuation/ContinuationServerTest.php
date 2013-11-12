@@ -311,7 +311,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
      */
     public function raisesAnExceptionWhenThePageFlowInstanceHasExpired($expirationTime, $firstTime, $secondTime, $shouldRaiseException)
     {
-        $clock = \Phake::mock('Piece\Flow\Continuation\Clock');
+        $clock = \Phake::mock('Piece\Flow\Continuation\GarbageCollection\Clock');
         \Phake::when($clock)->now()
             ->thenReturn(new \DateTime($firstTime))
             ->thenReturn(new \DateTime($secondTime));

@@ -35,7 +35,7 @@
  * @since      File available since Release 2.0.0
  */
 
-namespace Piece\Flow\Continuation;
+namespace Piece\Flow\Continuation\GarbageCollection;
 
 /**
  * @package    Piece_Flow

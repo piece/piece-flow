@@ -37,7 +37,7 @@
 
 namespace Piece\Flow\Continuation\GarbageCollection;
 
-use Piece\Flow\Continuation\Clock;
+use Piece\Flow\Continuation\GarbageCollection\Clock;
 
 /**
  * The garbage collector for expired page flow instances.
@@ -53,7 +53,7 @@ class GarbageCollector
     protected $expirationTime;
 
     /**
-     * @var \Piece\Flow\Continuation\Clock
+     * @var \Piece\Flow\Continuation\GarbageCollection\Clock
      * @since Property available since Release 2.0.0
      */
     protected $clock;
@@ -63,8 +63,8 @@ class GarbageCollector
     /**
      * Sets the expiration time in seconds.
      *
-     * @param integer                        $expirationTime
-     * @param \Piece\Flow\Continuation\Clock $clock
+     * @param integer                                          $expirationTime
+     * @param \Piece\Flow\Continuation\GarbageCollection\Clock $clock
      */
     public function __construct($expirationTime, Clock $clock)
     {
