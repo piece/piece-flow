@@ -120,9 +120,9 @@ class GarbageCollector
     /**
      * Sweeps all marked page flow instance with the specified callback.
      *
-     * @param callback $gcCallback
+     * @param callback $callback
      */
-    public function sweep($gcCallback)
+    public function sweep($callback)
     {
         reset($this->markers);
         while (list($pageFlowInstanceID, $marker) = each($this->markers)) {
@@ -131,7 +131,7 @@ class GarbageCollector
             }
 
             if ($marker['shouldSweep']) {
-                call_user_func($gcCallback, $pageFlowInstanceID);
+                call_user_func($callback, $pageFlowInstanceID);
                 $this->markers[$pageFlowInstanceID]['swept'] = true;
             }
         }
