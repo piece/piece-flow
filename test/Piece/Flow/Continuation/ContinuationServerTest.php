@@ -40,6 +40,7 @@ namespace Piece\Flow\Continuation;
 use Stagehand\FSM\Event\EventInterface;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
+use Piece\Flow\Continuation\GarbageCollection\GarbageCollector;
 use Piece\Flow\PageFlow\EventContext;
 use Piece\Flow\PageFlow\PageFlowRegistries;
 use Piece\Flow\PageFlow\PageFlowRegistry;

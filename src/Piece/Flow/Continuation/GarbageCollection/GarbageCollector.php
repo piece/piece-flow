@@ -35,7 +35,9 @@
  * @since      File available since Release 1.11.0
  */
 
-namespace Piece\Flow\Continuation;
+namespace Piece\Flow\Continuation\GarbageCollection;
+
+use Piece\Flow\Continuation\Clock;
 
 /**
  * The garbage collector for expired page flow instances.

@@ -39,6 +39,7 @@ namespace Piece\Flow\Continuation;
 
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
+use Piece\Flow\Continuation\GarbageCollection\GarbageCollector;
 use Piece\Flow\PageFlow\ActionInvokerInterface;
 
 /**
@@ -53,7 +54,7 @@ use Piece\Flow\PageFlow\ActionInvokerInterface;
 class ContinuationServer
 {
     /**
-     * @var \Piece\Flow\Continuation\GarbageCollector
+     * @var \Piece\Flow\Continuation\GarbageCollection\GarbageCollector
      */
     protected $garbageCollector;
 
@@ -90,8 +91,8 @@ class ContinuationServer
     private static $shutdownRegistered = false;
 
     /**
-     * @param \Piece\Flow\Continuation\PageFlowInstanceRepository $pageFlowInstanceRepository
-     * @param \Piece\Flow\Continuation\GarbageCollector           $garbageCollector
+     * @param \Piece\Flow\Continuation\PageFlowInstanceRepository         $pageFlowInstanceRepository
+     * @param \Piece\Flow\Continuation\GarbageCollection\GarbageCollector $garbageCollector
      */
     public function __construct(PageFlowInstanceRepository $pageFlowInstanceRepository, GarbageCollector $garbageCollector = null)
     {
