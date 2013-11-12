@@ -4,7 +4,7 @@
 /**
  * PHP version 5.3
  *
- * Copyright (c) 2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>,
+ * Copyright (c) 2007, 2012-2013 KUBO Atsuhiro <kubo@iteman.jp>,
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * @package    Piece_Flow
- * @copyright  2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2007, 2012-2013 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      File available since Release 1.11.0
@@ -41,12 +41,12 @@ namespace Piece\Flow\Continuation;
  * The garbage collector for expired page flow instances.
  *
  * @package    Piece_Flow
- * @copyright  2007, 2012 KUBO Atsuhiro <kubo@iteman.jp>
+ * @copyright  2007, 2012-2013 KUBO Atsuhiro <kubo@iteman.jp>
  * @license    http://www.opensource.org/licenses/bsd-license.php  New BSD License
  * @version    Release: @package_version@
  * @since      Class available since Release 1.11.0
  */
-class GC
+class GarbageCollector
 {
     protected $expirationTime;
 

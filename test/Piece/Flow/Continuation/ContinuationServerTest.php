@@ -316,7 +316,7 @@ class ContinuationServerTest extends \PHPUnit_Framework_TestCase
             ->thenReturn(new \DateTime($secondTime));
         $pageFlowInstanceRepository = $this->createPageFlowInstanceRepository();
         $pageFlowInstanceRepository->addPageFlow('Counter', false);
-        $continuationServer = new ContinuationServer($pageFlowInstanceRepository, new GC($expirationTime, $clock));
+        $continuationServer = new ContinuationServer($pageFlowInstanceRepository, new GarbageCollector($expirationTime, $clock));
         $continuationServer->setActionInvoker(\Phake::mock('Piece\Flow\PageFlow\ActionInvokerInterface'));
         $continuationServer->setContinuationContextProvider($this->continuationContextProvider);
         $continuationServer->setEventDispatcher(new EventDispatcher());
