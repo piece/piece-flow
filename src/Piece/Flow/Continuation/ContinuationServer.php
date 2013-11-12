@@ -84,12 +84,12 @@ class ContinuationServer
 
     /**
      * @param \Piece\Flow\Continuation\PageFlowInstanceRepository $pageFlowInstanceRepository
-     * @param \Piece\Flow\Continuation\GarbageCollector           $gc
+     * @param \Piece\Flow\Continuation\GarbageCollector           $garbageCollector
      */
-    public function __construct(PageFlowInstanceRepository $pageFlowInstanceRepository, GarbageCollector $gc = null)
+    public function __construct(PageFlowInstanceRepository $pageFlowInstanceRepository, GarbageCollector $garbageCollector = null)
     {
         $this->pageFlowInstanceRepository = $pageFlowInstanceRepository;
-        $this->gc = $gc;
+        $this->gc = $garbageCollector;
     }
 
     /**
