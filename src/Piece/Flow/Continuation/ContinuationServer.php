@@ -52,7 +52,7 @@ use Piece\Flow\PageFlow\ActionInvokerInterface;
  */
 class ContinuationServer
 {
-    protected $gc;
+    protected $garbageCollector;
     protected $pageFlowInstanceRepository;
 
     /**
@@ -89,7 +89,7 @@ class ContinuationServer
     public function __construct(PageFlowInstanceRepository $pageFlowInstanceRepository, GarbageCollector $garbageCollector = null)
     {
         $this->pageFlowInstanceRepository = $pageFlowInstanceRepository;
-        $this->gc = $garbageCollector;
+        $this->garbageCollector = $garbageCollector;
     }
 
     /**
@@ -99,7 +99,7 @@ class ContinuationServer
     public function __sleep()
     {
         return array(
-            'gc',
+            'garbageCollector',
             'pageFlowInstanceRepository',
         );
     }
@@ -111,15 +111,15 @@ class ContinuationServer
      */
     public function activate($payload)
     {
-        if (!is_null($this->gc)) {
-            $this->gc->mark();
+        if (!is_null($this->garbageCollector)) {
+            $this->garbageCollector->mark();
         }
 
         $this->pageFlowInstance = $this->createPageFlowInstance($payload);
         $this->pageFlowInstance->activate($this->continuationContextProvider->getEventID());
 
-        if (!is_null($this->gc) && !$this->pageFlowInstanceRepository->checkPageFlowIsExclusive($this->pageFlowInstance)) {
-            $this->gc->update($this->pageFlowInstance->getID());
+        if (!is_null($this->garbageCollector) && !$this->pageFlowInstanceRepository->checkPageFlowIsExclusive($this->pageFlowInstance)) {
+            $this->garbageCollector->update($this->pageFlowInstance->getID());
         }
 
         self::$activeInstances[] = $this;
@@ -155,9 +155,9 @@ class ContinuationServer
             }
         }
 
-        if (!is_null($this->gc)) {
+        if (!is_null($this->garbageCollector)) {
             $pageFlowInstanceRepository = $this->pageFlowInstanceRepository;
-            $this->gc->sweep(function ($pageFlowInstanceID) use ($pageFlowInstanceRepository) {
+            $this->garbageCollector->sweep(function ($pageFlowInstanceID) use ($pageFlowInstanceRepository) {
                 $pageFlowInstance = $pageFlowInstanceRepository->findByID($pageFlowInstanceID);
                 if (!is_null($pageFlowInstance)) {
                     $pageFlowInstance->removePageFlow();
@@ -274,8 +274,8 @@ class ContinuationServer
                 throw new UnexpectedPageFlowIDException(sprintf('The specified page flow ID [ %s ] is different from the expected page flow ID [ %s ].', $pageFlowID, $pageFlowInstance->getPageFlowID()));
             }
 
-            if (!is_null($this->gc)) {
-                if ($this->gc->isMarked($pageFlowInstance->getID())) {
+            if (!is_null($this->garbageCollector)) {
+                if ($this->garbageCollector->isMarked($pageFlowInstance->getID())) {
                     $this->pageFlowInstanceRepository->remove($pageFlowInstance);
                     throw new PageFlowInstanceExpiredException('The page flow instance has been expired.');
                 }
