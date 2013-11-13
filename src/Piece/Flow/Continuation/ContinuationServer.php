@@ -283,7 +283,7 @@ class ContinuationServer
             }
 
             if (!is_null($this->garbageCollector)) {
-                if ($this->garbageCollector->isMarked($pageFlowInstance->getID())) {
+                if ($this->garbageCollector->shouldSweep($pageFlowInstance->getID())) {
                     $this->pageFlowInstanceRepository->remove($pageFlowInstance);
                     throw new PageFlowInstanceExpiredException('The page flow instance has been expired.');
                 }

@@ -96,7 +96,7 @@ class GarbageCollector
      * @param  string  $pageFlowInstanceID
      * @return boolean
      */
-    public function isMarked($pageFlowInstanceID)
+    public function shouldSweep($pageFlowInstanceID)
     {
         if (array_key_exists($pageFlowInstanceID, $this->garbageMarkers)) {
             return $this->garbageMarkers[$pageFlowInstanceID]->isEnabled();
