@@ -112,7 +112,7 @@ class GarbageCollector
     {
         reset($this->garbageMarkers);
         while (list($pageFlowInstanceID, $marker) = each($this->garbageMarkers)) {
-            if (!$marker->isSwept() && ($this->clock->now()->getTimestamp() - $marker->getModificationTimestamp() > $this->expirationTime)) {
+            if (!$marker->isSwept() && $marker->isExpired($this->clock->now()->getTimestamp(), $this->expirationTime)) {
                 $marker->markAsEnabled();
             }
         }

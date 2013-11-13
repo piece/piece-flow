@@ -87,4 +87,14 @@ class GarbageMarker
     {
         return $this->swept;
     }
+
+    /**
+     * @param  integer $currentTimestamp
+     * @param  integer $expirationTime
+     * @return boolean
+     */
+    public function isExpired($currentTimestamp, $expirationTime)
+    {
+        return $currentTimestamp - $this->modificationTimestamp > $expirationTime;
+    }
 }
