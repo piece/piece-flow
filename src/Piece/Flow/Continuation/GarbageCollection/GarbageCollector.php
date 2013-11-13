@@ -61,7 +61,7 @@ class GarbageCollector
     /**
      * @var \Piece\Flow\Continuation\GarbageCollection\GarbageMarker[]
      */
-    protected $markers = array();
+    protected $garbageMarkers = array();
 
     /**
      * Sets the expiration time in seconds.
@@ -83,9 +83,9 @@ class GarbageCollector
     public function update($pageFlowInstanceID)
     {
         if (array_key_exists($pageFlowInstanceID, $this->garbageMarkers)) {
-            $this->markers[$pageFlowInstanceID]->updateModificationTimestamp($this->clock->now()->getTimestamp());
+            $this->garbageMarkers[$pageFlowInstanceID]->updateModificationTimestamp($this->clock->now()->getTimestamp());
         } else {
-            $this->markers[$pageFlowInstanceID] = new GarbageMarker($this->clock->now()->getTimestamp());
+            $this->garbageMarkers[$pageFlowInstanceID] = new GarbageMarker($this->clock->now()->getTimestamp());
         }
     }
 
@@ -98,8 +98,8 @@ class GarbageCollector
      */
     public function isMarked($pageFlowInstanceID)
     {
-        if (array_key_exists($pageFlowInstanceID, $this->markers)) {
-            return $this->markers[$pageFlowInstanceID]->isEnabled();
+        if (array_key_exists($pageFlowInstanceID, $this->garbageMarkers)) {
+            return $this->garbageMarkers[$pageFlowInstanceID]->isEnabled();
         } else {
             return false;
         }
@@ -110,8 +110,8 @@ class GarbageCollector
      */
     public function mark()
     {
-        reset($this->markers);
-        while (list($pageFlowInstanceID, $marker) = each($this->markers)) {
+        reset($this->garbageMarkers);
+        while (list($pageFlowInstanceID, $marker) = each($this->garbageMarkers)) {
             if ($marker->isSwept()) {
                 continue;
             }
@@ -129,8 +129,8 @@ class GarbageCollector
      */
     public function sweep($callback)
     {
-        reset($this->markers);
-        while (list($pageFlowInstanceID, $marker) = each($this->markers)) {
+        reset($this->garbageMarkers);
+        while (list($pageFlowInstanceID, $marker) = each($this->garbageMarkers)) {
             if ($marker->isSwept()) {
                 continue;
             }
