@@ -112,11 +112,7 @@ class GarbageCollector
     {
         reset($this->garbageMarkers);
         while (list($pageFlowInstanceID, $marker) = each($this->garbageMarkers)) {
-            if ($marker->isSwept()) {
-                continue;
-            }
-
-            if (($this->clock->now()->getTimestamp() - $marker->getModificationTimestamp()) > $this->expirationTime) {
+            if (!$marker->isSwept() && ($this->clock->now()->getTimestamp() - $marker->getModificationTimestamp() > $this->expirationTime)) {
                 $marker->markAsEnabled();
             }
         }
@@ -131,11 +127,7 @@ class GarbageCollector
     {
         reset($this->garbageMarkers);
         while (list($pageFlowInstanceID, $marker) = each($this->garbageMarkers)) {
-            if ($marker->isSwept()) {
-                continue;
-            }
-
-            if ($marker->isEnabled()) {
+            if (!$marker->isSwept() && $marker->isEnabled()) {
                 call_user_func($callback, $pageFlowInstanceID);
                 $marker->markAsSwept();
             }
