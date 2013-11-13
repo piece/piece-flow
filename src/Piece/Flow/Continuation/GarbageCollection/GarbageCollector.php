@@ -58,6 +58,9 @@ class GarbageCollector
      */
     protected $clock;
 
+    /**
+     * @var \Piece\Flow\Continuation\GarbageCollection\GarbageMarker[]
+     */
     protected $markers = array();
 
     /**
@@ -79,12 +82,10 @@ class GarbageCollector
      */
     public function update($pageFlowInstanceID)
     {
-        if (!$this->isMarked($pageFlowInstanceID)) {
-            $this->markers[$pageFlowInstanceID] = array(
-                'mtime' => $this->clock->now()->getTimestamp(),
-                'shouldSweep' => false,
-                'swept' => false
-            );
+        if (array_key_exists($pageFlowInstanceID, $this->garbageMarkers)) {
+            $this->markers[$pageFlowInstanceID]->updateModificationTimestamp($this->clock->now()->getTimestamp());
+        } else {
+            $this->markers[$pageFlowInstanceID] = new GarbageMarker($this->clock->now()->getTimestamp());
         }
     }
 
@@ -98,7 +99,7 @@ class GarbageCollector
     public function isMarked($pageFlowInstanceID)
     {
         if (array_key_exists($pageFlowInstanceID, $this->markers)) {
-            return $this->markers[$pageFlowInstanceID]['shouldSweep'];
+            return $this->markers[$pageFlowInstanceID]->isEnabled();
         } else {
             return false;
         }
@@ -111,11 +112,13 @@ class GarbageCollector
     {
         reset($this->markers);
         while (list($pageFlowInstanceID, $marker) = each($this->markers)) {
-            if ($marker['swept']) {
+            if ($marker->isSwept()) {
                 continue;
             }
 
-            $this->markers[$pageFlowInstanceID]['shouldSweep'] = $this->clock->now()->getTimestamp() - $marker['mtime'] > $this->expirationTime;
+            if (($this->clock->now()->getTimestamp() - $marker->getModificationTimestamp()) > $this->expirationTime) {
+                $marker->markAsEnabled();
+            }
         }
     }
 
@@ -128,13 +131,13 @@ class GarbageCollector
     {
         reset($this->markers);
         while (list($pageFlowInstanceID, $marker) = each($this->markers)) {
-            if ($marker['swept']) {
+            if ($marker->isSwept()) {
                 continue;
             }
 
-            if ($marker['shouldSweep']) {
+            if ($marker->isEnabled()) {
                 call_user_func($callback, $pageFlowInstanceID);
-                $this->markers[$pageFlowInstanceID]['swept'] = true;
+                $marker->markAsSwept();
             }
         }
     }
