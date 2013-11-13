@@ -57,14 +57,6 @@ class GarbageMarker
     }
 
     /**
-     * @return integer
-     */
-    public function getModificationTimestamp()
-    {
-        return $this->modificationTimestamp;
-    }
-
-    /**
      * @param integer $modificationTimestamp
      */
     public function updateModificationTimestamp($modificationTimestamp)
